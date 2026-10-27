@@ -1,0 +1,26 @@
+/** Textes de l'historique des parties : barre de filtres (issue, type d'adversaire, tri) et états. */
+export const history = {
+  /** Compteur de la barre (label du composant `SearchToolbar`). */
+  countLabel: "partie",
+  outcome: "Issue",
+  outcomeAria: "Filtrer l'historique par issue",
+  opponentType: "Adversaire",
+  opponentTypeAria: "Filtrer l'historique par type d'adversaire",
+  sort: "Tri",
+  sortAria: "Trier l'historique",
+  filtersTitle: "Filtres de l'historique",
+  outcomeAll: "Toutes les issues",
+  opponentAll: "Tous les adversaires",
+  opponentHuman: "Duels entre joueurs",
+  opponentBot: "Entraînements (bot)",
+  sortRecent: "Plus récentes",
+  sortOldest: "Plus anciennes",
+  sortScore: "Meilleur score",
+  loading: "Chargement de l'historique…",
+  error: "Historique indisponible.",
+  retry: "Réessayer",
+  empty: "Aucune partie pour l'instant.",
+  emptyFilteredTitle: "Aucun résultat",
+  emptyFilteredDescription: "Aucune partie ne correspond à ces filtres.",
+  reset: "Effacer les filtres",
+}

@@ -1,0 +1,180 @@
+/** Textes de l'atelier d'auteur : création/gestion de sujet, éditeur de question. */
+export const authoring = {
+  actions: {
+    cancel: "Annuler",
+    save: "Enregistrer",
+    saving: "Enregistrement…",
+  },
+  languages: {
+    fr: "Français",
+    en: "Anglais",
+  },
+  status: {
+    pending: "En attente",
+    approved: "Approuvée",
+    rejected: "Rejetée",
+    suspended: "Suspendue",
+    archived: "Archivée",
+    published: "Publié",
+    draft: "Brouillon",
+  },
+  topics: {
+    back: "Mes sujets",
+  },
+  fields: {
+    preview: "Aperçu",
+    previewManage: "Rendu de la carte du catalogue.",
+    previewCreate:
+      "Rendu de la carte : illustration, emoji ou icône de catégorie.",
+    nameFr: "Nom (FR)",
+    nameFrDescription:
+      "Obligatoire, 255 caractères max — nom de référence dans le catalogue.",
+    nameEn: "Nom (EN)",
+    nameEnDescription:
+      "Optionnel, 255 caractères max — affiché aux joueurs en anglais.",
+    nameEnPlaceholder: "English name",
+    description: "Description",
+    descriptionDescription:
+      "500 caractères max — présentée sur la fiche du sujet.",
+    descriptionPlaceholder: "Quelques mots sur le sujet…",
+    category: "Catégorie",
+    categoryDescription:
+      "Détermine l'icône de repli et la couleur automatique.",
+    categoryPlaceholder: "Choisir une catégorie",
+    emoji: "Emoji",
+    emojiDescription: "Optionnel — affiché si le sujet n'a pas d'illustration.",
+    accent: "Couleur d'accent",
+    accentDescription:
+      "Teinte des cartes et de l'arène ; « Auto » reprend la couleur de la catégorie.",
+    accentAria: "Couleur d'accent",
+    auto: "Auto",
+    illustration: "Illustration",
+    illustrationDescription:
+      "Image de couverture carrée : téléverse un fichier ou colle une URL http(s).",
+    banner: "Bannière de la fiche",
+    bannerDescription:
+      "Visuel panoramique affiché en tête de la fiche sujet (distinct de la couverture).",
+  },
+  create: {
+    title: "Créer un sujet",
+    subtitle:
+      "Le sujet reste en brouillon jusqu'à la publication ({{minimum}} questions approuvées minimum).",
+    section: "Le sujet",
+    sectionSub: "Nom, description et catégorie — modifiables après création.",
+    appearance: "Apparence",
+    appearanceSub:
+      "Couleur d'accent et illustration de couverture — optionnelles.",
+    submit: "Créer le brouillon",
+    submitting: "Création…",
+    success: "Sujet créé",
+    validation: {
+      nameRequired: "Nom requis",
+      max255: "255 caractères max",
+      descriptionMax: "500 caractères max",
+      categoryRequired: "Catégorie requise",
+      emojiMax: "16 caractères max",
+      imageUrlRequired: "URL http(s) requise",
+      imageUrlMax: "URL trop longue (1024 caractères max)",
+    },
+  },
+  settings: {
+    title: "Détails du sujet",
+    sub: "Chaque champ est enregistré séparément.",
+    errors: {
+      nameRequired: "Le nom (FR) est requis.",
+      nameTooLong: "Le nom dépasse 255 caractères.",
+      descriptionTooLong: "La description dépasse 500 caractères.",
+      imageUrlProtocol: "L'URL de l'image doit commencer par http(s)://.",
+      bannerUrlProtocol: "L'URL de la bannière doit commencer par http(s)://.",
+    },
+  },
+  manage: {
+    notFound: "Sujet introuvable",
+    back: "Retour à mes sujets",
+    restrictedTitle: "Atelier réservé au créateur",
+    restrictedDescription:
+      "Ce sujet n'est pas le tien. Tu peux le consulter et le suivre depuis sa fiche.",
+    view: "Voir la fiche",
+    approvedOne: "{{count}} approuvée",
+    approvedMany: "{{count}} approuvées",
+    pendingCount: "{{count}} en attente",
+    publish: "Publier",
+    publishing: "Publication…",
+    publishProgress:
+      "{{approved}}/{{minimum}} questions approuvées pour publier",
+    questions: "Questions",
+    questionsSub:
+      "Une question en attente doit être approuvée pour compter vers la publication.",
+    addQuestion: "Ajouter une question",
+    emptyTitle: "Aucune question",
+    emptyDescription:
+      "Ajoute des questions (4 réponses, une seule correcte). Il en faut {{minimum}} approuvées pour publier le sujet.",
+  },
+  question: {
+    correctAnswer: "Bonne réponse : {{choice}}",
+    correctAnswerText: "Bonne réponse : {{choice}} — {{text}}",
+    edit: "Modifier",
+    approve: "Approuver",
+    reject: "Rejeter",
+  },
+  editor: {
+    editTitle: "Modifier la question",
+    createTitle: "Nouvelle question",
+    sub: "Quatre réponses, une seule correcte — partagée entre les langues.",
+    addEnglish: "Ajouter une version anglaise",
+    addEnglishDescription:
+      "Optionnelle : un duel peut se jouer en anglais uniquement si les questions y sont traduites.",
+    text: "Question",
+    textPlaceholder: "Quelle est la capitale de la France ?",
+    answers: "Réponses — sélectionne la bonne",
+    answerPlaceholder: "Réponse {{choice}}",
+    correctAnswerAria: "Bonne réponse {{choice}}",
+    image: "Image (URL, optionnelle)",
+    errors: {
+      textRequiredFr: "Le texte en français est requis.",
+      textRequiredEn: "Le texte en anglais est requis.",
+      textTooLongFr: "Le texte en français dépasse {{max}} caractères.",
+      textTooLongEn: "Le texte en anglais dépasse {{max}} caractères.",
+      answersRequiredFr: "Les 4 réponses en français sont requises.",
+      answersRequiredEn: "Les 4 réponses en anglais sont requises.",
+      imageUrlTooLong: "L'URL de l'image dépasse {{max}} caractères.",
+      imageUrlProtocol: "L'URL de l'image doit commencer par http(s)://.",
+    },
+  },
+  reports: {
+    action: "Signalements",
+    actionCount: "{{count}} signalement(s)",
+    title: "Signalements de la question",
+    empty: "Aucun signalement.",
+    suspended:
+      "Cette question est suspendue — seul un administrateur peut la réactiver.",
+    archived: "Cette question est archivée.",
+    reasonQuestion: "Énoncé",
+    reasonImage: "Image",
+    reasonAnswers: "Réponses",
+    reportedVersion: "Version signalée",
+    currentVersion: "Version actuelle (historique indisponible)",
+    comment: "Commentaire",
+    noComment: "Aucun commentaire",
+    resolve: "Marquer résolu",
+    dismiss: "Ignorer",
+    resolveAll: "Tout clôturer",
+    noteLabel: "Note de clôture (optionnel)",
+    notePlaceholder:
+      "Explique la correction ou le motif d'ignorance…",
+    edit: "Corriger la question",
+    close: "Fermer",
+    resolved: "Résolu",
+    dismissed: "Ignoré",
+    open: "Ouvert",
+  },
+  toasts: {
+    topicUpdated: "Sujet mis à jour",
+    topicPublished: "Sujet publié",
+    questionUpdated: "Question mise à jour",
+    questionAdded: "Question ajoutée",
+    questionApproved: "Question approuvée",
+    questionRejected: "Question rejetée",
+    reportsResolved: "Signalements clôturés",
+  },
+}

@@ -1,0 +1,1154 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./styles/shadcn-tailwind.css";
+@import "@fontsource-variable/inter";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Contrat device (source unique : shared/theme/tokens.ts, doc : best-practices/.frontend/responsive-sizing.md).
+   `compact` < 640 px · `tablet` 640-1023 px · `desktop` >= 1024 px · `touch` = compact + tablette. */
+@custom-variant compact (@media (width < 40rem));
+@custom-variant tablet (@media (width >= 40rem) and (width < 64rem));
+@custom-variant tablet-up (@media (width >= 40rem));
+@custom-variant desktop (@media (width >= 64rem));
+@custom-variant touch (@media (width < 64rem));
+
+/* Décalage animable des bandes collantes quand la topbar se replie. Propriété **non héritée** :
+   chaque bande anime sa propre copie, sans invalider tout le sous-arbre de la page. */
+@property --qu-chrome-shift {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: "Inter Variable", sans-serif;
+  /* Plancher typographique : badges et surtitres denses (contrat responsive-sizing.md). */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  /* Survol des cartes cliquables : fond **plein** de la carte de titre Arc. */
+  --color-surface-muted: var(--surface-muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  /* Trophy UI — leaderboard (podium/rangs) */
+  --color-rank-1: var(--rank-1);
+  --color-rank-2: var(--rank-2);
+  --color-rank-3: var(--rank-3);
+  --color-success-600: var(--success-600);
+  /* Barre de statistiques V/N/D */
+  --color-win: var(--win);
+  --color-draw: var(--draw);
+  --color-loss: var(--loss);
+  /* Toasts — palette HeroUI v3 */
+  --color-toast: var(--toast-surface);
+  --color-toast-foreground: var(--toast-surface-foreground);
+  --color-toast-muted: var(--toast-muted);
+  --color-toast-border: var(--toast-border);
+  --color-toast-accent: var(--toast-accent-foreground);
+  --color-toast-success: var(--toast-success-foreground);
+  --color-toast-warning: var(--toast-warning-foreground);
+  --color-toast-danger: var(--toast-danger-foreground);
+  --shadow-toast: var(--toast-shadow);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  /* Recette de carte (AGENTS §5) : rayon des surfaces, aligné sur la carte de titre Arc. */
+  --radius-card: var(--qu-card-radius);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.488 0.243 264.376);
+  --primary-foreground: oklch(0.97 0.014 254.604);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.809 0.105 251.813);
+  --chart-2: oklch(0.623 0.214 259.815);
+  --chart-3: oklch(0.546 0.245 262.881);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.424 0.199 265.638);
+  --radius: 0.625rem;
+  /* Recette de carte : même rayon que la carte de titre (`--radius-surface` d'Arc UI). */
+  --qu-card-radius: var(--radius-surface);
+  /* Fond de coquille (clair) : le canvas de contenu reprend la surface de la sidebar
+     (`--sidebar`), pas `--background` — le chrome (topbar, en-têtes, cartes) reste blanc.
+     La tuile native du papier peint (374 × 666) est utilisée à 374 px dans le shell. */
+  --qu-shell-bg: var(--sidebar);
+  --qu-shell-pattern-size: 374px;
+  /* Sidebar clair : preset shadcn **natif** (aucune valeur custom). `sidebar-primary` est
+     l'anthracite shadcn (actions à forte emphase) ; l'entrée active de la nav reste sur
+     `sidebar-accent`, comme le composant shadcn natif. */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  /* Trophy UI — médailles + tendance */
+  --rank-1: oklch(0.78 0.16 85);
+  --rank-2: oklch(0.77 0.01 250);
+  --rank-3: oklch(0.66 0.12 55);
+  --success-600: oklch(0.627 0.194 149.214);
+  /* Toasts — palette HeroUI v3 (thème default, clair) */
+  --toast-surface: oklch(100% 0 0);
+  --toast-surface-foreground: oklch(0.2103 0.0059 285.89);
+  --toast-muted: oklch(0.5517 0.0138 285.94);
+  --toast-border: oklch(90% 0.004 286.32);
+  --toast-accent: oklch(0.6204 0.195 253.83);
+  --toast-success: oklch(0.7329 0.1935 150.81);
+  --toast-warning: oklch(0.7819 0.1585 72.33);
+  --toast-danger: oklch(0.6532 0.2328 25.74);
+  --toast-accent-foreground: color-mix(
+    in oklab,
+    var(--toast-accent) 70%,
+    var(--toast-surface-foreground) 30%
+  );
+  --toast-success-foreground: color-mix(
+    in oklab,
+    var(--toast-success) 80%,
+    var(--toast-surface-foreground) 60%
+  );
+  --toast-warning-foreground: color-mix(
+    in oklab,
+    var(--toast-warning) 80%,
+    var(--toast-surface-foreground) 70%
+  );
+  --toast-danger-foreground: color-mix(
+    in oklab,
+    var(--toast-danger) 70%,
+    var(--toast-surface-foreground) 40%
+  );
+  --toast-shadow:
+    0 2px 8px 0 rgb(0 0 0 / 0.06), 0 -6px 12px 0 rgb(0 0 0 / 0.03),
+    0 14px 28px 0 rgb(0 0 0 / 0.08);
+  /* Cartes de l'Accueil : à plat en clair (bordure seule). L'ombre profonde
+     `--qu-home-card-shadow` n'est définie qu'en sombre ; les autres cartes restent
+     volontairement à plat. */
+}
+
+/* Bordure Elo des avatars : métal du palier, appliqué partout sauf topbar/sidebar/éditeur/salons. */
+[data-elo-tier="FER"] { --elo-ring: #3F444C; }
+[data-elo-tier="BRONZE"] { --elo-ring: #B86A32; }
+[data-elo-tier="ARGENT"] { --elo-ring: #8C95A3; }
+[data-elo-tier="OR"] { --elo-ring: #D9A826; }
+[data-elo-tier="PLATINE"] { --elo-ring: #8C9FC9; }
+[data-elo-tier="EMERAUDE"] { --elo-ring: #2FBF77; }
+[data-elo-tier="DIAMANT"] { --elo-ring: #5DB4E2; }
+[data-elo-tier="PROVISIONAL"] { --elo-ring: var(--border); }
+
+/* `:root.dark` (et non `.dark`) pour battre `:root[data-theme="dark"]` d'Arc UI à
+   spécificité égale, la fondation Arc étant importée avant ce fichier.
+   Nuances sombres **fidèles à WhatsApp** (version neutre, cf. capture de conversation) : des gris
+   **neutres étagés** (fond `#121212` → surfaces `#1f1f1f` → champs/bordures `#2e2e2e`) au lieu de
+   gris neutres sans hiérarchie — c'est l'étagement qui adoucit, pas une teinte. L'**accent de
+   marque reste inchangé** (primaire, charts, V/N/D, paliers de badges). Les bordures sont
+   **opaques** : sur cette pile de surfaces, c'est elles qui la font lire. */
+:root.dark {
+  --background: #121212;
+  /* Canvas de coquille sombre : même tuile native que le clair (374 px, gribouillis ~48 px).
+     Seule l'opacité du motif diffère (8 % ici contre 5 % en clair). */
+  --qu-shell-bg: var(--background);
+  --qu-shell-pattern-size: 374px;
+  --foreground: #e9e9e9;
+  --card: #1f1f1f;
+  --card-foreground: #e9e9e9;
+  --popover: #1f1f1f;
+  --popover-foreground: #e9e9e9;
+  --primary: oklch(0.424 0.199 265.638);
+  --primary-foreground: oklch(0.97 0.014 254.604);
+  --secondary: #2a2a2a;
+  --secondary-foreground: #e9e9e9;
+  --muted: #2a2a2a;
+  --muted-foreground: #a0a0a0;
+  --accent: #2a2a2a;
+  --accent-foreground: #e9e9e9;
+  --destructive: #f15c6d;
+  --border: #2e2e2e;
+  --input: #2e2e2e;
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.809 0.105 251.813);
+  --chart-2: oklch(0.623 0.214 259.815);
+  --chart-3: oklch(0.546 0.245 262.881);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.424 0.199 265.638);
+  --sidebar: #161616;
+  --sidebar-foreground: #e9e9e9;
+  --sidebar-primary: oklch(0.623 0.214 259.815);
+  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --sidebar-accent: #2a2a2a;
+  --sidebar-accent-foreground: #e9e9e9;
+  --sidebar-border: #2e2e2e;
+  --sidebar-ring: oklch(0.556 0 0);
+  /* Trophy UI — médailles + tendance (thème sombre) */
+  --rank-1: oklch(0.83 0.16 87);
+  --rank-2: oklch(0.82 0.01 250);
+  --rank-3: oklch(0.72 0.12 55);
+  --success-600: oklch(0.696 0.17 162.48);
+  /* Toasts — palette HeroUI v3 (thème default, sombre), surfaces alignées sur les nuances
+     WhatsApp (gris neutres `#1f1f1f` / `#2e2e2e`) pour ne pas jurer avec les cartes. */
+  --toast-surface: #1f1f1f;
+  --toast-surface-foreground: #e9e9e9;
+  --toast-muted: #a0a0a0;
+  --toast-border: #2e2e2e;
+  --toast-warning: oklch(0.8203 0.1388 76.34);
+  --toast-danger: oklch(0.594 0.1967 24.63);
+  --toast-accent-foreground: color-mix(
+    in oklab,
+    var(--toast-accent) 80%,
+    var(--toast-surface-foreground) 30%
+  );
+  --toast-success-foreground: color-mix(
+    in oklab,
+    var(--toast-success) 80%,
+    var(--toast-surface-foreground) 30%
+  );
+  --toast-warning-foreground: color-mix(
+    in oklab,
+    var(--toast-warning) 80%,
+    var(--toast-surface-foreground) 30%
+  );
+  --toast-danger-foreground: color-mix(
+    in oklab,
+    var(--toast-danger) 80%,
+    var(--toast-surface-foreground) 30%
+  );
+  --toast-shadow: 0 0 1px 0 rgb(255 255 255 / 0.3) inset;
+  /* Cartes de l'Accueil : ombre profonde en sombre pour détacher les affiches du fond. */
+  --qu-home-card-shadow:
+    0 18px 40px -16px oklch(0% 0 0 / 0.85), 0 4px 14px -6px oklch(0% 0 0 / 0.5);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Sidebar — libellé actif. La surface reste celle du composant shadcn natif
+   (`sidebar-accent`, #f5f5f5) ; on remplace seulement son texte noir par le bleu primaire
+   de la marque (AA : 4,8:1 sur #f5f5f5). Le thème sombre WhatsApp garde son texte clair.
+   Règle hors layer : elle prime sur les utilitaires de couleur du composant vendored,
+   y compris au survol et à l'appui. */
+[data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
+  color: var(--primary);
+}
+:root.dark
+  [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
+  color: var(--sidebar-accent-foreground);
+}
+
+/* ======================================================================
+   Joutio — hors preset : tokens duel + typographie + animations/utilitaires
+   (le thème de base vient du preset shadcn ci-dessus)
+   ====================================================================== */
+:root {
+  --font-display: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --duel-bg: #0b0b0b;
+  --duel-surface: #ffffff;
+  --duel-surface-foreground: #26262a;
+  --duel-surface-muted: #c6c6ca;
+  --duel-surface-muted-foreground: #5a5a60;
+  --duel-correct: #0f7a52;
+  --duel-correct-accent: #1aa570;
+  --duel-correct-foreground: #ffffff;
+  --duel-wrong: #a4433a;
+  --duel-wrong-accent: #c9564a;
+  --duel-wrong-foreground: #ffffff;
+  --duel-gauge: #f5b13d;
+  --duel-gauge-track: #1c1c22;
+  --duel-score: #f5b13d;
+  --duel-timer: #29b6f6;
+  --duel-timer-urgent: #c9564a;
+
+  /* Barre de statistiques V/N/D (référence product/img_9.png). */
+  --win: #02d274;
+  --draw: #febd19;
+  --loss: #fe5454;
+
+  /* Safe areas PWA : encoche/statut iOS, indicateur maison, barre gestuelle Android.
+       `env()` vaut 0 hors mode installé — aucun impact navigateur classique. */
+  --qu-safe-top: env(safe-area-inset-top, 0px);
+  --qu-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --qu-safe-left: env(safe-area-inset-left, 0px);
+  --qu-safe-right: env(safe-area-inset-right, 0px);
+
+  /* ----------------------------------------------------------------------
+       Contrat de dimensionnement (responsive-sizing.md).
+       Valeurs tactiles par défaut (compact + tablette) ; `desktop` bascule sur
+       la densité compacte. Toute taille de contrôle doit passer par ces tokens.
+       ---------------------------------------------------------------------- */
+  --control-h-xs: 2.25rem; /* 36 px */
+  --control-h-sm: 2.75rem; /* 44 px — cible tactile pleine */
+  --control-h-md: 2.75rem; /* 44 px */
+  --control-h-lg: 3rem; /* 48 px */
+  --topbar-h: 4rem; /* 64 px — les contrôles tactiles ne touchent plus les bords */
+  --bottom-nav-h: 5rem; /* 80 px — hauteur native Android (Material 3) */
+  --page-gutter-x: 0.875rem; /* 14 px */
+  /* Gouttière de la topbar : les contrôles tactiles (44 px) frôlaient les bords avec 14 px. */
+  --topbar-gutter-x: max(1.25rem, var(--page-gutter-x)); /* 20 px minimum */
+
+  /* ----------------------------------------------------------------------
+       Scène du duel : en tactile, le duel remplit l'écran (valeurs téléphone) ;
+       en desktop, une scène centrée borne l'étalement et les tailles montent.
+       ---------------------------------------------------------------------- */
+  --duel-stage-w: 100%;
+  --duel-question-size: clamp(19px, 3.8dvh, 36px);
+  --duel-question-size-image: clamp(16px, 2.8dvh, 30px);
+  --duel-answers-w: 620px;
+  --duel-answer-grid-h: min(30dvh, 325px);
+  --duel-answer-card-h: clamp(64px, 13.9dvh, 156px);
+  --duel-image-max-h: clamp(110px, 26dvh, 280px);
+  --duel-ring-size: clamp(108px, 18dvh, 156px);
+
+  /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus).
+       `--bottom-nav-reserve` = hauteur réellement réservée au bas de page (spacer). */
+  --bottom-nav-offset: max(2.5rem, calc(var(--qu-safe-bottom) + 0.5rem));
+  --bottom-nav-reserve: calc(
+    var(--bottom-nav-offset) + var(--bottom-nav-h) + 1rem
+  );
+  /* Bord haut de la nav basse : position des éléments flottants au-dessus d'elle (FAB…). */
+  --bottom-nav-top: calc(var(--bottom-nav-offset) + var(--bottom-nav-h));
+
+  /* Bande collante sous la topbar : hauteur réelle + encoche (topbar masquée => encoche seule). */
+  --qu-topbar-offset: calc(var(--topbar-h) + var(--qu-safe-top));
+  /* Mouvement du chrome haut : topbar (transform) et bandes (--qu-chrome-shift), même timeline.
+     Miroir JS : CHROME_MOTION_MS dans shared/theme/tokens.ts. */
+  --qu-chrome-motion-duration: 240ms;
+  --qu-chrome-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Garde Arc UI : l'anneau de focus global (`:focus-visible`) suit le token de l'app
+       au lieu de l'accent Arc, sans toucher aux fichiers vendored. */
+  --focus-outline: var(--ring);
+}
+
+/* Nav basse « fixe » (préférence joueur) : collée au bord bas, la place réservée = barre + encoche. */
+:root[data-bottom-nav="fixed"] {
+  --bottom-nav-offset: calc(var(--bottom-nav-h) + var(--qu-safe-bottom));
+  --bottom-nav-reserve: calc(
+    var(--bottom-nav-h) + var(--qu-safe-bottom) + 0.5rem
+  );
+  --bottom-nav-top: var(--bottom-nav-offset);
+}
+
+@media (width >= 40rem) {
+  :root {
+    --page-gutter-x: 1.25rem; /* 20 px */
+  }
+}
+
+@media (width >= 64rem) {
+  :root {
+    /* Desktop : densité compacte (tactile 36/40/44/48), topbar plus haute. */
+    --control-h-xs: 1.5rem;
+    --control-h-sm: 2rem;
+    --control-h-md: 2.25rem;
+    --control-h-lg: 2.5rem;
+    --topbar-h: 4rem;
+    --page-gutter-x: 1.5rem; /* 24 px */
+
+    /* Flux immersif desktop : le duel est posé dans un mockup tablette paysage
+           (AppShell `[data-slot=game-frame]`) et garde donc les tailles tablette natives.
+           Seule la scène borne la composition dans le cadre. */
+    --duel-stage-w: min(100%, 960px);
+  }
+}
+
+/* Écrans immersifs (duel, salon, recherche) : respecte l'encoche haute et l'indicateur bas.
+   Le fond étant porté par le conteneur, le padding reste couvert par le thème duel. */
+.qu-immersive-safe {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Scrollbar thémée à piste opaque : nette sur le motif de fond (doodles). */
+.qu-root * {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--foreground) 20%, var(--background))
+    var(--background);
+}
+.qu-root *::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.qu-root *::-webkit-scrollbar-track {
+  background: var(--background);
+}
+.qu-root *::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--foreground) 20%, var(--background));
+  border-radius: 99px;
+  border: 3px solid var(--background);
+}
+.qu-root *::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--foreground) 30%, var(--background));
+}
+/* Pas de décalage horizontal quand la barre apparaît (barres overlay tactiles non concernées). */
+[data-scroll-root] {
+  scrollbar-gutter: stable;
+}
+
+/* Chrome de défilement (topbar + bandeaux collants) : surface pleine tant que le contenu n'est
+   pas passé dessous, verre dépoli ensuite (scrollEdgeAppearance iOS). `data-scrolled` est posé
+   par `useScrollHeader` sur `[data-scroll-root]`. La nav basse n'utilise pas cette règle : elle
+   flotte en permanence sur le contenu et garde son verre. */
+.qu-scroll-chrome {
+  background-color: var(--background);
+  transition: background-color 180ms ease;
+}
+
+/* Topbar : repli/dépli en CSS (transform) pour partager exactement la même timeline que les
+   bandes collantes. `visibility` différée retire les contrôles du focus/AT sans `inert` React. */
+.qu-topbar {
+  border-bottom-color: transparent;
+  visibility: visible;
+  will-change: transform;
+  transition:
+    transform var(--qu-chrome-motion-duration) var(--qu-chrome-motion-ease),
+    border-bottom-color 180ms ease,
+    visibility 0s linear 0s;
+}
+[data-scroll-root][data-chrome-hidden] .qu-topbar {
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition:
+    transform var(--qu-chrome-motion-duration) var(--qu-chrome-motion-ease),
+    border-bottom-color 180ms ease,
+    visibility 0s linear var(--qu-chrome-motion-duration);
+}
+/* Scroll edge : pas de séparateur tant que rien n'est passé sous la topbar. */
+[data-scroll-root][data-scrolled] .qu-topbar {
+  border-bottom-color: color-mix(
+    in oklab,
+    var(--border) 75%,
+    transparent
+  );
+}
+
+/* Bandes collantes : la topbar masquée remonte la surface de `-topbar-h`. La propriété
+   enregistrée ci-dessus est animée **par bande** ; la hauteur mesurée d'un autre bandeau
+   (`--qu-sticky-tabs-h`, supprimée avec la pile unique) ne déclenche plus aucun glissement. */
+.qu-scroll-chrome.qu-sticky-follow {
+  will-change: top;
+  transition:
+    --qu-chrome-shift var(--qu-chrome-motion-duration)
+      var(--qu-chrome-motion-ease),
+    background-color 180ms ease;
+}
+[data-scroll-root][data-chrome-hidden] .qu-sticky-follow {
+  --qu-chrome-shift: calc(-1 * var(--topbar-h));
+}
+
+/* Garde anti-liseré : pendant le déplacement, la surface sticky s'étend d'1 px vers le haut.
+   Elle couvre le seam de compositing entre la topbar et le bandeau, sans peser sur le layout. */
+.qu-sticky-follow::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 0;
+  pointer-events: none;
+  background-color: inherit;
+  -webkit-backdrop-filter: inherit;
+  backdrop-filter: inherit;
+}
+[data-scroll-root][data-chrome-shifting] .qu-sticky-follow::before {
+  height: 1px;
+}
+
+[data-scroll-root][data-scrolled] .qu-scroll-chrome {
+  background-color: color-mix(in oklab, var(--background) 70%, transparent);
+  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(40px);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  [data-scroll-root][data-scrolled] .qu-scroll-chrome {
+    background-color: color-mix(in oklab, var(--background) 60%, transparent);
+  }
+}
+
+/* Pendant le déplacement du chrome, le verre est neutralisé : le `top` animé des bandes
+   collantes et le transform de la topbar restent alignés, sans recalcul de backdrop-filter à
+   chaque frame (surtout quand un header sticky est déjà collé). Le verre revient après la
+   transition. */
+[data-scroll-root][data-chrome-shifting] .qu-topbar,
+[data-scroll-root][data-chrome-shifting] .qu-sticky-follow {
+  background-color: color-mix(in oklab, var(--background) 92%, transparent);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .qu-scroll-chrome,
+  [data-scroll-root][data-scrolled] .qu-scroll-chrome,
+  [data-scroll-root][data-chrome-shifting] .qu-topbar,
+  [data-scroll-root][data-chrome-shifting] .qu-sticky-follow {
+    background-color: var(--background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qu-scroll-chrome,
+  .qu-topbar,
+  [data-scroll-root][data-chrome-hidden] .qu-topbar,
+  .qu-scroll-chrome.qu-sticky-follow {
+    transition: none;
+  }
+}
+
+/* Rails et onglets à défilement horizontal : aucune barre. La règle globale `.qu-root *`
+   ci-dessus (barre thémée de page) est unlayered ; ce sélecteur plus spécifique la neutralise
+   (les utilitaires Tailwind, eux, vivent dans `@layer utilities` et perdraient le conflit).
+   L'affordance reste le contenu rogné au bord. */
+.qu-root .qu-hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.qu-root .qu-hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Toasts custom (sonner) : son CSS ne fixe la largeur de la colonne que sur les toasts
+   `data-styled="true"` ; nos cartes `toast.custom` se dimensionneraient sinon à leur contenu.
+   Au-dessus du breakpoint mobile de sonner (600 px), on leur impose donc la largeur du Toaster
+   (`--width`, 520 px) pour que tous les toasts aient la même largeur et soient alignés. */
+@media (width > 37.5rem) {
+  [data-sonner-toaster] [data-sonner-toast][data-styled="false"] {
+    width: var(--width);
+  }
+}
+
+/* Picker d'emoji en bottom sheet mobile : plein cadre, cibles tactiles généreuses. */
+.qu-emoji-picker {
+  --epr-picker-border-radius: 0;
+  --epr-horizontal-padding: 0.75rem;
+  --epr-category-navigation-button-size: 2.25rem;
+  --epr-emoji-size: 1.6rem;
+  --epr-emoji-padding: 0.25rem;
+  --epr-search-input-height: 2.75rem;
+  border: 0;
+}
+/* iOS : ≥16px empêche le zoom automatique au focus de la recherche emoji. */
+.qu-emoji-picker .epr-search-container input {
+  font-size: 16px;
+}
+
+/* Texture du fond de page : le **papier peint doodle officiel de WhatsApp** (`background.svg`,
+   planche de 374 × 666) sert de masque, la teinte vient de `background-color`.
+   La tuile par défaut est à **280 px** (gribouillis ~36 px, la maille de la toile du duel) ; le
+   shell utilise la tuile native de **374 px** via `--qu-shell-pattern-size` (gribouillis ~48 px,
+   l'échelle de la capture WhatsApp), dans les deux thèmes. Surcharge ponctuelle via
+   `--qu-pattern-size` (ex. la toile du duel). */
+.qu-pattern {
+  -webkit-mask-image: url("./assets/background.svg");
+  mask-image: url("./assets/background.svg");
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: var(--qu-pattern-size, 280px);
+  mask-size: var(--qu-pattern-size, 280px);
+}
+/* Rang du Top 10 : en clair, le chiffre officiel est inversé (corps clair) et cerné d'un liseré
+   sombre net — le dégradé clair du SVG, une fois inversé, ne donne qu'un gris mou. En sombre, le
+   SVG garde son rendu d'origine (corps sombre, liseré clair). */
+.qu-rank {
+  filter: invert(1) drop-shadow(0 0 0.75px rgb(0 0 0 / 0.8));
+}
+:root.dark .qu-rank {
+  filter: none;
+}
+@layer base {
+  .qu-root input::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.7;
+  }
+}
+
+@keyframes qu-halo {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}
+@keyframes qu-ping {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@keyframes qu-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+@keyframes qu-pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes qu-slide-in {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes qu-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+/* Secousse « wizz » (façon MSN) : posée sur `<html>` par `triggerScreenNudge` (~700 ms). */
+@keyframes qu-nudge {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  10% {
+    transform: translate3d(-9px, 2px, 0) rotate(-0.6deg);
+  }
+  25% {
+    transform: translate3d(8px, -3px, 0) rotate(0.5deg);
+  }
+  40% {
+    transform: translate3d(-7px, 3px, 0) rotate(-0.4deg);
+  }
+  55% {
+    transform: translate3d(6px, -2px, 0) rotate(0.3deg);
+  }
+  70% {
+    transform: translate3d(-4px, 1px, 0) rotate(-0.2deg);
+  }
+  85% {
+    transform: translate3d(2px, 0, 0) rotate(0.1deg);
+  }
+}
+.qu-nudge {
+  animation: qu-nudge 700ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .qu-nudge {
+    animation: none;
+  }
+}
+@keyframes qu-rise {
+  0% {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-24px);
+    opacity: 0;
+  }
+}
+@keyframes qu-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --- Écran VS + duel (référence defie.mp4) --- */
+@keyframes qu-vs-in-left {
+  from {
+    transform: translateX(-64px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes qu-vs-in-right {
+  from {
+    transform: translateX(64px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes qu-burst-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes qu-scan {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 120px;
+  }
+}
+@keyframes qu-shockwave {
+  0% {
+    transform: scale(0.35);
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(16);
+    opacity: 0;
+  }
+}
+@keyframes qu-iris-grow {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(26);
+  }
+}
+@keyframes qu-iris-bolt {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.038);
+    opacity: 0;
+  }
+}
+@keyframes qu-vs-panel-top {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes qu-vs-panel-bottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes qu-confetti-fall {
+  0% {
+    transform: translate3d(0, -14vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--dx, 0px), 112vh, 0) rotate(var(--rot, 720deg));
+    opacity: 1;
+  }
+}
+@keyframes qu-correct-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.045);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes qu-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+@keyframes qu-pending {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.16);
+  }
+}
+@keyframes qu-dash {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 14px;
+  }
+}
+@keyframes qu-pulse-ring {
+  0% {
+    transform: scale(0.82);
+    opacity: 0.75;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+@keyframes qu-push {
+  0% {
+    transform: translateY(8px) scale(0.92);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(0) scale(1.03);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes qu-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 16px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 34px currentColor;
+  }
+}
+
+.qu-halo {
+  animation: qu-halo 4.2s ease-in-out infinite;
+}
+.qu-ping {
+  animation: qu-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  will-change: transform, opacity;
+  transform-origin: center;
+  backface-visibility: hidden;
+}
+.qu-bob {
+  animation: qu-bob 3.2s ease-in-out infinite;
+}
+.qu-pop {
+  animation: qu-pop 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.qu-slide {
+  animation: qu-slide-in 0.3s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.qu-flash {
+  animation: qu-flash 1s ease-in-out infinite;
+}
+.qu-fade {
+  animation: qu-fade 0.18s ease-out both;
+}
+
+.qu-vs-left {
+  animation: qu-vs-in-left 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.qu-vs-right {
+  animation: qu-vs-in-right 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.qu-burst-spin {
+  animation: qu-burst-spin 48s linear infinite;
+}
+.qu-scan {
+  animation: qu-scan 6s linear infinite;
+}
+.qu-shockwave {
+  animation: qu-shockwave 0.8s cubic-bezier(0.3, 0.7, 0.2, 1) both;
+}
+.qu-iris {
+  animation: qu-iris-grow 1.45s cubic-bezier(0.55, 0.06, 0.68, 0.19) both;
+}
+.qu-iris-bolt {
+  animation: qu-iris-bolt 1.45s cubic-bezier(0.55, 0.06, 0.68, 0.19) both;
+}
+/* Ouverture de duel : compositing stable même à zoom fractionnaire (130 %). */
+.qu-shockwave,
+.qu-iris,
+.qu-iris-bolt {
+  will-change: transform, opacity;
+  transform-origin: center;
+  backface-visibility: hidden;
+}
+.qu-vs-panel-top {
+  animation: qu-vs-panel-top 0.34s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.qu-vs-panel-bottom {
+  animation: qu-vs-panel-bottom 0.34s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.qu-confetti {
+  animation-name: qu-confetti-fall;
+  animation-timing-function: cubic-bezier(0.25, 0.5, 0.5, 1);
+  animation-fill-mode: both;
+  will-change: transform;
+}
+.qu-question-in {
+  animation: qu-fade 0.3s ease-out both;
+}
+.qu-answer-in {
+  animation: qu-fade 0.22s ease-out both;
+}
+.qu-pulse-ring {
+  animation: qu-pulse-ring 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.qu-push {
+  animation: qu-push 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.qu-glow {
+  animation: qu-glow 2.6s ease-in-out infinite;
+}
+
+.qu-answer {
+  transition:
+    background-color 0.14s ease,
+    color 0.14s ease,
+    transform 0.1s ease;
+}
+.qu-answer:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+.qu-answer:not(:disabled):active {
+  transform: scale(0.985);
+}
+.qu-correct-pop {
+  animation: qu-correct-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.qu-shake {
+  animation: qu-shake 0.4s ease both;
+}
+.qu-answer-pending {
+  animation: qu-pending 1.2s ease-in-out infinite;
+}
+.qu-dash {
+  background-image: repeating-linear-gradient(
+    90deg,
+    currentColor 0 6px,
+    transparent 6px 14px
+  );
+  background-size: 14px 100%;
+  animation: qu-dash 0.45s linear infinite;
+}
+.qu-hoverable {
+  transition:
+    background-color 0.14s ease,
+    border-color 0.14s ease,
+    color 0.14s ease,
+    transform 0.14s ease;
+}
+
+/* Motif de fond de page : opacité uniforme clair/sombre, ajustable via `--qu-pattern-opacity`.
+   Contraste doux (5 %) : c'est ce qui fait « papier peint » plutôt que « texte qui passe ».
+   Sur le canvas clair du shell, la teinte `var(--foreground)` à 5 % donne un doodle discret.
+   En sombre, 8 % pour atteindre le ton des doodles de la capture (gris légèrement plus clair
+   que le fond `#121212`). */
+.page-pattern {
+  opacity: var(--qu-pattern-opacity, 0.05);
+}
+:root.dark .page-pattern {
+  opacity: var(--qu-pattern-opacity, 0.08);
+}
+
+/* Zoom navigateur (ex. 130 %) : stabilise les animations de dialogue (transform fractionnaire). */
+[data-slot="dialog-content"] {
+  will-change: transform, opacity;
+  transform-origin: center;
+  backface-visibility: hidden;
+}
+[data-slot="dialog-overlay"] {
+  will-change: opacity;
+}
+
+.qu-btn {
+  transition:
+    background-color 0.14s ease,
+    border-color 0.14s ease,
+    filter 0.14s ease,
+    transform 0.1s ease;
+}
+.qu-btn:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+.qu-btn:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.qu-gauge {
+  transition:
+    height 0.9s linear,
+    background-color 0.18s ease;
+}
+
+/* Revue (page résultat) : la piste embla (carousel shadcn) remplit la hauteur de la colonne
+   desktop et du corps de la bottom sheet — une question par vue, pleine hauteur, sans gouttière
+   latérale gauche (le carousel shadcn est content-height et réserve un `pl-4`/`-ml-4`). */
+.qu-review-deck [data-slot="carousel-content"] {
+  height: 100%;
+  min-height: 0;
+}
+.qu-review-deck [data-slot="carousel-content"] > div {
+  height: 100%;
+  min-height: 0;
+  margin-left: 0;
+}
+.qu-review-deck [data-slot="carousel-item"] {
+  height: 100%;
+  min-height: 0;
+  padding-left: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qu-root *,
+  .qu-root *::before,
+  .qu-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+/* ----------------------------------------------------------------------
+   Transitions de vue (React Router `viewTransition`) : fondu court entre écrans et morph du
+   cadre immersif entre les phases (salle → arène → résultat). Purement progressif : sans
+   `document.startViewTransition`, la navigation est instantanée comme avant.
+   ---------------------------------------------------------------------- */
+[data-slot="game-frame"] {
+  view-transition-name: qu-game-frame;
+}
+
+::view-transition-old(root) {
+  animation: qu-view-fade-out 140ms ease both;
+}
+::view-transition-new(root) {
+  animation: qu-view-fade-in 180ms ease both;
+}
+
+@keyframes qu-view-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes qu-view-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

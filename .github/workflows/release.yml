@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '.github/workflows/**'
+      - '**.md'
+
+jobs:
+  release:
+    uses: joutio/joutio-reusable-workflows/.github/workflows/frontend-release.yml@main
+    with:
+      github-username: ${{ vars.JOUTIO_GITHUB_USERNAME }}
+      service-name: joutio-web
+      vite-api-url: https://api.joutio.com
+      vite-oidc-authority: https://identity.joutio.com
+      vite-oidc-client-id: web
+      vite-oidc-redirect-uri: https://app.joutio.com/callback
+    secrets:
+      GITHUB_PASSWORD: ${{ secrets.JOUTIO_GITHUB_TOKEN }}

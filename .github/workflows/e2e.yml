@@ -1,0 +1,45 @@
+name: E2E
+
+# Les parcours E2E Playwright nécessitent la stack complète (Postgres/Kafka + microservices +
+# app web). Ce workflow est donc déclenché **manuellement** contre un environnement joignable
+# (staging, runner auto-hébergé, etc.) : `gh workflow run e2e.yml -f base_url=https://...`.
+#
+# En local : `npm run e2e` (le serveur Vite est démarré automatiquement, la stack doit tourner).
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "URL de l'app web (stack complète requise)"
+        required: true
+        type: string
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E
+        run: npm run e2e
+        env:
+          E2E_BASE_URL: ${{ inputs.base_url }}
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
