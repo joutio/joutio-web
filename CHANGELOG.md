@@ -1,3 +1,9 @@
+## 1.0.0 (2026-10-27)
+
+### Features
+
+* initial Joutio web app ([9547129](https://github.com/joutio/joutio-web/commit/9547129c8012b3e042b109a020432bb08469f12f))
+
 ## [6.8.2](https://github.com/joutio/joutio-web/compare/v6.8.1...v6.8.2) (2026-10-26)
 
 ### Bug Fixes
