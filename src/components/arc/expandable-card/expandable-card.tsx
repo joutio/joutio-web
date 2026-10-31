@@ -15,7 +15,7 @@ import {
   useReducedMotion,
 } from "motion/react"
 import type { Transition, Variants } from "motion/react"
-import { ChevronDown as NavArrowDown } from "lucide-react"
+import { CaretDownIcon } from "@phosphor-icons/react"
 import { motionTokens } from "../lib/motion-tokens"
 import styles from "./expandable-card.module.css"
 
@@ -232,7 +232,7 @@ export function ExpandableCard({
             animate={{ rotate: expanded ? 180 : 0 }}
             transition={reduceMotion ? still : boxTransition(expanded, hold)}
           >
-            <NavArrowDown width={18} height={18} aria-hidden="true" />
+            <CaretDownIcon width={18} height={18} aria-hidden="true" />
           </motion.span>
         </button>
         {/* The panel stays mounted so a second click mid-animation reverses from where it is; inert keeps closed details out of reach. */}

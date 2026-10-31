@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Bell, CheckCheck } from "lucide-react"
+import { BellIcon, ChecksIcon } from "@phosphor-icons/react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
@@ -40,7 +40,7 @@ export function NotificationBell() {
           "relative text-muted-foreground"
         )}
       >
-        <Bell className="size-4" />
+        <BellIcon className="size-4" />
         {count > 0 && (
           <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-heading text-2xs font-bold text-primary-foreground">
             {count > 9 ? "9+" : count}
@@ -64,7 +64,7 @@ export function NotificationBell() {
               markAll.mutate()
             }}
           >
-            <CheckCheck className="size-4" /> {t("notifications.bell.markAll")}
+            <ChecksIcon className="size-4" /> {t("notifications.bell.markAll")}
           </Button>
         </div>
         <div className="flex max-h-[420px] flex-col overflow-y-auto overscroll-y-contain">

@@ -10,7 +10,7 @@ export const BASE_BACKGROUND_GROUP_ID = "base-background"
 export type BaseAvatarStyleId = typeof BASE_AVATAR_STYLE
 export type AvatarPresetId = AvatarStyleId | BaseAvatarStyleId
 
-/** Avatar de base : icône générique Lucide + fond issu de la palette Micah. */
+/** Avatar de base : icône générique Phosphor + fond issu de la palette Micah. */
 export interface BaseAvatarOptions {
   style: BaseAvatarStyleId
   /** Couleur de fond (hex de {@link BACKGROUND_COLORS}). */

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { LogOut } from "lucide-react"
+import { SignOutIcon } from "@phosphor-icons/react"
 import { TOKEN } from "@/shared/theme/tokens"
 
 interface OutcomeHeaderProps {
@@ -69,7 +69,7 @@ export function OutcomeHeader({
             marginTop: "clamp(3px, 0.8dvh, 6px)",
           }}
         >
-          <LogOut size={13} aria-hidden />
+          <SignOutIcon size={13} aria-hidden />
           {forfeitLabel}
         </div>
       )}

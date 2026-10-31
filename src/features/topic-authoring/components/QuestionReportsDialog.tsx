@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, Pencil, X } from "lucide-react"
+import { CheckIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -82,13 +82,13 @@ export function QuestionReportsDialog({
             {t("authoring.reports.close")}
           </Button>
           <Button variant="outline" onClick={onEdit}>
-            <Pencil /> {t("authoring.reports.edit")}
+            <PencilSimpleIcon /> {t("authoring.reports.edit")}
           </Button>
           <Button
             onClick={() => closeAll("RESOLVED")}
             disabled={openReports.length === 0 || resolve.isPending}
           >
-            <Check /> {t("authoring.reports.resolveAll")}
+            <CheckIcon /> {t("authoring.reports.resolveAll")}
           </Button>
         </>
       }
@@ -206,10 +206,10 @@ function ReportCard({
       {opened && (
         <div className="mt-3 flex justify-end gap-1.5">
           <Button size="sm" variant="ghost" onClick={onDismiss} disabled={busy}>
-            <X /> {t("authoring.reports.dismiss")}
+            <XIcon /> {t("authoring.reports.dismiss")}
           </Button>
           <Button size="sm" variant="outline" onClick={onResolve} disabled={busy}>
-            <Check /> {t("authoring.reports.resolve")}
+            <CheckIcon /> {t("authoring.reports.resolve")}
           </Button>
         </div>
       )}

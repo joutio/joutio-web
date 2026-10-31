@@ -27,7 +27,7 @@ describe("StreakCalendar", () => {
     expect(missed?.getAttribute("style")).toContain("80%")
     expect(missed?.getAttribute("style")).toContain("black")
     expect(missed?.className).toContain("text-white")
-    expect(missed?.querySelector(".lucide-x")).not.toBeNull()
+    expect(missed?.querySelector('[data-glyph="x"]')).not.toBeNull()
   })
 
   it("affiche les jours validés en vert avec une coche blanche", () => {
@@ -53,7 +53,7 @@ describe("StreakCalendar", () => {
     expect(active?.getAttribute("style")).toContain("80%")
     expect(active?.getAttribute("style")).toContain("black")
     expect(active?.className).toContain("text-white")
-    expect(active?.querySelector(".lucide-check")).not.toBeNull()
+    expect(active?.querySelector('[data-glyph="check"]')).not.toBeNull()
   })
 
   it("remplit aussi aujourd'hui et les jours futurs sans activité", () => {

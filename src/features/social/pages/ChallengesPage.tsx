@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Inbox } from "lucide-react"
+import { TrayIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
 import {
@@ -295,7 +295,7 @@ export function ChallengesPage() {
           </p>
         ) : !hasPending ? (
           <EmptyState
-            icon={<Inbox className="size-6 text-muted-foreground" />}
+            icon={<TrayIcon className="size-6 text-muted-foreground" />}
             title={t("social.pending.emptyAllTitle")}
             description={t("social.pending.emptyAllDescription")}
           >
@@ -305,7 +305,7 @@ export function ChallengesPage() {
           </EmptyState>
         ) : filteredTotal === 0 ? (
           <EmptyState
-            icon={<Inbox className="size-6 text-muted-foreground" />}
+            icon={<TrayIcon className="size-6 text-muted-foreground" />}
             title={t("social.pending.filteredEmptyTitle")}
             description={t("social.pending.filteredEmptyDescription")}
           >

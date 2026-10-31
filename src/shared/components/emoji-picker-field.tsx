@@ -1,6 +1,6 @@
 import { useState } from "react"
 import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react"
-import { Smile, Trash2 } from "lucide-react"
+import { SmileyIcon, TrashIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -79,7 +79,7 @@ export function EmojiPickerField({
           {value ? (
             <span className="text-base leading-none">{value}</span>
           ) : (
-            <Smile className="size-4" />
+            <SmileyIcon className="size-4" />
           )}
           <span>{toggleLabel}</span>
         </Button>
@@ -102,7 +102,7 @@ export function EmojiPickerField({
                   )}
                   onClick={() => onChange(null)}
                 >
-                  <Trash2 className="size-4" /> {t("shared.emoji.remove")}
+                  <TrashIcon className="size-4" /> {t("shared.emoji.remove")}
                 </button>
               </BottomSheetClose>
             ) : undefined
@@ -124,7 +124,7 @@ export function EmojiPickerField({
           {value ? (
             <span className="text-base leading-none">{value}</span>
           ) : (
-            <Smile className="size-4" />
+            <SmileyIcon className="size-4" />
           )}
           <span>{toggleLabel}</span>
         </PopoverTrigger>

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Flag } from "lucide-react"
+import { FlagIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -120,7 +120,7 @@ export function ReportQuestionDialog({
             {t("game.report.cancel")}
           </Button>
           <Button onClick={submit} disabled={report.isPending}>
-            <Flag />
+            <FlagIcon />
             {report.isPending
               ? t("game.report.submitting")
               : t("game.report.submit")}

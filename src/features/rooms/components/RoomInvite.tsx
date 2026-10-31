@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Share2 } from "lucide-react"
+import { ShareNetworkIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { ShareDialog } from "@/shared/components/share-dialog"
 import { useIsTouchLayout } from "@/shared/hooks/use-device"
@@ -33,7 +33,7 @@ export function RoomInvite({ shareUrl, topicName }: RoomInviteProps) {
         className="w-full max-w-[380px]"
         onClick={() => setOpen(true)}
       >
-        <Share2 size={15} /> {t("game.share.invite")}
+        <ShareNetworkIcon size={15} /> {t("game.share.invite")}
       </Button>
       <ShareDialog
         open={open}

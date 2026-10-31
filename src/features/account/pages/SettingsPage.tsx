@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { LogOut } from "lucide-react"
+import { SignOutIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FormRow, FormSection } from "@/shared/components/form-section"
@@ -90,7 +90,7 @@ export function SettingsPage() {
           controlClassName="flex tablet-up:justify-end"
         >
           <Button variant="destructive" onClick={() => void logout()}>
-            <LogOut /> {t("shell.settings.session.logout")}
+            <SignOutIcon /> {t("shell.settings.session.logout")}
           </Button>
         </FormRow>
       </FormSection>

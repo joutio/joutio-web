@@ -144,8 +144,7 @@ describe("AchievementCelebration", () => {
     // Le ruban du rang porte le titre, comme sur le profil.
     expect(art?.getAttribute("src")).toContain("ruban-fer")
     expect(ribbon).toHaveTextContent("Historien de fer")
-    // Plus de médaille à couronne ni de palier/pastille de rang en doublon.
-    expect(document.querySelector(".lucide-crown")).toBeNull()
+    // Plus de palier ni de pastille de rang en doublon.
     expect(screen.queryByRole("heading", { name: "Fer" })).toBeNull()
     expect(screen.queryByText("Fer")).toBeNull()
   })

@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react"
+import { type Icon as IconType } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import {
   ToastCard,
@@ -11,7 +11,7 @@ export interface ShowToastOptions {
   description?: string
   tone?: ToastTone
   /** Icône du visuel de tête ; à défaut, celle du ton (jamais de toast sans visuel). */
-  icon?: LucideIcon
+  icon?: IconType
   /** Acteur : son avatar remplace la pastille d'icône (présence, abonnement). */
   actor?: ToastActor | null
   /** Action du clic — le toast se ferme **toujours** après (ex. ouvrir la cible d'une notification). */

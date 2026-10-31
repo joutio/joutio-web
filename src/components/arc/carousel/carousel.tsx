@@ -33,7 +33,12 @@ import type {
   MotionValue,
   TargetAndTransition,
 } from "motion/react"
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react"
+import {
+  CaretLeftIcon,
+  CaretRightIcon,
+  PauseIcon,
+  PlayIcon,
+} from "@phosphor-icons/react"
 import { motionTokens } from "../lib/motion-tokens"
 import styles from "./carousel.module.css"
 
@@ -654,17 +659,13 @@ export function Carousel({
                     }
                   >
                     {playing ? (
-                      <Pause
-                        size={15}
-                        strokeWidth={1.75}
-                        fill="currentColor"
+                      <PauseIcon
+                        size={15} weight="fill"
                         aria-hidden="true"
                       />
                     ) : (
-                      <Play
-                        size={15}
-                        strokeWidth={1.75}
-                        fill="currentColor"
+                      <PlayIcon
+                        size={15} weight="fill"
                         aria-hidden="true"
                       />
                     )}
@@ -705,7 +706,7 @@ export function Carousel({
                 if (target.current > 0) select(target.current - 1)
               }}
             >
-              <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />
+              <CaretLeftIcon size={18} aria-hidden="true" />
             </button>
             <button
               type="button"
@@ -716,7 +717,7 @@ export function Carousel({
                 if (target.current < last) select(target.current + 1)
               }}
             >
-              <ChevronRight size={18} strokeWidth={1.75} aria-hidden="true" />
+              <CaretRightIcon size={18} aria-hidden="true" />
             </button>
           </div>
         </div>

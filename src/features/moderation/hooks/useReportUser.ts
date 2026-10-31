@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Flag } from "lucide-react"
+import { FlagIcon } from "@phosphor-icons/react"
 
 import { showToast } from "@/shared/utils/toast"
 import type {
@@ -22,14 +22,14 @@ export function useReportUser() {
         title: ack.created
           ? t("moderation.report.success")
           : t("moderation.report.already"),
-        icon: Flag,
+        icon: FlagIcon,
         tone: ack.created ? "success" : "info",
       })
     },
     onError: () => {
       showToast({
         title: t("moderation.report.error"),
-        icon: Flag,
+        icon: FlagIcon,
         tone: "danger",
       })
     },

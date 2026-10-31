@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Check, Gift, Lock } from "lucide-react"
+import { CheckIcon, GiftIcon, LockIcon } from "@phosphor-icons/react"
 import { useNavigate } from "react-router-dom"
 import { cn } from "cn"
 import { Button } from "@/components/ui/button"
@@ -41,7 +41,7 @@ export function RewardsSection() {
     return (
       <div className="py-8">
         <EmptyState
-          icon={<Gift className="size-6 text-muted-foreground" />}
+          icon={<GiftIcon className="size-6 text-muted-foreground" />}
           title={t("progression.rewards.errorTitle")}
           description={t("progression.rewards.errorDescription")}
         >
@@ -122,7 +122,7 @@ function RewardCard({
               />
             ) : (
               <span className="grid size-[84px] place-items-center rounded-full bg-muted text-muted-foreground">
-                <Gift className="size-8" />
+                <GiftIcon className="size-8" />
               </span>
             )}
           </div>
@@ -137,9 +137,9 @@ function RewardCard({
                 }
               >
                 {reward.unlocked ? (
-                  <Check className="size-3.5" />
+                  <CheckIcon className="size-3.5" />
                 ) : (
-                  <Lock className="size-3.5" />
+                  <LockIcon className="size-3.5" />
                 )}
                 {t(
                   reward.unlocked

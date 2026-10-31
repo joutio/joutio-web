@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, ChevronLeft, ChevronRight, Flag } from "lucide-react"
+import {
+  CaretLeftIcon,
+  CaretRightIcon,
+  CheckIcon,
+  FlagIcon,
+} from "@phosphor-icons/react"
 import { cn } from "cn"
 import { Button } from "@/components/ui/button"
 import {
@@ -149,7 +154,7 @@ export function ReviewDeck({
         }}
       >
         <ActionButton
-          icon={alreadyReported ? <Check size={16} /> : <Flag size={16} />}
+          icon={alreadyReported ? <CheckIcon size={16} /> : <FlagIcon size={16} />}
           background={TOKEN.gauge}
           disabled={!currentQuestionId || alreadyReported}
           onClick={openReport}
@@ -172,7 +177,7 @@ export function ReviewDeck({
             className="qu-btn w-full min-w-0 justify-center font-bold"
             style={navButtonStyle}
           >
-            <ChevronLeft size={18} className="shrink-0" />
+            <CaretLeftIcon size={18} className="shrink-0" />
             <span className="min-w-0 truncate">
               {t("game.review.previous")}
             </span>
@@ -213,7 +218,7 @@ export function ReviewDeck({
             style={navButtonStyle}
           >
             <span className="min-w-0 truncate">{t("game.review.next")}</span>
-            <ChevronRight size={18} className="shrink-0" />
+            <CaretRightIcon size={18} className="shrink-0" />
           </Button>
         </div>
       </div>

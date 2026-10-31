@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next"
 import {
-  CheckCircle2,
-  Flag,
+  CheckCircleIcon,
+  FlagIcon,
   ImageIcon,
-  Pencil,
-  ThumbsDown,
-  ThumbsUp,
-  XCircle,
-} from "lucide-react"
+  PencilSimpleIcon,
+  ThumbsDownIcon,
+  ThumbsUpIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -107,8 +107,8 @@ export function QuestionCard({
               <Badge variant="secondary">{t("authoring.status.archived")}</Badge>
             )}
             <Badge variant="outline" className={STATUS_CLASSES[question.status]}>
-              {question.status === "APPROVED" && <CheckCircle2 />}
-              {question.status === "REJECTED" && <XCircle />}
+              {question.status === "APPROVED" && <CheckCircleIcon />}
+              {question.status === "REJECTED" && <XCircleIcon />}
               {t(STATUS_LABEL_KEYS[question.status])}
             </Badge>
           </div>
@@ -131,7 +131,7 @@ export function QuestionCard({
               onClick={onReports}
               disabled={busy}
             >
-              <Flag />
+              <FlagIcon />
               {t("authoring.reports.actionCount", {
                 count:
                   question.openReportCount > 0
@@ -141,7 +141,7 @@ export function QuestionCard({
             </Button>
           )}
           <Button size="sm" variant="ghost" onClick={onEdit} disabled={busy}>
-            <Pencil /> {t("authoring.question.edit")}
+            <PencilSimpleIcon /> {t("authoring.question.edit")}
           </Button>
           {question.status !== "APPROVED" && (
             <Button
@@ -150,7 +150,7 @@ export function QuestionCard({
               onClick={onApprove}
               disabled={busy}
             >
-              <ThumbsUp /> {t("authoring.question.approve")}
+              <ThumbsUpIcon /> {t("authoring.question.approve")}
             </Button>
           )}
           {question.status !== "REJECTED" && (
@@ -160,7 +160,7 @@ export function QuestionCard({
               onClick={onReject}
               disabled={busy}
             >
-              <ThumbsDown /> {t("authoring.question.reject")}
+              <ThumbsDownIcon /> {t("authoring.question.reject")}
             </Button>
           )}
         </div>

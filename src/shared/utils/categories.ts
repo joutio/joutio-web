@@ -5,26 +5,26 @@
  */
 import i18n from "@/lib/i18n"
 import {
-  BookOpen,
-  BookOpenText,
-  BriefcaseBusiness,
-  Clapperboard,
-  Cpu,
-  FlaskConical,
-  Gamepad2,
-  Globe,
-  Headphones,
-  Landmark,
-  Leaf,
-  Lightbulb,
-  Palette,
-  Pizza,
-  Shapes,
-  Star,
-  Tv,
-  Volleyball,
-  type LucideIcon,
-} from "lucide-react"
+  BankIcon,
+  BookOpenIcon,
+  BookOpenTextIcon,
+  BriefcaseIcon,
+  CpuIcon,
+  FilmSlateIcon,
+  FlaskIcon,
+  GameControllerIcon,
+  GlobeHemisphereWestIcon,
+  HeadphonesIcon,
+  LeafIcon,
+  LightbulbIcon,
+  PaletteIcon,
+  PizzaIcon,
+  ShapesIcon,
+  StarIcon,
+  TelevisionSimpleIcon,
+  VolleyballIcon,
+  type Icon as IconType,
+} from "@phosphor-icons/react"
 
 const CATEGORY_COLORS: Record<string, string> = {
   ARTS: "#C79DE6",
@@ -50,29 +50,29 @@ function normalize(code: string): string {
   return code?.toUpperCase() ?? ""
 }
 
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  ARTS: Palette,
-  BUSINESS: BriefcaseBusiness,
-  EDUCATION: BookOpen,
-  ENTERTAINMENT: Star,
-  FOOD_AND_DRINK: Pizza,
-  GAMES: Gamepad2,
-  GENERAL: Lightbulb,
-  HISTORY: Landmark,
-  LITERATURE: BookOpenText,
-  MOVIES: Clapperboard,
-  MUSIC: Headphones,
-  NATURE: Leaf,
-  SCIENCE: FlaskConical,
-  SPORTS: Volleyball,
-  TELEVISION: Tv,
-  TECHNOLOGY: Cpu,
-  WORLD: Globe,
+const CATEGORY_ICONS: Record<string, IconType> = {
+  ARTS: PaletteIcon,
+  BUSINESS: BriefcaseIcon,
+  EDUCATION: BookOpenIcon,
+  ENTERTAINMENT: StarIcon,
+  FOOD_AND_DRINK: PizzaIcon,
+  GAMES: GameControllerIcon,
+  GENERAL: LightbulbIcon,
+  HISTORY: BankIcon,
+  LITERATURE: BookOpenTextIcon,
+  MOVIES: FilmSlateIcon,
+  MUSIC: HeadphonesIcon,
+  NATURE: LeafIcon,
+  SCIENCE: FlaskIcon,
+  SPORTS: VolleyballIcon,
+  TELEVISION: TelevisionSimpleIcon,
+  TECHNOLOGY: CpuIcon,
+  WORLD: GlobeHemisphereWestIcon,
 }
 
-/** Icône lucide illustrative de la catégorie (repli générique `Shapes`). */
-export function categoryIcon(code: string): LucideIcon {
-  return CATEGORY_ICONS[normalize(code)] ?? Shapes
+/** Icône Phosphor illustrative de la catégorie (repli générique `Shapes`). */
+export function categoryIcon(code: string): IconType {
+  return CATEGORY_ICONS[normalize(code)] ?? ShapesIcon
 }
 
 export function categoryColor(code: string): string {

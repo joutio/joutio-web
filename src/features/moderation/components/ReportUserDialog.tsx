@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Flag } from "lucide-react"
+import { FlagIcon } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -139,7 +139,7 @@ export function ReportUserDialog({
             {t("moderation.report.cancel")}
           </Button>
           <Button onClick={submit} disabled={report.isPending}>
-            <Flag />
+            <FlagIcon />
             {report.isPending
               ? t("moderation.report.submitting")
               : t("moderation.report.submit")}

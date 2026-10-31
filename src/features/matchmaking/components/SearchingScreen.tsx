@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Bot, Globe, Users } from "lucide-react"
+import {
+  GlobeHemisphereWestIcon,
+  RobotIcon,
+  UsersIcon,
+} from "@phosphor-icons/react"
 import { TOKEN } from "@/shared/theme/tokens"
 import { useServerClock } from "@/shared/clock/useServerClock"
 import { useCountdownTicks } from "@/shared/hooks/useCountdownTicks"
@@ -35,9 +39,9 @@ const PIN_COLORS = [
 
 /** Critères d'appariement (Matchmaking côté serveur). */
 const CRITERIA = [
-  { icon: Users, labelKey: "game.matchmaking.criteria.elo" },
-  { icon: Globe, labelKey: "game.matchmaking.criteria.country" },
-  { icon: Bot, labelKey: "game.matchmaking.criteria.botFallback" },
+  { icon: UsersIcon, labelKey: "game.matchmaking.criteria.elo" },
+  { icon: GlobeHemisphereWestIcon, labelKey: "game.matchmaking.criteria.country" },
+  { icon: RobotIcon, labelKey: "game.matchmaking.criteria.botFallback" },
 ] as const
 
 interface SearchingScreenProps {
@@ -145,7 +149,7 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
                 boxShadow: "0 6px 14px rgba(0,0,0,.55)",
               }}
             >
-              <Users
+              <UsersIcon
                 size={14}
                 style={{ transform: "rotate(45deg)", color: "#0b0b0d" }}
               />

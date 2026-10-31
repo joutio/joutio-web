@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Loader2, Search } from "lucide-react"
+import { CircleNotchIcon, MagnifyingGlassIcon } from "@phosphor-icons/react"
 import { AppDialog } from "@/shared/components/app-dialog"
 import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import { Button } from "@/components/ui/button"
@@ -74,7 +74,7 @@ export function ThemePickerDialog({
 
   const searchField = (
     <div className="relative">
-      <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+      <MagnifyingGlassIcon className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
@@ -106,7 +106,7 @@ export function ThemePickerDialog({
             {t("game.themePicker.cancel")}
           </Button>
           <Button onClick={launch} disabled={pending || !selectedTopicId}>
-            {pending && <Loader2 className="size-4 animate-spin" />}
+            {pending && <CircleNotchIcon className="size-4 animate-spin" />}
             {pending
               ? t("game.playMode.launching")
               : t("game.themePicker.launch")}

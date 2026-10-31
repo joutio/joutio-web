@@ -1,4 +1,4 @@
-import { Check } from "lucide-react"
+import { CheckIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 import { CARD_INTERACTIVE_CLASS } from "@/components/ui/card"
 
@@ -52,7 +52,7 @@ export function SelectableTile({
           selected ? "bg-primary text-primary-foreground" : "text-transparent"
         )}
       >
-        <Check className="size-3" strokeWidth={3} />
+        <CheckIcon className="size-3" />
       </span>
     </button>
   )

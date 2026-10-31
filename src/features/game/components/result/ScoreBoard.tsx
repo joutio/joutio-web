@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react"
+import { LightningIcon } from "@phosphor-icons/react"
 import { AnimatedNumber } from "@/shared/components/animated-number"
 import type { AvatarIdentity } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
@@ -51,11 +51,9 @@ export function ScoreBoard({
           <AnimatedNumber value={scores.you} />
         </span>
       </div>
-      <Zap
-        size={22}
-        fill={TOKEN.duelSurfaceMuted}
+      <LightningIcon
+        size={22} weight="fill"
         color={TOKEN.duelSurfaceMuted}
-        strokeWidth={0}
         className="shrink-0"
       />
       <div className="flex min-w-0 flex-1 items-center justify-start">

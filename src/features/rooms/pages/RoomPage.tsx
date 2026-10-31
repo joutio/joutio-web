@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
-import { Zap } from "lucide-react"
+import { LightningIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { CloseButton } from "@/shared/components/close-button"
 import { queryKeys } from "@/lib/query-keys"
@@ -212,7 +212,7 @@ export function RoomPage() {
               onClick={wizz.send}
               aria-label={t("game.room.wizz.aria", { name: opponentName })}
             >
-              <Zap className="size-4" aria-hidden />
+              <LightningIcon className="size-4" aria-hidden />
               {wizz.cooldownSeconds > 0
                 ? t("game.room.wizz.cooldown", {
                     seconds: wizz.cooldownSeconds,

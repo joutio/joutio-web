@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Hourglass } from "lucide-react"
+import { HourglassIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/shared/components/empty-state"
 import { useGoBack } from "@/shared/hooks/useGoBack"
@@ -16,7 +16,7 @@ export function ComingSoonPage() {
   return (
     <PageContainer>
       <EmptyState
-        icon={<Hourglass className="size-6 text-muted-foreground" />}
+        icon={<HourglassIcon className="size-6 text-muted-foreground" />}
         title={t("shell.comingSoon.title")}
         description={t("shell.comingSoon.description")}
       >

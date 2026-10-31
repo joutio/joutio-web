@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Check, Snowflake, X } from "lucide-react"
+import { CheckIcon, SnowflakeIcon, XIcon } from "@phosphor-icons/react"
 
 import {
   Tooltip,
@@ -421,11 +421,11 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                     style={cellToneStyle(isActive, isMissed, usedFreeze)}
                   >
                     {usedFreeze ? (
-                      <Snowflake className="h-5 w-5" />
+                      <SnowflakeIcon className="h-5 w-5" />
                     ) : isActive ? (
-                      <Check className="h-5 w-5 text-white" />
+                      <CheckIcon data-glyph="check" className="h-5 w-5 text-white" />
                     ) : isMissed ? (
-                      <X className="h-5 w-5 text-white" />
+                      <XIcon data-glyph="x" className="h-5 w-5 text-white" />
                     ) : null}
                   </button>
                   <span

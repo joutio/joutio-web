@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronRight } from "lucide-react"
+import { CaretRightIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 
 /**
@@ -39,7 +39,7 @@ export function SectionHeader({
         ) : (
           label
         )}
-        <ChevronRight />
+        <CaretRightIcon />
       </Button>
     ) : null)
 

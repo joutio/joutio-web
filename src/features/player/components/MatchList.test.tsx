@@ -68,9 +68,9 @@ describe("MatchList", () => {
     expect(draw.getAttribute("style")).toContain("80%")
     expect(loss.getAttribute("style")).toContain("--loss")
     expect(loss.getAttribute("style")).toContain("80%")
-    expect(win.querySelector(".lucide-check")).not.toBeNull()
-    expect(draw.querySelector(".lucide-equal")).not.toBeNull()
-    expect(loss.querySelector(".lucide-x")).not.toBeNull()
+    expect(win.querySelector('[data-glyph="CheckIcon"]')).not.toBeNull()
+    expect(draw.querySelector('[data-glyph="EqualsIcon"]')).not.toBeNull()
+    expect(loss.querySelector('[data-glyph="XIcon"]')).not.toBeNull()
   })
 
   it("teinte la carte et le score à la recette de la carte de titre débloquée", () => {

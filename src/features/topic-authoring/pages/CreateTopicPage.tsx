@@ -5,7 +5,7 @@ import type { TFunction } from "i18next"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeftIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -123,7 +123,7 @@ export function CreateTopicPage() {
         nativeButton={false}
         render={<Link to="/topics?mine=true" />}
       >
-        <ArrowLeft /> {t("authoring.topics.back")}
+        <ArrowLeftIcon /> {t("authoring.topics.back")}
       </Button>
 
       <div className="mb-5">

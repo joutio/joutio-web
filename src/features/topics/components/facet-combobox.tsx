@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown } from "lucide-react"
+import { CaretDownIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 import {
   Popover,
@@ -50,7 +50,7 @@ export function FacetCombobox({
         <span className="text-muted-foreground">{label}</span>
         <span className="text-border">|</span>
         <span className="max-w-[140px] truncate">{summary}</span>
-        <ChevronDown className="size-4 text-muted-foreground" />
+        <CaretDownIcon className="size-4 text-muted-foreground" />
       </PopoverTrigger>
 
       <PopoverContent

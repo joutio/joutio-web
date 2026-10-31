@@ -1,7 +1,13 @@
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
-import { Clock, DoorOpen, Hourglass, Send, Swords } from "lucide-react"
+import {
+  ClockIcon,
+  DoorOpenIcon,
+  HourglassIcon,
+  PaperPlaneTiltIcon,
+  SwordIcon,
+} from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -58,7 +64,7 @@ export function PendingDuelCard({
         ? t("social.pending.sent")
         : t("social.pending.room")
   const KindIcon =
-    item.kind === "received" ? Swords : item.kind === "sent" ? Send : DoorOpen
+    item.kind === "received" ? SwordIcon : item.kind === "sent" ? PaperPlaneTiltIcon : DoorOpenIcon
   const playerLine =
     item.kind === "room" && !item.player
       ? t("social.pending.roomWaiting")
@@ -138,7 +144,7 @@ export function PendingDuelCard({
               )
             ) : (
               <span className="grid size-5 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
-                <Hourglass size={11} aria-hidden />
+                <HourglassIcon size={11} aria-hidden />
               </span>
             )}
             <span className="truncate">{playerLine}</span>
@@ -151,7 +157,7 @@ export function PendingDuelCard({
 
       <div className="mx-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-xl bg-surface-muted px-3.5 py-2.5">
         <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-          <Clock className="size-4 shrink-0" aria-hidden />
+          <ClockIcon className="size-4 shrink-0" aria-hidden />
           {item.kind === "room"
             ? t("social.pending.expiresIn")
             : t("social.pending.challengeExpiresIn")}

@@ -1,20 +1,20 @@
 import loreleiDefinition from "@dicebear/styles/lorelei.json"
 import type { StyleDefinition } from "@dicebear/core"
 import {
-  Brush,
-  CircleUserRound,
-  Eye,
-  Flower2,
-  Gem,
-  Glasses,
-  PaintBucket,
-  Palette,
-  Scissors,
-  Smile,
-  Sparkles,
-  Triangle,
-  VenetianMask,
-} from "lucide-react"
+  DiamondIcon,
+  EyeIcon,
+  EyeglassesIcon,
+  FlowerIcon,
+  MaskHappyIcon,
+  PaintBrushIcon,
+  PaintBucketIcon,
+  PaletteIcon,
+  ScissorsIcon,
+  SmileyIcon,
+  SparkleIcon,
+  TriangleIcon,
+  UserCircleIcon,
+} from "@phosphor-icons/react"
 import { collectPalettes, collectVariants } from "./derive"
 import { numberedVariants, variantLabelKeys } from "./labels"
 import {
@@ -95,12 +95,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "visage",
     labelKey: "avatar.groups.face",
-    icon: Smile,
+    icon: SmileyIcon,
     sections: [
       {
         id: "head",
         labelKey: "avatar.sections.head",
-        icon: CircleUserRound,
+        icon: UserCircleIcon,
         variantField: "head",
         variants: HEAD_VARIANTS,
         labelKeys: HEAD_LABEL_KEYS,
@@ -108,7 +108,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "eyes",
         labelKey: "avatar.sections.eyes",
-        icon: Eye,
+        icon: EyeIcon,
         variantField: "eyes",
         variants: EYES_VARIANTS,
         labelKeys: variantLabelKeys("lorelei", "eyes", EYES_VARIANTS),
@@ -116,7 +116,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "eyebrows",
         labelKey: "avatar.sections.eyebrows",
-        icon: Brush,
+        icon: PaintBrushIcon,
         variantField: "eyebrows",
         variants: EYEBROWS_VARIANTS,
         labelKeys: variantLabelKeys("lorelei", "eyebrows", EYEBROWS_VARIANTS),
@@ -124,7 +124,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "nose",
         labelKey: "avatar.sections.nose",
-        icon: Triangle,
+        icon: TriangleIcon,
         variantField: "nose",
         variants: NOSE_VARIANTS,
         labelKeys: variantLabelKeys("lorelei", "nose", NOSE_VARIANTS),
@@ -132,7 +132,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "mouth",
         labelKey: "avatar.sections.mouth",
-        icon: Smile,
+        icon: SmileyIcon,
         variantField: "mouth",
         variants: MOUTH_VARIANTS,
         labelKeys: variantLabelKeys("lorelei", "mouth", MOUTH_VARIANTS),
@@ -140,7 +140,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "freckles",
         labelKey: "avatar.sections.freckles",
-        icon: Sparkles,
+        icon: SparkleIcon,
         variantField: "freckles",
         variants: FRECKLES_VARIANTS,
         labelKeys: { variant01: "avatar.options.freckles" },
@@ -151,12 +151,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "cheveux",
     labelKey: "avatar.groups.hair",
-    icon: Scissors,
+    icon: ScissorsIcon,
     sections: [
       {
         id: "hair",
         labelKey: "avatar.sections.hair",
-        icon: Scissors,
+        icon: ScissorsIcon,
         variantField: "hair",
         variants: HAIR_VARIANTS,
         labelKeys: variantLabelKeys("lorelei", "hair", HAIR_VARIANTS),
@@ -168,7 +168,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "beard",
         labelKey: "avatar.sections.beard",
-        icon: VenetianMask,
+        icon: MaskHappyIcon,
         variantField: "beard",
         variants: BEARD_VARIANTS,
         labelKeys: {
@@ -182,12 +182,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "accessoires",
     labelKey: "avatar.groups.accessories",
-    icon: Glasses,
+    icon: EyeglassesIcon,
     sections: [
       {
         id: "glasses",
         labelKey: "avatar.sections.glasses",
-        icon: Glasses,
+        icon: EyeglassesIcon,
         variantField: "glasses",
         variants: GLASSES_VARIANTS,
         labelKeys: variantLabelKeys("lorelei", "glasses", GLASSES_VARIANTS),
@@ -196,7 +196,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "earrings",
         labelKey: "avatar.sections.earrings",
-        icon: Gem,
+        icon: DiamondIcon,
         variantField: "earrings",
         variants: EARRINGS_VARIANTS,
         labelKeys: variantLabelKeys("lorelei", "earrings", EARRINGS_VARIANTS),
@@ -205,7 +205,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "hairAccessories",
         labelKey: "avatar.sections.hairAccessories",
-        icon: Flower2,
+        icon: FlowerIcon,
         variantField: "hairAccessories",
         variants: HAIR_ACCESSORIES_VARIANTS,
         labelKeys: { flowers: "avatar.options.flowers" },
@@ -216,12 +216,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "couleurs",
     labelKey: "avatar.groups.colors",
-    icon: Palette,
+    icon: PaletteIcon,
     sections: [
       {
         id: "skin",
         labelKey: "avatar.sections.skin",
-        icon: Palette,
+        icon: PaletteIcon,
         colorField: "skinColor",
         colors: SKIN_COLORS,
         colorLabelKey: "avatar.colors.skin",
@@ -229,7 +229,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "outline",
         labelKey: "avatar.sections.outline",
-        icon: Brush,
+        icon: PaintBrushIcon,
         colorField: "outlineColor",
         colors: INK_COLORS,
         colorLabelKey: "avatar.colors.outline",
@@ -237,7 +237,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "background",
         labelKey: "avatar.sections.background",
-        icon: PaintBucket,
+        icon: PaintBucketIcon,
         colorField: "backgroundColor",
         colors: BACKGROUND_COLORS,
         colorLabelKey: "avatar.colors.background",

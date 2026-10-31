@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Dices, PaintBucket, RotateCcw, Shapes } from "lucide-react"
+import {
+  ArrowCounterClockwiseIcon,
+  DiceFiveIcon,
+  PaintBucketIcon,
+  ShapesIcon,
+} from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs"
 import { AvatarEditor } from "@/shared/components/avatar-editor"
@@ -169,14 +174,14 @@ function AvatarEditorContent({
     {
       id: STYLE_GROUP_ID,
       labelKey: "avatar.editor.style" as const,
-      icon: Shapes,
+      icon: ShapesIcon,
     },
     ...(isBase
       ? [
           {
             id: BASE_BACKGROUND_GROUP_ID,
             labelKey: "avatar.sections.background" as const,
-            icon: PaintBucket,
+            icon: PaintBucketIcon,
           },
         ]
       : groups.map((group) => ({
@@ -208,7 +213,7 @@ function AvatarEditorContent({
                 disabled={update.isPending}
                 onClick={handleRandom}
               >
-                <Dices /> {t("avatar.editor.random")}
+                <DiceFiveIcon /> {t("avatar.editor.random")}
               </Button>
               <Button
                 variant="outline"
@@ -216,7 +221,7 @@ function AvatarEditorContent({
                 disabled={update.isPending}
                 onClick={handleReset}
               >
-                <RotateCcw /> {t("avatar.editor.reset")}
+                <ArrowCounterClockwiseIcon /> {t("avatar.editor.reset")}
               </Button>
             </div>
           </div>

@@ -87,7 +87,7 @@ export function AppSidebar() {
                       onClick={() => void navigate(item.path)}
                     >
                       <span className="relative shrink-0">
-                        <Icon />
+                        <Icon weight={isActive ? "fill" : "regular"} />
                         <NavBadge count={badge} />
                       </span>
                       <span className="flex-1">{t(item.labelKey)}</span>

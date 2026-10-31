@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Crown } from "lucide-react"
+import { CrownIcon } from "@phosphor-icons/react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { SelectRow } from "@/shared/components/select-row"
@@ -47,7 +47,7 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
               className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground"
               aria-hidden
             >
-              <Crown className="size-4" />
+              <CrownIcon className="size-4" />
             </span>
           )
         }

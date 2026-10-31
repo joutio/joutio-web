@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, Lock } from "lucide-react"
+import { CheckIcon, LockIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -209,7 +209,7 @@ function StylePicker({
                 </span>
                 {locked ? (
                   <span className="absolute top-1 right-1 flex items-center gap-0.5 rounded-full bg-muted px-1.5 py-0.5 text-2xs font-semibold text-muted-foreground">
-                    <Lock className="size-2.5" aria-hidden />
+                    <LockIcon className="size-2.5" aria-hidden />
                     {styleId === "micah" && !premium
                       ? t("avatar.editor.assiduityRequired")
                       : t("avatar.editor.premium")}
@@ -217,7 +217,7 @@ function StylePicker({
                 ) : (
                   selected && (
                     <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
-                      <Check className="size-3" />
+                      <CheckIcon className="size-3" />
                     </span>
                   )
                 )}
@@ -400,7 +400,7 @@ const VariantTile = memo(function VariantTile({
       </span>
       {selected && (
         <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
-          <Check className="size-3" />
+          <CheckIcon className="size-3" />
         </span>
       )}
     </button>

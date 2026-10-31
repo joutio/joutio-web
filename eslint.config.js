@@ -19,6 +19,11 @@ const RESTRICTED_IMPORTS = {
       message:
         "Passe par le gabarit unique des toasts : '@/shared/utils/toast' (showToast / showSuccessToast).",
     },
+    {
+      // Icônes : Phosphor uniquement (design system 2.1).
+      name: "lucide-react",
+      message: "Utilise '@phosphor-icons/react'.",
+    },
   ],
   patterns: [
     {

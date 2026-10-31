@@ -1,4 +1,4 @@
-import { UserRound } from "lucide-react"
+import { UserIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 import {
   baseAvatarBackground,
@@ -13,7 +13,7 @@ interface DefaultAvatarProps {
   iconClassName?: string
 }
 
-/** Icône de base : silhouette Lucide sur un fond de la palette Micah. */
+/** Icône de base : silhouette Phosphor sur un fond de la palette Micah. */
 export function DefaultAvatar({
   backgroundColor = DEFAULT_BASE_AVATAR_BACKGROUND,
   className,
@@ -32,11 +32,9 @@ export function DefaultAvatar({
         color: "rgba(24, 24, 27, 0.35)",
       }}
     >
-      <UserRound
+      <UserIcon
         aria-hidden
-        className={cn("size-[52%]", iconClassName)}
-        fill="currentColor"
-        strokeWidth={0}
+        className={cn("size-[52%]", iconClassName)} weight="fill"
       />
     </span>
   )

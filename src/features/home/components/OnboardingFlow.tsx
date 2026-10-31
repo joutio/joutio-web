@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Loader2 } from "lucide-react"
+import { CircleNotchIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
@@ -147,12 +147,12 @@ export function OnboardingFlow({
         disabled={busy}
         onClick={() => void complete(false)}
       >
-        {busy && <Loader2 className="size-4 animate-spin" aria-hidden />}
+        {busy && <CircleNotchIcon className="size-4 animate-spin" aria-hidden />}
         {t("home.onboarding.joinRoom")}
       </Button>
     ) : recommendationsLoading ? (
       <Button size="lg" className="w-full" disabled>
-        <Loader2 className="size-4 animate-spin" aria-hidden />
+        <CircleNotchIcon className="size-4 animate-spin" aria-hidden />
         {t("home.onboarding.loadingRecommendations")}
       </Button>
     ) : recommendationsError ? (
@@ -170,7 +170,7 @@ export function OnboardingFlow({
         disabled={busy}
         onClick={() => void complete(false)}
       >
-        {busy && <Loader2 className="size-4 animate-spin" aria-hidden />}
+        {busy && <CircleNotchIcon className="size-4 animate-spin" aria-hidden />}
         {t("home.onboarding.explore")}
       </Button>
     ) : (
@@ -180,7 +180,7 @@ export function OnboardingFlow({
         disabled={busy || !selectedTopic}
         onClick={() => void complete(true)}
       >
-        {busy && <Loader2 className="size-4 animate-spin" aria-hidden />}
+        {busy && <CircleNotchIcon className="size-4 animate-spin" aria-hidden />}
         {startBot.isError
           ? t("home.onboarding.retry")
           : busy

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Check, Lock } from "lucide-react"
+import { CheckIcon, LockIcon } from "@phosphor-icons/react"
 import { Toggle } from "@/components/ui/toggle"
 import { SearchToolbar } from "@/shared/components/search-toolbar"
 import {
@@ -61,8 +61,8 @@ export function BadgeFilterBar({
           pressed={state === value}
           onPressedChange={() => onStateChange(value)}
         >
-          {value === "EARNED" && <Check />}
-          {value === "TO_UNLOCK" && <Lock />}
+          {value === "EARNED" && <CheckIcon />}
+          {value === "TO_UNLOCK" && <LockIcon />}
           {stateLabel(value)}
         </Toggle>
       ))}

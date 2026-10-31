@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { ChevronDown } from "lucide-react"
+import { CaretDownIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 import { TOKEN } from "@/shared/theme/tokens"
 
@@ -58,7 +58,7 @@ export function ResultDetailsButton({
       >
         {t("game.result.details")}
       </span>
-      <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
+      <CaretDownIcon size={18} color={TOKEN.duelSurfaceMuted} />
     </button>
   )
 }

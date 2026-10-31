@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { CalendarCheck } from "lucide-react"
+import { CalendarCheckIcon } from "@phosphor-icons/react"
 import {
   Card,
   CardContent,
@@ -40,7 +40,7 @@ export function StreakSection({ userId }: { userId: string }) {
         <CardHeader>
           <CardMedia>
             <span className="grid size-9 place-items-center rounded-full bg-primary/10 text-accent-ink">
-              <CalendarCheck className="size-4" aria-hidden />
+              <CalendarCheckIcon className="size-4" aria-hidden />
             </span>
           </CardMedia>
           <CardHeading>

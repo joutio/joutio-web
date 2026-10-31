@@ -1,18 +1,18 @@
 import { useState, type ReactNode } from "react"
 import {
-  ArrowRight,
-  Ban,
-  Check,
-  ChevronDown,
-  DoorOpen,
-  Moon,
-  Search,
-  Sun,
-  Trash2,
-  UserX,
-  X,
-  Zap,
-} from "lucide-react"
+  ArrowRightIcon,
+  CaretDownIcon,
+  CheckIcon,
+  DoorOpenIcon,
+  LightningIcon,
+  MagnifyingGlassIcon,
+  MoonIcon,
+  ProhibitIcon,
+  SunIcon,
+  TrashIcon,
+  UserMinusIcon,
+  XIcon,
+} from "@phosphor-icons/react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -145,27 +145,27 @@ const RADIUS_TOKENS = [
 const DESTRUCTIVE_ACTIONS = [
   {
     label: "Quitter le duel",
-    icon: DoorOpen,
+    icon: DoorOpenIcon,
     note: "Abandon irréversible d'une partie en cours.",
   },
   {
     label: "Annuler la recherche",
-    icon: Search,
+    icon: MagnifyingGlassIcon,
     note: "Termine un engagement en cours (ticket d'appariement).",
   },
   {
     label: "Annuler la salle",
-    icon: X,
+    icon: XIcon,
     note: "Ferme une salle créée et son cycle de préparation.",
   },
   {
     label: "Refuser un défi",
-    icon: UserX,
+    icon: UserMinusIcon,
     note: "Supprime l'invitation en attente côté backend.",
   },
   {
     label: "Supprimer une notification",
-    icon: Trash2,
+    icon: TrashIcon,
     note: "Suppression définitive dans l'inbox du joueur.",
   },
 ]
@@ -247,7 +247,7 @@ export function DesignSystemPage() {
       <header className="sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-5 py-3.5">
           <div className="grid size-9 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
-            <Zap className="size-4 fill-current" strokeWidth={0} />
+            <LightningIcon className="size-4 fill-current" />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold">Design system</p>
@@ -271,7 +271,7 @@ export function DesignSystemPage() {
                   : "Passer en thème sombre"
               }
             >
-              {resolvedTheme === "dark" ? <Sun /> : <Moon />}
+              {resolvedTheme === "dark" ? <SunIcon /> : <MoonIcon />}
               <span className="hidden tablet-up:inline">
                 {resolvedTheme === "dark" ? "Clair" : "Sombre"}
               </span>
@@ -320,7 +320,7 @@ export function DesignSystemPage() {
             <Card size="sm">
               <CardHeader>
                 <CardMedia className="rounded-xl bg-destructive/10 text-destructive">
-                  <Ban className="size-4" />
+                  <ProhibitIcon className="size-4" />
                 </CardMedia>
                 <CardHeading>
                   <CardTitle>Le rouge est réservé à la destruction</CardTitle>
@@ -338,7 +338,7 @@ export function DesignSystemPage() {
             <Card size="sm">
               <CardHeader>
                 <CardMedia className="rounded-xl bg-muted">
-                  <ChevronDown className="size-4" />
+                  <CaretDownIcon className="size-4" />
                 </CardMedia>
                 <CardHeading>
                   <CardTitle>Ordre des actions en compact</CardTitle>
@@ -356,7 +356,7 @@ export function DesignSystemPage() {
             <Card size="sm">
               <CardHeader>
                 <CardMedia className="rounded-xl bg-muted">
-                  <Zap className="size-4" />
+                  <LightningIcon className="size-4" />
                 </CardMedia>
                 <CardHeading>
                   <CardTitle>Les cartes sont à plat</CardTitle>
@@ -375,7 +375,7 @@ export function DesignSystemPage() {
             <Card size="sm">
               <CardHeader>
                 <CardMedia className="rounded-xl bg-muted">
-                  <Check className="size-4" />
+                  <CheckIcon className="size-4" />
                 </CardMedia>
                 <CardHeading>
                   <CardTitle>Une échelle, pas de valeurs arbitraires</CardTitle>
@@ -550,16 +550,16 @@ export function DesignSystemPage() {
             </CardHeader>
             <CardContent className="flex flex-wrap items-center gap-3">
               <Button>
-                <Zap /> Jouer
+                <LightningIcon /> Jouer
               </Button>
               <Button variant="secondary">Secondaire</Button>
               <Button variant="outline">Détails</Button>
               <Button variant="ghost">Plus tard</Button>
               <Button variant="link">
-                En savoir plus <ArrowRight />
+                En savoir plus <ArrowRightIcon />
               </Button>
               <Button variant="destructive">
-                <Trash2 /> Supprimer
+                <TrashIcon /> Supprimer
               </Button>
               <Button disabled>Désactivé</Button>
             </CardContent>
@@ -583,10 +583,10 @@ export function DesignSystemPage() {
               <Button>Default</Button>
               <Button size="lg">Large</Button>
               <Button size="icon" aria-label="Ajouter">
-                <Zap />
+                <LightningIcon />
               </Button>
               <Button size="icon-sm" aria-label="Ajouter (petit)">
-                <Zap />
+                <LightningIcon />
               </Button>
             </CardContent>
           </Card>
@@ -721,7 +721,7 @@ export function DesignSystemPage() {
             <Card className="max-w-xl">
               <CardHeader>
                 <CardMedia className="rounded-xl bg-muted">
-                  <Zap className="size-4" />
+                  <LightningIcon className="size-4" />
                 </CardMedia>
                 <CardHeading>
                   <CardTitle>Culture générale</CardTitle>
@@ -755,7 +755,7 @@ export function DesignSystemPage() {
             <Card interactive className="max-w-xl">
               <CardHeader>
                 <CardMedia className="rounded-xl bg-muted">
-                  <ArrowRight className="size-4" />
+                  <ArrowRightIcon className="size-4" />
                 </CardMedia>
                 <CardHeading>
                   <CardTitle>Carte interactive</CardTitle>
@@ -828,10 +828,10 @@ export function DesignSystemPage() {
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-2">
                   <Toggle aria-label="Filtrer les sujets">
-                    <Search /> Filtres
+                    <MagnifyingGlassIcon /> Filtres
                   </Toggle>
                   <Toggle variant="outline" aria-label="Vue compacte">
-                    <Zap /> Compact
+                    <LightningIcon /> Compact
                   </Toggle>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -991,7 +991,7 @@ export function DesignSystemPage() {
                 <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="grid size-7 place-items-center rounded-lg bg-primary text-primary-foreground">
-                      <Zap className="size-3.5 fill-current" strokeWidth={0} />
+                      <LightningIcon className="size-3.5 fill-current" />
                     </span>
                     <span className="text-sm font-semibold">Joutio</span>
                   </div>

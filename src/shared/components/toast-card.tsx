@@ -1,11 +1,11 @@
 import {
-  Bell,
-  CircleCheck,
-  CircleX,
-  Info,
-  TriangleAlert,
-  type LucideIcon,
-} from "lucide-react"
+  BellIcon,
+  CheckCircleIcon,
+  InfoIcon,
+  WarningIcon,
+  XCircleIcon,
+  type Icon as IconType,
+} from "@phosphor-icons/react"
 import { cn } from "cn"
 import { UserAvatar } from "./user-avatar"
 
@@ -26,20 +26,20 @@ interface ToastCardProps {
   tone?: ToastTone
   actor?: ToastActor | null
   /** Icône du gabarit quand il n'y a pas d'acteur ; à défaut, celle du ton. */
-  icon?: LucideIcon
+  icon?: IconType
   onClick?: () => void
 }
 
 /** Icône de tête par ton : aucun toast n'est jamais affiché sans visuel. */
 const TONE_ICONS: Record<
   "success" | "danger" | "warning" | "info" | "neutral",
-  LucideIcon
+  IconType
 > = {
-  success: CircleCheck,
-  danger: CircleX,
-  warning: TriangleAlert,
-  info: Info,
-  neutral: Bell,
+  success: CheckCircleIcon,
+  danger: XCircleIcon,
+  warning: WarningIcon,
+  info: InfoIcon,
+  neutral: BellIcon,
 }
 
 /** Pastille du visuel de tête par ton (fond plein teinté, jamais translucide à outrance). */

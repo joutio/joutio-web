@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Heart, Share2, SquarePen, Swords } from "lucide-react"
+import {
+  HeartIcon,
+  NotePencilIcon,
+  ShareNetworkIcon,
+  SwordIcon,
+} from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { BannerGlow } from "@/shared/components/banner-glow"
 import { EmptyState } from "@/shared/components/empty-state"
@@ -209,7 +214,7 @@ export function TopicDetailPage() {
                   disabled={startDuel.isPending}
                   onClick={openPlay}
                 >
-                  <Swords /> {t("topic.detail.play")}
+                  <SwordIcon /> {t("topic.detail.play")}
                 </Button>
                 {/* Créateur uniquement : entrée de l'atelier d'édition du thème. */}
                 {topicAuthoring && canManage && (
@@ -219,7 +224,7 @@ export function TopicDetailPage() {
                     nativeButton={false}
                     render={<Link to={`/topics/${topicId}/manage`} />}
                   >
-                    <SquarePen /> {t("topic.detail.edit")}
+                    <NotePencilIcon /> {t("topic.detail.edit")}
                   </Button>
                 )}
                 <Button
@@ -228,7 +233,7 @@ export function TopicDetailPage() {
                   onClick={toggleFollow}
                   aria-pressed={isFollowed}
                 >
-                  <Heart
+                  <HeartIcon
                     className={isFollowed ? "fill-primary text-accent-ink" : ""}
                   />
                   {isFollowed
@@ -240,7 +245,7 @@ export function TopicDetailPage() {
                   className="w-full"
                   onClick={() => setShareOpen(true)}
                 >
-                  <Share2 /> {t("topic.detail.share")}
+                  <ShareNetworkIcon /> {t("topic.detail.share")}
                 </Button>
               </div>
             </div>
@@ -337,12 +342,12 @@ export function TopicDetailPage() {
             stickyActive={tab === "progression"}
             empty={
               <EmptyState
-                icon={<Swords className="size-6 text-muted-foreground" />}
+                icon={<SwordIcon className="size-6 text-muted-foreground" />}
                 title={t("topic.detail.emptyTitle")}
                 description={t("topic.detail.emptyDescription")}
               >
                 <Button onClick={openPlay}>
-                  <Swords /> {t("topic.detail.play")}
+                  <SwordIcon /> {t("topic.detail.play")}
                 </Button>
               </EmptyState>
             }

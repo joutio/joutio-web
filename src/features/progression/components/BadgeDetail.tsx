@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Check } from "lucide-react"
+import { CheckIcon } from "@phosphor-icons/react"
 import {
   badgeProgressPercent,
   tierColorOf,
@@ -56,7 +56,10 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
       <div className="flex flex-col gap-1 text-sm leading-relaxed">
         <p className="flex items-start justify-center gap-1.5">
           {badge.earned && (
-            <Check className="mt-0.5 size-4 shrink-0 text-success-600" />
+            <CheckIcon
+              data-glyph="check"
+              className="mt-0.5 size-4 shrink-0 text-success-600"
+            />
           )}
           <span>{objective}</span>
         </p>

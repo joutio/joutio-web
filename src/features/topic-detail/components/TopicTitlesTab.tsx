@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Check, Lock } from "lucide-react"
+import { CheckIcon, LockIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { ExpandableCard } from "@/components/arc/expandable-card/expandable-card"
 
@@ -144,9 +144,9 @@ export function TopicTitlesTab({
                     aria-hidden
                   >
                     {unlocked ? (
-                      <Check className="size-4" strokeWidth={3} />
+                      <CheckIcon data-glyph="check" className="size-4" />
                     ) : (
-                      <Lock className="size-4" />
+                      <LockIcon data-glyph="lock" className="size-4" />
                     )}
                   </span>
                   <span
@@ -207,13 +207,13 @@ export function TopicTitlesTab({
                 {unlocked &&
                   (equipped ? (
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-accent-ink">
-                      <Check className="size-3.5" />
+                      <CheckIcon className="size-3.5" />
                       {t("progression.titleEquipped")}
                     </span>
                   ) : (
                     <span className="flex flex-col items-start gap-2">
                       <span className="flex items-center gap-1.5 text-xs font-semibold text-success-600">
-                        <Check className="size-3.5" />
+                        <CheckIcon className="size-3.5" />
                         {t("progression.titleUnlocked")}
                       </span>
                       <Button

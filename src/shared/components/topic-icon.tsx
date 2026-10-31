@@ -10,7 +10,7 @@ import { categoryColor, categoryIcon } from "@/shared/utils/categories"
 
 /**
  * Pastille de sujet — **forme springboard iOS** (rayon 22 % + ombre légère, comme les tuiles
- * d'accueil). Contenu : image de couverture si fournie, sinon **icône lucide de la
+ * d'accueil). Contenu : image de couverture si fournie, sinon **icône Phosphor de la
  * catégorie** (le sujet a une catégorie), sinon emoji (surfaces hors catalogue : palette ⌘K,
  * duel), sinon rien. Fond : couleur éditoriale du sujet, repli couleur de catégorie — jamais
  * de rond gris vide ; un visuel de sujet couvre la pastille sans fond forcé (les zones

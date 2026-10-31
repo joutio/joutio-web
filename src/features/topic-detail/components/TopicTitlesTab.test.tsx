@@ -86,12 +86,12 @@ describe("TopicTitlesTab", () => {
     expect(
       screen
         .getByRole("button", { name: "Argent · Histoire" })
-        .querySelector(".lucide-check")
+        .querySelector('[data-glyph="check"]')
     ).not.toBeNull()
     expect(
       screen
         .getByRole("button", { name: "Platine · Histoire" })
-        .querySelector(".lucide-lock")
+        .querySelector('[data-glyph="lock"]')
     ).not.toBeNull()
   })
 
@@ -171,7 +171,7 @@ describe("TopicTitlesTab", () => {
     })
 
     const fer = screen.getByRole("button", { name: "Fer · Histoire" })
-    expect(fer.querySelector(".lucide-lock")).not.toBeNull()
+    expect(fer.querySelector('[data-glyph="lock"]')).not.toBeNull()
 
     fireEvent.click(fer)
     expect(
@@ -191,7 +191,7 @@ describe("TopicTitlesTab", () => {
       expect(
         screen
           .getByRole("button", { name: tier })
-          .querySelector(".lucide-lock")
+          .querySelector('[data-glyph="lock"]')
       ).not.toBeNull()
     }
 
@@ -215,7 +215,7 @@ describe("TopicTitlesTab", () => {
     })
 
     const fer = screen.getByRole("button", { name: "Fer · Histoire" })
-    expect(fer.querySelector(".lucide-check")).not.toBeNull()
+    expect(fer.querySelector('[data-glyph="check"]')).not.toBeNull()
     expect(
       screen.getByText("Débloqué par ta première partie contre un humain")
     ).toBeInTheDocument()
@@ -229,6 +229,6 @@ describe("TopicTitlesTab", () => {
     expect(
       within(cardOf(bronze)).getByText("Plus que 500 XP")
     ).toBeInTheDocument()
-    expect(bronze.querySelector(".lucide-lock")).not.toBeNull()
+    expect(bronze.querySelector('[data-glyph="lock"]')).not.toBeNull()
   })
 })

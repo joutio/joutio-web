@@ -1,5 +1,5 @@
 import type { StyleDefinition } from "@dicebear/core"
-import type { LucideIcon } from "lucide-react"
+import { type Icon as IconType } from "@phosphor-icons/react"
 import type { TranslationKey } from "@/lib/i18n/types"
 
 export type AvatarStyleId = "micah" | "lorelei" | "notionists"
@@ -17,7 +17,7 @@ export type AvatarOptions = { style?: AvatarStyleId } & Record<
 export interface AvatarStyleSection {
   id: string
   labelKey: TranslationKey
-  icon: LucideIcon
+  icon: IconType
   variantField?: string
   variants?: readonly string[]
   /** Clés de traduction par variante (sinon libellé humanisé). */
@@ -31,7 +31,7 @@ export interface AvatarStyleSection {
 export interface AvatarStyleGroup {
   id: string
   labelKey: TranslationKey
-  icon: LucideIcon
+  icon: IconType
   sections: AvatarStyleSection[]
 }
 

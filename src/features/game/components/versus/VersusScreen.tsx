@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react"
+import { LightningIcon } from "@phosphor-icons/react"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
@@ -244,7 +244,7 @@ export function VersusScreen({ player, opponent, topic }: VersusScreenProps) {
               }}
             />
           ))}
-          <Zap size={50} fill={TOKEN.fg} color={TOKEN.fg} strokeWidth={0} />
+          <LightningIcon size={50} weight="fill" color={TOKEN.fg} />
         </div>
       </div>
     </div>

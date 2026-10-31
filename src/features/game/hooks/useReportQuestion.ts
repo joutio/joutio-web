@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Flag } from "lucide-react"
+import { FlagIcon } from "@phosphor-icons/react"
 import { showToast } from "@/shared/utils/toast"
 import { gamesService } from "../lib/games"
 import type {
@@ -23,14 +23,14 @@ export function useReportQuestion() {
         title: ack.created
           ? t("game.report.success")
           : t("game.report.already"),
-        icon: Flag,
+        icon: FlagIcon,
         tone: "success",
       })
     },
     onError: () => {
       showToast({
         title: t("game.report.error"),
-        icon: Flag,
+        icon: FlagIcon,
         tone: "danger",
       })
     },

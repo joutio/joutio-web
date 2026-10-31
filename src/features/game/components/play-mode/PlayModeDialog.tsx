@@ -1,6 +1,10 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronLeft, Loader2, Search } from "lucide-react"
+import {
+  CaretLeftIcon,
+  CircleNotchIcon,
+  MagnifyingGlassIcon,
+} from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AppDialog } from "@/shared/components/app-dialog"
@@ -116,7 +120,7 @@ export function PlayModeDialog({
 
   const playerSearchField = (
     <div className="relative">
-      <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+      <MagnifyingGlassIcon className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         autoFocus={playerSource === "all"}
         value={playerQuery}
@@ -175,7 +179,7 @@ export function PlayModeDialog({
         <>
           {step > 0 && (
             <Button variant="ghost" onClick={goBack}>
-              <ChevronLeft size={15} /> {t("game.playMode.previous")}
+              <CaretLeftIcon size={15} /> {t("game.playMode.previous")}
             </Button>
           )}
           <div className="flex-1 touch:hidden" />
@@ -188,7 +192,7 @@ export function PlayModeDialog({
               pendingAction || playerStepIncomplete || roomChoiceBlocked
             }
           >
-            {pendingAction && <Loader2 className="size-4 animate-spin" />}
+            {pendingAction && <CircleNotchIcon className="size-4 animate-spin" />}
             {isFinalStep
               ? pendingAction
                 ? t("game.playMode.launching")

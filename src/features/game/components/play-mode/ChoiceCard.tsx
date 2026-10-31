@@ -1,9 +1,9 @@
-import type { LucideIcon } from "lucide-react"
+import { type Icon as IconType } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { CARD_INTERACTIVE_CLASS } from "@/components/ui/card"
 
 interface ChoiceCardProps {
-  icon: LucideIcon
+  icon: IconType
   title: string
   desc: string
   selected: boolean

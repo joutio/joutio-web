@@ -1,7 +1,12 @@
 import { useState } from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Flag, Swords, UserCheck, UserPlus } from "lucide-react"
+import {
+  FlagIcon,
+  SwordIcon,
+  UserCheckIcon,
+  UserPlusIcon,
+} from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { ReportUserDialog } from "@/features/moderation"
 import { SuspendedBadge } from "@/shared/components/suspended-badge"
@@ -183,7 +188,7 @@ function PlayerProfileContent({
               disabled={profile.suspended}
               onClick={() => setSalonOpen(true)}
             >
-              <Swords /> {t("player.profile.challenge")}
+              <SwordIcon /> {t("player.profile.challenge")}
             </Button>
             <Button
               variant={profile.following ? "secondary" : "outline"}
@@ -198,9 +203,9 @@ function PlayerProfileContent({
               }
             >
               {profile.following ? (
-                <UserCheck className="text-accent-ink" />
+                <UserCheckIcon className="text-accent-ink" />
               ) : (
-                <UserPlus />
+                <UserPlusIcon />
               )}
               {profile.following
                 ? t("player.profile.following")
@@ -213,7 +218,7 @@ function PlayerProfileContent({
               disabled={reported}
               onClick={() => setReportTarget(playerId)}
             >
-              <Flag />
+              <FlagIcon />
               {reported
                 ? t("moderation.report.reported")
                 : t("moderation.report.action")}
@@ -259,7 +264,7 @@ function PlayerProfileContent({
         showOpponent={false}
         empty={
           <EmptyState
-            icon={<Swords className="size-6 text-muted-foreground" />}
+            icon={<SwordIcon className="size-6 text-muted-foreground" />}
             title={t("player.profile.emptyCommonTitle")}
             description={t("player.profile.emptyCommonDescription")}
           >
@@ -267,7 +272,7 @@ function PlayerProfileContent({
               disabled={profile.suspended}
               onClick={() => setSalonOpen(true)}
             >
-              <Swords /> {t("player.profile.challenge")}
+              <SwordIcon /> {t("player.profile.challenge")}
             </Button>
           </EmptyState>
         }

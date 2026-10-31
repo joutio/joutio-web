@@ -34,7 +34,7 @@ describe("BadgeDetail", () => {
     expect(
       screen.getByText("Joue 10 duel(s) contre des joueurs")
     ).toBeInTheDocument()
-    expect(container.querySelector(".lucide-check")).not.toBeNull()
+    expect(container.querySelector('[data-glyph="check"]')).not.toBeNull()
     const rarity = screen.getByText("Rareté : Bronze")
     expect(rarity).toBeInTheDocument()
     expect(rarity.style.color).toBe(TIER_COLORS.BRONZE.text)

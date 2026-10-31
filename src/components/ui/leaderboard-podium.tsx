@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Crown } from "lucide-react"
+import { CrownIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
@@ -35,7 +35,7 @@ const podiumVariants = cva("flex items-end justify-center gap-4", {
 // Podium styles for each position
 const PODIUM_CONFIG = {
   1: {
-    icon: Crown,
+    icon: CrownIcon,
     color: "text-rank-1",
     bg: "bg-rank-1/60",
     ringColor: "ring-rank-1/50",
@@ -44,7 +44,7 @@ const PODIUM_CONFIG = {
     heightLg: "h-40",
   },
   2: {
-    icon: Crown,
+    icon: CrownIcon,
     color: "text-rank-2",
     bg: "bg-rank-2/30",
     ringColor: "ring-rank-2/50",
@@ -53,7 +53,7 @@ const PODIUM_CONFIG = {
     heightLg: "h-32",
   },
   3: {
-    icon: Crown,
+    icon: CrownIcon,
     color: "text-rank-3",
     bg: "bg-rank-3/50",
     ringColor: "ring-rank-3/50",

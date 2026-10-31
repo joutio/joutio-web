@@ -1,4 +1,4 @@
-import { Moon, Sun } from "lucide-react"
+import { MoonIcon, SunIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "../providers/theme-context"
@@ -28,9 +28,9 @@ export function ThemeToggle() {
       className="text-muted-foreground"
     >
       {nextTheme === "dark" ? (
-        <Moon className="size-4" />
+        <MoonIcon className="size-4" />
       ) : (
-        <Sun className="size-4" />
+        <SunIcon className="size-4" />
       )}
     </Button>
   )

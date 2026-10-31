@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Heart, Plus, SquarePen } from "lucide-react"
+import { HeartIcon, NotePencilIcon, PlusIcon } from "@phosphor-icons/react"
 import type { TranslationKey } from "@/lib/i18n/types"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/shared/components/empty-state"
@@ -209,11 +209,11 @@ export function TopicsPage() {
           selected={followedOnly && !mine}
           onSelect={toggleFollowed}
         >
-          <Heart className="size-4" /> {t("topics.filters.sourceFollowed")}
+          <HeartIcon className="size-4" /> {t("topics.filters.sourceFollowed")}
         </FilterOption>
         {topicAuthoring && (
           <FilterOption selected={mine} onSelect={() => toggleMine(!mine)}>
-            <SquarePen className="size-4" /> {t("topics.list.mineToggle")}
+            <NotePencilIcon className="size-4" /> {t("topics.list.mineToggle")}
           </FilterOption>
         )}
       </FilterSection>
@@ -262,7 +262,7 @@ export function TopicsPage() {
             nativeButton={false}
             render={<Link to="/topics/new" />}
           >
-            <Plus /> {t("topics.list.create")}
+            <PlusIcon /> {t("topics.list.create")}
           </Button>
         </PageHeaderBar>
       )}
@@ -279,7 +279,7 @@ export function TopicsPage() {
               pressed={followedOnly && !mine}
               onPressedChange={toggleFollowed}
             >
-              <Heart /> {t("topics.list.followedToggle")}
+              <HeartIcon /> {t("topics.list.followedToggle")}
             </Toggle>
             {topicAuthoring && (
               <Toggle
@@ -288,7 +288,7 @@ export function TopicsPage() {
                 pressed={mine}
                 onPressedChange={() => toggleMine(!mine)}
               >
-                <SquarePen /> {t("topics.list.mineToggle")}
+                <NotePencilIcon /> {t("topics.list.mineToggle")}
               </Toggle>
             )}
           </>
@@ -353,7 +353,7 @@ export function TopicsPage() {
           >
             {mine ? (
               <Button nativeButton={false} render={<Link to="/topics/new" />}>
-                <Plus /> {t("topics.list.create")}
+                <PlusIcon /> {t("topics.list.create")}
               </Button>
             ) : (
               <Button variant="outline" onClick={reset}>
@@ -404,7 +404,7 @@ export function TopicsPage() {
           render={<Link to="/topics/new" />}
           className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-top)+0.75rem)] z-40 hidden size-14 rounded-full shadow-lg shadow-primary/25 compact:inline-flex"
         >
-          <Plus className="size-6" />
+          <PlusIcon className="size-6" />
         </Button>
       )}
     </>

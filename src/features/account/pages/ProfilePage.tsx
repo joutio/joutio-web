@@ -1,6 +1,10 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Pencil, Share2, Swords } from "lucide-react"
+import {
+  PencilSimpleIcon,
+  ShareNetworkIcon,
+  SwordIcon,
+} from "@phosphor-icons/react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/shared/components/empty-state"
@@ -146,10 +150,10 @@ export function ProfilePage() {
         actions={
           <>
             <Button onClick={() => void navigate("/settings")}>
-              <Pencil /> {t("shell.profile.edit")}
+              <PencilSimpleIcon /> {t("shell.profile.edit")}
             </Button>
             <Button variant="outline" onClick={() => setShareOpen(true)}>
-              <Share2 /> {t("shell.profile.share")}
+              <ShareNetworkIcon /> {t("shell.profile.share")}
             </Button>
           </>
         }
@@ -183,12 +187,12 @@ export function ProfilePage() {
               stickyActive={tab === "parties"}
               empty={
                 <EmptyState
-                  icon={<Swords className="size-6 text-muted-foreground" />}
+                  icon={<SwordIcon className="size-6 text-muted-foreground" />}
                   title={t("shell.profile.emptyTitle")}
                   description={t("shell.profile.emptyDescription")}
                 >
                   <Button onClick={() => void navigate("/topics")}>
-                    <Swords /> {t("shell.profile.findOpponent")}
+                    <SwordIcon /> {t("shell.profile.findOpponent")}
                   </Button>
                 </EmptyState>
               }
@@ -199,12 +203,12 @@ export function ProfilePage() {
             <PageContainer>
               {(stats?.played ?? 0) === 0 ? (
                 <EmptyState
-                  icon={<Swords className="size-6 text-muted-foreground" />}
+                  icon={<SwordIcon className="size-6 text-muted-foreground" />}
                   title={t("shell.profile.emptyTitle")}
                   description={t("shell.profile.emptyDescription")}
                 >
                   <Button onClick={() => void navigate("/topics")}>
-                    <Swords /> {t("shell.profile.findOpponent")}
+                    <SwordIcon /> {t("shell.profile.findOpponent")}
                   </Button>
                 </EmptyState>
               ) : (

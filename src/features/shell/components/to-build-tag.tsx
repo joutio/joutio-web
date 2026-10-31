@@ -1,4 +1,4 @@
-import { Hammer } from "lucide-react"
+import { HammerIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@/components/ui/badge"
 
@@ -14,7 +14,7 @@ export function ToBuildTag({ label }: { label?: string }) {
       variant="outline"
       className="gap-1 border-amber-500/40 text-amber-500"
     >
-      <Hammer /> {label ?? t("shell.toBuild.label")}
+      <HammerIcon /> {label ?? t("shell.toBuild.label")}
     </Badge>
   )
 }

@@ -82,7 +82,7 @@ export function BadgeMedallion({
       >
         {createElement(icon, {
           className: "size-full",
-          strokeWidth: 2.2,
+          weight: "bold",
           style: {
             color: ink,
             filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.65))",

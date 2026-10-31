@@ -55,7 +55,7 @@ describe("BadgeMedallion", () => {
       <BadgeMedallion family="VICTORY" tier="DIAMANT" />
     )
 
-    expect(container.querySelector("svg.lucide")).toHaveStyle({
+    expect(container.querySelector("svg.size-full")).toHaveStyle({
       color: BADGE_PICTO_INK.DIAMANT,
     })
   })

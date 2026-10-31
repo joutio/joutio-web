@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next"
-import { Flag, Users, Zap } from "lucide-react"
+import { FlagIcon, LightningIcon, UsersIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 import { TOKEN } from "@/shared/theme/tokens"
 import { ActionButton } from "./ActionButton"
-import { RESULT_LOSS, RESULT_WHITE } from "./palette"
+import { RESULT_LOSS } from "./palette"
 
 interface ResultActionsProps {
   botGame: boolean
@@ -58,7 +58,7 @@ export function ResultActions({
     >
       {botGame && (
         <ActionButton
-          icon={<Zap size={16} fill={RESULT_WHITE} strokeWidth={0} />}
+          icon={<LightningIcon size={16} weight="fill" />}
           background={RESULT_LOSS}
           disabled={replayPending}
           onClick={onReplayBot}
@@ -69,7 +69,7 @@ export function ResultActions({
 
       {!botGame && (
         <ActionButton
-          icon={<Zap size={16} fill={RESULT_WHITE} strokeWidth={0} />}
+          icon={<LightningIcon size={16} weight="fill" />}
           background={
             rematchRefused || rematchBlocked || rematchUnavailable
               ? TOKEN.duelSurfaceMuted
@@ -100,7 +100,7 @@ export function ResultActions({
       )}
 
       <ActionButton
-        icon={<Users size={16} />}
+        icon={<UsersIcon size={16} />}
         background={TOKEN.timer}
         disabled={newOpponentPending}
         onClick={onNewOpponent}
@@ -111,7 +111,7 @@ export function ResultActions({
       {reportable ? (
         <div className={cn("w-full", !botGame && "tablet-up:col-span-2")}>
           <ActionButton
-            icon={<Flag size={16} />}
+            icon={<FlagIcon size={16} />}
             background={TOKEN.gauge}
             disabled={reported}
             onClick={() => onReportOpponent?.()}

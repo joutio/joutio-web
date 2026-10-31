@@ -1,4 +1,4 @@
-import { Bot, Check, Sparkles } from "lucide-react"
+import { CheckIcon, RobotIcon, SparkleIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { useTopicName } from "@/features/shell"
@@ -82,7 +82,7 @@ export function FirstDuelStep({
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-accent-ink" aria-hidden />
+          <SparkleIcon className="size-4 text-accent-ink" aria-hidden />
           <span className="text-xs font-semibold tracking-wide text-accent-ink uppercase">
             {t("home.onboarding.recommendedForYou")}
           </span>
@@ -121,7 +121,7 @@ export function FirstDuelStep({
             )}
             {selected.topicId === primary.topicId && (
               <span className="absolute top-3 right-3 grid size-7 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                <Check className="size-4" strokeWidth={3} aria-hidden />
+                <CheckIcon className="size-4" aria-hidden />
               </span>
             )}
           </div>
@@ -183,7 +183,7 @@ export function FirstDuelStep({
                     </span>
                   </span>
                   {isSelected && (
-                    <Check
+                    <CheckIcon
                       className="size-4 shrink-0 text-accent-ink"
                       aria-hidden
                     />
@@ -197,7 +197,7 @@ export function FirstDuelStep({
 
       <div className="flex items-start gap-3 rounded-card border border-border bg-muted/30 p-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-background">
-          <Bot className="size-5 text-accent-ink" aria-hidden />
+          <RobotIcon className="size-5 text-accent-ink" aria-hidden />
         </span>
         <div className="flex flex-col gap-1">
           <p className="font-heading text-sm font-bold">

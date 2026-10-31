@@ -2,7 +2,12 @@ import type { CSSProperties } from "react"
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
-import { Check, Equal, X, type LucideIcon } from "lucide-react"
+import {
+  CheckIcon,
+  EqualsIcon,
+  XIcon,
+  type Icon as IconType,
+} from "@phosphor-icons/react"
 import {
   Card,
   CardAction,
@@ -36,7 +41,7 @@ const OUTCOME_KEYS: Record<GameHistoryItem["outcome"], TranslationKey> = {
 const PENDING_COLOR = "var(--draw)"
 
 interface OutcomeAccent {
-  icon: LucideIcon
+  icon: IconType
   /** Teinte de l'issue : bordure, fond et score. */
   color: string
   borderColor: string
@@ -55,7 +60,7 @@ interface OutcomeAccent {
  * **bordure** s'accentue (70 %, comme la tuile de badge acquise) : le fond reste celui de
  * l'issue.
  */
-function cardAccent(icon: LucideIcon, color: string): OutcomeAccent {
+function cardAccent(icon: IconType, color: string): OutcomeAccent {
   return {
     icon,
     color,
@@ -69,9 +74,9 @@ function cardAccent(icon: LucideIcon, color: string): OutcomeAccent {
 const OUTCOME_ACCENT: Partial<
   Record<GameHistoryItem["outcome"], OutcomeAccent>
 > = {
-  WIN: cardAccent(Check, "var(--success-600)"),
-  LOSS: cardAccent(X, "var(--loss)"),
-  DRAW: cardAccent(Equal, "var(--draw)"),
+  WIN: cardAccent(CheckIcon, "var(--success-600)"),
+  LOSS: cardAccent(XIcon, "var(--loss)"),
+  DRAW: cardAccent(EqualsIcon, "var(--draw)"),
 }
 
 function opponentName(item: GameHistoryItem, t: TFunction): string {
@@ -160,7 +165,8 @@ export function MatchList({
                       >
                         <BadgeIcon
                           className="size-4"
-                          strokeWidth={3}
+                          weight="bold"
+                          data-glyph={BadgeIcon.displayName}
                           aria-hidden
                         />
                       </span>

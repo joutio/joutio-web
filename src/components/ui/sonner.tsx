@@ -1,19 +1,19 @@
 import type { CSSProperties } from "react"
 import {
-  CircleCheck,
-  CircleX,
-  Info,
-  LoaderCircle,
-  TriangleAlert,
-} from "lucide-react"
+  CheckCircleIcon,
+  CircleNotchIcon,
+  InfoIcon,
+  WarningIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
 const ICONS = {
-  success: <CircleCheck className="size-5" />,
-  error: <CircleX className="size-5" />,
-  warning: <TriangleAlert className="size-5" />,
-  info: <Info className="size-5" />,
-  loading: <LoaderCircle className="size-5 animate-spin" />,
+  success: <CheckCircleIcon className="size-5" />,
+  error: <XCircleIcon className="size-5" />,
+  warning: <WarningIcon className="size-5" />,
+  info: <InfoIcon className="size-5" />,
+  loading: <CircleNotchIcon className="size-5 animate-spin" />,
 }
 
 /** Décalage haut : sous la topbar (hauteur du device + encoche + marge), sans la recouvrir. */

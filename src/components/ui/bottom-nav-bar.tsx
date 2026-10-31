@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { MotionConfig, motion } from "framer-motion"
-import type { LucideIcon } from "lucide-react"
+import { type Icon as IconType } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 
@@ -9,7 +9,7 @@ const LABEL_WIDTH = 84
 export interface BottomNavItem {
   id: string
   label: string
-  icon: LucideIcon
+  icon: IconType
   /** Badge optionnel (compteur de non-lues…) rendu en pastille sur l'icône. */
   badge?: ReactNode
 }
@@ -89,7 +89,11 @@ export function BottomNavBar({
                 )}
               >
                 <span className="relative">
-                  <Icon size={24} strokeWidth={2} aria-hidden />
+                  <Icon
+                  size={24}
+                  weight={isActive ? "fill" : "regular"}
+                  aria-hidden
+                />
                   {item.badge}
                 </span>
                 <span className="max-w-full truncate text-xs font-medium select-none">
@@ -116,7 +120,11 @@ export function BottomNavBar({
               )}
             >
               <span className="relative">
-                <Icon size={24} strokeWidth={2} aria-hidden />
+                <Icon
+                  size={24}
+                  weight={isActive ? "fill" : "regular"}
+                  aria-hidden
+                />
                 {item.badge}
               </span>
 

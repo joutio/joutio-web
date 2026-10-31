@@ -26,7 +26,7 @@ import {
   useReducedMotion,
   useTransform,
 } from "motion/react"
-import { X } from "lucide-react"
+import { XIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { motionTokens } from "../lib/motion-tokens"
 import styles from "./bottom-sheet.module.css"
@@ -687,7 +687,7 @@ function Sheet({
                   className={styles.close}
                   aria-label={closeLabel ?? t("shared.actions.close")}
                 >
-                  <X size={16} strokeWidth={1.75} aria-hidden="true" />
+                  <XIcon size={16} aria-hidden="true" />
                 </DialogPrimitive.Close>
               )}
             </div>

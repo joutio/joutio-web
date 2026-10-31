@@ -1,7 +1,7 @@
 "use client"
 // beui.dev/components/motion/tabs
 
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react"
 import {
   cancelFrame,
   frame,
@@ -306,7 +306,7 @@ export function TabsList({
           onClick={() => scroll(-1)}
           className={cn(controlClass, "left-0 rounded-l-full")}
         >
-          <ChevronLeft size={20} aria-hidden="true" />
+          <CaretLeftIcon size={20} aria-hidden="true" />
         </button>
       )}
       <motion.div
@@ -361,7 +361,7 @@ export function TabsList({
           onClick={() => scroll(1)}
           className={cn(controlClass, "right-0 rounded-r-full")}
         >
-          <ChevronRight size={20} aria-hidden="true" />
+          <CaretRightIcon size={20} aria-hidden="true" />
         </button>
       )}
     </div>

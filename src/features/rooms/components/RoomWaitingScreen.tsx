@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Zap } from "lucide-react"
+import { LightningIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 import { Countdown } from "@/components/arc/countdown/countdown"
 import { Stepper } from "@/components/arc/stepper/stepper"
@@ -128,9 +128,8 @@ export function RoomWaitingScreen({
                 }}
                 aria-hidden
               >
-                <Zap
-                  size={16}
-                  fill={bothPresent ? TOKEN.correctAccent : "transparent"}
+                <LightningIcon
+                  size={16} weight="fill"
                 />
               </div>
               {opponent ? (

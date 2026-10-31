@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { UserRound } from "lucide-react"
+import { UserIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
 import { EmptyState } from "@/shared/components/empty-state"
@@ -237,7 +237,7 @@ export function PeopleDirectory({
           </p>
         ) : people.length === 0 ? (
           <EmptyState
-            icon={<UserRound className="size-6 text-muted-foreground" />}
+            icon={<UserIcon className="size-6 text-muted-foreground" />}
             title={
               bothSelected
                 ? t("social.emptyBoth")
