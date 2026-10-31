@@ -26,7 +26,7 @@ export function EmptyState({
       className={cn("items-center gap-3 px-5 py-12 text-center", className)}
     >
       {icon}
-      <div className="text-base font-semibold">{title}</div>
+      <div className="type-headline">{title}</div>
       {description && (
         <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
           {description}
