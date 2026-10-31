@@ -30,7 +30,7 @@ export function FacetOptionList({
       <button
         type="button"
         onClick={() => onChange(null)}
-        className="flex min-h-11 w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
+        className="flex min-h-11 w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-surface-muted"
       >
         <span className="flex-1">{t("topics.filters.all")}</span>
         {value === null && <CheckIcon className="size-4" />}
@@ -43,7 +43,7 @@ export function FacetOptionList({
             key={option.value}
             type="button"
             onClick={() => onChange(selected ? null : option.value)}
-            className="flex min-h-11 w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
+            className="flex min-h-11 w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-surface-muted"
           >
             <span
               className="size-2 shrink-0 rounded-full"
@@ -51,7 +51,7 @@ export function FacetOptionList({
             />
             <span className="min-w-0 flex-1 truncate">{option.label}</span>
             {option.count != null && (
-              <span className="text-xs text-muted-foreground font-mono tabular-nums">
+              <span className="font-mono text-xs text-muted-foreground tabular-nums">
                 {option.count}
               </span>
             )}

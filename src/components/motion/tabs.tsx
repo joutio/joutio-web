@@ -98,9 +98,9 @@ export function Tabs({
 }
 
 const listClasses: Record<Variant, string> = {
-  pill: "inline-flex items-center gap-1 rounded-full bg-muted p-1",
+  pill: "inline-flex items-center gap-1 rounded-full bg-raised p-1",
   underline: "inline-flex items-center gap-1 border-b border-border",
-  segment: "inline-flex items-center gap-0 rounded-lg bg-muted p-0.5",
+  segment: "inline-flex items-center gap-0 rounded-md bg-raised p-0.5",
 }
 
 export function TabsList({
@@ -427,7 +427,8 @@ export function TabsTrigger({
           layout
           style={{ borderRadius: variant === "pill" ? 9999 : 8 }}
           className={cn(
-            "absolute inset-0 bg-foreground",
+            // Design 3.0 : le segment actif est une surface sur la piste relief.
+            "absolute inset-0 bg-card",
             radius,
             indicatorClassName
           )}
@@ -440,8 +441,10 @@ export function TabsTrigger({
         data-tabs-value={value}
         onClick={() => setValue(value)}
         className={cn(
-          "relative z-10 inline-flex items-center justify-center bg-transparent px-3.5 py-1.5 text-sm font-medium whitespace-nowrap outline-none touch:min-h-11",
-          "text-muted-foreground hover:text-foreground",
+          "relative z-10 inline-flex min-h-9 items-center justify-center bg-transparent px-3.5 py-1.5 text-sm font-medium whitespace-nowrap outline-none touch:min-h-11",
+          active
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground",
           radius,
           className
         )}
@@ -451,7 +454,7 @@ export function TabsTrigger({
           data-tabs-label=""
           aria-hidden="true"
           inert
-          className="pointer-events-none absolute inset-0 inline-flex items-center justify-center [gap:inherit] [padding:inherit] text-background"
+          className="pointer-events-none absolute inset-0 inline-flex items-center justify-center [gap:inherit] [padding:inherit] text-foreground"
           style={{ clipPath: initialClip }}
         >
           {children}

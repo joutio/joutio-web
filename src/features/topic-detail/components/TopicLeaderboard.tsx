@@ -51,7 +51,11 @@ const SCOPES: {
   labelKey: TranslationKey
   icon: typeof GlobeHemisphereWestIcon
 }[] = [
-  { value: "WORLD", labelKey: "topic.leaderboard.scope.world", icon: GlobeHemisphereWestIcon },
+  {
+    value: "WORLD",
+    labelKey: "topic.leaderboard.scope.world",
+    icon: GlobeHemisphereWestIcon,
+  },
   {
     value: "FOLLOWING",
     labelKey: "topic.leaderboard.scope.following",
@@ -369,7 +373,7 @@ export function TopicLeaderboard({
             )}
 
             {leaderboard.isFetchingNextPage && (
-              <div className="mt-3 h-16 animate-pulse rounded-2xl bg-muted/50" />
+              <div className="mt-3 h-16 animate-skeleton rounded-md bg-raised" />
             )}
           </>
         )}

@@ -1,13 +1,9 @@
 import type { ReactNode } from "react"
-import {
-  MagnifyingGlassIcon,
-  SlidersHorizontalIcon,
-  XIcon,
-} from "@phosphor-icons/react"
+import { SlidersHorizontalIcon, XIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
-import { Input } from "@/components/ui/input"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { SearchField } from "./search-field"
 import {
   BottomSheet,
   BottomSheetClose,
@@ -82,20 +78,11 @@ export function SearchToolbar({
      compteur — l'écran n'a pas de requête textuelle à saisir. */
   const searchField =
     query !== undefined && onQueryChange ? (
-      <div className="relative w-full">
-        <MagnifyingGlassIcon className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-          onKeyDown={(event) => {
-            // Entrée replie le clavier mobile (la recherche est déjà live).
-            if (event.key === "Enter") event.currentTarget.blur()
-          }}
-          enterKeyHint="search"
-          placeholder={placeholder}
-          className="pl-9"
-        />
-      </div>
+      <SearchField
+        value={query}
+        onChange={onQueryChange}
+        placeholder={placeholder}
+      />
     ) : null
 
   if (isTouch) {

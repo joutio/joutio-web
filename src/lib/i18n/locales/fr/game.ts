@@ -11,6 +11,7 @@ export const game = {
   },
   matchmaking: {
     searching: "Recherche d'un adversaire…",
+    opponentFound: "Adversaire trouvé",
     cancel: "Annuler la recherche",
     failed: "Recherche impossible",
     canceled: "Recherche annulée",

@@ -43,7 +43,7 @@ export function FacetCombobox({
       <PopoverTrigger
         aria-label={t("topics.filters.by", { label: label.toLowerCase() })}
         className={cn(
-          "flex h-8 items-center gap-1.5 rounded-3xl border border-border bg-background px-3 text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 aria-expanded:bg-muted",
+          "flex h-8 items-center gap-1.5 rounded-full border border-transparent bg-raised px-3 text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-hover focus-visible:ring-2 focus-visible:ring-ring aria-expanded:bg-hover",
           className
         )}
       >

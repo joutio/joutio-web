@@ -34,7 +34,7 @@ export function RoomShareCard({ shareUrl, topicName }: RoomShareCardProps) {
         {t("game.share.description")}
       </p>
 
-      <div className="mt-4 grid place-items-center rounded-2xl bg-white p-3">
+      <div className="mt-4 grid place-items-center rounded-card bg-white p-3">
         <QRCodeSVG value={shareUrl} size={140} />
       </div>
 

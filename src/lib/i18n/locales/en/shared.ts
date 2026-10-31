@@ -79,6 +79,7 @@ export const shared: typeof frShared = {
     matching: "{{count}} matching {{label}}",
     matchingPlural: "{{count}} matching {{label}}s",
     clearAll: "Clear all",
+    clearSearch: "Clear search",
     viewResults: "View results",
   },
   winLoss: {

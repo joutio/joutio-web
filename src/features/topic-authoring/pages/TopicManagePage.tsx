@@ -42,7 +42,7 @@ export function TopicManagePage() {
   if (overview.isLoading) {
     return (
       <PageContainer className="max-w-3xl">
-        <div className="h-30 animate-pulse rounded-2xl bg-muted/50" />
+        <div className="h-30 animate-skeleton rounded-card bg-raised" />
       </PageContainer>
     )
   }
@@ -209,7 +209,7 @@ export function TopicManagePage() {
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="h-26 animate-pulse rounded-xl bg-muted/50"
+              className="h-26 animate-skeleton rounded-md bg-raised"
             />
           ))}
         </div>

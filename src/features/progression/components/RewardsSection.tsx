@@ -178,7 +178,7 @@ function RewardCard({
             </Button>
           </div>
         ) : (
-          <p className="rounded-lg border border-border bg-muted/40 p-2 text-xs text-muted-foreground">
+          <p className="rounded-md border border-border bg-raised p-2 text-xs text-muted-foreground">
             {condition}
           </p>
         )}

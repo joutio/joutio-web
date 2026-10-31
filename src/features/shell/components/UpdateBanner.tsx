@@ -20,10 +20,10 @@ export function UpdateBanner() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-          className="flex items-center gap-3 border-b bg-primary/[0.06] px-(--page-gutter-x) py-2.5"
+          transition={{ duration: 0.2, ease: [0.32, 0.72, 0, 1] }}
+          className="flex items-center gap-3 border-b bg-warm px-(--page-gutter-x) py-2.5"
         >
-          <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-accent-ink">
+          <span className="grid size-8 shrink-0 place-items-center rounded-md bg-raised text-accent-ink">
             <ArrowsClockwiseIcon className="size-4" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
@@ -32,12 +32,12 @@ export function UpdateBanner() {
               {t("shell.update.description")}
             </p>
           </div>
-          <Button size="sm" onClick={reload}>
+          <Button size="xs" onClick={reload}>
             {t("shell.update.reload")}
           </Button>
           <Button
             variant="ghost"
-            size="icon"
+            size="icon-xs"
             aria-label={t("shell.update.dismiss")}
             className="shrink-0"
             onClick={dismiss}

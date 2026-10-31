@@ -1,14 +1,19 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useReducedMotion } from "framer-motion"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { useGoBack } from "@/shared/hooks/useGoBack"
 import { useTopicOverview } from "@/features/topic-detail"
 import { useTopicName } from "@/features/shell"
+import { usePlayerProfile } from "@/features/player"
+import { TIER_COLORS } from "@/features/progression/domain/progression"
 import { BotTrainingDialog } from "@/features/game"
 import { useStartBotGame } from "@/features/rooms"
 import { trackProductEvent } from "@/lib/telemetry"
 import { TOKEN } from "@/shared/theme/tokens"
+import { eloTier } from "@/shared/elo/elo"
+import type { FoundOpponent } from "../components/matchmaking-map"
 import { SearchingScreen } from "../components/SearchingScreen"
 import { NoOpponentDialog } from "../components/NoOpponentDialog"
 import {
@@ -43,6 +48,22 @@ export function MatchmakingPage() {
   // Sortie : retour **d'où l'on vient** (la fiche du sujet), repli sur cette fiche en lien direct.
   const goBack = useGoBack(ticket.topicId ? `/topics/${ticket.topicId}` : "/")
   const [trainOpen, setTrainOpen] = useState(false)
+  const reduce = useReducedMotion() ?? false
+  const opponent = usePlayerProfile(
+    ticket.status === "MATCHED" ? (ticket.opponentId ?? "") : ""
+  )
+  const found = useMemo<FoundOpponent | null>(() => {
+    if (ticket.status !== "MATCHED") return null
+    const profile = opponent.data
+    return {
+      name: profile?.pseudonym ?? t("game.matchmaking.opponentFound"),
+      avatarOptions: profile?.avatarOptions,
+      ring: profile
+        ? TIER_COLORS[eloTier(profile.progression.rating)].fill
+        : undefined,
+      country: profile?.country,
+    }
+  }, [opponent.data, t, ticket.status])
 
   const statusRef = useRef(ticket.status)
   const cancelRef = useRef(cancel)
@@ -100,10 +121,15 @@ export function MatchmakingPage() {
   }, [])
 
   useEffect(() => {
-    if (ticket.status === "MATCHED" && ticket.roomId) {
-      void navigate(`/rooms/${ticket.roomId}`, { replace: true })
-    }
-  }, [ticket.status, ticket.roomId, navigate])
+    if (ticket.status !== "MATCHED" || !ticket.roomId) return
+    const roomId = ticket.roomId
+    // Laisse la carte se poser sur le pays (700 ms) avant d'entrer dans la salle.
+    const timer = window.setTimeout(
+      () => void navigate(`/rooms/${roomId}`, { replace: true }),
+      reduce ? 0 : 900
+    )
+    return () => window.clearTimeout(timer)
+  }, [navigate, reduce, ticket.roomId, ticket.status])
 
   if (ticket.status === "CANCELLED" || ticket.status === "FAILED" || isError) {
     return (
@@ -153,6 +179,7 @@ export function MatchmakingPage() {
     >
       <SearchingScreen
         deadlineAt={ticket.deadlineAt}
+        found={found}
         topic={{
           name: resolveName(topic?.names, t("game.matchmaking.topicFallback")),
           emoji: topic?.emoji ?? undefined,
@@ -172,7 +199,7 @@ export function MatchmakingPage() {
           </p>
         </div>
       )}
-      {!expired && (
+      {!expired && ticket.status !== "MATCHED" && (
         <div className="relative z-10 flex shrink-0 justify-center px-6 pt-1 pb-4">
           <Button
             variant="destructive"

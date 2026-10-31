@@ -6,10 +6,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Échelle typographique (design/tokens.json) : le palier large suit `tablet-up`. */
+/* Échelle typographique 3.0 (design/tokens.json) : les styles de titre suivent une rampe
+   compacte → desktop, les styles de texte sont fixes. */
 @utility type-display {
-  font-size: 3rem;
-  line-height: 3rem;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 1;
   font-weight: 700;
   letter-spacing: -0.03em;
 }
@@ -20,31 +21,50 @@
   letter-spacing: -0.02em;
 }
 @utility type-title-1 {
-  font-size: 1.5rem;
-  line-height: 2rem;
+  font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+  line-height: 1.12;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 @utility type-title-2 {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
+  font-size: clamp(1.375rem, 2.6vw, 1.875rem);
+  line-height: 1.25;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+}
+@utility type-question {
+  font-size: clamp(1.375rem, 2.2vw, 1.625rem);
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 @utility type-headline {
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 600;
 }
+@utility type-body {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+}
 @utility type-callout {
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
+  letter-spacing: 0.02em;
 }
 @utility type-caption {
   font-size: 0.75rem;
   line-height: 1rem;
+  font-weight: 500;
+}
+@utility type-numeric {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  line-height: 2rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Contrat device (source unique : shared/theme/tokens.ts, doc : best-practices/.frontend/responsive-sizing.md).
@@ -54,6 +74,15 @@
 @custom-variant tablet-up (@media (width >= 40rem));
 @custom-variant desktop (@media (width >= 64rem));
 @custom-variant touch (@media (width < 64rem));
+
+/* Courbe unique du design system 3.0 : les transitions d'état suivent la même timeline que
+   le chrome. Les animations de jeu (jauges, chrono) gardent leurs timings dédiés. */
+@theme {
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  --animate-skeleton: qu-pulse 1400ms cubic-bezier(0.32, 0.72, 0, 1) infinite
+    alternate;
+}
 
 /* Décalage animable des bandes collantes quand la topbar se replie. Propriété **non héritée** :
    chaque bande anime sa propre copie, sans invalider tout le sous-arbre de la page. */
@@ -175,7 +204,7 @@
   --accent-ink: #8a5e0f;
   --correct: #2e8a5f;
   --wrong: #c2433a;
-  --glass: rgba(246, 245, 241, 0.8);
+  --glass: rgba(255, 255, 255, 0.76);
   --scrim: rgba(18, 18, 16, 0.4);
   --jo-shadow: 0 12px 32px rgba(60, 50, 20, 0.12);
   --surface-muted: var(--hover);
@@ -189,14 +218,15 @@
   --qu-card-radius: 1rem;
   /* Rayons Arc UI recalés sur l'échelle du design system (feuille = 24). */
   --font-body: var(--font-sans);
-  --radius-control: 0.5rem;
-  --radius-panel: 1rem;
-  --radius-surface: 1.5rem;
+  --radius-control: 0.5rem; /* 8 — bouton, champ, réponse */
+  --radius-tile: 0.75rem; /* 12 — tuile, toast, bannière, carte de sujet */
+  --radius-panel: 1rem; /* 16 — carte */
+  --radius-surface: 1.5rem; /* 24 — feuille, dialogue */
   --sidebar: #ffffff;
   --sidebar-foreground: #121210;
   --sidebar-primary: #e8b04a;
   --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #efede7;
+  --sidebar-accent: var(--hover);
   --sidebar-accent-foreground: #121210;
   --sidebar-border: #d9d6cd;
   --sidebar-ring: #c9963c;
@@ -205,8 +235,8 @@
   --rank-2: #8c95a3;
   --rank-3: #b86a32;
   --success-600: var(--correct);
-  /* Toasts : mêmes surfaces et mêmes signaux que le reste de l'app. */
-  --toast-surface: var(--card);
+  /* Toasts : surface haute du design system 3.0. */
+  --toast-surface: var(--raised);
   --toast-surface-foreground: var(--foreground);
   --toast-muted: var(--muted-foreground);
   --toast-border: var(--border);
@@ -222,25 +252,168 @@
 }
 
 /* Bordure Elo des avatars : métal du palier, appliqué partout sauf topbar/sidebar/éditeur/salons. */
-[data-elo-tier="FER"] { --elo-ring: #3F444C; }
-[data-elo-tier="BRONZE"] { --elo-ring: #B86A32; }
-[data-elo-tier="ARGENT"] { --elo-ring: #8C95A3; }
-[data-elo-tier="OR"] { --elo-ring: #D9A826; }
-[data-elo-tier="PLATINE"] { --elo-ring: #8C9FC9; }
-[data-elo-tier="EMERAUDE"] { --elo-ring: #2FBF77; }
-[data-elo-tier="DIAMANT"] { --elo-ring: #5DB4E2; }
-[data-elo-tier="PROVISIONAL"] { --elo-ring: var(--border); }
+[data-elo-tier="FER"] {
+  --elo-ring: #3f444c;
+}
+[data-elo-tier="BRONZE"] {
+  --elo-ring: #b86a32;
+}
+[data-elo-tier="ARGENT"] {
+  --elo-ring: #8c95a3;
+}
+[data-elo-tier="OR"] {
+  --elo-ring: #d9a826;
+}
+[data-elo-tier="PLATINE"] {
+  --elo-ring: #8c9fc9;
+}
+[data-elo-tier="EMERAUDE"] {
+  --elo-ring: #2fbf77;
+}
+[data-elo-tier="DIAMANT"] {
+  --elo-ring: #5db4e2;
+}
+[data-elo-tier="PROVISIONAL"] {
+  --elo-ring: var(--border);
+}
 
 /* Cadre Elo (spec `Elo Avatar`) : métal conique, reflet et halo selon le rang. La couleur du
    rang reste sur le cadre, jamais en aplat de fond d'écran. */
-[data-elo-tier="FER"] { --elo-metal: #3f444c; --elo-gap: 5%; }
-[data-elo-tier="BRONZE"] { --elo-metal: conic-gradient(from 200deg, #6e3412, #d4925a, #8a4a20, #eab07a, #7a3e18, #c27a42, #6e3412); --elo-gap: 7.5%; }
-[data-elo-tier="ARGENT"] { --elo-metal: conic-gradient(from 200deg, #6f7783, #eef1f5, #8c95a3, #ffffff, #6f7783, #c9cfd8, #6f7783); --elo-gap: 8%; --elo-line: rgba(180, 188, 200, 0.5); }
-[data-elo-tier="OR"] { --elo-metal: conic-gradient(from 210deg, #8a6410, #ffe08a, #c9971c, #fff3c4, #a87a12, #ffd76a, #8a6410); --elo-gap: 8.5%; --elo-line: rgba(232, 190, 90, 0.55); --elo-halo: radial-gradient(circle, rgba(232, 176, 74, 0.34) 34%, transparent 68%); --elo-halo-size: -14%; }
-[data-elo-tier="PLATINE"] { --elo-metal: conic-gradient(from 200deg, #56658f, #eef2fd, #8c9fc9, #ffffff, #65749f, #d5ddf2, #56658f); --elo-gap: 9%; --elo-line: rgba(190, 204, 238, 0.6); --elo-halo: radial-gradient(circle, rgba(150, 170, 220, 0.36) 32%, transparent 68%); --elo-halo-size: -16%; --elo-shine: conic-gradient(transparent 0 38%, rgba(255, 255, 255, 0.85) 46%, transparent 54% 100%); --elo-spin: 5s; }
-[data-elo-tier="EMERAUDE"] { --elo-metal: conic-gradient(from 200deg, #0a5e38, #9df5c9, #2fbf77, #e4fff0, #107446, #5fdc9e, #0a5e38); --elo-gap: 9.5%; --elo-line: rgba(95, 220, 158, 0.65); --elo-halo: radial-gradient(circle, rgba(47, 191, 119, 0.4) 30%, transparent 68%); --elo-halo-size: -18%; --elo-shine: conic-gradient(transparent 0 30%, rgba(230, 255, 240, 0.85) 38%, transparent 46% 80%, rgba(230, 255, 240, 0.5) 86%, transparent 92% 100%); --elo-spin: 4.5s; }
-[data-elo-tier="DIAMANT"] { --elo-metal: conic-gradient(#5db4e2, #eaf8ff, #a58cf0, #5db4e2, #c9f0ff, #7fe0d0, #ffffff, #5db4e2); --elo-gap: 10%; --elo-line: rgba(180, 228, 255, 0.75); --elo-halo: radial-gradient(circle, rgba(120, 200, 255, 0.45) 26%, rgba(170, 140, 255, 0.18) 48%, transparent 70%); --elo-halo-size: -22%; --elo-shine: conic-gradient(transparent 0 40%, rgba(255, 255, 255, 0.9) 47%, transparent 54% 100%); --elo-spin: 3.5s; }
-[data-elo-tier="PROVISIONAL"] { --elo-gap: 8%; }
+[data-elo-tier="FER"] {
+  --elo-metal: #3f444c;
+  --elo-gap: 5%;
+}
+[data-elo-tier="BRONZE"] {
+  --elo-metal: conic-gradient(
+    from 200deg,
+    #6e3412,
+    #d4925a,
+    #8a4a20,
+    #eab07a,
+    #7a3e18,
+    #c27a42,
+    #6e3412
+  );
+  --elo-gap: 7.5%;
+}
+[data-elo-tier="ARGENT"] {
+  --elo-metal: conic-gradient(
+    from 200deg,
+    #6f7783,
+    #eef1f5,
+    #8c95a3,
+    #ffffff,
+    #6f7783,
+    #c9cfd8,
+    #6f7783
+  );
+  --elo-gap: 8%;
+  --elo-line: rgba(180, 188, 200, 0.5);
+}
+[data-elo-tier="OR"] {
+  --elo-metal: conic-gradient(
+    from 210deg,
+    #8a6410,
+    #ffe08a,
+    #c9971c,
+    #fff3c4,
+    #a87a12,
+    #ffd76a,
+    #8a6410
+  );
+  --elo-gap: 8.5%;
+  --elo-line: rgba(232, 190, 90, 0.55);
+  --elo-halo: radial-gradient(
+    circle,
+    rgba(232, 176, 74, 0.34) 34%,
+    transparent 68%
+  );
+  --elo-halo-size: -14%;
+}
+[data-elo-tier="PLATINE"] {
+  --elo-metal: conic-gradient(
+    from 200deg,
+    #56658f,
+    #eef2fd,
+    #8c9fc9,
+    #ffffff,
+    #65749f,
+    #d5ddf2,
+    #56658f
+  );
+  --elo-gap: 9%;
+  --elo-line: rgba(190, 204, 238, 0.6);
+  --elo-halo: radial-gradient(
+    circle,
+    rgba(150, 170, 220, 0.36) 32%,
+    transparent 68%
+  );
+  --elo-halo-size: -16%;
+  --elo-shine: conic-gradient(
+    transparent 0 38%,
+    rgba(255, 255, 255, 0.85) 46%,
+    transparent 54% 100%
+  );
+  --elo-spin: 5s;
+}
+[data-elo-tier="EMERAUDE"] {
+  --elo-metal: conic-gradient(
+    from 200deg,
+    #0a5e38,
+    #9df5c9,
+    #2fbf77,
+    #e4fff0,
+    #107446,
+    #5fdc9e,
+    #0a5e38
+  );
+  --elo-gap: 9.5%;
+  --elo-line: rgba(95, 220, 158, 0.65);
+  --elo-halo: radial-gradient(
+    circle,
+    rgba(47, 191, 119, 0.4) 30%,
+    transparent 68%
+  );
+  --elo-halo-size: -18%;
+  --elo-shine: conic-gradient(
+    transparent 0 30%,
+    rgba(230, 255, 240, 0.85) 38%,
+    transparent 46% 80%,
+    rgba(230, 255, 240, 0.5) 86%,
+    transparent 92% 100%
+  );
+  --elo-spin: 4.5s;
+}
+[data-elo-tier="DIAMANT"] {
+  --elo-metal: conic-gradient(
+    #5db4e2,
+    #eaf8ff,
+    #a58cf0,
+    #5db4e2,
+    #c9f0ff,
+    #7fe0d0,
+    #ffffff,
+    #5db4e2
+  );
+  --elo-gap: 10%;
+  --elo-line: rgba(180, 228, 255, 0.75);
+  --elo-halo: radial-gradient(
+    circle,
+    rgba(120, 200, 255, 0.45) 26%,
+    rgba(170, 140, 255, 0.18) 48%,
+    transparent 70%
+  );
+  --elo-halo-size: -22%;
+  --elo-shine: conic-gradient(
+    transparent 0 40%,
+    rgba(255, 255, 255, 0.9) 47%,
+    transparent 54% 100%
+  );
+  --elo-spin: 3.5s;
+}
+[data-elo-tier="PROVISIONAL"] {
+  --elo-gap: 8%;
+}
 
 .qu-elo-frame {
   position: absolute;
@@ -295,29 +468,29 @@
   --foreground: #ffffff;
   --card: #181818;
   --card-foreground: #ffffff;
-  --popover: #1f1f1f;
+  --popover: #242424;
   --popover-foreground: #ffffff;
   --primary: #e8b04a;
   --primary-foreground: #000000;
-  --secondary: #1f1f1f;
+  --secondary: #242424;
   --secondary-foreground: #ffffff;
-  --muted: #1f1f1f;
+  --muted: #242424;
   --muted-foreground: #9b9b9b;
-  --accent: #272727;
+  --accent: #2d2d2d;
   --accent-foreground: #ffffff;
   --destructive: #e5645a;
-  --border: #313131;
-  --input: #313131;
+  --border: #3a3a3a;
+  --input: #3a3a3a;
   --ring: #e8b04a;
   --canvas: #0c0c0b;
-  --raised: #1f1f1f;
-  --hover: #272727;
+  --raised: #242424;
+  --hover: #2d2d2d;
   --warm: #131209;
   --primary-press: #c9963c;
   --accent-ink: #e8b04a;
   --correct: #4fb286;
   --wrong: #e5645a;
-  --glass: rgba(10, 10, 10, 0.72);
+  --glass: rgba(24, 24, 24, 0.72);
   --scrim: rgba(0, 0, 0, 0.6);
   --jo-shadow: 0 16px 48px rgba(19, 18, 9, 0.6);
   --surface-muted: var(--hover);
@@ -330,9 +503,9 @@
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #e8b04a;
   --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #1f1f1f;
+  --sidebar-accent: var(--hover);
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #313131;
+  --sidebar-border: #3a3a3a;
   --sidebar-ring: #e8b04a;
   --toast-accent: var(--primary);
   --toast-warning: var(--primary);
@@ -389,6 +562,10 @@
   --duel-score: #e8b04a;
   --duel-timer: #ffffff;
   --duel-timer-urgent: #e5645a;
+  /* Carte de matchmaking (design 3.0) : terre relief, filet noir, halo ambre. */
+  --duel-map-land: #242424;
+  --duel-map-line: #000000;
+  --duel-map-glow: rgba(232, 176, 74, 0.16);
 
   /* Barre de statistiques V/N/D. */
   --win: var(--correct);
@@ -404,18 +581,20 @@
 
   /* ----------------------------------------------------------------------
        Contrat de dimensionnement (responsive-sizing.md).
-       Valeurs tactiles par défaut (compact + tablette) ; `desktop` bascule sur
-       la densité compacte. Toute taille de contrôle doit passer par ces tokens.
+       Les contrôles gardent l'échelle 3.0 (48/40/32, icône 44) sur tous les
+       appareils ; seules les gouttières changent. Toute taille de contrôle doit
+       passer par ces tokens.
        ---------------------------------------------------------------------- */
-  --control-h-xs: 2.25rem; /* 36 px */
-  --control-h-sm: 2.25rem; /* Jo Button S */
-  --control-h-md: 2.75rem; /* Jo Button M */
-  --control-h-lg: 3.25rem; /* Jo Button L */
-  --control-h-field: 3.25rem; /* Jo Field */
+  --control-h-xs: 2rem; /* 32 px — Jo Button S */
+  --control-h-sm: 2.5rem; /* 40 px — Jo Button M */
+  --control-h-md: 2.5rem; /* 40 px — contrôle compact */
+  --control-h-lg: 3rem; /* 48 px — Jo Button L */
+  --control-h-field: 3rem; /* 48 px — Jo Field */
+  --control-h-icon: 2.75rem; /* 44 px — Jo Icon Button */
   --topbar-h: 4rem; /* 64 px — les contrôles tactiles ne touchent plus les bords */
   --bottom-nav-h: 5rem; /* 80 px — hauteur native Android (Material 3) */
-  --page-gutter-x: 0.875rem; /* 14 px */
-  /* Gouttière de la topbar : les contrôles tactiles (44 px) frôlaient les bords avec 14 px. */
+  --page-gutter-x: 1rem; /* 16 px — marge d'écran 3.0 */
+  /* Gouttière de la topbar : les contrôles tactiles (44 px) ne touchent jamais les bords. */
   --topbar-gutter-x: max(1.25rem, var(--page-gutter-x)); /* 20 px minimum */
 
   /* ----------------------------------------------------------------------
@@ -445,7 +624,7 @@
   /* Mouvement du chrome haut : topbar (transform) et bandes (--qu-chrome-shift), même timeline.
      Miroir JS : CHROME_MOTION_MS dans shared/theme/tokens.ts. */
   --qu-chrome-motion-duration: 250ms;
-  --qu-chrome-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --qu-chrome-motion-ease: cubic-bezier(0.32, 0.72, 0, 1);
 
   /* Garde Arc UI : l'anneau de focus global (`:focus-visible`) suit le token de l'app
        au lieu de l'accent Arc, sans toucher aux fichiers vendored. */
@@ -469,8 +648,7 @@
 
 @media (width >= 64rem) {
   :root {
-    /* Desktop : seuls les contrôles embarqués se densifient, topbar plus haute. */
-    --control-h-xs: 1.5rem;
+    /* Desktop : même échelle de contrôles (Jo Button 48/40/32), gouttière élargie. */
     --topbar-h: 4rem;
     --page-gutter-x: 1.5rem; /* 24 px */
 
@@ -544,11 +722,7 @@
 }
 /* Scroll edge : pas de séparateur tant que rien n'est passé sous la topbar. */
 [data-scroll-root][data-scrolled] .qu-topbar {
-  border-bottom-color: color-mix(
-    in oklab,
-    var(--border) 75%,
-    transparent
-  );
+  border-bottom-color: color-mix(in oklab, var(--border) 75%, transparent);
 }
 
 /* Bandes collantes : la topbar masquée remonte la surface de `-topbar-h`. La propriété
@@ -636,7 +810,7 @@
 /* Toasts custom (sonner) : son CSS ne fixe la largeur de la colonne que sur les toasts
    `data-styled="true"` ; nos cartes `toast.custom` se dimensionneraient sinon à leur contenu.
    Au-dessus du breakpoint mobile de sonner (600 px), on leur impose donc la largeur du Toaster
-   (`--width`, 520 px) pour que tous les toasts aient la même largeur et soient alignés. */
+   (`--width`, 358 px) pour que tous les toasts aient la même largeur et soient alignés. */
 @media (width > 37.5rem) {
   [data-sonner-toaster] [data-sonner-toast][data-styled="false"] {
     width: var(--width);
@@ -665,6 +839,14 @@
   }
 }
 
+@keyframes qu-pulse {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @keyframes qu-halo {
   0%,
   100% {
@@ -693,6 +875,26 @@
   }
   50% {
     transform: translateY(-7px);
+  }
+}
+@keyframes qu-pin-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes qu-pin-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.6);
+    opacity: 0;
   }
 }
 @keyframes qu-pop {

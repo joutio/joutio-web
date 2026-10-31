@@ -10,37 +10,15 @@ import { useServerClock } from "@/shared/clock/useServerClock"
 import { useCountdownTicks } from "@/shared/hooks/useCountdownTicks"
 import { WaitingStatusPill } from "@/shared/components/waiting-status-pill"
 import { WaitingTopic } from "@/shared/components/waiting-topic"
-
-/** Positions des pastilles sur la carte, en pourcentage. Purement décoratif. */
-const PIN_SPOTS = [
-  { x: 14, y: 30 },
-  { x: 22, y: 52 },
-  { x: 31, y: 22 },
-  { x: 38, y: 44 },
-  { x: 46, y: 28 },
-  { x: 52, y: 58 },
-  { x: 61, y: 36 },
-  { x: 69, y: 24 },
-  { x: 74, y: 55 },
-  { x: 83, y: 40 },
-  { x: 88, y: 66 },
-  { x: 27, y: 70 },
-]
-
-/** Couleurs des pastilles (joueurs anonymes en attente d'appariement). */
-const PIN_COLORS = [
-  "#46C6CD",
-  "#79B6F4",
-  "#C79DE6",
-  "#E694BB",
-  "#ED997B",
-  "#A1BD6E",
-]
+import { MatchmakingMap, type FoundOpponent } from "./matchmaking-map"
 
 /** Critères d'appariement (Matchmaking côté serveur). */
 const CRITERIA = [
   { icon: UsersIcon, labelKey: "game.matchmaking.criteria.elo" },
-  { icon: GlobeHemisphereWestIcon, labelKey: "game.matchmaking.criteria.country" },
+  {
+    icon: GlobeHemisphereWestIcon,
+    labelKey: "game.matchmaking.criteria.country",
+  },
   { icon: RobotIcon, labelKey: "game.matchmaking.criteria.botFallback" },
 ] as const
 
@@ -55,6 +33,8 @@ interface SearchingScreenProps {
   }
   /** Fin de la fenêtre de recherche (10 s) — échéance serveur du compte à rebours. */
   deadlineAt?: string | null
+  /** Adversaire trouvé : la carte se centre sur son pays avant la bascule vers la salle. */
+  found?: FoundOpponent | null
 }
 
 /**
@@ -84,7 +64,11 @@ function useSecondsLeft(
  * automatiquement un entraînement ou propose de relancer une recherche. Le déroulé réel
  * (ticket + WebSocket) est piloté par `MatchmakingPage`.
  */
-export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
+export function SearchingScreen({
+  topic,
+  deadlineAt,
+  found = null,
+}: SearchingScreenProps) {
   const { t } = useTranslation()
   const { serverNow } = useServerClock()
   const secondsLeft = useSecondsLeft(deadlineAt, serverNow)
@@ -98,58 +82,21 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
       className="relative flex flex-1 flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      <div className="pointer-events-none absolute top-[38%] left-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center">
-        {[0, 1, 2].map((index) => (
-          <span
-            key={index}
-            className="qu-ping col-start-1 row-start-1 size-[180px] place-self-center rounded-full"
-            style={{
-              border: `1.5px solid ${TOKEN.primary}`,
-              animationDelay: `${index * 0.8}s`,
-            }}
-          />
-        ))}
-      </div>
+      <MatchmakingMap found={found} />
 
-      <div className="relative flex-1">
-        {PIN_SPOTS.map((spot, index) => (
-          <div
-            key={`${spot.x}-${spot.y}`}
-            className="qu-bob absolute"
-            style={{
-              left: `${spot.x}%`,
-              top: `${spot.y}%`,
-              animationDelay: `${(index % 5) * 0.4}s`,
-            }}
-          >
-            <div
-              className="flex size-[34px] items-center justify-center"
-              style={{
-                borderRadius: "50% 50% 50% 4px",
-                transform: "rotate(-45deg)",
-                background: PIN_COLORS[index % PIN_COLORS.length],
-                opacity: 0.9,
-                boxShadow: "0 6px 14px rgba(0,0,0,.55)",
-              }}
-            >
-              <UsersIcon
-                size={14}
-                style={{ transform: "rotate(45deg)", color: "#000000" }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="relative flex flex-col items-center gap-4 pb-8 text-center">
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-end gap-4 pb-8 text-center">
         <WaitingTopic topic={topic} size={56} />
 
         {/* Statut et temps restant dans **une seule** pastille jaune : les secondes sont
             intégrées à « Recherche d'un adversaire ». */}
         <WaitingStatusPill
-          label={t("game.matchmaking.searching")}
+          label={
+            found
+              ? t("game.matchmaking.opponentFound")
+              : t("game.matchmaking.searching")
+          }
           trailing={
-            secondsLeft != null ? (
+            !found && secondsLeft != null ? (
               <span
                 className="font-mono tabular-nums"
                 style={{ letterSpacing: "0.02em" }}
@@ -160,17 +107,19 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
           }
         />
 
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
-          {CRITERIA.map((criterion) => (
-            <span
-              key={criterion.labelKey}
-              className="flex items-center gap-1.5"
-              style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
-            >
-              <criterion.icon size={12} /> {t(criterion.labelKey)}
-            </span>
-          ))}
-        </div>
+        {!found && (
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
+            {CRITERIA.map((criterion) => (
+              <span
+                key={criterion.labelKey}
+                className="flex items-center gap-1.5 text-xs"
+                style={{ color: TOKEN.mutedFg }}
+              >
+                <criterion.icon size={12} /> {t(criterion.labelKey)}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

@@ -64,7 +64,11 @@ export function PendingDuelCard({
         ? t("social.pending.sent")
         : t("social.pending.room")
   const KindIcon =
-    item.kind === "received" ? SwordIcon : item.kind === "sent" ? PaperPlaneTiltIcon : DoorOpenIcon
+    item.kind === "received"
+      ? SwordIcon
+      : item.kind === "sent"
+        ? PaperPlaneTiltIcon
+        : DoorOpenIcon
   const playerLine =
     item.kind === "room" && !item.player
       ? t("social.pending.roomWaiting")
@@ -84,7 +88,7 @@ export function PendingDuelCard({
       className={cn(
         "overflow-hidden",
         highlighted &&
-          "ring-2 ring-primary ring-offset-2 ring-offset-background",
+          "ring-2 ring-accent-ink ring-offset-2 ring-offset-background",
         className
       )}
     >
@@ -155,7 +159,7 @@ export function PendingDuelCard({
         </CardHeading>
       </CardHeader>
 
-      <div className="mx-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-xl bg-surface-muted px-3.5 py-2.5">
+      <div className="mx-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-md bg-surface-muted px-3.5 py-2.5">
         <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
           <ClockIcon className="size-4 shrink-0" aria-hidden />
           {item.kind === "room"

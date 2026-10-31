@@ -192,7 +192,9 @@ export function PlayModeDialog({
               pendingAction || playerStepIncomplete || roomChoiceBlocked
             }
           >
-            {pendingAction && <CircleNotchIcon className="size-4 animate-spin" />}
+            {pendingAction && (
+              <CircleNotchIcon className="size-4 animate-spin" />
+            )}
             {isFinalStep
               ? pendingAction
                 ? t("game.playMode.launching")
@@ -205,7 +207,7 @@ export function PlayModeDialog({
       {step === 0 && (
         <div className="flex flex-col gap-3">
           {roomAlreadyOpenOnTopic && (
-            <p className="rounded-lg border border-border bg-surface-muted p-3 text-xs text-muted-foreground">
+            <p className="rounded-md border border-border bg-surface-muted p-3 text-xs text-muted-foreground">
               {t("game.playMode.roomAlreadyOpen")}
             </p>
           )}

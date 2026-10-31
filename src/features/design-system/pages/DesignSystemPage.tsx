@@ -8,6 +8,7 @@ import {
   MagnifyingGlassIcon,
   MoonIcon,
   ProhibitIcon,
+  SlidersHorizontalIcon,
   SunIcon,
   TrashIcon,
   UserMinusIcon,
@@ -35,7 +36,11 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 import { Label } from "@/components/ui/label"
 import {
   Progress,
@@ -52,10 +57,18 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Toggle } from "@/components/ui/toggle"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/motion/tabs"
 import { AnimatedSwitch } from "@/components/spectrumui/animated-switch"
 import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
 import { AppDialog } from "@/shared/components/app-dialog"
+import { EmptyState } from "@/shared/components/empty-state"
+import { SearchField } from "@/shared/components/search-field"
+import { MatchmakingMap } from "@/features/matchmaking"
 import { showToast } from "@/shared/utils/toast"
 import { useTheme } from "@/features/shell"
 
@@ -67,6 +80,7 @@ const SECTIONS = [
   { id: "buttons", label: "Boutons" },
   { id: "forms", label: "Formulaires" },
   { id: "cards", label: "Cartes" },
+  { id: "jo", label: "Jo 3.0" },
   { id: "controls", label: "Contrôles" },
   { id: "overlays", label: "Overlays" },
   { id: "shell", label: "Shell" },
@@ -85,8 +99,16 @@ const COLOR_TOKENS: Array<{
   { token: "--foreground", label: "Texte principal", text: true },
   { token: "--card", label: "Carte" },
   { token: "--popover", label: "Popover" },
+  { token: "--raised", label: "Surface haute" },
+  { token: "--hover", label: "Survol" },
+  { token: "--warm", label: "Chaud" },
   { token: "--primary", label: "Accent de marque" },
-  { token: "--primary-foreground", label: "Texte sur accent", text: true, on: "--primary" },
+  {
+    token: "--primary-foreground",
+    label: "Texte sur accent",
+    text: true,
+    on: "--primary",
+  },
   { token: "--secondary", label: "Secondaire" },
   { token: "--muted", label: "Muted" },
   { token: "--muted-foreground", label: "Texte muted", text: true },
@@ -108,15 +130,32 @@ const COLOR_TOKENS: Array<{
 ]
 
 const TYPE_SCALE = [
-  { label: "Display", className: "text-4xl font-semibold tracking-tight", sample: "Joutio" },
-  { label: "Title", className: "text-3xl font-semibold tracking-tight", sample: "Titre de page" },
-  { label: "Heading", className: "text-2xl font-semibold", sample: "Titre de section" },
-  { label: "Subheading", className: "text-lg font-semibold", sample: "Sous-section" },
-  { label: "Body large", className: "text-base", sample: "Corps de texte principal." },
-  { label: "Body", className: "text-sm", sample: "Texte courant des écrans." },
-  { label: "Label", className: "text-sm font-medium", sample: "Libellé fort" },
-  { label: "Caption", className: "text-xs text-muted-foreground", sample: "Légende secondaire" },
-  { label: "Badge", className: "text-2xs", sample: "PLANCHER 11 PX" },
+  { label: "Display", className: "type-display", sample: "Défie un ami" },
+  { label: "Large title", className: "type-large-title", sample: "Sujets" },
+  { label: "Title 1", className: "type-title-1", sample: "Duel gagné" },
+  {
+    label: "Title 2",
+    className: "type-title-2",
+    sample: "Classement de la semaine",
+  },
+  {
+    label: "Question",
+    className: "type-question",
+    sample: "Qui a peint Les Nymphéas ?",
+  },
+  { label: "Headline", className: "type-headline", sample: "Défier Sofia" },
+  {
+    label: "Body",
+    className: "type-body",
+    sample: "Tu as dix secondes pour répondre.",
+  },
+  { label: "Callout", className: "type-callout", sample: "Question 4 sur 7" },
+  {
+    label: "Caption",
+    className: "type-caption",
+    sample: "Il y a 4 min · expire dans 23 h",
+  },
+  { label: "Numeric", className: "type-numeric", sample: "118 · 91" },
 ]
 
 const SPACING_TOKENS = [
@@ -131,14 +170,13 @@ const SPACING_TOKENS = [
 ]
 
 const RADIUS_TOKENS = [
-  { token: "rounded-sm", label: "sm" },
-  { token: "rounded-md", label: "md" },
-  { token: "rounded-lg", label: "lg" },
-  { token: "rounded-xl", label: "xl" },
-  { token: "rounded-2xl", label: "2xl" },
-  { token: "rounded-3xl", label: "3xl" },
-  { token: "rounded-card", label: "card (34)" },
-  { token: "rounded-full", label: "full" },
+  { token: "rounded-xs", label: "xs · 4 — étiquette" },
+  { token: "rounded-sm", label: "sm · 8 — bouton/champ" },
+  { token: "rounded-md", label: "md · 12 — tuile/toast" },
+  { token: "rounded-lg", label: "lg · 16 — carte" },
+  { token: "rounded-xl", label: "xl · 24 — feuille" },
+  { token: "rounded-card", label: "card · 16" },
+  { token: "rounded-full", label: "full — chip" },
 ]
 
 const DESTRUCTIVE_ACTIONS = [
@@ -170,20 +208,68 @@ const DESTRUCTIVE_ACTIONS = [
 ]
 
 const MOBILE_PARITY = [
-  { web: 'Button variant="default"', mobile: "AppButton (filled)", rule: "Action principale" },
-  { web: 'Button variant="outline"', mobile: 'AppButton variant="outlined"', rule: "Action secondaire" },
-  { web: 'Button variant="ghost" / "link"', mobile: 'AppButton variant="text"', rule: "Action discrète" },
-  { web: 'Button variant="destructive"', mobile: 'AppButton tone="danger"', rule: "Le rouge reste réservé à la destruction" },
-  { web: "Card", mobile: "AppCard (surface / outlined / flat)", rule: "Surface, bordure, rayon" },
+  {
+    web: 'Button variant="default"',
+    mobile: "AppButton (filled)",
+    rule: "Action principale",
+  },
+  {
+    web: 'Button variant="outline"',
+    mobile: 'AppButton variant="outlined"',
+    rule: "Action secondaire",
+  },
+  {
+    web: 'Button variant="ghost" / "link"',
+    mobile: 'AppButton variant="text"',
+    rule: "Action discrète",
+  },
+  {
+    web: 'Button variant="destructive"',
+    mobile: 'AppButton tone="danger"',
+    rule: "Le rouge reste réservé à la destruction",
+  },
+  {
+    web: "Card",
+    mobile: "AppCard (surface / outlined / flat)",
+    rule: "Surface, bordure, rayon",
+  },
   { web: "Badge", mobile: "AppChip · AppDot", rule: "Statut ou filtre court" },
-  { web: "Input + Field", mobile: "AppTextField", rule: "Libellé, aide, erreur" },
+  {
+    web: "Input + Field",
+    mobile: "AppTextField",
+    rule: "Libellé, aide, erreur",
+  },
   { web: "Select", mobile: "Picker (Expo UI)", rule: "Choix fermé" },
-  { web: "Switch (AnimatedSwitch)", mobile: "AppSwitch", rule: "Interrupteur natif" },
-  { web: "Tabs (beui)", mobile: "Picker segmenté · onglets natifs", rule: "Vue locale, jamais la navigation" },
-  { web: "Progress", mobile: "ProgressBar", rule: "Valeur et libellé accessibles" },
-  { web: "Skeleton", mobile: "AppSkeleton · AppSkeletonCard", rule: "Chargement sans texte" },
-  { web: "Typography (text-*)", mobile: "AppText variant / tone", rule: "Rôles display → caption" },
-  { web: "CSS variables", mobile: "useNativeColors()", rule: "background, surface, text, accent, danger" },
+  {
+    web: "Switch (AnimatedSwitch)",
+    mobile: "AppSwitch",
+    rule: "Interrupteur natif",
+  },
+  {
+    web: "Tabs (beui)",
+    mobile: "Picker segmenté · onglets natifs",
+    rule: "Vue locale, jamais la navigation",
+  },
+  {
+    web: "Progress",
+    mobile: "ProgressBar",
+    rule: "Valeur et libellé accessibles",
+  },
+  {
+    web: "Skeleton",
+    mobile: "AppSkeleton · AppSkeletonCard",
+    rule: "Chargement sans texte",
+  },
+  {
+    web: "Typography (text-*)",
+    mobile: "AppText variant / tone",
+    rule: "Rôles display → caption",
+  },
+  {
+    web: "CSS variables",
+    mobile: "useNativeColors()",
+    rule: "background, surface, text, accent, danger",
+  },
 ]
 
 const LANGUAGES = [
@@ -237,7 +323,10 @@ function InlineCode({ children }: { children: ReactNode }) {
 export function DesignSystemPage() {
   const { resolvedTheme, setTheme } = useTheme()
   const [tab, setTab] = useState("overview")
+  const [segment, setSegment] = useState("week")
   const [notify, setNotify] = useState(true)
+  const [search, setSearch] = useState("")
+  const [mapFound, setMapFound] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
 
@@ -254,7 +343,10 @@ export function DesignSystemPage() {
               Joutio Web → Joutio Mobile
             </p>
           </div>
-          <Badge variant="outline" className="ml-1 hidden tablet-up:inline-flex">
+          <Badge
+            variant="outline"
+            className="ml-1 hidden tablet-up:inline-flex"
+          >
             DEV ONLY
           </Badge>
           <div className="ml-auto flex items-center gap-2">
@@ -295,17 +387,17 @@ export function DesignSystemPage() {
       <main className="mx-auto max-w-6xl space-y-16 px-5 py-10">
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Référence canonique</Badge>
-            <Badge variant="outline">shadcn + tokens Joutio</Badge>
-            <Badge variant="outline">Sans couche Apple</Badge>
+            <Badge variant="secondary">Design system 3.0</Badge>
+            <Badge variant="outline">Jetons + composants Jo</Badge>
+            <Badge variant="outline">Référence unique</Badge>
           </div>
           <h1 className="max-w-3xl font-heading text-4xl font-semibold tracking-tight compact:text-3xl">
             Le vocabulaire visuel de Joutio, au même endroit.
           </h1>
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Cette page documente le design system <strong>actuel</strong> :
-            primitives shadcn, tokens de thème et contrat responsive. Elle sert
-            de référence pour le web et de cible de parité pour{" "}
+            Cette page documente la <strong>référence 3.0</strong> : jetons,
+            composants Jo, primitives shadcn et contrat responsive. Elle sert de
+            cible d’implémentation pour le web et de parité pour{" "}
             <span className="font-medium text-foreground">joutio-mobile</span>.
           </p>
         </div>
@@ -366,8 +458,8 @@ export function DesignSystemPage() {
                 </CardHeading>
               </CardHeader>
               <CardContent className="pt-0 text-xs leading-relaxed text-muted-foreground">
-                L’ombre est réservée aux overlays, aux visuels springboard et aux
-                cartes de l’Accueil en sombre.
+                L’ombre est réservée aux overlays, aux visuels springboard et
+                aux cartes de l’Accueil en sombre.
               </CardContent>
             </Card>
 
@@ -454,7 +546,7 @@ export function DesignSystemPage() {
         <Section
           id="spacing"
           title="Espacements, rayons, élévation"
-          description="Rythme de 4 px, rayon de carte 34 px, ombres réservées aux overlays."
+          description="Rythme de 4 px, rayons 4/8/12/16/24, ombres réservées aux overlays."
         >
           <div className="grid gap-3 desktop:grid-cols-2">
             <Card size="sm">
@@ -470,7 +562,9 @@ export function DesignSystemPage() {
                     <span className="w-8 font-mono text-2xs text-muted-foreground">
                       {token}
                     </span>
-                    <div className={`h-2 rounded-full bg-primary ${className}`} />
+                    <div
+                      className={`h-2 rounded-full bg-primary ${className}`}
+                    />
                     <span className="text-2xs text-muted-foreground">
                       {px} px
                     </span>
@@ -554,11 +648,15 @@ export function DesignSystemPage() {
               <Button variant="secondary">Secondaire</Button>
               <Button variant="outline">Détails</Button>
               <Button variant="ghost">Plus tard</Button>
+              <Button variant="tertiary">Tout voir</Button>
               <Button variant="link">
                 En savoir plus <ArrowRightIcon />
               </Button>
               <Button variant="destructive">
                 <TrashIcon /> Supprimer
+              </Button>
+              <Button variant="destructive-strong">
+                <TrashIcon /> Supprimer définitivement
               </Button>
               <Button disabled>Désactivé</Button>
             </CardContent>
@@ -569,10 +667,10 @@ export function DesignSystemPage() {
               <CardHeading>
                 <CardTitle>Tailles</CardTitle>
                 <CardDescription>
-                  <InlineCode>xs</InlineCode> · <InlineCode>sm</InlineCode> ·{" "}
-                  <InlineCode>default</InlineCode> ·{" "}
-                  <InlineCode>lg</InlineCode> ·{" "}
-                  <InlineCode>icon</InlineCode>
+                  <InlineCode>xs</InlineCode> 32 · <InlineCode>sm</InlineCode>{" "}
+                  40 · <InlineCode>default</InlineCode> 48 ·{" "}
+                  <InlineCode>lg</InlineCode> 48 · <InlineCode>icon</InlineCode>{" "}
+                  44
                 </CardDescription>
               </CardHeading>
             </CardHeader>
@@ -621,7 +719,7 @@ export function DesignSystemPage() {
         <Section
           id="forms"
           title="Formulaires"
-          description="La disposition de référence est FormSection / FormRow. Les champs suivent le contrat tactile : 44 px et 16 px minimum sous 1024."
+          description="La disposition de référence est FormSection / FormRow. Les champs suivent Jo Field : 48 px, 16 px minimum pour éviter le zoom iOS ; la recherche fait 44 px en pilule."
         >
           <Card size="sm">
             <CardHeader>
@@ -673,6 +771,18 @@ export function DesignSystemPage() {
                   placeholder="Présente-toi en quelques mots."
                 />
                 <FieldDescription>160 caractères maximum.</FieldDescription>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="ds-search">Recherche</FieldLabel>
+                <SearchField
+                  id="ds-search"
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Sujets, joueurs"
+                />
+                <FieldDescription>
+                  Jo Field search : 44 px, pilule, effacement intégré.
+                </FieldDescription>
               </Field>
               <Field>
                 <FieldLabel htmlFor="ds-otp">Code de vérification</FieldLabel>
@@ -767,11 +877,193 @@ export function DesignSystemPage() {
               <CardContent className="pt-0 text-sm text-muted-foreground">
                 Utiliser <InlineCode>CARD_INTERACTIVE_CLASS</InlineCode> ou la
                 prop <InlineCode>interactive</InlineCode>. Jamais{" "}
-                <InlineCode>hover:bg-muted/50</InlineCode> : le motif de page
-                traverserait le fond.
+                <InlineCode>hover:bg-surface-muted</InlineCode> : le motif de
+                page traverserait le fond.
               </CardContent>
             </Card>
           </div>
+        </Section>
+
+        <Section
+          id="jo"
+          title="Composants Jo 3.0"
+          description="Les pièces transverses du design system : toast, bannière, sélection, progression et état vide."
+        >
+          <div className="grid gap-4 tablet-up:grid-cols-2">
+            <Card size="sm">
+              <CardHeader>
+                <CardHeading>
+                  <CardTitle>Toast et bannière</CardTitle>
+                  <CardDescription>
+                    Toast raised, rayon 12, titre 16/24. Bannière inline, jamais
+                    un toast pour une erreur bloquante.
+                  </CardDescription>
+                </CardHeading>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      showToast({
+                        tone: "success",
+                        title: "Défi envoyé",
+                        description: "Sofia R. a 1 h pour répondre.",
+                      })
+                    }
+                  >
+                    Toast succès
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      showToast({
+                        tone: "danger",
+                        title: "Limite de défis atteinte",
+                        description:
+                          "Termine ou annule un défi avant d'en lancer un autre.",
+                      })
+                    }
+                  >
+                    Toast erreur
+                  </Button>
+                </div>
+                <div className="flex items-start gap-3 rounded-md border border-border bg-raised p-3">
+                  <SlidersHorizontalIcon className="mt-0.5 size-5 text-muted-foreground" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold">Pas de connexion</p>
+                    <p className="text-xs text-muted-foreground">
+                      Le catalogue se charge dès ton retour.
+                    </p>
+                  </div>
+                  <Button variant="secondary" size="sm">
+                    Réessayer
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card size="sm">
+              <CardHeader>
+                <CardHeading>
+                  <CardTitle>Sélection</CardTitle>
+                  <CardDescription>
+                    Filtre actif en encre inversée, segment en surface sur piste
+                    relief.
+                  </CardDescription>
+                </CardHeading>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  <Toggle size="sm" defaultPressed>
+                    Tous
+                  </Toggle>
+                  <Toggle size="sm" variant="outline">
+                    Suivis
+                  </Toggle>
+                  <Toggle size="sm" variant="outline">
+                    Science
+                  </Toggle>
+                </div>
+                <Tabs
+                  value={segment}
+                  onValueChange={setSegment}
+                  variant="segment"
+                >
+                  <TabsList>
+                    <TabsTrigger value="week">Cette semaine</TabsTrigger>
+                    <TabsTrigger value="all">Depuis toujours</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </CardContent>
+            </Card>
+
+            <Card size="sm">
+              <CardHeader>
+                <CardHeading>
+                  <CardTitle>Progression et chargement</CardTitle>
+                  <CardDescription>
+                    Barre 8 px, rayon 4, piste relief. Squelette raised, sans
+                    spinner.
+                  </CardDescription>
+                </CardHeading>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Progress value={64}>
+                  <ProgressLabel>Maîtrise du sujet</ProgressLabel>
+                  <ProgressValue />
+                </Progress>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="h-11 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card size="sm">
+              <CardHeader>
+                <CardHeading>
+                  <CardTitle>État vide</CardTitle>
+                  <CardDescription>
+                    Icône 72 px, titre 28/34, message 16/24 borné à 300 px.
+                  </CardDescription>
+                </CardHeading>
+              </CardHeader>
+              <CardContent>
+                <EmptyState
+                  icon={<UserMinusIcon />}
+                  title="Tu ne suis personne"
+                  description="Suis les joueurs croisés en duel pour les défier en un geste."
+                  className="border-0 bg-transparent px-0 py-4 shadow-none"
+                >
+                  <Button size="sm">Trouver des joueurs</Button>
+                </EmptyState>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card size="sm" className="overflow-hidden">
+            <CardHeader>
+              <CardHeading>
+                <CardTitle>Carte de matchmaking</CardTitle>
+                <CardDescription>
+                  Monde qui défile, épingles 34 × 42, halo ambre et état «
+                  adversaire trouvé ». Toujours sombre en immersif.
+                </CardDescription>
+              </CardHeading>
+              <CardAction>
+                <Button
+                  variant="secondary"
+                  size="xs"
+                  aria-label={
+                    mapFound
+                      ? "Afficher la recherche en cours"
+                      : "Afficher l’adversaire trouvé"
+                  }
+                  onClick={() => setMapFound((value) => !value)}
+                >
+                  {mapFound ? "Recherche" : "Trouvé"}
+                </Button>
+              </CardAction>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="relative h-72 overflow-hidden">
+                <MatchmakingMap
+                  found={
+                    mapFound
+                      ? {
+                          name: "Idriss B.",
+                          country: "France",
+                          ring: "var(--rank-1)",
+                        }
+                      : null
+                  }
+                />
+              </div>
+            </CardContent>
+          </Card>
         </Section>
 
         <Section
@@ -863,9 +1155,7 @@ export function DesignSystemPage() {
               <CardHeader>
                 <CardHeading>
                   <CardTitle>Chargement</CardTitle>
-                  <CardDescription>
-                    Skeleton pulsé, sans texte.
-                  </CardDescription>
+                  <CardDescription>Skeleton pulsé, sans texte.</CardDescription>
                 </CardHeading>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -913,14 +1203,11 @@ export function DesignSystemPage() {
             sheetOnTouch
             footer={
               <>
-                <Button
-                  variant="outline"
-                  onClick={() => setDialogOpen(false)}
-                >
+                <Button variant="outline" onClick={() => setDialogOpen(false)}>
                   Annuler
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant="destructive-strong"
                   onClick={() => setDialogOpen(false)}
                 >
                   Supprimer
@@ -979,9 +1266,7 @@ export function DesignSystemPage() {
               <span>
                 Canvas <TokenLabel>--background</TokenLabel>
               </span>
-              <span>
-                surfaces plates, filet 1 px
-              </span>
+              <span>surfaces plates, filet 1 px</span>
             </div>
             <div className="relative overflow-hidden bg-background p-4">
               <div className="relative z-10 overflow-hidden rounded-card border border-border bg-background">
@@ -1033,7 +1318,7 @@ export function DesignSystemPage() {
         >
           <div className="overflow-x-auto rounded-card border border-border">
             <table className="w-full min-w-[620px] text-sm">
-              <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
+              <thead className="bg-raised text-left text-xs text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3 font-medium">Web</th>
                   <th className="px-4 py-3 font-medium">Mobile</th>
@@ -1094,14 +1379,16 @@ export function DesignSystemPage() {
           <Card size="sm">
             <CardContent className="space-y-2 p-5 text-xs leading-relaxed text-muted-foreground">
               <p>
-                Cibles tactiles : <strong>44 px</strong> sous 1024 via{" "}
-                <InlineCode>--control-h-*</InlineCode>. Champs :{" "}
-                <strong>16 px</strong> minimum pour éviter le zoom iOS.
+                Cibles tactiles : <strong>44 px</strong> via{" "}
+                <InlineCode>--control-h-icon</InlineCode>. Champs :{" "}
+                <strong>48 px</strong>, <strong>16 px</strong> de texte minimum
+                pour éviter le zoom iOS.
               </p>
               <p>
-                Gouttières : <InlineCode>--page-gutter-x</InlineCode>. Topbar :{" "}
-                <InlineCode>--topbar-h</InlineCode>. Typo : jamais de valeur
-                arbitraire, plancher <InlineCode>text-2xs</InlineCode> (11 px).
+                Gouttières : <InlineCode>--page-gutter-x</InlineCode> (16 px en
+                compact). Topbar : <InlineCode>--topbar-h</InlineCode>. Typo :
+                jamais de valeur arbitraire, plancher{" "}
+                <InlineCode>text-2xs</InlineCode> (12 px).
               </p>
             </CardContent>
           </Card>

@@ -122,7 +122,7 @@ export function AccountDeletionDialog({
     >
       {step === "warning" ? (
         <div className="flex flex-col gap-5">
-          <div className="flex gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="flex gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
             <WarningIcon className="mt-0.5 size-4 shrink-0" />
             <p>{t("shell.settings.danger.dialog.warning")}</p>
           </div>

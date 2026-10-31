@@ -75,7 +75,7 @@ export function InterestProfileForm({
         {Array.from({ length: 6 }).map((_, index) => (
           <div
             key={index}
-            className="min-h-24 animate-pulse rounded-2xl border border-border bg-muted/40"
+            className="min-h-24 animate-skeleton rounded-card border border-border bg-raised"
           />
         ))}
       </div>
@@ -148,12 +148,12 @@ export function InterestProfileForm({
               onClick={() => toggle(category.category)}
               className={
                 selected
-                  ? "relative flex min-h-24 flex-col items-start justify-between gap-3 rounded-2xl border border-primary bg-primary/5 p-4 text-left ring-1 ring-primary"
-                  : "relative flex min-h-24 flex-col items-start justify-between gap-3 rounded-2xl border border-border p-4 text-left transition-colors hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-45"
+                  ? "relative flex min-h-24 flex-col items-start justify-between gap-3 rounded-card border border-foreground bg-surface-muted p-4 text-left"
+                  : "relative flex min-h-24 flex-col items-start justify-between gap-3 rounded-card border border-border p-4 text-left transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-45"
               }
             >
               <span
-                className="grid size-10 place-items-center rounded-xl"
+                className="grid size-10 place-items-center rounded-md"
                 style={{
                   backgroundColor: `color-mix(in oklab, ${categoryColor(category.category)} 16%, transparent)`,
                   color: categoryTextColor(category.category),
@@ -165,8 +165,8 @@ export function InterestProfileForm({
                 {categoryLabel(category.category, category.label)}
               </span>
               {selected && (
-                <span className="absolute top-3 right-3 grid size-5 place-items-center rounded-full bg-primary text-primary-foreground">
-                  <CheckIcon className="size-3" aria-hidden />
+                <span className="absolute top-3 right-3 grid size-5 place-items-center rounded-full text-accent-ink">
+                  <CheckIcon className="size-4" weight="bold" aria-hidden />
                 </span>
               )}
             </button>
@@ -175,7 +175,7 @@ export function InterestProfileForm({
       </div>
 
       {value.length > 1 && (
-        <div className="flex flex-col gap-2 rounded-2xl border border-border bg-muted/30 p-4">
+        <div className="flex flex-col gap-2 rounded-card border border-border bg-raised p-4">
           <div className="flex items-center gap-2">
             <StarIcon className="size-4 text-accent-ink" aria-hidden />
             <h3 className="text-sm font-semibold">
@@ -203,8 +203,8 @@ export function InterestProfileForm({
                   onClick={() => promote(code)}
                   className={
                     isPrimary
-                      ? "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-primary bg-primary/10 px-3 py-1.5 text-xs font-semibold text-accent-ink"
-                      : "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-muted/50 disabled:opacity-50"
+                      ? "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-foreground bg-foreground px-3 py-1.5 text-xs font-semibold text-background"
+                      : "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-surface-muted disabled:opacity-50"
                   }
                 >
                   <Icon className="size-3.5" aria-hidden />

@@ -30,9 +30,9 @@ export function SelectableTile({
       aria-pressed={selected}
       onClick={() => onSelectedChange(!selected)}
       className={cn(
-        "flex min-h-(--control-h-md) w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30",
+        "flex min-h-(--control-h-md) w-full cursor-pointer items-center gap-3 rounded-md border px-3 py-2 text-left transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring",
         selected
-          ? "border-primary bg-primary/5 ring-1 ring-primary"
+          ? "border-foreground bg-surface-muted"
           : cn("border-border bg-card", CARD_INTERACTIVE_CLASS),
         className
       )}
@@ -49,10 +49,10 @@ export function SelectableTile({
         aria-hidden
         className={cn(
           "grid size-5 shrink-0 place-items-center rounded-full",
-          selected ? "bg-primary text-primary-foreground" : "text-transparent"
+          selected ? "text-accent-ink" : "text-transparent"
         )}
       >
-        <CheckIcon className="size-3" />
+        <CheckIcon className="size-4" weight="bold" />
       </span>
     </button>
   )

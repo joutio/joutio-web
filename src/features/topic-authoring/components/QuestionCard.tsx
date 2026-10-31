@@ -30,7 +30,7 @@ const STATUS_LABEL_KEYS: Record<QuestionStatus, TranslationKey> = {
 }
 
 const STATUS_CLASSES: Record<QuestionStatus, string> = {
-  PENDING: "border-primary/40 bg-primary/10 text-accent-ink",
+  PENDING: "border-accent-ink/40 bg-warm text-accent-ink",
   APPROVED: "border-correct/40 bg-correct/10 text-correct",
   REJECTED: "border-destructive/40 bg-destructive/10 text-destructive",
 }
@@ -70,10 +70,10 @@ export function QuestionCard({
             <img
               src={question.imageUrl}
               alt=""
-              className="size-9 rounded-lg object-cover"
+              className="size-9 rounded-md object-cover"
             />
           ) : (
-            <span className="grid size-9 place-items-center rounded-lg bg-muted">
+            <span className="grid size-9 place-items-center rounded-md bg-muted">
               <ImageIcon className="size-4 text-muted-foreground" />
             </span>
           )}
@@ -98,15 +98,20 @@ export function QuestionCard({
             {question.suspended && (
               <Badge
                 variant="outline"
-                className="border-primary/40 bg-primary/10 text-accent-ink"
+                className="border-accent-ink/40 bg-warm text-accent-ink"
               >
                 {t("authoring.status.suspended")}
               </Badge>
             )}
             {question.archived && (
-              <Badge variant="secondary">{t("authoring.status.archived")}</Badge>
+              <Badge variant="secondary">
+                {t("authoring.status.archived")}
+              </Badge>
             )}
-            <Badge variant="outline" className={STATUS_CLASSES[question.status]}>
+            <Badge
+              variant="outline"
+              className={STATUS_CLASSES[question.status]}
+            >
               {question.status === "APPROVED" && <CheckCircleIcon />}
               {question.status === "REJECTED" && <XCircleIcon />}
               {t(STATUS_LABEL_KEYS[question.status])}
@@ -127,7 +132,7 @@ export function QuestionCard({
             <Button
               size="sm"
               variant="outline"
-              className="border-primary/40 bg-primary/10 text-accent-ink hover:bg-primary/15"
+              className="border-accent-ink/40 bg-warm text-accent-ink hover:bg-warm/80"
               onClick={onReports}
               disabled={busy}
             >

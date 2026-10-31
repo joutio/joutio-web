@@ -117,7 +117,7 @@ export function QuestionEditorDialog({
       }
     >
       {errors.length > 0 && (
-        <ul className="mb-4 list-disc space-y-1 rounded-lg border border-destructive/40 bg-destructive/5 px-6 py-3 text-sm text-destructive">
+        <ul className="mb-4 list-disc space-y-1 rounded-md border border-destructive/40 bg-destructive/5 px-6 py-3 text-sm text-destructive">
           {errors.map((error, index) => (
             <li key={`${error.key}-${index}`}>{t(error.key, error.options)}</li>
           ))}
@@ -125,7 +125,7 @@ export function QuestionEditorDialog({
       )}
 
       {language === "en" && !content.enabled ? (
-        <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed px-6 py-10 text-center">
+        <div className="flex flex-col items-center gap-4 rounded-card border border-dashed px-6 py-10 text-center">
           <div>
             <p className="text-sm font-semibold">
               {t("authoring.editor.addEnglish")}

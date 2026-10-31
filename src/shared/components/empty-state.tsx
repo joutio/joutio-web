@@ -30,7 +30,9 @@ export function EmptyState({
           {icon}
         </span>
       )}
-      <div className="type-title-1 text-balance">{title}</div>
+      <div className="text-2xl leading-8 font-bold tracking-[-0.02em] text-balance">
+        {title}
+      </div>
       {description && (
         <p className="max-w-[300px] text-base text-pretty text-muted-foreground">
           {description}

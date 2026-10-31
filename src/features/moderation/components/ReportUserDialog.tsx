@@ -148,7 +148,7 @@ export function ReportUserDialog({
       }
     >
       <div className="flex flex-col gap-5">
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/40 p-3">
+        <div className="flex items-center gap-3 rounded-md border border-border bg-raised p-3">
           <UserAvatar
             name={targetPseudonym}
             userId={targetUserId}

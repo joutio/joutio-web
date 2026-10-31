@@ -12,7 +12,7 @@ interface StatBoxProps {
 export function StatBox({ label, value, color, hint }: StatBoxProps) {
   return (
     <div
-      className="flex min-w-0 flex-col items-center justify-center rounded-xl border text-center"
+      className="flex min-w-0 flex-col items-center justify-center rounded-md border text-center"
       style={{
         borderColor: color,
         background: veil(TOKEN.duelSurface, 3),

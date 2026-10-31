@@ -54,7 +54,7 @@ export function BottomNavBar({
           opacity: hidden ? 0 : 1,
           y: hidden ? 96 : 0,
         }}
-        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.2, ease: [0.32, 0.72, 0, 1] }}
         role="navigation"
         aria-label={t("shared.navigation.aria")}
         aria-hidden={hidden}
@@ -90,10 +90,10 @@ export function BottomNavBar({
               >
                 <span className="relative">
                   <Icon
-                  size={24}
-                  weight={isActive ? "fill" : "regular"}
-                  aria-hidden
-                />
+                    size={24}
+                    weight={isActive ? "fill" : "regular"}
+                    aria-hidden
+                  />
                   {item.badge}
                 </span>
                 <span className="max-w-full truncate text-xs font-medium select-none">
@@ -138,7 +138,7 @@ export function BottomNavBar({
                   // Tween sans rebond : les onglets voisins glissent sans « jingle ».
                   type: "tween",
                   duration: 0.22,
-                  ease: [0.4, 0, 0.2, 1],
+                  ease: [0.32, 0.72, 0, 1],
                 }}
                 className="flex max-w-[84px] items-center overflow-hidden"
               >

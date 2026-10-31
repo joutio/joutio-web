@@ -101,7 +101,7 @@ export function ShareActions({ text, url }: ShareActionsProps) {
       </div>
 
       <div
-        className="mt-4 flex items-center gap-2 rounded-xl border px-3 py-2"
+        className="mt-4 flex items-center gap-2 rounded-md border px-3 py-2"
         style={{
           borderColor: TOKEN.border,
           background: `color-mix(in srgb, ${TOKEN.muted} 55%, transparent)`,

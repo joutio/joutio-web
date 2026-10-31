@@ -113,7 +113,7 @@ export function TopicIcon({
           {state === "loading" && (
             <span
               aria-hidden
-              className="absolute inset-0 animate-pulse rounded-[inherit] bg-muted/50 motion-reduce:animate-none"
+              className="absolute inset-0 animate-skeleton rounded-[inherit] bg-raised motion-reduce:animate-none"
             />
           )}
           <img

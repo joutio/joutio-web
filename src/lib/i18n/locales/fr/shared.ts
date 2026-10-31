@@ -79,6 +79,7 @@ export const shared = {
     matching: "{{count}} {{label}} correspondant",
     matchingPlural: "{{count}} {{label}}s correspondants",
     clearAll: "Tout effacer",
+    clearSearch: "Effacer la recherche",
     viewResults: "Voir les résultats",
   },
   winLoss: {

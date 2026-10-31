@@ -81,7 +81,7 @@ export function ProfileMenu({
   ) : (
     <button
       className={
-        "flex w-full items-center gap-2.5 rounded-2xl text-left hover:bg-muted/60 " +
+        "flex w-full items-center gap-2.5 rounded-md text-left hover:bg-surface-muted " +
         (collapsed ? "justify-center p-1.5" : "p-2.5")
       }
     >

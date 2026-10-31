@@ -70,20 +70,20 @@ describe("ReportQuestionDialog", () => {
     const answers = screen.getByRole("button", { name: /Les réponses/ })
 
     expect(image).toHaveAttribute("aria-pressed", "false")
-    expect(image).not.toHaveClass("border-primary")
+    expect(image).not.toHaveClass("border-foreground")
 
     fireEvent.click(image)
     fireEvent.click(answers)
 
     expect(image).toHaveAttribute("aria-pressed", "true")
-    expect(image).toHaveClass("border-primary")
+    expect(image).toHaveClass("border-foreground")
     expect(answers).toHaveAttribute("aria-pressed", "true")
-    expect(answers).toHaveClass("border-primary")
+    expect(answers).toHaveClass("border-foreground")
 
     fireEvent.click(image)
 
     expect(image).toHaveAttribute("aria-pressed", "false")
-    expect(image).not.toHaveClass("border-primary")
+    expect(image).not.toHaveClass("border-foreground")
     expect(answers).toHaveAttribute("aria-pressed", "true")
   })
 

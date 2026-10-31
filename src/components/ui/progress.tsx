@@ -28,8 +28,8 @@ function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   return (
     <ProgressPrimitive.Track
       className={cn(
-        // Spec Jo Progress Bar.
-        "relative flex h-1.5 w-full items-center overflow-x-hidden bg-hover",
+        // Spec Jo Progress Bar 3.0 : 8 px, rayon 4, piste relief.
+        "relative flex h-2 w-full items-center overflow-x-hidden rounded-xs bg-hover",
         className
       )}
       data-slot="progress-track"
@@ -45,7 +45,7 @@ function ProgressIndicator({
   return (
     <ProgressPrimitive.Indicator
       data-slot="progress-indicator"
-      className={cn("h-full bg-primary transition-all", className)}
+      className={cn("h-full rounded-xs bg-primary transition-all", className)}
       {...props}
     />
   )
@@ -65,7 +65,7 @@ function ProgressValue({ className, ...props }: ProgressPrimitive.Value.Props) {
   return (
     <ProgressPrimitive.Value
       className={cn(
-        "ml-auto text-sm text-muted-foreground font-mono tabular-nums",
+        "ml-auto font-mono text-sm text-muted-foreground tabular-nums",
         className
       )}
       data-slot="progress-value"

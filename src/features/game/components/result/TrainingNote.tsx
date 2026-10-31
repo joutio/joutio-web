@@ -12,7 +12,7 @@ export function TrainingNote() {
 
   return (
     <div
-      className="flex w-full max-w-[420px] items-center gap-3.5 rounded-xl border"
+      className="flex w-full max-w-[420px] items-center gap-3.5 rounded-card border"
       style={{
         borderColor: veil(TOKEN.gauge, 55),
         background: veil(TOKEN.duelSurface, 6),

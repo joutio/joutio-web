@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { CaretRightIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 
 /**
@@ -30,7 +29,12 @@ export function SectionHeader({
   const action =
     children ??
     (onAction ? (
-      <Button variant="ghost" size="sm" aria-label={label} onClick={onAction}>
+      <Button
+        variant="tertiary"
+        size="xs"
+        aria-label={label}
+        onClick={onAction}
+      >
         {compactActionLabel ? (
           <>
             <span className="compact:hidden">{label}</span>
@@ -39,13 +43,12 @@ export function SectionHeader({
         ) : (
           label
         )}
-        <CaretRightIcon />
       </Button>
     ) : null)
 
   return (
     <div className="mb-3 flex items-center justify-between gap-3 compact:mb-2">
-      <h2 className="min-w-0 type-title-2">
+      <h2 className="min-w-0 text-xl leading-7 font-semibold tracking-[-0.01em]">
         {title}
       </h2>
       {action && <div className="flex shrink-0 items-center">{action}</div>}

@@ -13,7 +13,7 @@ interface ChoiceCardProps {
 
 /**
  * Carte de choix radio (adversaire, source de recherche, difficulté) — **style shadcn compact**
- * (`rounded-lg border p-3`) : icône de tête, titre, description et radio. Comme les lignes de
+ * (`rounded-md border p-3`) : icône de tête, titre, description et radio. Comme les lignes de
  * sélection (`SelectRow`), elle ne suit pas la recette des cartes (`rounded-card`).
  */
 export function ChoiceCard({
@@ -32,7 +32,7 @@ export function ChoiceCard({
       aria-pressed={selected}
       aria-disabled={disabled || undefined}
       className={cn(
-        "flex w-full items-start gap-3 rounded-lg border border-border bg-card p-3 text-left",
+        "flex w-full items-start gap-3 rounded-md border border-border bg-card p-3 text-left",
         !disabled && CARD_INTERACTIVE_CLASS,
         disabled && "cursor-not-allowed opacity-50"
       )}

@@ -174,8 +174,8 @@ function StylePicker({
                 className={cn(
                   "group relative flex flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
                   selected
-                    ? "border-primary bg-primary/5 ring-1 ring-primary/40"
-                    : "border-border hover:border-foreground/30 hover:bg-muted/50",
+                    ? "border-foreground bg-surface-muted"
+                    : "border-border hover:border-foreground/30 hover:bg-surface-muted",
                   locked && "cursor-not-allowed opacity-55"
                 )}
               >
@@ -216,8 +216,8 @@ function StylePicker({
                   </span>
                 ) : (
                   selected && (
-                    <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
-                      <CheckIcon className="size-3" />
+                    <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full text-accent-ink">
+                      <CheckIcon className="size-3" weight="bold" />
                     </span>
                   )
                 )}
@@ -226,7 +226,7 @@ function StylePicker({
           })}
         </div>
         {(!premium || !micahUnlocked) && (
-          <p className="rounded-lg border border-border bg-muted/40 p-2 text-xs text-muted-foreground">
+          <p className="rounded-md border border-border bg-raised p-2 text-xs text-muted-foreground">
             {!micahUnlocked
               ? t("avatar.editor.micahRequired")
               : t("avatar.editor.premiumRequired")}
@@ -385,8 +385,8 @@ const VariantTile = memo(function VariantTile({
       className={cn(
         "group relative flex flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
         selected
-          ? "border-primary bg-primary/5 ring-1 ring-primary/40"
-          : "border-border hover:border-foreground/30 hover:bg-muted/50"
+          ? "border-foreground bg-surface-muted"
+          : "border-border hover:border-foreground/30 hover:bg-surface-muted"
       )}
     >
       <img src={dataUri} alt="" className="size-14" />
@@ -399,8 +399,8 @@ const VariantTile = memo(function VariantTile({
         {label}
       </span>
       {selected && (
-        <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
-          <CheckIcon className="size-3" />
+        <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full text-accent-ink">
+          <CheckIcon className="size-3" weight="bold" />
         </span>
       )}
     </button>

@@ -73,7 +73,7 @@ function ThemesPreview({ interests }: { interests: string[] }) {
             return (
               <div
                 key={`empty-${index}`}
-                className="flex aspect-[4/5] items-center justify-center rounded-xl border border-dashed border-white/15 bg-white/[0.03]"
+                className="flex aspect-[4/5] items-center justify-center rounded-md border border-dashed border-white/15 bg-white/[0.03]"
               >
                 <span className="text-lg text-white/20">+</span>
               </div>
@@ -83,7 +83,7 @@ function ThemesPreview({ interests }: { interests: string[] }) {
           return (
             <div
               key={code}
-              className="flex aspect-[4/5] flex-col items-center justify-center gap-2 rounded-xl border border-white/10 p-2 text-center"
+              className="flex aspect-[4/5] flex-col items-center justify-center gap-2 rounded-md border border-white/10 p-2 text-center"
               style={{
                 background: `color-mix(in oklab, ${categoryColor(code)} 22%, transparent)`,
               }}
@@ -101,7 +101,7 @@ function ThemesPreview({ interests }: { interests: string[] }) {
         })}
       </div>
       <div
-        className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs"
+        className="rounded-md border border-white/10 bg-white/[0.04] p-3 text-xs"
         style={{ color: TOKEN.duelSurfaceMuted }}
       >
         {t("home.onboarding.previewNote")}
@@ -125,7 +125,7 @@ function DuelPreview({ topic }: { topic?: TopicCard | null }) {
           {t("home.onboarding.previewDuel")}
         </span>
       </div>
-      <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+      <div className="flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.04] p-3">
         {topic ? (
           <>
             <TopicIcon
@@ -148,10 +148,10 @@ function DuelPreview({ topic }: { topic?: TopicCard | null }) {
             </div>
           </>
         ) : (
-          <div className="h-14 w-full animate-pulse rounded-xl bg-white/10" />
+          <div className="h-14 w-full animate-skeleton rounded-md bg-white/10" />
         )}
       </div>
-      <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+      <div className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.04] p-3">
         <div className="flex items-center gap-2">
           <span className="grid size-9 place-items-center rounded-full bg-white/10">
             <RobotIcon className="size-4" aria-hidden />

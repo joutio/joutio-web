@@ -17,7 +17,7 @@ interface SelectRowProps {
 /**
  * Ligne de sélection neutre **partagée** par toutes les listes de choix de l'app (parcours de
  * défi — sélection d'un joueur ou d'un thème — et choix du titre porté) et les rappels : visuel,
- * titre, sous-titre et radio optionnelle. **Style shadcn compact** (`rounded-lg`, `p-2.5`) :
+ * titre, sous-titre et radio optionnelle. **Style compact** (`rounded-md`, `p-2.5`) :
  * ces listes restent des lignes denses et ne suivent pas la recette des cartes (`rounded-card`).
  */
 export function SelectRow({
@@ -33,8 +33,8 @@ export function SelectRow({
 
   const style: CSSProperties | undefined = active
     ? {
-        borderColor: "var(--primary)",
-        background: "color-mix(in srgb, var(--primary) 8%, var(--card))",
+        borderColor: "var(--foreground)",
+        background: "var(--surface-muted)",
       }
     : undefined
 
@@ -54,8 +54,8 @@ export function SelectRow({
           aria-hidden
           className="size-4 shrink-0 rounded-full border-2"
           style={{
-            borderColor: active ? "var(--primary)" : "var(--border)",
-            background: active ? "var(--primary)" : "transparent",
+            borderColor: active ? "var(--accent-ink)" : "var(--border)",
+            background: active ? "var(--accent-ink)" : "transparent",
           }}
         />
       )}
@@ -63,7 +63,7 @@ export function SelectRow({
   )
 
   const classes = cn(
-    "flex w-full items-center gap-3 rounded-lg border border-border bg-card p-2.5 text-left transition-colors",
+    "flex w-full items-center gap-3 rounded-md border border-border bg-card p-2.5 text-left transition-colors",
     interactive && CARD_INTERACTIVE_CLASS,
     className
   )

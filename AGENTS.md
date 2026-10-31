@@ -1,7 +1,7 @@
 # AGENTS.md — joutio-web
 
 > Interface **web React** de Joutio (Vite + React 19 + TypeScript + Tailwind v4 + shadcn).
-> Source de vérité design : [`design/`](../../design/README.md) (design system 2.1, jetons dans `design/tokens.json`). Conventions : `best-practices/.frontend/`.
+> Source de vérité design : [`design/`](../../design/README.md) (design system 3.0, jetons dans `design/tokens.json`). Conventions : `best-practices/.frontend/`.
 > **Contrat backend normatif** : [`services/joutio-bff/AGENTS.md`](../../services/joutio-bff/AGENTS.md) § 3.
 
 ---
@@ -242,7 +242,7 @@ Application web de Joutio (Lot 1) :
   **optionnelle**, tous deux affichés **en entier** : la hauteur de la carte suit son contenu,
   sans ligne tronquée (les messages de quota sont intégralement lisibles). **Largeur toujours
   constante** :
-  la largeur de colonne du `Toaster` (520 px desktop, pleine largeur mobile) est imposée aux
+  la largeur de colonne du `Toaster` (358 px desktop, pleine largeur mobile) est imposée aux
   toasts custom de sonner dans `src/index.css` (`[data-styled="false"]`) et la pile est
   **toujours déployée** (`expand` : aucune carte arrière réduite) ; `sonner` n'est importé que
   par le `Toaster` et cet utilitaire (garde-fou ESLint). Une invitation **supprimée en temps réel** (`NOTIFICATION_DELETED`, ex. défi
@@ -340,6 +340,14 @@ Application web de Joutio (Lot 1) :
   « Préparation du duel… » au lieu d'afficher un « Partie introuvable » transitoire ; au-delà de
   la fenêtre (ou après un premier chargement réussi), le 404 redevient terminal. Les streams
   **salle** et **matchmaking** gardent un 404 terminal immédiat.
+  **Carte de matchmaking** : `MatchmakingMap` (React/SVG, sans D3 ni CDN) reprend
+  `design/matchmaking-map.html` et les données générées `domain/world-map-data.ts` +
+  `domain/country-centroids.ts` : monde qui défile à **18 px/s**, épingles 34 × 42 avec avatar
+  26 et anneau de rang, halo ambre, fondus. À `MATCHED`, la carte s'arrête, se centre sur le
+  pays de l'adversaire (`GET /api/profiles/{id}`), affiche son épingle et le tag `Nom · Pays`
+  puis la page rejoint la salle après **900 ms** (navigation immédiate en
+  `prefers-reduced-motion`). La carte est décorative (`aria-hidden`) : le statut textuel reste
+  la source accessible.
   **Synchronisation de l'arène** : `domain/arena-timeline.ts` projette le fold en une **scène
   unique** (`sceneAt(game, now)`) à partir des seuls instants serveur (`firstRoundAt`,
   `shownAt`/`revealAt`, `answerDeadlineAt`, `closedAt`/`nextRoundAt`) — une animation n'est jouée
@@ -954,6 +962,15 @@ via `joutio/joutio-reusable-workflows`.
   (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
   sur 360 px, `stacked` pour un contrôle pleine largeur). Utilisée par Réglages, la création de
   sujet et l'édition du sujet ; à reprendre pour tout nouveau formulaire.
+- **Recherche** : `SearchField` (`shared/components/search-field.tsx`) — **44 px, pilule**,
+  surface `raised`, icône 18 et effacement intégré — dans les barres de filtres et la palette.
+  Les champs de saisie classiques restent à **48 px**.
+- **Boutons** : `Button` suit **L 48 / M 40 / S 32** (rayon 8) et `size="icon"` **44** ;
+  `tertiary` pour une action texte `accent-ink`, `destructive` (soft) pour une action risquée,
+  `destructive-strong` réservé à la confirmation finale. Une seule action `primary` par écran.
+- **Sélection** : filtre actif en **encre inversée** (`Toggle`/chips), segment actif en
+  **surface sur piste `raised`** (`Tabs`), options de sheet et tuiles avec **coche
+  `accent-ink`** ; jamais `bg-primary/10` ni `ring-primary` sur une sélection.
 - **Modales mobiles** : `DialogContent` reste une **modale centrée ajustée au contenu**
   (`max-w-[calc(100%-2rem)]`, coins arrondis), plafonnée au `--vvh` du `visualViewport` (clavier
   virtuel compris) — jamais plein écran avec un vide central ; seule la palette ⌘K est explicitement
@@ -1093,8 +1110,8 @@ via `joutio/joutio-reusable-workflows`.
 - **Scrollbar opaque** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
   scroller principal. Les bordures des surfaces sont **opaques** (`--border`/`--input` =
-  `#2e2e2e` en sombre, ≈ `#e5e5e5` en clair), avec la pile de surfaces neutres (`#121212` →
-  `#1f1f1f` → `#2e2e2e`) : c'est cet étagement qui les fait lire. **Toutes les surfaces** (cartes,
+  `#3A3A3A` en sombre, `#D9D6CD` en clair), avec la pile de surfaces neutres (`#181818` →
+  `#242424` → `#3A3A3A`) : c'est cet étagement qui les fait lire. **Toutes les surfaces** (cartes,
   modales, popovers, menus) portent `border border-border` dans les deux thèmes — le
   comportement des tuiles badges (`BadgeTile`) ; pas de ring translucide
   (`ring-foreground/5|10` proscrit, le ring restant réservé aux états sélection/focus).
@@ -1103,7 +1120,7 @@ via `joutio/joutio-reusable-workflows`.
   La palette ⌘K, plein écran en compact, neutralise sa bordure (`compact:border-0`).
 - **Cartes — recette unique, à plat** (`components/ui/card.tsx`, alignée sur la carte de titre
   Arc `ExpandableCard`) : fond `--card`, bordure `1px --border`, rayon `--radius-surface`
-  (`rounded-card`, 34 px) et **aucune ombre au repos** (`shadow-none`). En-tête `CardHeader` =
+  (`rounded-card`, 16 px) et **aucune ombre au repos** (`shadow-none`). En-tête `CardHeader` =
   rangée de 64 px avec visuel de tête 36 px (`CardMedia`), copie (`CardHeading` : titre 14 px
   medium + description 12 px muted) et action à droite (`CardAction`). **Survol d'une carte
   cliquable** (`Card interactive`, `SelectRow`, lignes de classement) : fond **plein**
@@ -1123,8 +1140,8 @@ via `joutio/joutio-reusable-workflows`.
   s'accentue (teinte de l'issue à 70 %, comme la tuile de badge acquise ; `foreground/20` pour
   une carte neutre), le fond reste inchangé.
   **Exception — sélection compacte** : les lignes `SelectRow` (popups joueur/thème/titre, ligne
-  d'état du titre) et les `ChoiceCard` du wizard restent des **lignes compactes de style shadcn**
-  (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes
+  d'état du titre) et les `ChoiceCard` du wizard restent des **lignes compactes**
+  (`rounded-md border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes
   `rounded-card`.
   **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 5:8 du Top 10 ou paysage 16:9 ;
   pied titre + catégorie intégré à toutes les tailles, hauteur 64 px, sur la **surface de la carte**
@@ -1227,20 +1244,21 @@ via `joutio/joutio-reusable-workflows`.
 ### Dimensionnement responsive (contrat device)
 
 - **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ; hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
-- **Tokens** (`index.css`) : `--control-h-sm/md/lg` (Jo Button S/M/L, sur tous les appareils), `--control-h-field` (Jo Field), `--control-h-xs` (contrôles embarqués),
-  `--page-gutter-x` (14/20/24), `--topbar-gutter-x` (max 18 px, topbar), `--topbar-h` (56/64),
+- **Tokens** (`index.css`) : `--control-h-lg/md/sm/xs` = **48/40/40/32** (Jo Button L/M/S),
+  `--control-h-icon` = **44** (Jo Icon Button), `--control-h-field` = **48** (Jo Field),
+  `--page-gutter-x` (**16**/20/24), `--topbar-gutter-x` (max 20 px, topbar), `--topbar-h` (64),
   `--bottom-nav-h`, `--qu-safe-left/right` ; `--qu-topbar-offset`
   dérivé + `--qu-chrome-shift` (repli animé) consommés par toutes les bandes collantes (mobile
-  **et** desktop) ; `text-2xs` = 11 px.
+  **et** desktop) ; `text-2xs` = 12 px. Rayons : 8 contrôle, 12 tuile/toast, 16 carte, 24 feuille.
 - **Primitives** : button/input/textarea/select/input-group/input-otp/accordion/menus/tabs/toggle/
   sidebar/fermetures portent le tactile (≥ 44 px sous `touch`) ; les patchs `max-md:size-11` de page
-  sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
+  sont supprimés ; iOS ≥ 16 px sur tous les champs (16 px partout, plus de `desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies — `sticky` pour les bandeaux
   d'onglets ; `below` accueille la barre de filtres de l'onglet actif dans la même surface),
   `StickyHeaderProvider`/`StickyHeaderSlot`/`StickyHeaderFilters` (portail du filtre actif),
   `EmptyState` (8 copies),
   `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge Elo du profil ;
-  barre fine via `ProgressTrack` (spec Jo Progress Bar), couleurs
+  barre **8 px, rayon 4** via `ProgressTrack` (spec Jo Progress Bar), piste `--hover`, couleurs
   shadcn ; même gabarit pour les barres de badge et de titre — la barre d'étape du wizard
   reste un élément shadcn standard plus fin, pas une barre de progression),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.

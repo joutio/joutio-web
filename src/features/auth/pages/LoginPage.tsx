@@ -82,12 +82,12 @@ export function LoginPage() {
         className="flex flex-col gap-5"
       >
         {accountDeleted ? (
-          <p className="rounded-xl border border-border bg-muted/40 p-3 text-center text-xs text-muted-foreground">
+          <p className="rounded-md border border-border bg-raised p-3 text-center text-xs text-muted-foreground">
             {t("auth.login.accountDeleted")}
           </p>
         ) : (
           endReason && (
-            <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-center text-xs text-destructive">
+            <p className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-center text-xs text-destructive">
               {endReason === "unknownUser"
                 ? t("auth.login.sessionUnknownUser")
                 : endReason === "suspended"
@@ -97,9 +97,7 @@ export function LoginPage() {
           )
         )}
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="type-title-1">
-            {t("auth.login.title")}
-          </h1>
+          <h1 className="type-title-1">{t("auth.login.title")}</h1>
           <p className="text-sm leading-normal text-muted-foreground">
             {t("auth.login.subtitle")}
           </p>

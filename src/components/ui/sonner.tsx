@@ -42,11 +42,11 @@ export function Toaster(props: ToasterProps) {
       // Pile toujours déployée : aucune carte réduite, toutes à la même taille réelle.
       expand
       icons={ICONS}
-      style={{ "--width": "520px" } as CSSProperties}
+      style={{ "--width": "358px" } as CSSProperties}
       toastOptions={{
         classNames: {
           toast:
-            "group rounded-[26px]! bg-toast! text-toast-foreground! px-5! py-4! gap-3! shadow-toast! items-start! border-0!",
+            "group rounded-md! bg-toast! text-toast-foreground! px-4! py-3! gap-3! shadow-toast! items-start! border-0!",
           title: "text-base! leading-6! font-semibold!",
           description: "text-sm! leading-5! text-toast-muted!",
           icon: "mt-0.5",

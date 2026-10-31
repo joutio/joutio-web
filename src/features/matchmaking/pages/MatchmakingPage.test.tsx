@@ -53,6 +53,10 @@ vi.mock("@/features/shell", () => ({
   useTopicName: () => (names: { fr?: string } | null) => names?.fr ?? "Sujet",
 }))
 
+vi.mock("@/features/player", () => ({
+  usePlayerProfile: () => ({ data: undefined }),
+}))
+
 vi.mock("@/shared/clock/useServerClock", () => ({
   useServerClock: () => ({
     serverNow: () => Date.now(),

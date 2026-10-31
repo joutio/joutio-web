@@ -45,9 +45,9 @@ export function EntityTile({
       onKeyDown={handleKeyDown}
       title={title}
       className={cn(
-        "group flex flex-col items-center gap-1.5 rounded-2xl p-1.5 text-center transition-[background-color,transform]",
+        "group flex flex-col items-center gap-1.5 rounded-md p-1.5 text-center transition-[background-color,transform]",
         interactive &&
-          "cursor-pointer hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.97]",
+          "cursor-pointer hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.97]",
         className
       )}
     >

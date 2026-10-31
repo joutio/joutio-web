@@ -96,7 +96,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         variant="outline"
         onClick={onOpenPalette}
         aria-label={t("shell.topbar.searchAria")}
-        className="hidden h-9 w-[280px] justify-start gap-2.5 px-3 font-normal text-muted-foreground desktop:inline-flex"
+        className="hidden h-11 w-[280px] justify-start gap-2.5 rounded-full px-4 font-normal text-muted-foreground desktop:inline-flex"
       >
         <MagnifyingGlassIcon className="size-4" />
         <span className="flex-1 truncate text-left text-sm">

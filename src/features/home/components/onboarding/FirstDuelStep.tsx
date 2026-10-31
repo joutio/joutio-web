@@ -35,10 +35,10 @@ export function FirstDuelStep({
   if (loading) {
     return (
       <div className="flex flex-col gap-4">
-        <div className="h-56 animate-pulse rounded-card border border-border bg-muted/40" />
+        <div className="h-56 animate-skeleton rounded-card border border-border bg-raised" />
         <div className="grid gap-3 tablet-up:grid-cols-2">
-          <div className="h-28 animate-pulse rounded-2xl border border-border bg-muted/40" />
-          <div className="h-28 animate-pulse rounded-2xl border border-border bg-muted/40" />
+          <div className="h-28 animate-skeleton rounded-md border border-border bg-raised" />
+          <div className="h-28 animate-skeleton rounded-md border border-border bg-raised" />
         </div>
       </div>
     )
@@ -94,8 +94,8 @@ export function FirstDuelStep({
           onClick={() => onSelect(primary.topicId)}
           className={
             selected.topicId === primary.topicId
-              ? "overflow-hidden rounded-card border border-primary bg-primary/5 text-left ring-1 ring-primary"
-              : "overflow-hidden rounded-card border border-border bg-card text-left transition-colors hover:bg-muted/40"
+              ? "overflow-hidden rounded-card border border-foreground bg-surface-muted text-left"
+              : "overflow-hidden rounded-card border border-border bg-card text-left transition-colors hover:bg-surface-muted"
           }
         >
           <div className="relative aspect-[16/8] overflow-hidden">
@@ -119,8 +119,8 @@ export function FirstDuelStep({
               </div>
             )}
             {selected.topicId === primary.topicId && (
-              <span className="absolute top-3 right-3 grid size-7 place-items-center rounded-full bg-primary text-primary-foreground">
-                <CheckIcon className="size-4" aria-hidden />
+              <span className="absolute top-3 right-3 grid size-7 place-items-center rounded-full text-accent-ink">
+                <CheckIcon className="size-5" weight="bold" aria-hidden />
               </span>
             )}
           </div>
@@ -165,8 +165,8 @@ export function FirstDuelStep({
                   onClick={() => onSelect(topic.topicId)}
                   className={
                     isSelected
-                      ? "flex items-center gap-3 rounded-2xl border border-primary bg-primary/5 p-2.5 text-left ring-1 ring-primary"
-                      : "flex items-center gap-3 rounded-2xl border border-border bg-card p-2.5 text-left transition-colors hover:bg-muted/40"
+                      ? "flex items-center gap-3 rounded-md border border-foreground bg-surface-muted p-2.5 text-left"
+                      : "flex items-center gap-3 rounded-md border border-border bg-card p-2.5 text-left transition-colors hover:bg-surface-muted"
                   }
                 >
                   <TopicIcon topic={topic} size={48} />
@@ -194,8 +194,8 @@ export function FirstDuelStep({
         </div>
       )}
 
-      <div className="flex items-start gap-3 rounded-card border border-border bg-muted/30 p-4">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-background">
+      <div className="flex items-start gap-3 rounded-card border border-border bg-raised p-4">
+        <span className="grid size-10 shrink-0 place-items-center rounded-md bg-background">
           <RobotIcon className="size-5 text-accent-ink" aria-hidden />
         </span>
         <div className="flex flex-col gap-1">

@@ -184,7 +184,7 @@ export function ColorSelectorItem({
         aria-hidden="true"
         style={style}
         className={cn(
-          "relative flex size-11 items-center justify-center rounded-full border border-foreground/10 bg-muted/60",
+          "relative flex size-11 items-center justify-center rounded-full border border-foreground/10 bg-hover",
           "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-foreground",
           className
         )}

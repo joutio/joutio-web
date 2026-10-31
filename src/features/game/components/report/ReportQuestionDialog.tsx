@@ -129,7 +129,7 @@ export function ReportQuestionDialog({
       }
     >
       <div className="flex flex-col gap-5">
-        <div className="rounded-xl border border-border bg-muted/40 p-3">
+        <div className="rounded-md border border-border bg-raised p-3">
           <p className="text-2xs font-semibold tracking-wide text-muted-foreground uppercase">
             {t("game.report.previewLabel")}
           </p>
@@ -138,7 +138,7 @@ export function ReportQuestionDialog({
             <img
               src={imageUrl}
               alt=""
-              className="mt-2 max-h-32 w-full rounded-lg object-contain"
+              className="mt-2 max-h-32 w-full rounded-md object-contain"
             />
           )}
         </div>

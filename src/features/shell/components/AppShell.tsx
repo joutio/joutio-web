@@ -194,7 +194,7 @@ export function AppShell() {
                   <div className="relative flex h-full items-center justify-center desktop:bg-canvas">
                     <div
                       data-slot="game-frame"
-                      className="relative h-full w-full overflow-hidden desktop:aspect-[3/2] desktop:h-auto desktop:w-[min(100%,calc((100dvh-3rem)*3/2))] desktop:max-w-[1320px] desktop:rounded-xl desktop:border desktop:border-[#313131] desktop:bg-[var(--duel-bg)]"
+                      className="relative h-full w-full overflow-hidden desktop:aspect-[3/2] desktop:h-auto desktop:w-[min(100%,calc((100dvh-3rem)*3/2))] desktop:max-w-[1320px] desktop:rounded-xl desktop:border desktop:border-border desktop:bg-[var(--duel-bg)]"
                     >
                       <ErrorBoundary key={pathname}>
                         <Outlet />

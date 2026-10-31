@@ -116,9 +116,7 @@ export function RoomWaitingScreen({
                 }}
                 aria-hidden
               >
-                <LightningIcon
-                  size={16} weight="fill"
-                />
+                <LightningIcon size={16} weight="fill" />
               </div>
               {opponent ? (
                 <RoomPlayerSlot slot={opponent} />
@@ -131,7 +129,7 @@ export function RoomWaitingScreen({
               {/* Wrapper du stepper : jaune pendant la préparation, vert dès qu'elle est
                   terminée (lancement en cours). */}
               <div
-                className="w-full rounded-2xl border px-4 py-3.5 transition-colors duration-300"
+                className="w-full rounded-card border px-4 py-3.5 transition-colors duration-300"
                 style={{
                   borderColor: complete
                     ? `color-mix(in srgb, ${TOKEN.correctAccent} 35%, transparent)`

@@ -67,20 +67,20 @@ describe("ReportUserDialog", () => {
     const cheating = screen.getByRole("button", { name: /Triche/ })
 
     expect(harassment).toHaveAttribute("aria-pressed", "false")
-    expect(harassment).not.toHaveClass("border-primary")
+    expect(harassment).not.toHaveClass("border-foreground")
 
     fireEvent.click(harassment)
     fireEvent.click(cheating)
 
     expect(harassment).toHaveAttribute("aria-pressed", "true")
-    expect(harassment).toHaveClass("border-primary")
+    expect(harassment).toHaveClass("border-foreground")
     expect(cheating).toHaveAttribute("aria-pressed", "true")
-    expect(cheating).toHaveClass("border-primary")
+    expect(cheating).toHaveClass("border-foreground")
 
     fireEvent.click(harassment)
 
     expect(harassment).toHaveAttribute("aria-pressed", "false")
-    expect(harassment).not.toHaveClass("border-primary")
+    expect(harassment).not.toHaveClass("border-foreground")
     expect(cheating).toHaveAttribute("aria-pressed", "true")
   })
 

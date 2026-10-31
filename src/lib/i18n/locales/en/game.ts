@@ -12,6 +12,7 @@ export const game: typeof frGame = {
   },
   matchmaking: {
     searching: "Finding an opponent…",
+    opponentFound: "Opponent found",
     cancel: "Cancel search",
     failed: "Search unavailable",
     canceled: "Search canceled",

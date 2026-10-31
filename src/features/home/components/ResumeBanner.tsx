@@ -28,7 +28,7 @@ export function ResumeBanner() {
           transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
           className="relative flex items-center gap-3 overflow-hidden bg-destructive/[0.07] px-(--page-gutter-x) py-2.5"
         >
-          <span className="relative grid size-8 shrink-0 place-items-center rounded-lg bg-destructive/15 text-destructive">
+          <span className="relative grid size-8 shrink-0 place-items-center rounded-md bg-destructive/15 text-destructive">
             {/* Halo rouge animé derrière l'icône. */}
             <span
               aria-hidden

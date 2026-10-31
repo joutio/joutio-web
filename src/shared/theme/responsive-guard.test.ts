@@ -11,7 +11,11 @@ const SOURCES = import.meta.glob("../../**/*.{ts,tsx}", {
   eager: true,
 }) as Record<string, string>
 
-const IGNORED = ["/components/arc/", "/components/animate-ui/"]
+const IGNORED = [
+  "/components/arc/",
+  "/components/animate-ui/",
+  "/features/design-system/",
+]
 /** `matchMedia` légitime hors contrat device : hover pointeur, thème système. */
 const ALLOWED_MATCHMEDIA = [
   "/hooks/use-device.ts",
@@ -78,6 +82,21 @@ const RULES: Rule[] = [
     name: "matchMedia direct — passer par useDevice",
     pattern: /matchMedia\(/,
     isAllowed: (file) => ALLOWED_MATCHMEDIA.some((path) => file.endsWith(path)),
+  },
+  {
+    name: "surface translucide — utiliser bg-raised / bg-surface-muted",
+    pattern: /\b(?:hover:)?bg-muted\/\d+/,
+    isAllowed: (file) => file.includes("/components/ui/"),
+  },
+  {
+    name: "rayon hors échelle — 12 tuile, 16 carte, 24 feuille",
+    pattern: /\brounded-(?:2xl|3xl|4xl)\b/,
+    isAllowed: (file) => file.includes("/components/ui/"),
+  },
+  {
+    name: "sélection ambre — utiliser l'encre inversée ou une coche accent",
+    pattern: /\bring-1 ring-primary\b|\bring-primary\b/,
+    isAllowed: (file) => file.includes("/components/ui/"),
   },
 ]
 

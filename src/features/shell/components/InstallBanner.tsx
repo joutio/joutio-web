@@ -25,8 +25,8 @@ export function InstallBanner() {
   }
 
   return (
-    <div className="flex items-center gap-3 border-b bg-primary/[0.06] px-(--page-gutter-x) py-2.5">
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-accent-ink">
+    <div className="flex items-center gap-3 border-b bg-warm px-(--page-gutter-x) py-2.5">
+      <span className="grid size-8 shrink-0 place-items-center rounded-md bg-raised text-accent-ink">
         <DownloadSimpleIcon className="size-4" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
@@ -38,13 +38,13 @@ export function InstallBanner() {
         </p>
       </div>
       {canInstall && (
-        <Button size="sm" onClick={() => void promptInstall()}>
+        <Button size="xs" onClick={() => void promptInstall()}>
           {t("shell.install.install")}
         </Button>
       )}
       <Button
         variant="ghost"
-        size="icon"
+        size="icon-xs"
         aria-label={t("shell.install.dismissBanner")}
         className="shrink-0"
         onClick={dismissBanner}

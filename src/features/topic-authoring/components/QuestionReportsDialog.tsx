@@ -95,18 +95,18 @@ export function QuestionReportsDialog({
     >
       <div className="flex flex-col gap-4">
         {question.suspended && (
-          <p className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-accent-ink">
+          <p className="rounded-md border border-accent-ink/40 bg-warm px-3 py-2 text-xs text-accent-ink">
             {t("authoring.reports.suspended")}
           </p>
         )}
         {question.archived && (
-          <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+          <p className="rounded-md border border-border bg-raised px-3 py-2 text-xs text-muted-foreground">
             {t("authoring.reports.archived")}
           </p>
         )}
 
         {reports.isLoading ? (
-          <div className="h-24 animate-pulse rounded-xl bg-muted/50" />
+          <div className="h-24 animate-skeleton rounded-md bg-raised" />
         ) : (reports.data ?? []).length === 0 ? (
           <p className="text-sm text-muted-foreground">
             {t("authoring.reports.empty")}
@@ -160,7 +160,7 @@ function ReportCard({
   const opened = report.status === "OPEN"
 
   return (
-    <article className="rounded-xl border border-border bg-card p-3">
+    <article className="rounded-card border border-border bg-card p-3">
       <div className="flex flex-wrap items-center gap-1.5">
         {report.reasons.map((reason) => (
           <Badge key={reason} variant="secondary">
@@ -171,7 +171,7 @@ function ReportCard({
           variant="outline"
           className={
             opened
-              ? "border-primary/40 bg-primary/10 text-accent-ink"
+              ? "border-accent-ink/40 bg-warm text-accent-ink"
               : report.status === "RESOLVED"
                 ? "border-correct/40 bg-correct/10 text-correct"
                 : undefined
@@ -208,7 +208,12 @@ function ReportCard({
           <Button size="sm" variant="ghost" onClick={onDismiss} disabled={busy}>
             <XIcon /> {t("authoring.reports.dismiss")}
           </Button>
-          <Button size="sm" variant="outline" onClick={onResolve} disabled={busy}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onResolve}
+            disabled={busy}
+          >
             <CheckIcon /> {t("authoring.reports.resolve")}
           </Button>
         </div>
@@ -226,7 +231,7 @@ function SnapshotView({ snapshot }: { snapshot: QuestionReportSnapshot }) {
   const text = translated?.text ?? snapshot.questionText
 
   return (
-    <div className="mt-2 rounded-lg border border-border bg-muted/30 p-2.5">
+    <div className="mt-2 rounded-md border border-border bg-raised p-2.5">
       <p className="text-2xs font-semibold tracking-wide text-muted-foreground uppercase">
         {snapshot.source === "PLAYED"
           ? t("authoring.reports.reportedVersion")
