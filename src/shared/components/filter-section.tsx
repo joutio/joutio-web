@@ -82,7 +82,7 @@ export function FilterOption({
       aria-pressed={selected}
       className={cn(
         "flex min-h-11 w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors",
-        selected ? "bg-primary/10 text-primary" : "hover:bg-accent"
+        selected ? "bg-primary/10 text-accent-ink" : "hover:bg-accent"
       )}
     >
       <span className="flex min-w-0 flex-1 items-center gap-2 truncate">

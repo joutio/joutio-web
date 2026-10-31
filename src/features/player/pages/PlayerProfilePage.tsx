@@ -198,7 +198,7 @@ function PlayerProfileContent({
               }
             >
               {profile.following ? (
-                <UserCheck className="text-primary" />
+                <UserCheck className="text-accent-ink" />
               ) : (
                 <UserPlus />
               )}

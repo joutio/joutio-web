@@ -78,8 +78,7 @@ describe("TopicMediaCard", () => {
       "aspect-[5/8]",
       "border",
       "border-border",
-      "shadow-none",
-      "dark:shadow-[var(--qu-home-card-shadow)]"
+      "shadow-none"
     )
     expect(
       container.querySelector('[data-slot="topic-card-media"]')

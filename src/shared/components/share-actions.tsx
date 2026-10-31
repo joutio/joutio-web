@@ -90,7 +90,7 @@ export function ShareActions({ text, url }: ShareActionsProps) {
             }
             className="qu-hoverable grid size-(--control-h-md) place-items-center rounded-full border"
             style={{
-              color: TOKEN.primary,
+              color: TOKEN.accentInk,
               borderColor: `color-mix(in srgb, ${TOKEN.primary} 32%, ${TOKEN.border})`,
               background: `color-mix(in srgb, ${TOKEN.primary} 14%, transparent)`,
             }}

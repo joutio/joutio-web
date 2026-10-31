@@ -84,7 +84,7 @@ export function BottomNavBar({
                   "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 transition-colors duration-200",
                   "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                   isActive
-                    ? "text-primary"
+                    ? "text-accent-ink"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -111,7 +111,7 @@ export function BottomNavBar({
                 "relative flex h-16 min-h-16 min-w-11 items-center rounded-full px-2.5 py-2 transition-colors duration-200",
                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 isActive
-                  ? "gap-2 bg-primary/10 text-primary"
+                  ? "gap-2 bg-primary/10 text-accent-ink"
                   : "bg-transparent text-muted-foreground hover:bg-muted"
               )}
             >
@@ -138,7 +138,7 @@ export function BottomNavBar({
                   title={item.label}
                   className={cn(
                     "overflow-hidden text-xs leading-[1.9] font-medium text-ellipsis whitespace-nowrap select-none",
-                    isActive ? "text-primary" : "opacity-0"
+                    isActive ? "text-accent-ink" : "opacity-0"
                   )}
                 >
                   {item.label}

@@ -504,7 +504,7 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                                   "h-4 w-4 rounded-[0.4rem] border border-border/40 transition-colors",
                                   "hover:ring-1 hover:ring-ring",
                                   isToday &&
-                                    "border-primary !bg-primary-foreground !text-primary",
+                                    "border-primary !bg-primary-foreground !text-accent-ink",
                                   isActive &&
                                     !usedFreeze &&
                                     "border-primary/80 bg-primary",

@@ -207,7 +207,7 @@ export function OnboardingFlow({
       {step === 0 ? (
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+            <p className="text-xs font-semibold tracking-wide text-accent-ink uppercase">
               {t("home.onboarding.welcome")}
             </p>
             <h1
@@ -239,7 +239,7 @@ export function OnboardingFlow({
       ) : (
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+            <p className="text-xs font-semibold tracking-wide text-accent-ink uppercase">
               {t("home.onboarding.firstDuelEyebrow")}
             </p>
             <h1

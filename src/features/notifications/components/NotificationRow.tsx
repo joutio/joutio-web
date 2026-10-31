@@ -47,12 +47,12 @@ const GLYPHS: Record<
   NotificationType,
   { icon: LucideIcon; className: string }
 > = {
-  FOLLOW: { icon: UserPlus, className: "text-primary" },
-  CHALLENGE_RECEIVED: { icon: Swords, className: "text-primary" },
+  FOLLOW: { icon: UserPlus, className: "text-accent-ink" },
+  CHALLENGE_RECEIVED: { icon: Swords, className: "text-accent-ink" },
   CHALLENGE_DECLINED: { icon: X, className: "text-destructive" },
   ROOM_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
-  WIZZ: { icon: Zap, className: "text-primary" },
-  QUESTION_REPORTED: { icon: Flag, className: "text-primary" },
+  WIZZ: { icon: Zap, className: "text-accent-ink" },
+  QUESTION_REPORTED: { icon: Flag, className: "text-accent-ink" },
   TOPIC_DRAFTED: { icon: FileWarning, className: "text-destructive" },
   ACCOUNT_SUSPENDED: { icon: ShieldAlert, className: "text-destructive" },
 }

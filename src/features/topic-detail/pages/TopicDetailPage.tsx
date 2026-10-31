@@ -228,7 +228,7 @@ export function TopicDetailPage() {
                   aria-pressed={isFollowed}
                 >
                   <Heart
-                    className={isFollowed ? "fill-primary text-primary" : ""}
+                    className={isFollowed ? "fill-primary text-accent-ink" : ""}
                   />
                   {isFollowed
                     ? t("topic.detail.following")

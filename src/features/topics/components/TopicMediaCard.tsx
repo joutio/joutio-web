@@ -106,7 +106,7 @@ export function TopicMediaCard({
         aria-label={rankLabel ? `${rankLabel} — ${title}` : title}
         onClick={() => onOpen(topic.topicId)}
         className={cn(
-          "group relative z-10 block w-full overflow-hidden rounded-lg border border-border bg-card text-left shadow-none dark:shadow-[var(--qu-home-card-shadow)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
+          "group relative z-10 block w-full overflow-hidden rounded-lg border border-border bg-card text-left shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
           isPoster && "flex aspect-[5/8] flex-col"
         )}
       >

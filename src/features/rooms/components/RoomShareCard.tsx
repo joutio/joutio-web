@@ -28,7 +28,7 @@ export function RoomShareCard({ shareUrl, topicName }: RoomShareCardProps) {
       }}
     >
       <div className="flex items-center gap-2 text-sm font-semibold">
-        <Share2 size={15} style={{ color: TOKEN.primary }} />
+        <Share2 size={15} style={{ color: TOKEN.accentInk }} />
         {t("game.share.invite")}
       </div>
       <p className="mt-1 text-xs" style={{ color: TOKEN.mutedFg }}>

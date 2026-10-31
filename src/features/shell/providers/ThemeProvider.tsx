@@ -52,7 +52,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       .querySelector('meta[name="theme-color"]')
       ?.setAttribute(
         "content",
-        resolvedTheme === "dark" ? "#0a0a0a" : "#ffffff"
+        resolvedTheme === "dark" ? "#000000" : "#f6f5f1"
       )
   }, [resolvedTheme])
 

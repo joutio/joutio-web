@@ -215,7 +215,7 @@ export function ProfileTitlesSection({
                     </p>
 
                     {equipped ? (
-                      <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                      <span className="flex items-center gap-1.5 text-xs font-semibold text-accent-ink">
                         <Check className="size-3.5" />
                         {t("progression.titleEquipped")}
                       </span>

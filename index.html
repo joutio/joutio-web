@@ -12,7 +12,7 @@
     <!-- PWA installée : plein écran, chrome natif minimal (push iOS ≥ 16.4 via écran d'accueil).
          `theme-color` suit le thème RÉSOLU de l'app (pas prefers-color-scheme) : la barre d'état
          Android/Chrome reste alignée même si l'utilisateur force Clair/Sombre. -->
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#000000" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -27,7 +27,7 @@
       (function () {
         try {
           var raw = localStorage.getItem("joutio-theme");
-          var pref = raw ? JSON.parse(raw).state.theme : "system";
+          var pref = raw ? JSON.parse(raw).state.theme : "dark";
           var dark =
             pref === "dark" ||
             (pref === "system" &&
@@ -36,7 +36,7 @@
           root.classList.toggle("dark", dark);
           root.style.colorScheme = dark ? "dark" : "light";
           var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", dark ? "#0a0a0a" : "#ffffff");
+          if (meta) meta.setAttribute("content", dark ? "#000000" : "#f6f5f1");
           // Habillage de la nav basse (mobile) : appliqué avant le paint pour éviter un saut.
           var navRaw = localStorage.getItem("joutio-bottom-nav");
           var nav = navRaw ? JSON.parse(navRaw).state.variant : "floating";
@@ -72,12 +72,12 @@
         place-content: center;
         justify-items: center;
         gap: 14px;
-        background: #ffffff;
-        color: #0a0a0a;
+        background: #f6f5f1;
+        color: #121210;
       }
       html.dark #boot-splash {
-        background: #0a0a0a;
-        color: #fafafa;
+        background: #000000;
+        color: #ffffff;
       }
       #boot-splash .boot-mark {
         display: grid;
@@ -85,14 +85,14 @@
         width: 64px;
         height: 64px;
         border-radius: 9999px;
-        background: currentColor;
+        background: #e8b04a;
         animation: boot-pulse 1.4s ease-in-out infinite;
       }
       #boot-splash .boot-mark svg {
-        color: #ffffff;
+        color: #000000;
       }
       html.dark #boot-splash .boot-mark svg {
-        color: #0a0a0a;
+        color: #000000;
       }
       #boot-splash .boot-title {
         margin: 0;

@@ -39,7 +39,7 @@ export function StreakSection({ userId }: { userId: string }) {
       <Card>
         <CardHeader>
           <CardMedia>
-            <span className="grid size-9 place-items-center rounded-full bg-primary/10 text-primary">
+            <span className="grid size-9 place-items-center rounded-full bg-primary/10 text-accent-ink">
               <CalendarCheck className="size-4" aria-hidden />
             </span>
           </CardMedia>

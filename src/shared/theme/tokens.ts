@@ -15,6 +15,7 @@ export const TOKEN = {
   muted: "var(--muted)",
   mutedFg: "var(--muted-foreground)",
   accent: "var(--accent)",
+  accentInk: "var(--accent-ink)",
   destructive: "var(--destructive)",
   border: "var(--border)",
   ring: "var(--ring)",
@@ -41,12 +42,13 @@ export const TOKEN = {
   fontDisplay: "var(--font-display)",
 } as const
 
-/** Rayons dérivés de --radius, comme le fait shadcn. */
+/** Rayons du design system (`design/tokens.json`). */
 export const RADIUS = {
-  sm: "calc(var(--radius) - 4px)",
-  md: "calc(var(--radius) - 2px)",
-  lg: "var(--radius)",
-  xl: "calc(var(--radius) + 4px)",
+  xs: "var(--radius-xs)",
+  sm: "var(--radius-sm)",
+  md: "var(--radius-md)",
+  lg: "var(--radius-lg)",
+  xl: "var(--radius-xl)",
 } as const
 
 /** Voile translucide à partir d'une couleur quelconque (hex de sujet ou variable CSS). */
@@ -66,4 +68,4 @@ export const DEVICE = {
 } as const
 
 /** Durée du repli/dépli du chrome haut (miroir de `--qu-chrome-motion-duration`). */
-export const CHROME_MOTION_MS = 240
+export const CHROME_MOTION_MS = 250

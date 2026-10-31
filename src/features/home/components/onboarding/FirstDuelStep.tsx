@@ -82,8 +82,8 @@ export function FirstDuelStep({
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-primary" aria-hidden />
-          <span className="text-xs font-semibold tracking-wide text-primary uppercase">
+          <Sparkles className="size-4 text-accent-ink" aria-hidden />
+          <span className="text-xs font-semibold tracking-wide text-accent-ink uppercase">
             {t("home.onboarding.recommendedForYou")}
           </span>
         </div>
@@ -184,7 +184,7 @@ export function FirstDuelStep({
                   </span>
                   {isSelected && (
                     <Check
-                      className="size-4 shrink-0 text-primary"
+                      className="size-4 shrink-0 text-accent-ink"
                       aria-hidden
                     />
                   )}
@@ -197,7 +197,7 @@ export function FirstDuelStep({
 
       <div className="flex items-start gap-3 rounded-card border border-border bg-muted/30 p-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-background">
-          <Bot className="size-5 text-primary" aria-hidden />
+          <Bot className="size-5 text-accent-ink" aria-hidden />
         </span>
         <div className="flex flex-col gap-1">
           <p className="font-heading text-sm font-bold">

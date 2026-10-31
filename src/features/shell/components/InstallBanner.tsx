@@ -26,7 +26,7 @@ export function InstallBanner() {
 
   return (
     <div className="flex items-center gap-3 border-b bg-primary/[0.06] px-(--page-gutter-x) py-2.5">
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-accent-ink">
         <Download className="size-4" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
