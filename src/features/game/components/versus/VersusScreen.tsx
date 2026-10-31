@@ -78,8 +78,7 @@ export function VersusScreen({ player, opponent, topic }: VersusScreenProps) {
         className="qu-vs-panel-top absolute inset-x-0 top-0 overflow-hidden"
         style={{
           height: "50%",
-          background:
-            "radial-gradient(125% 115% at 50% 100%, #7e1b1b 0%, #41100f 45%, #150606 100%)",
+          background: "#131209",
         }}
       >
         <div
@@ -128,7 +127,7 @@ export function VersusScreen({ player, opponent, topic }: VersusScreenProps) {
         className="qu-vs-panel-bottom absolute inset-x-0 bottom-0 overflow-hidden"
         style={{
           height: "50%",
-          background: "linear-gradient(180deg, #2c2c31 0%, #191a1e 100%)",
+          background: TOKEN.duelAnswer,
         }}
       >
         <div
@@ -143,7 +142,7 @@ export function VersusScreen({ player, opponent, topic }: VersusScreenProps) {
             <span key={index}>{emoji}</span>
           ))}
         </div>
-        <NamePlate name={opponent.name} accent="#e0483a" side="bottom" />
+        <NamePlate name={opponent.name} accent={TOKEN.duelSurfaceMuted} side="bottom" />
         <div
           className="absolute inset-0 flex items-center justify-end"
           style={{ padding: "0 clamp(20px, 6vw, 90px)" }}

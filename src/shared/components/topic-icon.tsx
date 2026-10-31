@@ -90,7 +90,7 @@ export function TopicIcon({
     <span
       className={cn(
         "relative grid place-items-center overflow-hidden select-none",
-        !fill && "shrink-0 rounded-[22%] shadow-md",
+        !fill && "shrink-0 rounded-[22%]",
         fluid && !fill && "@container aspect-square w-full",
         fill && "@container absolute inset-0 h-full w-full rounded-[inherit]",
         className

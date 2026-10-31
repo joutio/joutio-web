@@ -9,8 +9,8 @@ function Notch({ side }: { side: "left" | "right" }) {
     position: "absolute",
     top: "50%",
     transform: "translateY(-50%)",
-    width: 17,
-    height: 40,
+    width: 14,
+    height: 32,
     background: TOKEN.duelBg,
     pointerEvents: "none",
     clipPath:
@@ -23,12 +23,12 @@ function Notch({ side }: { side: "left" | "right" }) {
 }
 
 const PALETTE: Record<AnswerState, { background: string; color: string }> = {
-  idle: { background: TOKEN.duelSurface, color: TOKEN.duelSurfaceFg },
-  selected: { background: TOKEN.duelSurfaceMuted, color: TOKEN.duelSurfaceFg },
+  idle: { background: TOKEN.duelAnswer, color: TOKEN.duelAnswerFg },
+  selected: { background: TOKEN.duelAnswerPending, color: TOKEN.duelAnswerFg },
   correct: { background: TOKEN.correct, color: TOKEN.correctFg },
   wrong: { background: TOKEN.wrong, color: TOKEN.wrongFg },
   muted: {
-    background: TOKEN.duelSurfaceMuted,
+    background: TOKEN.duelAnswer,
     color: TOKEN.duelSurfaceMutedFg,
   },
 }

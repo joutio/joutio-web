@@ -91,18 +91,6 @@ export function RoomWaitingScreen({
       className="relative flex flex-1 flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(${TOKEN.secondary} 1.4px, color-mix(in srgb, ${TOKEN.secondary} 0%, transparent) 1.4px)`,
-          backgroundSize: "13px 13px",
-          maskImage:
-            "radial-gradient(ellipse 70% 60% at 50% 42%, #000 40%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 70% 60% at 50% 42%, #000 40%, transparent 100%)",
-        }}
-      />
-
       <div className="relative flex-1 overflow-y-auto overscroll-y-contain">
         <div
           className={cn(

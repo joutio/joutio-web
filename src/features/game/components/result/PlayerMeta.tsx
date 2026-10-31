@@ -37,7 +37,7 @@ export function PlayerMeta({
       {suspended ? (
         <span
           style={{
-            color: "#f15c6d",
+            color: TOKEN.wrongAccent,
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: "0.04em",
@@ -59,7 +59,7 @@ export function PlayerMeta({
         {rating != null && rated ? (
           <span
             style={{
-              color: delta >= 0 ? "#4ade80" : "#f15c6d",
+              color: delta >= 0 ? TOKEN.correctAccent : TOKEN.wrongAccent,
               marginLeft: 4,
             }}
           >

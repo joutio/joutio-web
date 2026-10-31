@@ -12,7 +12,7 @@ export function ToBuildTag({ label }: { label?: string }) {
   return (
     <Badge
       variant="outline"
-      className="gap-1 border-amber-500/40 text-amber-500"
+      className="gap-1 border-primary/40 text-accent-ink"
     >
       <HammerIcon /> {label ?? t("shell.toBuild.label")}
     </Badge>

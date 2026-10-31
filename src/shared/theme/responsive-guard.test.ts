@@ -30,6 +30,11 @@ const RULES: Rule[] = [
     pattern: /\btext-\[[0-9.]+(?:px|rem)\]/,
   },
   {
+    name: "palette Tailwind directe — utiliser les jetons du design system",
+    pattern:
+      /\b(?:bg|text|border|ring)-(?:cyan|pink|rose|orange|yellow|blue|green|red|emerald|amber|violet|purple|indigo|sky|teal|lime|fuchsia)-\d{2,3}\b/,
+  },
+  {
     name: "ancien breakpoint Tailwind (max-sm/max-md/max-lg) — utiliser compact:/tablet:/touch:",
     pattern: /\bmax-(?:sm|md|lg):/,
   },

@@ -99,7 +99,7 @@ export function ProfileBanner({
                   onClick={onEditAvatar}
                   aria-label={t("player.banner.editAvatar")}
                   title={t("player.banner.editAvatar")}
-                  className="absolute -right-0.5 -bottom-0.5 grid size-(--control-h-md) place-items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground shadow-md transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  className="absolute -right-0.5 -bottom-0.5 grid size-(--control-h-md) place-items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <PencilSimpleIcon size={14} aria-hidden />
                 </button>

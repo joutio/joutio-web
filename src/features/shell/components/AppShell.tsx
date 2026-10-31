@@ -191,7 +191,7 @@ export function AppShell() {
                   // Flux immersif desktop : toutes les pages (duel, résultat, salons,
                   // matchmaking, join) partagent un cadre paysage 3:2 (largeur dérivée de la
                   // hauteur, 1320 px max) centré sur le canvas. En tactile, le cadre disparaît : plein écran natif.
-                  <div className="relative flex h-full items-center justify-center desktop:bg-[#0c0c0b]">
+                  <div className="relative flex h-full items-center justify-center desktop:bg-canvas">
                     <div
                       data-slot="game-frame"
                       className="relative h-full w-full overflow-hidden desktop:aspect-[3/2] desktop:h-auto desktop:w-[min(100%,calc((100dvh-3rem)*3/2))] desktop:max-w-[1320px] desktop:rounded-xl desktop:border desktop:border-[#313131] desktop:bg-[var(--duel-bg)]"

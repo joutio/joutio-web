@@ -119,7 +119,7 @@ export function AchievementCelebration({
       aria-modal="true"
       aria-label={t("progression.achievement.heading")}
     >
-      <div className="qu-pop flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border bg-background p-5 text-center shadow-2xl">
+      <div className="qu-pop flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border bg-background p-5 text-center">
         <p className="text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase">
           {t("progression.achievement.heading")}
         </p>

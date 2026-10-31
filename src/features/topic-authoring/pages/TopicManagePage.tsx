@@ -115,7 +115,7 @@ export function TopicManagePage() {
       <Card className="mb-5">
         <CardContent className="flex flex-col gap-4">
           <div className="flex items-start gap-4">
-            <TopicIcon topic={topic} size={64} className="shadow-lg" />
+            <TopicIcon topic={topic} size={64} />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-heading text-lg font-bold">
@@ -125,7 +125,7 @@ export function TopicManagePage() {
                   variant="outline"
                   className={
                     topic.status === "PUBLISHED"
-                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+                      ? "border-correct/40 bg-correct/10 text-correct"
                       : undefined
                   }
                 >

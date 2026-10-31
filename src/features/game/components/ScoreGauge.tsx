@@ -36,7 +36,7 @@ export function ScoreGauge({
       aria-valuemin={0}
       aria-valuemax={MAX_SCORE}
       className={cn(
-        "relative w-[7px] shrink-0 self-stretch rounded-full tablet-up:w-[11px]"
+        "relative w-2 shrink-0 self-stretch rounded-full tablet-up:w-2.5"
       )}
       style={{
         background: veil(TOKEN.gaugeTrack, 90),

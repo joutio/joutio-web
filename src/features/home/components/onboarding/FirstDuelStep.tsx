@@ -110,17 +110,16 @@ export function FirstDuelStep({
               <div
                 className="absolute inset-0"
                 style={{
-                  background: `linear-gradient(135deg, ${coverColor} 0%, color-mix(in oklab, ${coverColor} 62%, black) 100%)`,
+                  background: coverColor,
                 }}
               >
-                <div className="absolute -top-10 -right-8 size-44 rounded-full bg-white/15 blur-3xl" />
                 <div className="absolute inset-0 grid place-items-center">
-                  <TopicIcon topic={primary} size={88} className="shadow-xl" />
+                  <TopicIcon topic={primary} size={88} />
                 </div>
               </div>
             )}
             {selected.topicId === primary.topicId && (
-              <span className="absolute top-3 right-3 grid size-7 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm">
+              <span className="absolute top-3 right-3 grid size-7 place-items-center rounded-full bg-primary text-primary-foreground">
                 <CheckIcon className="size-4" aria-hidden />
               </span>
             )}

@@ -3,7 +3,6 @@ import { FlagIcon, LightningIcon, UsersIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 import { TOKEN } from "@/shared/theme/tokens"
 import { ActionButton } from "./ActionButton"
-import { RESULT_LOSS } from "./palette"
 
 interface ResultActionsProps {
   botGame: boolean
@@ -50,6 +49,8 @@ export function ResultActions({
   onReportOpponent,
 }: ResultActionsProps) {
   const { t } = useTranslation()
+  const rematchLocked =
+    rematchRefused || rematchBlocked || rematchUnavailable
   return (
     <div
       className={`grid w-full max-w-[420px] gap-3 ${
@@ -59,7 +60,8 @@ export function ResultActions({
       {botGame && (
         <ActionButton
           icon={<LightningIcon size={16} weight="fill" />}
-          background={RESULT_LOSS}
+          background={TOKEN.primary}
+          color={TOKEN.primaryFg}
           disabled={replayPending}
           onClick={onReplayBot}
         >
@@ -70,17 +72,9 @@ export function ResultActions({
       {!botGame && (
         <ActionButton
           icon={<LightningIcon size={16} weight="fill" />}
-          background={
-            rematchRefused || rematchBlocked || rematchUnavailable
-              ? TOKEN.duelSurfaceMuted
-              : RESULT_LOSS
-          }
-          disabled={
-            rematchPending ||
-            rematchRefused ||
-            rematchBlocked ||
-            rematchUnavailable
-          }
+          background={rematchLocked ? TOKEN.duelAnswer : TOKEN.primary}
+          color={rematchLocked ? TOKEN.duelSurfaceMuted : TOKEN.primaryFg}
+          disabled={rematchPending || rematchLocked}
           onClick={onChallengeRematch}
         >
           {rematchRefused
@@ -101,7 +95,7 @@ export function ResultActions({
 
       <ActionButton
         icon={<UsersIcon size={16} />}
-        background={TOKEN.timer}
+        background={TOKEN.duelAnswer}
         disabled={newOpponentPending}
         onClick={onNewOpponent}
       >
@@ -112,7 +106,8 @@ export function ResultActions({
         <div className={cn("w-full", !botGame && "tablet-up:col-span-2")}>
           <ActionButton
             icon={<FlagIcon size={16} />}
-            background={TOKEN.gauge}
+            background={TOKEN.duelAnswer}
+            color={TOKEN.wrongAccent}
             disabled={reported}
             onClick={() => onReportOpponent?.()}
           >

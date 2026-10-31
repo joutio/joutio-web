@@ -30,8 +30,8 @@ const STATUS_LABEL_KEYS: Record<QuestionStatus, TranslationKey> = {
 }
 
 const STATUS_CLASSES: Record<QuestionStatus, string> = {
-  PENDING: "border-amber-500/40 bg-amber-500/10 text-amber-600",
-  APPROVED: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+  PENDING: "border-primary/40 bg-primary/10 text-accent-ink",
+  APPROVED: "border-correct/40 bg-correct/10 text-correct",
   REJECTED: "border-destructive/40 bg-destructive/10 text-destructive",
 }
 
@@ -98,7 +98,7 @@ export function QuestionCard({
             {question.suspended && (
               <Badge
                 variant="outline"
-                className="border-amber-500/40 bg-amber-500/10 text-amber-600"
+                className="border-primary/40 bg-primary/10 text-accent-ink"
               >
                 {t("authoring.status.suspended")}
               </Badge>
@@ -127,7 +127,7 @@ export function QuestionCard({
             <Button
               size="sm"
               variant="outline"
-              className="border-amber-500/40 bg-amber-500/10 text-amber-700 hover:bg-amber-500/15"
+              className="border-primary/40 bg-primary/10 text-accent-ink hover:bg-primary/15"
               onClick={onReports}
               disabled={busy}
             >

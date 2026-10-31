@@ -402,7 +402,7 @@ export function TopicsPage() {
           aria-label={t("topics.list.create")}
           nativeButton={false}
           render={<Link to="/topics/new" />}
-          className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-top)+0.75rem)] z-40 hidden size-14 rounded-full shadow-lg shadow-primary/25 compact:inline-flex"
+          className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-top)+0.75rem)] z-40 hidden size-14 rounded-full shadow-primary/25 compact:inline-flex"
         >
           <PlusIcon className="size-6" />
         </Button>

@@ -79,7 +79,7 @@ export function CreateTopicPage() {
       description: "",
       category: "",
       emoji: "",
-      color: "#6366f1",
+      color: "#E8B04A",
       imageUrl: "",
     },
   })
@@ -155,7 +155,7 @@ export function CreateTopicPage() {
                 category: category || null,
               }}
               size={56}
-              className="shadow-lg"
+              
             />
           </FormRow>
 

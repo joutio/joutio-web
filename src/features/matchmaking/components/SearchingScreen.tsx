@@ -29,12 +29,12 @@ const PIN_SPOTS = [
 
 /** Couleurs des pastilles (joueurs anonymes en attente d'appariement). */
 const PIN_COLORS = [
-  "#f97316",
-  "#22c55e",
-  "#3b82f6",
-  "#eab308",
-  "#a855f7",
-  "#ef4444",
+  "#46C6CD",
+  "#79B6F4",
+  "#C79DE6",
+  "#E694BB",
+  "#ED997B",
+  "#A1BD6E",
 ]
 
 /** Critères d'appariement (Matchmaking côté serveur). */
@@ -98,23 +98,6 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
       className="relative flex flex-1 flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(${TOKEN.secondary} 1.4px, color-mix(in srgb, ${TOKEN.secondary} 0%, transparent) 1.4px)`,
-          backgroundSize: "13px 13px",
-          maskImage:
-            "radial-gradient(ellipse 70% 60% at 50% 45%, #000 40%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 70% 60% at 50% 45%, #000 40%, transparent 100%)",
-        }}
-      />
-      <div
-        className="qu-halo pointer-events-none absolute top-[38%] left-1/2 size-[440px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          background: `radial-gradient(circle, color-mix(in srgb, ${topic.color ?? TOKEN.primary} 22%, transparent), color-mix(in srgb, ${topic.color ?? TOKEN.primary} 0%, transparent) 65%)`,
-        }}
-      />
       <div className="pointer-events-none absolute top-[38%] left-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center">
         {[0, 1, 2].map((index) => (
           <span
@@ -151,7 +134,7 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
             >
               <UsersIcon
                 size={14}
-                style={{ transform: "rotate(45deg)", color: "#0b0b0d" }}
+                style={{ transform: "rotate(45deg)", color: "#000000" }}
               />
             </div>
           </div>

@@ -372,18 +372,22 @@
   --duel-bg: #000000;
   --duel-surface: #ffffff;
   --duel-surface-foreground: #26262a;
-  --duel-surface-muted: #c6c6ca;
-  --duel-surface-muted-foreground: #5a5a60;
-  --duel-correct: #2e8a5f;
+  --duel-surface-muted: #9b9b9b;
+  --duel-surface-muted-foreground: #9b9b9b;
+  /* Cartes réponse (spec Jo Answer Card). */
+  --duel-answer: #1f1f1f;
+  --duel-answer-foreground: #ffffff;
+  --duel-answer-pending: #3a3a3e;
+  --duel-correct: #4fb286;
   --duel-correct-accent: #4fb286;
-  --duel-correct-foreground: #ffffff;
-  --duel-wrong: #c2433a;
+  --duel-correct-foreground: #000000;
+  --duel-wrong: #e5645a;
   --duel-wrong-accent: #e5645a;
-  --duel-wrong-foreground: #ffffff;
+  --duel-wrong-foreground: #000000;
   --duel-gauge: #e8b04a;
   --duel-gauge-track: #1f1f1f;
   --duel-score: #e8b04a;
-  --duel-timer: #e8b04a;
+  --duel-timer: #ffffff;
   --duel-timer-urgent: #e5645a;
 
   /* Barre de statistiques V/N/D. */
@@ -882,7 +886,7 @@
     transform: scale(1);
   }
   45% {
-    transform: scale(1.045);
+    transform: scale(1.03);
   }
   100% {
     transform: scale(1);
@@ -1054,7 +1058,7 @@
   transform: scale(0.985);
 }
 .qu-correct-pop {
-  animation: qu-correct-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  animation: qu-correct-pop 0.4s cubic-bezier(0.32, 0.72, 0, 1) both;
 }
 .qu-shake {
   animation: qu-shake 0.4s ease both;

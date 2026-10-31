@@ -20,11 +20,10 @@ export function RoomShareCard({ shareUrl, topicName }: RoomShareCardProps) {
 
   return (
     <div
-      className="w-full max-w-[380px] rounded-3xl border p-5"
+      className="w-full max-w-[380px] rounded-lg border p-5"
       style={{
-        background: `linear-gradient(180deg, color-mix(in srgb, ${TOKEN.card} 94%, white 3%), ${TOKEN.card})`,
+        background: TOKEN.card,
         borderColor: TOKEN.border,
-        boxShadow: "0 24px 60px rgba(0,0,0,.45)",
       }}
     >
       <div className="flex items-center gap-2 text-sm font-semibold">
@@ -35,7 +34,7 @@ export function RoomShareCard({ shareUrl, topicName }: RoomShareCardProps) {
         {t("game.share.description")}
       </p>
 
-      <div className="mt-4 grid place-items-center rounded-2xl bg-white p-3 shadow-lg">
+      <div className="mt-4 grid place-items-center rounded-2xl bg-white p-3">
         <QRCodeSVG value={shareUrl} size={140} />
       </div>
 

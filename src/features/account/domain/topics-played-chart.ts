@@ -7,16 +7,16 @@
 
 /** Palette de repli (couleurs éditoriales des catégories) quand un sujet n'a pas de couleur. */
 export const TOPIC_DONUT_PALETTE = [
-  "#8b5cf6", // violet
-  "#06b6d4", // cyan
-  "#22c55e", // vert
-  "#eab308", // jaune
-  "#f97316", // orange
-  "#ef4444", // rouge
+  "#46C6CD", // Sport
+  "#79B6F4", // Technologie
+  "#C79DE6", // Arts
+  "#E694BB", // Cinéma
+  "#ED997B", // Gastronomie
+  "#A1BD6E", // Nature
 ] as const
 
 /** Couleur neutre du regroupement « Autres ». */
-export const TOPIC_DONUT_OTHER_COLOR = "#94a3b8"
+export const TOPIC_DONUT_OTHER_COLOR = "#9B9B9B"
 
 /* Géométrie exprimée dans une boîte carrée de 100 × 100 unités (le viewBox du SVG). */
 export const DONUT_R_OUTER = 24.5

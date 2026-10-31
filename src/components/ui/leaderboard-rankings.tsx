@@ -223,7 +223,7 @@ const LeaderboardRankings = React.forwardRef<
                         "inline-flex items-center gap-1 text-xs font-medium",
                         ranking.rankChange > 0
                           ? "text-success-600"
-                          : "text-red-600"
+                          : "text-wrong"
                       )}
                     >
                       {ranking.rankChange > 0 ? (

@@ -115,7 +115,7 @@ export function ResultScreen({
   const win = outcome ? outcome === "win" : scores.you > scores.them
   const draw = outcome ? outcome === "draw" : scores.you === scores.them
 
-  const titleColor = draw ? TOKEN.gauge : win ? TOKEN.timer : RESULT_LOSS
+  const titleColor = draw ? RESULT_WHITE : win ? TOKEN.correctAccent : RESULT_LOSS
   const myColor = draw ? RESULT_WHITE : win ? TOKEN.correctAccent : RESULT_LOSS
   const theirColor = draw
     ? RESULT_WHITE
