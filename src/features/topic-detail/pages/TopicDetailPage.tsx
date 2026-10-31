@@ -44,6 +44,7 @@ import {
   categoryColor,
   categoryLabel,
   categoryTagline,
+  categoryTextColor,
 } from "@/shared/utils/categories"
 import { compactNumber } from "@/lib/helpers"
 import { TopicTitlesTab } from "../components/TopicTitlesTab"
@@ -185,7 +186,7 @@ export function TopicDetailPage() {
                 <div className="min-w-0">
                   <div
                     className="text-xs font-semibold tracking-wide uppercase"
-                    style={{ color: categoryColor(topic.category ?? "") }}
+                    style={{ color: categoryTextColor(topic.category ?? "") }}
                   >
                     {categoryLabel(
                       topic.category ?? "",

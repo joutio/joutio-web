@@ -19,7 +19,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce"
 import { useDevice } from "@/shared/hooks/use-device"
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages"
 import { useSuggestions } from "../hooks/useSuggestions"
-import { categoryColor } from "@/shared/utils/categories"
+import { categoryTextColor } from "@/shared/utils/categories"
 import { useTopicName } from "../hooks/useTopicName"
 
 interface CommandPaletteProps {
@@ -145,7 +145,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                     className="ml-auto text-xs text-muted-foreground"
                     style={
                       topic.category
-                        ? { color: categoryColor(topic.category) }
+                        ? { color: categoryTextColor(topic.category) }
                         : undefined
                     }
                   >

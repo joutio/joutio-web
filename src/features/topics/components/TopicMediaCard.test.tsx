@@ -42,7 +42,7 @@ describe("TopicMediaCard", () => {
     const category = screen.getByText("Séries & TV")
     expect(category).toHaveAttribute("data-slot", "topic-card-category")
     expect(category.getAttribute("style")).toContain("color-mix")
-    expect(category.getAttribute("style")).toContain("#f59e0b")
+    expect(category.getAttribute("style")).toContain("#EC93A8")
   })
 
   it("utilise la bannière en paysage, sans rang", () => {

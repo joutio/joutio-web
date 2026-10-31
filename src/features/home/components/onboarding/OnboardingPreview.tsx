@@ -5,6 +5,7 @@ import { TopicIcon } from "@/shared/components/topic-icon"
 import { TOKEN } from "@/shared/theme/tokens"
 import {
   categoryColor,
+  categoryTextColor,
   categoryIcon,
   categoryLabel,
 } from "@/shared/utils/categories"
@@ -89,7 +90,7 @@ function ThemesPreview({ interests }: { interests: string[] }) {
             >
               <Icon
                 className="size-6"
-                style={{ color: categoryColor(code) }}
+                style={{ color: categoryTextColor(code) }}
                 aria-hidden
               />
               <span className="line-clamp-2 text-2xs font-semibold">
