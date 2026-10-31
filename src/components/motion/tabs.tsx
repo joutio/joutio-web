@@ -407,7 +407,7 @@ export function TabsTrigger({
             layoutId={layoutId}
             layout
             className={cn(
-              "absolute right-0 bottom-0 left-0 h-px bg-primary",
+              "absolute right-0 bottom-0 left-0 h-px bg-foreground",
               indicatorClassName
             )}
           />
@@ -427,7 +427,7 @@ export function TabsTrigger({
           layout
           style={{ borderRadius: variant === "pill" ? 9999 : 8 }}
           className={cn(
-            "absolute inset-0 bg-primary",
+            "absolute inset-0 bg-foreground",
             radius,
             indicatorClassName
           )}
@@ -451,7 +451,7 @@ export function TabsTrigger({
           data-tabs-label=""
           aria-hidden="true"
           inert
-          className="pointer-events-none absolute inset-0 inline-flex items-center justify-center [gap:inherit] [padding:inherit] text-primary-foreground"
+          className="pointer-events-none absolute inset-0 inline-flex items-center justify-center [gap:inherit] [padding:inherit] text-background"
           style={{ clipPath: initialClip }}
         >
           {children}
