@@ -1,19 +1,19 @@
 import {
-  Bell,
-  Home,
-  LayoutGrid,
-  Swords,
-  UserRound,
-  Users,
-  type LucideIcon,
-} from "lucide-react"
+  BellIcon,
+  HouseIcon,
+  SquaresFourIcon,
+  SwordIcon,
+  UserIcon,
+  UsersIcon,
+  type Icon as IconType,
+} from "@phosphor-icons/react"
 import type { TranslationKey } from "@/lib/i18n/types"
 
 export interface NavItem {
   id: string
   labelKey: TranslationKey
   path: string
-  icon: LucideIcon
+  icon: IconType
 }
 
 /**
@@ -24,25 +24,25 @@ export interface NavItem {
  * (`FEATURE_FLAGS.topicAuthoring`) ; pas d'entrée de nav dédiée.
  */
 export const NAV: NavItem[] = [
-  { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
+  { id: "home", labelKey: "shell.nav.home", path: "/", icon: HouseIcon },
   {
     id: "topics",
     labelKey: "shell.nav.topics",
     path: "/topics",
-    icon: LayoutGrid,
+    icon: SquaresFourIcon,
   },
-  { id: "social", labelKey: "shell.nav.social", path: "/social", icon: Users },
+  { id: "social", labelKey: "shell.nav.social", path: "/social", icon: UsersIcon },
   {
     id: "challenges",
     labelKey: "shell.nav.challenges",
     path: "/challenges",
-    icon: Swords,
+    icon: SwordIcon,
   },
   {
     id: "notifications",
     labelKey: "shell.nav.notifications",
     path: "/notifications",
-    icon: Bell,
+    icon: BellIcon,
   },
 ]
 
@@ -51,25 +51,25 @@ export const NAV: NavItem[] = [
  * L'inbox complète reste accessible par la cloche de la topbar (« Voir tout »).
  */
 export const MOBILE_NAV: NavItem[] = [
-  { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
+  { id: "home", labelKey: "shell.nav.home", path: "/", icon: HouseIcon },
   {
     id: "topics",
     labelKey: "shell.nav.topics",
     path: "/topics",
-    icon: LayoutGrid,
+    icon: SquaresFourIcon,
   },
-  { id: "social", labelKey: "shell.nav.social", path: "/social", icon: Users },
+  { id: "social", labelKey: "shell.nav.social", path: "/social", icon: UsersIcon },
   {
     id: "challenges",
     labelKey: "shell.nav.challenges",
     path: "/challenges",
-    icon: Swords,
+    icon: SwordIcon,
   },
   {
     id: "profile",
     labelKey: "shell.nav.profile",
     path: "/profile",
-    icon: UserRound,
+    icon: UserIcon,
   },
 ]
 

@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
-import { Flame, Search } from "lucide-react"
+import { FireIcon, MagnifyingGlassIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useFeatureFlag } from "@/shared/hooks/use-feature-flag"
@@ -98,7 +98,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         aria-label={t("shell.topbar.searchAria")}
         className="hidden h-9 w-[280px] justify-start gap-2.5 px-3 font-normal text-muted-foreground desktop:inline-flex"
       >
-        <Search className="size-4" />
+        <MagnifyingGlassIcon className="size-4" />
         <span className="flex-1 truncate text-left text-sm">
           {t("shell.topbar.searchPlaceholder")}
         </span>
@@ -111,7 +111,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         className="hidden items-center gap-1.5 rounded-full border border-sidebar-border bg-card px-2.5 py-1.5 desktop:flex"
         title={t("shell.topbar.bestStreak")}
       >
-        <Flame className="size-4 text-[var(--duel-score)]" />
+        <FireIcon className="size-4 text-[var(--duel-score)]" />
         <span className="font-heading text-sm font-bold text-[var(--duel-score)]">
           {meProfile.data?.stats.bestWinStreak ?? 0}
         </span>
@@ -128,7 +128,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         aria-label={t("shell.topbar.searchShortAria")}
         className="text-muted-foreground desktop:hidden"
       >
-        <Search className="size-4" />
+        <MagnifyingGlassIcon className="size-4" />
       </Button>
 
       <div className="desktop:hidden">

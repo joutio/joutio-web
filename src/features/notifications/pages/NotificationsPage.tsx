@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { BellOff, CheckCheck, Trash2 } from "lucide-react"
+import { BellSlashIcon, ChecksIcon, TrashIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions"
@@ -85,14 +85,14 @@ export function NotificationsPage() {
               markAll.mutate()
             }}
           >
-            <CheckCheck /> {t("notifications.page.markAll")}
+            <ChecksIcon /> {t("notifications.page.markAll")}
           </Button>
           <Button
             variant="destructive"
             disabled={!hasNotifications || deleteAll.isPending}
             onClick={() => setConfirmDeleteAll(true)}
           >
-            <Trash2 /> {t("notifications.page.deleteAll")}
+            <TrashIcon /> {t("notifications.page.deleteAll")}
           </Button>
         </div>
       </PageHeaderBar>
@@ -112,7 +112,7 @@ export function NotificationsPage() {
 
         {!isLoading && !isError && items.length === 0 && (
           <EmptyState
-            icon={<BellOff className="size-6 text-muted-foreground" />}
+            icon={<BellSlashIcon className="size-6 text-muted-foreground" />}
             title={t(
               unreadOnly
                 ? "notifications.page.emptyUnreadTitle"

@@ -7,8 +7,8 @@ export const motionTokens = {
     considered: 0.48,
   },
   ease: {
-    enter: [0.16, 1, 0.3, 1],
-    exit: [0.7, 0, 0.84, 0],
+    enter: [0.22, 1, 0.36, 1],
+    exit: [0.55, 0, 0.85, 0.2],
     standard: [0.22, 1, 0.36, 1],
     /** For elements that move while already on screen. */
     inOut: [0.65, 0, 0.35, 1],

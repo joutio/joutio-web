@@ -1,12 +1,12 @@
 import {
-  LogOut,
-  Monitor,
-  Moon,
-  Settings,
-  Sun,
-  SunMoon,
-  UserRound,
-} from "lucide-react"
+  CircleHalfIcon,
+  GearSixIcon,
+  MonitorIcon,
+  MoonIcon,
+  SignOutIcon,
+  SunIcon,
+  UserIcon,
+} from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import {
   DropdownMenu,
@@ -111,11 +111,11 @@ export function ProfileMenu({
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onProfile}>
-          <UserRound /> {t("shell.profileMenu.profile")}
+          <UserIcon /> {t("shell.profileMenu.profile")}
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <SunMoon />
+            <CircleHalfIcon />
             <span className="flex min-w-0 flex-col items-start leading-tight">
               <span>{t("shell.profileMenu.appearance")}</span>
               <span className="text-xs font-normal text-muted-foreground">
@@ -129,23 +129,23 @@ export function ProfileMenu({
               onValueChange={(value) => setTheme(value as Theme)}
             >
               <DropdownMenuRadioItem value="light">
-                <Sun /> {t("shell.profileMenu.theme.light")}
+                <SunIcon /> {t("shell.profileMenu.theme.light")}
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="dark">
-                <Moon /> {t("shell.profileMenu.theme.dark")}
+                <MoonIcon /> {t("shell.profileMenu.theme.dark")}
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="system">
-                <Monitor /> {t("shell.profileMenu.theme.system")}
+                <MonitorIcon /> {t("shell.profileMenu.theme.system")}
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuItem onClick={onSettings}>
-          <Settings /> {t("shell.profileMenu.settings")}
+          <GearSixIcon /> {t("shell.profileMenu.settings")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={onLogout}>
-          <LogOut /> {t("shell.profileMenu.logout")}
+          <SignOutIcon /> {t("shell.profileMenu.logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

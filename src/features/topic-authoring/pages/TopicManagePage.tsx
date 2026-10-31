@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useParams } from "react-router-dom"
-import { ArrowLeft, Plus, Rocket } from "lucide-react"
+import { ArrowLeftIcon, PlusIcon, RocketIcon } from "@phosphor-icons/react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -109,13 +109,13 @@ export function TopicManagePage() {
         nativeButton={false}
         render={<Link to="/topics?mine=true" />}
       >
-        <ArrowLeft /> {t("authoring.topics.back")}
+        <ArrowLeftIcon /> {t("authoring.topics.back")}
       </Button>
 
       <Card className="mb-5">
         <CardContent className="flex flex-col gap-4">
           <div className="flex items-start gap-4">
-            <TopicIcon topic={topic} size={64} className="shadow-lg" />
+            <TopicIcon topic={topic} size={64} />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-heading text-lg font-bold">
@@ -125,7 +125,7 @@ export function TopicManagePage() {
                   variant="outline"
                   className={
                     topic.status === "PUBLISHED"
-                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+                      ? "border-correct/40 bg-correct/10 text-correct"
                       : undefined
                   }
                 >
@@ -146,7 +146,7 @@ export function TopicManagePage() {
             </div>
             {isDraft && (
               <Button onClick={() => publish.mutate()} disabled={!canPublish}>
-                <Rocket />
+                <RocketIcon />
                 {publish.isPending
                   ? t("authoring.manage.publishing")
                   : t("authoring.manage.publish")}
@@ -200,7 +200,7 @@ export function TopicManagePage() {
           </p>
         </div>
         <Button variant="outline" onClick={() => setEditor({ question: null })}>
-          <Plus /> {t("authoring.manage.addQuestion")}
+          <PlusIcon /> {t("authoring.manage.addQuestion")}
         </Button>
       </div>
 
@@ -222,7 +222,7 @@ export function TopicManagePage() {
           className="py-10"
         >
           <Button onClick={() => setEditor({ question: null })}>
-            <Plus /> {t("authoring.manage.addQuestion")}
+            <PlusIcon /> {t("authoring.manage.addQuestion")}
           </Button>
         </EmptyState>
       ) : (

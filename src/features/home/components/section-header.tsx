@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronRight } from "lucide-react"
+import { CaretRightIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 
 /**
@@ -39,13 +39,13 @@ export function SectionHeader({
         ) : (
           label
         )}
-        <ChevronRight />
+        <CaretRightIcon />
       </Button>
     ) : null)
 
   return (
     <div className="mb-3 flex items-center justify-between gap-3 compact:mb-2">
-      <h2 className="min-w-0 font-heading text-xl leading-tight font-bold">
+      <h2 className="min-w-0 type-title-2">
         {title}
       </h2>
       {action && <div className="flex shrink-0 items-center">{action}</div>}

@@ -29,7 +29,7 @@ import {
   useTransform,
 } from "motion/react"
 import type { AnimationPlaybackControls, MotionValue } from "motion/react"
-import { MoreHorizontal } from "lucide-react"
+import { DotsThreeIcon } from "@phosphor-icons/react"
 import { motionTokens } from "../lib/motion-tokens"
 import styles from "./swipe-actions.module.css"
 
@@ -568,7 +568,7 @@ export function SwipeActionsRow({
                 if (event.detail > 0) setMenuOpen((open) => !open)
               }}
             >
-              <MoreHorizontal size={18} strokeWidth={1.75} aria-hidden="true" />
+              <DotsThreeIcon size={18} aria-hidden="true" />
             </Menu.Trigger>
             <Menu.Portal>
               <Menu.Content

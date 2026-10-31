@@ -1,4 +1,4 @@
-import { Check, Loader2, Star } from "lucide-react"
+import { CheckIcon, CircleNotchIcon, StarIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
@@ -166,7 +166,7 @@ export function InterestProfileForm({
               </span>
               {selected && (
                 <span className="absolute top-3 right-3 grid size-5 place-items-center rounded-full bg-primary text-primary-foreground">
-                  <Check className="size-3" strokeWidth={3} aria-hidden />
+                  <CheckIcon className="size-3" aria-hidden />
                 </span>
               )}
             </button>
@@ -177,7 +177,7 @@ export function InterestProfileForm({
       {value.length > 1 && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-muted/30 p-4">
           <div className="flex items-center gap-2">
-            <Star className="size-4 text-primary" aria-hidden />
+            <StarIcon className="size-4 text-accent-ink" aria-hidden />
             <h3 className="text-sm font-semibold">
               {t("home.onboarding.primaryTitle")}
             </h3>
@@ -203,7 +203,7 @@ export function InterestProfileForm({
                   onClick={() => promote(code)}
                   className={
                     isPrimary
-                      ? "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-primary bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary"
+                      ? "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-primary bg-primary/10 px-3 py-1.5 text-xs font-semibold text-accent-ink"
                       : "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-muted/50 disabled:opacity-50"
                   }
                 >
@@ -218,7 +218,7 @@ export function InterestProfileForm({
 
       {categoriesQuery.isFetching && (
         <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-          <Loader2 className="size-3.5 animate-spin" aria-hidden />
+          <CircleNotchIcon className="size-3.5 animate-spin" aria-hidden />
           {t("common.app.loading")}
         </span>
       )}

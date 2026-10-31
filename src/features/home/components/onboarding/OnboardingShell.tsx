@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Zap } from "lucide-react"
+import { JoutioMark } from "@/shared/components/joutio-mark"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -38,15 +38,7 @@ export function OnboardingShell({
         <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-3 px-(--page-gutter-x) py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="inline-flex size-7 items-center justify-center rounded-lg bg-foreground">
-                <Zap
-                  size={15}
-                  className="text-background"
-                  fill="currentColor"
-                  strokeWidth={0}
-                  aria-hidden
-                />
-              </span>
+              <JoutioMark className="size-7" />
               <span className="text-sm font-semibold">Joutio</span>
             </div>
             {secondaryLabel && onSecondary && (

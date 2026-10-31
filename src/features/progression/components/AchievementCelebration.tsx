@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Check, Sparkles } from "lucide-react"
+import { CheckIcon, SparkleIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { getSessionUserId } from "@/features/auth"
 import { useTopicOverview } from "@/features/topic-detail"
@@ -119,7 +119,7 @@ export function AchievementCelebration({
       aria-modal="true"
       aria-label={t("progression.achievement.heading")}
     >
-      <div className="qu-pop flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border bg-background p-5 text-center shadow-2xl">
+      <div className="qu-pop flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border bg-background p-5 text-center">
         <p className="text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase">
           {t("progression.achievement.heading")}
         </p>
@@ -142,14 +142,14 @@ export function AchievementCelebration({
           />
         )}
         {achievement.kind !== "TITLE" && (
-          <h2 className="font-heading text-xl font-bold">
+          <h2 className="type-title-2">
             {achievement.kind === "BADGE" && badgeLabel}
           </h2>
         )}
 
         {achievement.kind === "BADGE" && objective && (
           <p className="flex max-w-[36ch] items-start justify-center gap-1.5 text-sm leading-relaxed">
-            <Check
+            <CheckIcon
               className="mt-0.5 size-4 shrink-0 text-success-600"
               aria-hidden
             />
@@ -185,7 +185,7 @@ export function AchievementCelebration({
               equipTitle.mutate(titleKey, { onSuccess: () => dismiss() })
             }
           >
-            <Sparkles /> {t("progression.achievement.equipTitle")}
+            <SparkleIcon /> {t("progression.achievement.equipTitle")}
           </Button>
         )}
 

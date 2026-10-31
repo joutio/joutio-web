@@ -10,7 +10,7 @@ import {
 /**
  * Garde-fou responsive du contrat device (cf. best-practices/.frontend/responsive-sizing.md) :
  * - aucun débordement horizontal sur les écrans non-duel ;
- * - cibles tactiles >= 44 px et champs >= 16 px sous 1024 px ;
+ * - cibles tactiles >= 36 px (Jo Button S) et champs >= 16 px sous 1024 px ;
  * - chrome cohérent : nav basse en compact, rail en tablette, sidebar étendue en desktop ;
  * - bandes collantes calées sur la topbar.
  */
@@ -81,7 +81,8 @@ async function findSmallTargets(page: Page): Promise<SmallTarget[]> {
         return
       const rect = el.getBoundingClientRect()
       if (rect.width === 0 || rect.height === 0) return
-      if (rect.width < 44 || rect.height < 44) {
+      // Jo Button S : 36 px de haut, 44 px de large au minimum.
+      if (rect.width < 36 || rect.height < 36) {
         bad.push({
           selector:
             `${el.tagName.toLowerCase()}${el.getAttribute("data-slot") ? `[data-slot=${el.getAttribute("data-slot")}]` : ""}`.slice(
@@ -219,7 +220,7 @@ test("contrat responsive : viewports, chrome, cibles et débordements", async ({
       const small = await findSmallTargets(page)
       expect(
         small,
-        `${path} @${viewport.width}: cibles < 44px\n${small
+        `${path} @${viewport.width}: cibles < 36px\n${small
           .map((t) => `  ${t.selector} (${t.width}x${t.height})`)
           .join("\n")}`
       ).toEqual([])

@@ -1,20 +1,20 @@
 import notionistsDefinition from "@dicebear/styles/notionists.json"
 import type { StyleDefinition } from "@dicebear/core"
 import {
-  Brush,
-  Eye,
-  Glasses,
-  Hand,
-  PaintBucket,
-  Palette,
-  PenLine,
-  Scissors,
-  Shirt,
-  Smile,
-  Sparkles,
-  Triangle,
-  VenetianMask,
-} from "lucide-react"
+  EyeIcon,
+  EyeglassesIcon,
+  HandIcon,
+  MaskHappyIcon,
+  PaintBrushIcon,
+  PaintBucketIcon,
+  PaletteIcon,
+  PencilLineIcon,
+  ScissorsIcon,
+  SmileyIcon,
+  SparkleIcon,
+  TShirtIcon,
+  TriangleIcon,
+} from "@phosphor-icons/react"
 import { collectPalettes, collectVariants } from "./derive"
 import { numberedVariants, variantLabelKeys } from "./labels"
 import { BACKGROUND_COLORS, INK_COLORS, PAPER_COLORS } from "./palettes"
@@ -60,12 +60,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "visage",
     labelKey: "avatar.groups.face",
-    icon: Smile,
+    icon: SmileyIcon,
     sections: [
       {
         id: "eyes",
         labelKey: "avatar.sections.eyes",
-        icon: Eye,
+        icon: EyeIcon,
         variantField: "eyes",
         variants: EYES_VARIANTS,
         labelKeys: variantLabelKeys("notionists", "eyes", EYES_VARIANTS),
@@ -73,7 +73,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "eyebrows",
         labelKey: "avatar.sections.eyebrows",
-        icon: Brush,
+        icon: PaintBrushIcon,
         variantField: "eyebrows",
         variants: EYEBROWS_VARIANTS,
         labelKeys: variantLabelKeys(
@@ -85,7 +85,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "nose",
         labelKey: "avatar.sections.nose",
-        icon: Triangle,
+        icon: TriangleIcon,
         variantField: "nose",
         variants: NOSE_VARIANTS,
         labelKeys: variantLabelKeys("notionists", "nose", NOSE_VARIANTS),
@@ -93,7 +93,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "mouth",
         labelKey: "avatar.sections.mouth",
-        icon: Smile,
+        icon: SmileyIcon,
         variantField: "mouth",
         variants: MOUTH_VARIANTS,
         labelKeys: variantLabelKeys("notionists", "mouth", MOUTH_VARIANTS),
@@ -103,12 +103,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "cheveux",
     labelKey: "avatar.groups.hair",
-    icon: Scissors,
+    icon: ScissorsIcon,
     sections: [
       {
         id: "hair",
         labelKey: "avatar.sections.hair",
-        icon: Scissors,
+        icon: ScissorsIcon,
         variantField: "hair",
         variants: HAIR_VARIANTS,
         labelKeys: {
@@ -120,7 +120,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "beard",
         labelKey: "avatar.sections.beard",
-        icon: VenetianMask,
+        icon: MaskHappyIcon,
         variantField: "beard",
         variants: BEARD_VARIANTS,
         labelKeys: variantLabelKeys("notionists", "beard", BEARD_VARIANTS),
@@ -131,12 +131,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "tenue",
     labelKey: "avatar.groups.outfit",
-    icon: Shirt,
+    icon: TShirtIcon,
     sections: [
       {
         id: "clothes",
         labelKey: "avatar.sections.clothes",
-        icon: Shirt,
+        icon: TShirtIcon,
         variantField: "clothes",
         variants: CLOTHES_VARIANTS,
         labelKeys: variantLabelKeys("notionists", "clothes", CLOTHES_VARIANTS),
@@ -144,7 +144,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "clothesGraphic",
         labelKey: "avatar.sections.clothesGraphic",
-        icon: Sparkles,
+        icon: SparkleIcon,
         variantField: "clothesGraphic",
         variants: CLOTHES_GRAPHIC_VARIANTS,
         labelKeys: {
@@ -157,7 +157,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "gesture",
         labelKey: "avatar.sections.gesture",
-        icon: Hand,
+        icon: HandIcon,
         variantField: "gesture",
         variants: GESTURE_VARIANTS,
         labelKeys: GESTURE_LABEL_KEYS,
@@ -168,12 +168,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "accessoires",
     labelKey: "avatar.groups.accessories",
-    icon: Glasses,
+    icon: EyeglassesIcon,
     sections: [
       {
         id: "glasses",
         labelKey: "avatar.sections.glasses",
-        icon: Glasses,
+        icon: EyeglassesIcon,
         variantField: "glasses",
         variants: GLASSES_VARIANTS,
         labelKeys: variantLabelKeys("notionists", "glasses", GLASSES_VARIANTS),
@@ -184,12 +184,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "couleurs",
     labelKey: "avatar.groups.colors",
-    icon: Palette,
+    icon: PaletteIcon,
     sections: [
       {
         id: "ink",
         labelKey: "avatar.sections.ink",
-        icon: PenLine,
+        icon: PencilLineIcon,
         colorField: "inkColor",
         colors: INK_COLORS,
         colorLabelKey: "avatar.colors.ink",
@@ -197,7 +197,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "paper",
         labelKey: "avatar.sections.paper",
-        icon: PaintBucket,
+        icon: PaintBucketIcon,
         colorField: "paperColor",
         colors: PAPER_COLORS,
         colorLabelKey: "avatar.colors.paper",
@@ -205,7 +205,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "background",
         labelKey: "avatar.sections.background",
-        icon: Palette,
+        icon: PaletteIcon,
         colorField: "backgroundColor",
         colors: BACKGROUND_COLORS,
         colorLabelKey: "avatar.colors.background",

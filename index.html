@@ -12,7 +12,7 @@
     <!-- PWA installée : plein écran, chrome natif minimal (push iOS ≥ 16.4 via écran d'accueil).
          `theme-color` suit le thème RÉSOLU de l'app (pas prefers-color-scheme) : la barre d'état
          Android/Chrome reste alignée même si l'utilisateur force Clair/Sombre. -->
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#000000" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -27,7 +27,7 @@
       (function () {
         try {
           var raw = localStorage.getItem("joutio-theme");
-          var pref = raw ? JSON.parse(raw).state.theme : "system";
+          var pref = raw ? JSON.parse(raw).state.theme : "dark";
           var dark =
             pref === "dark" ||
             (pref === "system" &&
@@ -36,7 +36,7 @@
           root.classList.toggle("dark", dark);
           root.style.colorScheme = dark ? "dark" : "light";
           var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", dark ? "#0a0a0a" : "#ffffff");
+          if (meta) meta.setAttribute("content", dark ? "#000000" : "#f6f5f1");
           // Habillage de la nav basse (mobile) : appliqué avant le paint pour éviter un saut.
           var navRaw = localStorage.getItem("joutio-bottom-nav");
           var nav = navRaw ? JSON.parse(navRaw).state.variant : "floating";
@@ -53,11 +53,10 @@
          le script anti-FOUC ci-dessus. Masqué dès que React a monté l'app (`#root` non vide). -->
     <div id="boot-splash" aria-hidden="true">
       <div class="boot-mark">
-        <svg viewBox="0 0 24 24" width="34" height="34">
-          <path
-            fill="currentColor"
-            d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
-          />
+        <svg viewBox="0 0 100 100" width="64" height="64">
+          <rect width="100" height="100" rx="28" fill="#181818" />
+          <path d="M60 44V66A18 18 0 0 1 42 84H36" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="60" cy="24" r="7" fill="#e8b04a" />
         </svg>
       </div>
       <p class="boot-title">Joutio</p>
@@ -72,33 +71,31 @@
         place-content: center;
         justify-items: center;
         gap: 14px;
-        background: #ffffff;
-        color: #0a0a0a;
+        background: #f6f5f1;
+        color: #121210;
       }
       html.dark #boot-splash {
-        background: #0a0a0a;
-        color: #fafafa;
+        background: #000000;
+        color: #ffffff;
       }
       #boot-splash .boot-mark {
         display: grid;
         place-items: center;
         width: 64px;
         height: 64px;
-        border-radius: 9999px;
-        background: currentColor;
         animation: boot-pulse 1.4s ease-in-out infinite;
       }
       #boot-splash .boot-mark svg {
-        color: #ffffff;
+        color: #000000;
       }
       html.dark #boot-splash .boot-mark svg {
-        color: #0a0a0a;
+        color: #000000;
       }
       #boot-splash .boot-title {
         margin: 0;
         font-family: system-ui, sans-serif;
         font-size: 18px;
-        font-weight: 800;
+        font-weight: 700;
         letter-spacing: -0.02em;
       }
       #boot-splash .boot-sub {

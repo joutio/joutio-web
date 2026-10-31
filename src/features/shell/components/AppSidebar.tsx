@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Zap } from "lucide-react"
+import { JoutioMark } from "@/shared/components/joutio-mark"
 import {
   Sidebar as SidebarUI,
   SidebarContent,
@@ -51,11 +51,9 @@ export function AppSidebar() {
               onClick={() => void navigate("/")}
               className="data-[state=open]:bg-sidebar-accent"
             >
-              <div className="grid size-8 shrink-0 place-items-center rounded-full bg-foreground text-background">
-                <Zap className="!size-4 fill-current" strokeWidth={0} />
-              </div>
+              <JoutioMark className="size-8" />
               <div className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-heading font-extrabold">
+                <span className="truncate font-heading font-bold">
                   Joutio
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
@@ -89,7 +87,7 @@ export function AppSidebar() {
                       onClick={() => void navigate(item.path)}
                     >
                       <span className="relative shrink-0">
-                        <Icon />
+                        <Icon weight={isActive ? "fill" : "regular"} />
                         <NavBadge count={badge} />
                       </span>
                       <span className="flex-1">{t(item.labelKey)}</span>

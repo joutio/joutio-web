@@ -1,19 +1,19 @@
 import micahDefinition from "@dicebear/styles/micah.json"
 import type { StyleDefinition } from "@dicebear/core"
 import {
-  Brush,
-  Ear,
-  Eye,
-  Gem,
-  Glasses,
-  PaintBucket,
-  Palette,
-  Scissors,
-  Shirt,
-  Smile,
-  Triangle,
-  VenetianMask,
-} from "lucide-react"
+  DiamondIcon,
+  EarIcon,
+  EyeIcon,
+  EyeglassesIcon,
+  MaskHappyIcon,
+  PaintBrushIcon,
+  PaintBucketIcon,
+  PaletteIcon,
+  ScissorsIcon,
+  SmileyIcon,
+  TShirtIcon,
+  TriangleIcon,
+} from "@phosphor-icons/react"
 import { collectPalettes, collectVariants } from "./derive"
 import {
   BACKGROUND_COLORS,
@@ -81,12 +81,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "visage",
     labelKey: "avatar.groups.face",
-    icon: Smile,
+    icon: SmileyIcon,
     sections: [
       {
         id: "eyes",
         labelKey: "avatar.sections.eyes",
-        icon: Eye,
+        icon: EyeIcon,
         variantField: "eyes",
         variants: EYES_VARIANTS,
         labelKeys: {
@@ -103,7 +103,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "eyebrows",
         labelKey: "avatar.sections.eyebrows",
-        icon: Brush,
+        icon: PaintBrushIcon,
         variantField: "eyebrows",
         variants: EYEBROWS_VARIANTS,
         labelKeys: {
@@ -119,7 +119,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "nose",
         labelKey: "avatar.sections.nose",
-        icon: Triangle,
+        icon: TriangleIcon,
         variantField: "nose",
         variants: NOSE_VARIANTS,
         labelKeys: {
@@ -131,7 +131,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "mouth",
         labelKey: "avatar.sections.mouth",
-        icon: Smile,
+        icon: SmileyIcon,
         variantField: "mouth",
         variants: MOUTH_VARIANTS,
         labelKeys: {
@@ -153,12 +153,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "cheveux",
     labelKey: "avatar.groups.hair",
-    icon: Scissors,
+    icon: ScissorsIcon,
     sections: [
       {
         id: "hair",
         labelKey: "avatar.sections.hair",
-        icon: Scissors,
+        icon: ScissorsIcon,
         variantField: "hair",
         variants: HAIR_VARIANTS,
         labelKeys: {
@@ -178,7 +178,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "facialHair",
         labelKey: "avatar.sections.beard",
-        icon: VenetianMask,
+        icon: MaskHappyIcon,
         variantField: "facialHair",
         variants: FACIAL_HAIR_VARIANTS,
         labelKeys: {
@@ -195,12 +195,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "accessoires",
     labelKey: "avatar.groups.accessories",
-    icon: Glasses,
+    icon: EyeglassesIcon,
     sections: [
       {
         id: "glasses",
         labelKey: "avatar.sections.glasses",
-        icon: Glasses,
+        icon: EyeglassesIcon,
         variantField: "glasses",
         variants: GLASSES_VARIANTS,
         labelKeys: {
@@ -215,7 +215,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "earrings",
         labelKey: "avatar.sections.earrings",
-        icon: Gem,
+        icon: DiamondIcon,
         variantField: "earrings",
         variants: EARRINGS_VARIANTS,
         labelKeys: {
@@ -230,7 +230,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "ears",
         labelKey: "avatar.sections.ears",
-        icon: Ear,
+        icon: EarIcon,
         variantField: "ears",
         variants: EARS_VARIANTS,
         labelKeys: {
@@ -243,12 +243,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "vetements",
     labelKey: "avatar.groups.clothes",
-    icon: Shirt,
+    icon: TShirtIcon,
     sections: [
       {
         id: "clothes",
         labelKey: "avatar.sections.clothes",
-        icon: Shirt,
+        icon: TShirtIcon,
         variantField: "clothes",
         variants: CLOTHES_VARIANTS,
         labelKeys: {
@@ -265,12 +265,12 @@ const groups: AvatarStyleGroup[] = [
   {
     id: "couleurs",
     labelKey: "avatar.groups.colors",
-    icon: Palette,
+    icon: PaletteIcon,
     sections: [
       {
         id: "skin",
         labelKey: "avatar.sections.skin",
-        icon: Palette,
+        icon: PaletteIcon,
         colorField: "baseColor",
         colors: SKIN_COLORS,
         colorLabelKey: "avatar.colors.skin",
@@ -278,7 +278,7 @@ const groups: AvatarStyleGroup[] = [
       {
         id: "background",
         labelKey: "avatar.sections.background",
-        icon: PaintBucket,
+        icon: PaintBucketIcon,
         colorField: "backgroundColor",
         colors: BACKGROUND_COLORS,
         colorLabelKey: "avatar.colors.background",

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
-import { Play, Swords } from "lucide-react"
+import { PlayIcon, SwordIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { useActiveGames } from "@/features/game"
 import { useImmersiveNavigate, useTopicName } from "@/features/shell"
@@ -34,7 +34,7 @@ export function ResumeBanner() {
               aria-hidden
               className="absolute -inset-1 animate-pulse rounded-xl bg-destructive/30 blur-[3px] motion-reduce:animate-none"
             />
-            <Swords className="relative size-4" aria-hidden />
+            <SwordIcon className="relative size-4" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
             <p className="flex items-center gap-1.5 text-sm font-semibold text-destructive">
@@ -55,7 +55,7 @@ export function ResumeBanner() {
             </p>
           </div>
           <Button size="sm" onClick={() => navigate(`/game/${game.gameId}`)}>
-            <Play /> {t("home.resumeBanner.join")}
+            <PlayIcon /> {t("home.resumeBanner.join")}
           </Button>
         </motion.div>
       )}

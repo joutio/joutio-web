@@ -25,10 +25,14 @@ export function EmptyState({
     <Card
       className={cn("items-center gap-3 px-5 py-12 text-center", className)}
     >
-      {icon}
-      <div className="text-base font-semibold">{title}</div>
+      {icon && (
+        <span className="grid size-18 place-items-center rounded-xl bg-raised text-primary [&_svg]:size-9">
+          {icon}
+        </span>
+      )}
+      <div className="type-title-1 text-balance">{title}</div>
       {description && (
-        <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-[300px] text-base text-pretty text-muted-foreground">
           {description}
         </p>
       )}

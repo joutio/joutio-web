@@ -6,6 +6,8 @@ interface ActionButtonProps {
   icon: ReactNode
   children: ReactNode
   background: string
+  /** Texte du bouton : noir sur ambre, blanc sur surface. */
+  color?: string
   disabled?: boolean
   onClick: () => void
   /** Nom accessible quand le libellé visible est trop générique (ex. « Signaler »). */
@@ -17,6 +19,7 @@ export function ActionButton({
   icon,
   children,
   background,
+  color = RESULT_WHITE,
   disabled,
   onClick,
   ariaLabel,
@@ -27,12 +30,12 @@ export function ActionButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
-      className="qu-btn flex w-full min-w-0 items-center justify-center gap-2 rounded-[14px] font-bold whitespace-nowrap disabled:opacity-50"
+      className="qu-btn flex w-full min-w-0 items-center justify-center gap-2 rounded-sm font-semibold whitespace-nowrap disabled:opacity-50"
       style={{
         height: "clamp(42px, 6.2dvh, 54px)",
         background,
-        color: RESULT_WHITE,
-        fontFamily: TOKEN.fontDisplay,
+        color,
+        fontFamily: TOKEN.fontSans,
         fontSize: "clamp(13px, 2dvh, 16px)",
       }}
     >

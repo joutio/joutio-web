@@ -52,7 +52,7 @@ export function EntityTile({
       )}
     >
       {visual}
-      <div className="line-clamp-2 min-h-8 w-full font-heading text-xs leading-tight font-extrabold tracking-tight break-words hyphens-auto tablet-up:min-h-9 tablet-up:text-sm">
+      <div className="line-clamp-2 min-h-8 w-full font-heading text-xs leading-tight font-bold tracking-tight break-words hyphens-auto tablet-up:min-h-9 tablet-up:text-sm">
         {title}
       </div>
       {trailing}

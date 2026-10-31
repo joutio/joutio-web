@@ -17,6 +17,12 @@ import {
   resolveAvatarStyleId,
 } from "@/shared/avatar/styles"
 
+/** Taille à partir de laquelle l'avatar porte le cadre complet de son rang. */
+const ELO_FRAME_MIN_SIZE = 40
+
+/** Horloge commune : le délai négatif met en phase tous les cadres, quel que soit leur montage. */
+const ELO_CLOCK = `-${Math.round(performance.now())}ms`
+
 /**
  * Avatar joueur — rend l'avatar DiceBear configuré, sinon l'icône de base grise.
  *
@@ -81,9 +87,10 @@ export function UserAvatar({
       ? { rating, provisional }
       : fetched
     : null
-  // Même couleur que l'avatar du profil, épaisseur proportionnelle à la taille réelle
-  // (`clamp` en `cqw` sur le conteneur), sans offset.
-  const tier = elo ? eloTier(elo.rating) : null
+  const tier = elo ? (elo.provisional ? "PROVISIONAL" : eloTier(elo.rating)) : null
+  // Cadre complet dès 40 px, anneau plein en dessous (épaisseur proportionnelle en `cqw`).
+  const framed = tier !== null && (fluid || size >= ELO_FRAME_MIN_SIZE)
+  const ring = tier !== null && !framed
 
   // Style non embarqué : chargé au premier rendu, re-rendu une fois prêt.
   const [styleReady, setStyleReady] = useState(
@@ -108,18 +115,19 @@ export function UserAvatar({
     [dicebearOptions, initialOnly, styleReady, size, seed]
   )
 
-  const wrapperStyle: CSSProperties = {
+  const wrapperStyle = {
     width: fluid ? "100%" : size,
     height: fluid ? "100%" : size,
     containerType: "inline-size",
-  }
+    "--elo-clock": ELO_CLOCK,
+  } as CSSProperties
 
   const avatarStyle: CSSProperties = {
     width: "100%",
     height: "100%",
-    outline: tier ? "var(--elo-ring) solid" : undefined,
-    outlineWidth: tier ? "clamp(1px, 5cqw, 4px)" : undefined,
-    outlineOffset: tier ? 0 : undefined,
+    outline: ring ? "var(--elo-ring) solid" : undefined,
+    outlineWidth: ring ? "clamp(1px, 5cqw, 4px)" : undefined,
+    outlineOffset: ring ? 0 : undefined,
   }
 
   return (
@@ -128,9 +136,11 @@ export function UserAvatar({
       className={cn("relative inline-flex shrink-0 rounded-full", className)}
       style={wrapperStyle}
     >
+      {framed && <span aria-hidden className="qu-elo-frame" />}
       <Avatar
         className={cn(
-          "size-full overflow-hidden rounded-full bg-transparent after:hidden"
+          "size-full overflow-hidden rounded-full bg-transparent after:hidden",
+          framed && "qu-elo-portrait"
         )}
         style={avatarStyle}
       >

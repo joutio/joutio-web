@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Check, Snowflake, X } from "lucide-react"
+import { CheckIcon, SnowflakeIcon, XIcon } from "@phosphor-icons/react"
 
 import {
   Tooltip,
@@ -226,17 +226,16 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
       "--freeze-foreground-color": "var(--info-foreground)",
     } as React.CSSProperties
 
-    // Même disque que les pastilles d'issue des cartes d'historique : 80 % de la teinte
-    // (`--success-600` / `--loss`) + noir, icône blanche.
+    // Spec Jo Streak : jour validé en ambre, jour manqué en contour avec croix rouge.
     const activeDayStyle: React.CSSProperties = {
-      backgroundColor: "color-mix(in oklab, var(--success-600) 80%, black)",
-      borderColor: "color-mix(in oklab, var(--success-600) 80%, black)",
-      color: "#fff",
+      backgroundColor: "var(--primary)",
+      borderColor: "var(--primary)",
+      color: "var(--primary-foreground)",
     }
     const missedDayStyle: React.CSSProperties = {
-      backgroundColor: "color-mix(in oklab, var(--loss) 80%, black)",
-      borderColor: "color-mix(in oklab, var(--loss) 80%, black)",
-      color: "#fff",
+      backgroundColor: "transparent",
+      borderColor: "var(--border)",
+      color: "var(--wrong)",
     }
     const cellToneStyle = (
       isActive: boolean,
@@ -342,8 +341,8 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                         "bg-muted text-foreground ring-2 ring-primary ring-offset-0 ring-inset",
                       isFuture &&
                         "cursor-not-allowed bg-muted text-muted-foreground/50",
-                      isMissed && "text-white",
-                      isActive && !usedFreeze && "text-white",
+                      isMissed && "text-wrong",
+                      isActive && !usedFreeze && "text-primary-foreground",
                       usedFreeze &&
                         "bg-[var(--freeze-color)] text-[var(--freeze-foreground-color)] hover:opacity-90"
                     )}
@@ -408,10 +407,10 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                         "bg-muted text-foreground ring-2 ring-primary ring-offset-2 ring-offset-background",
                       isFuture &&
                         "cursor-not-allowed border-border bg-muted text-muted-foreground/50",
-                      isActive && !usedFreeze && "text-white",
+                      isActive && !usedFreeze && "text-primary-foreground",
                       usedFreeze &&
                         "border-[var(--freeze-color)] bg-[var(--freeze-color)] text-[var(--freeze-foreground-color)]",
-                      isMissed && "text-white",
+                      isMissed && "text-wrong",
                       !isActive &&
                         !usedFreeze &&
                         !isFuture &&
@@ -421,11 +420,11 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                     style={cellToneStyle(isActive, isMissed, usedFreeze)}
                   >
                     {usedFreeze ? (
-                      <Snowflake className="h-5 w-5" />
+                      <SnowflakeIcon className="h-5 w-5" />
                     ) : isActive ? (
-                      <Check className="h-5 w-5 text-white" />
+                      <CheckIcon data-glyph="check" weight="bold" className="h-5 w-5" />
                     ) : isMissed ? (
-                      <X className="h-5 w-5 text-white" />
+                      <XIcon data-glyph="x" weight="bold" className="h-5 w-5" />
                     ) : null}
                   </button>
                   <span
@@ -504,7 +503,7 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                                   "h-4 w-4 rounded-[0.4rem] border border-border/40 transition-colors",
                                   "hover:ring-1 hover:ring-ring",
                                   isToday &&
-                                    "border-primary !bg-primary-foreground !text-primary",
+                                    "border-primary !bg-primary-foreground !text-accent-ink",
                                   isActive &&
                                     !usedFreeze &&
                                     "border-primary/80 bg-primary",

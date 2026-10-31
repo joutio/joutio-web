@@ -1,6 +1,12 @@
 "use client"
 
-import { Loader2, Mail, MessageSquare, Phone, RefreshCw } from "lucide-react"
+import {
+  ArrowsClockwiseIcon,
+  ChatIcon,
+  CircleNotchIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+} from "@phosphor-icons/react"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
@@ -73,17 +79,17 @@ const DELIVERY_METHOD_CONFIG: Record<
   email: {
     label: "Email",
     titleKey: "shared.otp.emailTitle",
-    icon: Mail,
+    icon: EnvelopeIcon,
   },
   sms: {
     label: "SMS",
     titleKey: "shared.otp.smsTitle",
-    icon: MessageSquare,
+    icon: ChatIcon,
   },
   whatsapp: {
     label: "WhatsApp",
     titleKey: "shared.otp.whatsappTitle",
-    icon: Phone,
+    icon: PhoneIcon,
   },
 }
 
@@ -182,7 +188,7 @@ function ResendButton({ cooldown, isLoading, onClick }: ResendButtonProps) {
         t("shared.otp.resendIn", { count: cooldown })
       ) : (
         <span className="flex items-center gap-1">
-          <RefreshCw aria-hidden="true" className="size-3" />
+          <ArrowsClockwiseIcon aria-hidden="true" className="size-3" />
           {t("shared.otp.resend")}
         </span>
       )}
@@ -283,7 +289,7 @@ function VerifyButton({
     >
       {isLoading ? (
         <>
-          <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+          <CircleNotchIcon aria-hidden="true" className="size-4 animate-spin" />
           {t("shared.otp.verifying")}
         </>
       ) : (

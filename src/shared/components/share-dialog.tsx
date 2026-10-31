@@ -33,7 +33,7 @@ export function ShareDialog({
 
   const content = (
     <div className="flex flex-col items-center">
-      <div className="grid place-items-center rounded-2xl bg-white p-3 shadow-lg">
+      <div className="grid place-items-center rounded-2xl bg-white p-3">
         <QRCodeSVG value={url} size={120} />
       </div>
       <div className="w-full">

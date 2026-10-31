@@ -5,7 +5,7 @@ import type { TFunction } from "i18next"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeftIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -79,7 +79,7 @@ export function CreateTopicPage() {
       description: "",
       category: "",
       emoji: "",
-      color: "#6366f1",
+      color: "#E8B04A",
       imageUrl: "",
     },
   })
@@ -123,11 +123,11 @@ export function CreateTopicPage() {
         nativeButton={false}
         render={<Link to="/topics?mine=true" />}
       >
-        <ArrowLeft /> {t("authoring.topics.back")}
+        <ArrowLeftIcon /> {t("authoring.topics.back")}
       </Button>
 
       <div className="mb-5">
-        <h1 className="font-heading text-xl font-bold">
+        <h1 className="type-title-2">
           {t("authoring.create.title")}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -155,7 +155,7 @@ export function CreateTopicPage() {
                 category: category || null,
               }}
               size={56}
-              className="shadow-lg"
+              
             />
           </FormRow>
 

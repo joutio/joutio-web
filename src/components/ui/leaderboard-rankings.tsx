@@ -1,13 +1,13 @@
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import {
-  ChevronLeft,
-  ChevronRight,
-  Crown,
-  EllipsisIcon,
-  TrendingDown,
-  TrendingUp,
-} from "lucide-react"
+  CaretLeftIcon,
+  CaretRightIcon,
+  CrownIcon,
+  DotsThreeIcon,
+  TrendDownIcon,
+  TrendUpIcon,
+} from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -138,7 +138,7 @@ const LeaderboardRankings = React.forwardRef<
                   aria-label={t("shared.leaderboard.collapsedAria")}
                   className="flex items-center justify-center px-4 py-2 text-muted-foreground"
                 >
-                  <EllipsisIcon className="h-5 w-5" />
+                  <DotsThreeIcon className="h-5 w-5" />
                 </div>
               )
             }
@@ -174,11 +174,11 @@ const LeaderboardRankings = React.forwardRef<
                 )}
               >
                 <div className="flex w-12 items-center gap-1">
-                  <span className="w-4 text-sm font-semibold tabular-nums">
+                  <span className="w-4 text-sm font-semibold font-mono tabular-nums">
                     {ranking.rank}
                   </span>
                   {showCrown ? (
-                    <Crown
+                    <CrownIcon
                       className={cn("h-5 w-5", crownColor)}
                       aria-hidden="true"
                     />
@@ -223,16 +223,16 @@ const LeaderboardRankings = React.forwardRef<
                         "inline-flex items-center gap-1 text-xs font-medium",
                         ranking.rankChange > 0
                           ? "text-success-600"
-                          : "text-red-600"
+                          : "text-wrong"
                       )}
                     >
                       {ranking.rankChange > 0 ? (
-                        <TrendingUp
+                        <TrendUpIcon
                           className="h-3.5 w-3.5"
                           aria-hidden="true"
                         />
                       ) : (
-                        <TrendingDown
+                        <TrendDownIcon
                           className="h-3.5 w-3.5"
                           aria-hidden="true"
                         />
@@ -240,7 +240,7 @@ const LeaderboardRankings = React.forwardRef<
                       {Math.abs(ranking.rankChange)}
                     </p>
                   ) : null}
-                  <p className="leading-none font-semibold tabular-nums">
+                  <p className="leading-none font-semibold font-mono tabular-nums">
                     {formatLeaderboardValue(ranking.value)}
                   </p>
                 </div>
@@ -282,7 +282,7 @@ const LeaderboardRankings = React.forwardRef<
                 disabled={currentPage === 1}
                 className="rounded-md border p-1.5 transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <CaretLeftIcon className="h-4 w-4" />
               </Button>
 
               <span className="text-sm text-muted-foreground">
@@ -301,7 +301,7 @@ const LeaderboardRankings = React.forwardRef<
                 disabled={currentPage === totalPages}
                 className="rounded-md border p-1.5 transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <ChevronRight className="h-4 w-4" />
+                <CaretRightIcon className="h-4 w-4" />
               </Button>
             </div>
           </div>

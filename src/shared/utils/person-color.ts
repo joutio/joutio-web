@@ -1,13 +1,13 @@
 import { hashString } from "@/lib/helpers"
 
 const AVATAR_COLORS = [
-  "#8b5cf6",
-  "#06b6d4",
-  "#f97316",
-  "#22c55e",
-  "#ec4899",
-  "#14b8a6",
-  "#eab308",
+  "#46C6CD",
+  "#79B6F4",
+  "#C79DE6",
+  "#E694BB",
+  "#ED997B",
+  "#A1BD6E",
+  "#BBB55E",
 ]
 
 /** Couleur d'avatar stable dérivée de l'identifiant joueur. */

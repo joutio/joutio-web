@@ -1,9 +1,13 @@
 import { useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Heart, Share2, SquarePen, Swords } from "lucide-react"
+import {
+  HeartIcon,
+  NotePencilIcon,
+  ShareNetworkIcon,
+  SwordIcon,
+} from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { BannerGlow } from "@/shared/components/banner-glow"
 import { EmptyState } from "@/shared/components/empty-state"
 import { StatStrip } from "@/shared/components/stat-strip"
 import { PageHeaderBar } from "@/shared/components/page-header-bar"
@@ -41,9 +45,9 @@ import { usePeopleList } from "@/features/follows"
 import { masteryTierKeyOf } from "@/features/progression"
 import { useTopicDuelState } from "@/features/social"
 import {
-  categoryColor,
   categoryLabel,
   categoryTagline,
+  categoryTextColor,
 } from "@/shared/utils/categories"
 import { compactNumber } from "@/lib/helpers"
 import { TopicTitlesTab } from "../components/TopicTitlesTab"
@@ -161,14 +165,9 @@ export function TopicDetailPage() {
                 className="pointer-events-none absolute inset-0 h-full w-full object-cover"
               />
               {/* Voile pour garder le titre/contrôles lisibles sur n'importe quelle bannière. */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/55 via-background/75 to-background" />
+              <div className="pointer-events-none absolute inset-0 bg-background/75" />
             </>
           ) : null}
-          {/* Halo dynamique : couleur éditoriale du sujet, repli couleur de sa catégorie.
-            (Beams désactivés pour le moment — composant conservé dans components/ui.) */}
-          <BannerGlow
-            color={topic.color ?? categoryColor(topic.category ?? "")}
-          />
           <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
             <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
               <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
@@ -185,14 +184,14 @@ export function TopicDetailPage() {
                 <div className="min-w-0">
                   <div
                     className="text-xs font-semibold tracking-wide uppercase"
-                    style={{ color: categoryColor(topic.category ?? "") }}
+                    style={{ color: categoryTextColor(topic.category ?? "") }}
                   >
                     {categoryLabel(
                       topic.category ?? "",
                       topic.categoryLabel ?? undefined
                     )}
                   </div>
-                  <h1 className="mt-1 font-heading text-3xl font-extrabold tracking-tight">
+                  <h1 className="mt-1 type-large-title">
                     {resolveName(topic.names)}
                   </h1>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -208,7 +207,7 @@ export function TopicDetailPage() {
                   disabled={startDuel.isPending}
                   onClick={openPlay}
                 >
-                  <Swords /> {t("topic.detail.play")}
+                  <SwordIcon /> {t("topic.detail.play")}
                 </Button>
                 {/* Créateur uniquement : entrée de l'atelier d'édition du thème. */}
                 {topicAuthoring && canManage && (
@@ -218,7 +217,7 @@ export function TopicDetailPage() {
                     nativeButton={false}
                     render={<Link to={`/topics/${topicId}/manage`} />}
                   >
-                    <SquarePen /> {t("topic.detail.edit")}
+                    <NotePencilIcon /> {t("topic.detail.edit")}
                   </Button>
                 )}
                 <Button
@@ -227,8 +226,8 @@ export function TopicDetailPage() {
                   onClick={toggleFollow}
                   aria-pressed={isFollowed}
                 >
-                  <Heart
-                    className={isFollowed ? "fill-primary text-primary" : ""}
+                  <HeartIcon
+                    className={isFollowed ? "fill-primary text-accent-ink" : ""}
                   />
                   {isFollowed
                     ? t("topic.detail.following")
@@ -239,7 +238,7 @@ export function TopicDetailPage() {
                   className="w-full"
                   onClick={() => setShareOpen(true)}
                 >
-                  <Share2 /> {t("topic.detail.share")}
+                  <ShareNetworkIcon /> {t("topic.detail.share")}
                 </Button>
               </div>
             </div>
@@ -336,12 +335,12 @@ export function TopicDetailPage() {
             stickyActive={tab === "progression"}
             empty={
               <EmptyState
-                icon={<Swords className="size-6 text-muted-foreground" />}
+                icon={<SwordIcon className="size-6 text-muted-foreground" />}
                 title={t("topic.detail.emptyTitle")}
                 description={t("topic.detail.emptyDescription")}
               >
                 <Button onClick={openPlay}>
-                  <Swords /> {t("topic.detail.play")}
+                  <SwordIcon /> {t("topic.detail.play")}
                 </Button>
               </EmptyState>
             }

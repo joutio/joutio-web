@@ -2,20 +2,20 @@ import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
 import {
-  Bell,
-  Check,
-  FileWarning,
-  Flag,
-  Mail,
-  MailOpen,
-  ShieldAlert,
-  Swords,
-  Trash2,
-  UserPlus,
-  X,
-  Zap,
-  type LucideIcon,
-} from "lucide-react"
+  BellIcon,
+  CheckIcon,
+  EnvelopeIcon,
+  EnvelopeOpenIcon,
+  FlagIcon,
+  LightningIcon,
+  ShieldWarningIcon,
+  SwordIcon,
+  TrashIcon,
+  UserPlusIcon,
+  WarningIcon,
+  XIcon,
+  type Icon as IconType,
+} from "@phosphor-icons/react"
 import { cn } from "cn"
 import {
   SwipeActionsRow,
@@ -45,16 +45,16 @@ import {
 /** Pictogramme et teinte par type de notification (badge sur l'avatar de l'auteur). */
 const GLYPHS: Record<
   NotificationType,
-  { icon: LucideIcon; className: string }
+  { icon: IconType; className: string }
 > = {
-  FOLLOW: { icon: UserPlus, className: "text-primary" },
-  CHALLENGE_RECEIVED: { icon: Swords, className: "text-primary" },
-  CHALLENGE_DECLINED: { icon: X, className: "text-destructive" },
-  ROOM_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
-  WIZZ: { icon: Zap, className: "text-primary" },
-  QUESTION_REPORTED: { icon: Flag, className: "text-primary" },
-  TOPIC_DRAFTED: { icon: FileWarning, className: "text-destructive" },
-  ACCOUNT_SUSPENDED: { icon: ShieldAlert, className: "text-destructive" },
+  FOLLOW: { icon: UserPlusIcon, className: "text-accent-ink" },
+  CHALLENGE_RECEIVED: { icon: SwordIcon, className: "text-accent-ink" },
+  CHALLENGE_DECLINED: { icon: XIcon, className: "text-destructive" },
+  ROOM_ACCEPTED: { icon: CheckIcon, className: "text-[var(--duel-correct)]" },
+  WIZZ: { icon: LightningIcon, className: "text-accent-ink" },
+  QUESTION_REPORTED: { icon: FlagIcon, className: "text-accent-ink" },
+  TOPIC_DRAFTED: { icon: WarningIcon, className: "text-destructive" },
+  ACCOUNT_SUSPENDED: { icon: ShieldWarningIcon, className: "text-destructive" },
 }
 
 /**
@@ -84,7 +84,7 @@ export function NotificationRow({
   const target = notificationTargetPath(notification)
   // Fallback défensif : une ancienne notification (type retiré) ne doit pas casser la ligne.
   const glyph = GLYPHS[notification.type] ?? {
-    icon: Bell,
+    icon: BellIcon,
     className: "text-muted-foreground",
   }
   const Glyph = glyph.icon
@@ -94,7 +94,7 @@ export function NotificationRow({
   const readToggle: SwipeAction = unread
     ? {
         label: t("notifications.actions.markRead"),
-        icon: <MailOpen />,
+        icon: <EnvelopeOpenIcon />,
         keepRow: true,
         onSelect: () => {
           playSuccessChime()
@@ -103,7 +103,7 @@ export function NotificationRow({
       }
     : {
         label: t("notifications.actions.markUnread"),
-        icon: <Mail />,
+        icon: <EnvelopeIcon />,
         keepRow: true,
         onSelect: () => {
           playSuccessChime()
@@ -129,7 +129,7 @@ export function NotificationRow({
       trailing={[
         {
           label: t("notifications.actions.delete"),
-          icon: <Trash2 />,
+          icon: <TrashIcon />,
           tone: "danger",
           onSelect: () => {
             playSuccessChime()

@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
-import { Zap } from "lucide-react"
+import { LightningIcon } from "@phosphor-icons/react"
 import { AppShell, ComingSoonPage } from "@/features/shell"
 import { useFeatureFlag } from "@/shared/hooks/use-feature-flag"
 import { RequireAuth } from "./RequireAuth"
@@ -122,7 +122,7 @@ function RouteFallback() {
     <div className="grid min-h-svh place-items-center">
       <div className="flex flex-col items-center gap-3">
         <div className="grid size-14 place-items-center rounded-full bg-foreground text-background motion-safe:animate-pulse">
-          <Zap className="size-6 fill-current" strokeWidth={0} />
+          <LightningIcon className="size-6 fill-current" />
         </div>
         <p className="font-heading text-sm font-semibold">Joutio</p>
       </div>

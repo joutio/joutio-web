@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { AlertTriangle, Loader2 } from "lucide-react"
+import { CircleNotchIcon, WarningIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import AuthOTPVerify from "@/components/ui/auth-otp-verify"
 import { AppDialog } from "@/shared/components/app-dialog"
@@ -92,7 +92,7 @@ export function AccountDeletionDialog({
             </Button>
             <Button onClick={sendCode} disabled={requestCode.isPending}>
               {requestCode.isPending && (
-                <Loader2 className="size-4 animate-spin" />
+                <CircleNotchIcon className="size-4 animate-spin" />
               )}
               {t("shell.settings.danger.dialog.sendCode")}
             </Button>
@@ -112,7 +112,7 @@ export function AccountDeletionDialog({
               disabled={code.length !== 6 || deleteAccount.isPending}
             >
               {deleteAccount.isPending && (
-                <Loader2 className="size-4 animate-spin" />
+                <CircleNotchIcon className="size-4 animate-spin" />
               )}
               {t("shell.settings.danger.dialog.delete")}
             </Button>
@@ -123,7 +123,7 @@ export function AccountDeletionDialog({
       {step === "warning" ? (
         <div className="flex flex-col gap-5">
           <div className="flex gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+            <WarningIcon className="mt-0.5 size-4 shrink-0" />
             <p>{t("shell.settings.danger.dialog.warning")}</p>
           </div>
           <p className="text-sm text-muted-foreground">

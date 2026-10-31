@@ -1,4 +1,4 @@
-import { Check, Clock } from "lucide-react"
+import { CheckIcon, ClockIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 import { SuspendedBadge } from "@/shared/components/suspended-badge"
@@ -67,9 +67,9 @@ export function RoomPlayerSlot({ slot }: { slot: RoomSlot }) {
           style={{ borderColor: TOKEN.duelBg }}
         >
           {slot.present ? (
-            <Check size={11} strokeWidth={3.5} aria-hidden />
+            <CheckIcon size={11} aria-hidden />
           ) : (
-            <Clock size={10} className="text-muted-foreground" aria-hidden />
+            <ClockIcon size={10} className="text-muted-foreground" aria-hidden />
           )}
         </span>
       </div>

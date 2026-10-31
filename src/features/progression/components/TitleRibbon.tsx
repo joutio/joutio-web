@@ -113,7 +113,13 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
         className
       )}
     >
-      <img src={asset} alt="" aria-hidden className="block h-auto w-full" />
+      <img
+        src={asset}
+        alt=""
+        aria-hidden
+        data-rank={rank}
+        className="block h-auto w-full"
+      />
       <svg
         viewBox={RIBBON_VIEWBOX}
         role="img"

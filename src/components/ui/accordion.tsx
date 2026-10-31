@@ -1,5 +1,5 @@
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
-import { ChevronDown } from "lucide-react"
+import { CaretDownIcon } from "@phosphor-icons/react"
 import { cn } from "cn"
 
 function Accordion({ ...props }: AccordionPrimitive.Root.Props) {
@@ -32,7 +32,7 @@ function AccordionTrigger({
         {...props}
       >
         {children}
-        <ChevronDown
+        <CaretDownIcon
           data-slot="accordion-chevron"
           className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[panel-open]/accordion-trigger:rotate-180"
         />

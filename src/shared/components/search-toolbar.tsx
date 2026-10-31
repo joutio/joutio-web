@@ -1,5 +1,9 @@
 import type { ReactNode } from "react"
-import { Search, SlidersHorizontal, X } from "lucide-react"
+import {
+  MagnifyingGlassIcon,
+  SlidersHorizontalIcon,
+  XIcon,
+} from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 import { Input } from "@/components/ui/input"
@@ -79,7 +83,7 @@ export function SearchToolbar({
   const searchField =
     query !== undefined && onQueryChange ? (
       <div className="relative w-full">
-        <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+        <MagnifyingGlassIcon className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
@@ -128,7 +132,7 @@ export function SearchToolbar({
                     "relative shrink-0"
                   )}
                 >
-                  <SlidersHorizontal className="size-4" />
+                  <SlidersHorizontalIcon className="size-4" />
                   {activeCount > 0 && (
                     <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-2xs font-bold text-primary-foreground">
                       {activeCount}
@@ -147,7 +151,7 @@ export function SearchToolbar({
                         "flex-1 gap-1.5"
                       )}
                     >
-                      <X /> {t("shared.searchToolbar.clearAll")}
+                      <XIcon /> {t("shared.searchToolbar.clearAll")}
                     </button>
                   )}
                   <BottomSheetClose asChild>
@@ -189,7 +193,7 @@ export function SearchToolbar({
           </span>
           {activeCount > 0 && (
             <Button variant="outline" size="sm" onClick={onClear}>
-              <X /> {t("shared.searchToolbar.clearAll")}
+              <XIcon /> {t("shared.searchToolbar.clearAll")}
             </Button>
           )}
         </div>

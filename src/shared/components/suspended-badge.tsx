@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { ShieldAlert } from "lucide-react"
+import { ShieldWarningIcon } from "@phosphor-icons/react"
 
 import { Badge } from "@/components/ui/badge"
 import { cn } from "cn"
@@ -12,7 +12,7 @@ export function SuspendedBadge({ className }: { className?: string }) {
       variant="outline"
       className={cn("gap-1 border-destructive/40 text-destructive", className)}
     >
-      <ShieldAlert />
+      <ShieldWarningIcon />
       {t("moderation.suspendedBadge")}
     </Badge>
   )

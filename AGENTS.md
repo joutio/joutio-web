@@ -1,7 +1,7 @@
 # AGENTS.md — joutio-web
 
 > Interface **web React** de Joutio (Vite + React 19 + TypeScript + Tailwind v4 + shadcn).
-> Source de vérité design : `product/maquettes` (iso shadcn). Conventions : `best-practices/.frontend/`.
+> Source de vérité design : [`design/`](../../design/README.md) (design system 2.1, jetons dans `design/tokens.json`). Conventions : `best-practices/.frontend/`.
 > **Contrat backend normatif** : [`services/joutio-bff/AGENTS.md`](../../services/joutio-bff/AGENTS.md) § 3.
 
 ---
@@ -39,22 +39,16 @@ Application web de Joutio (Lot 1) :
   **toute la communauté** (via `game`, aucun filtre joueur), **complétée par le classement
   all-time** (`MOST_PLAYED`) pour garantir **10 cartes**, section **masquée** quand aucune carte
   n'est disponible, et dont « Explorer le catalogue » ouvre le tri `MOST_PLAYED`. **Ordre des
-  rails : Top 10 du moment, Tes sujets suivis, Nouveaux thèmes, Pour toi (si intérêts).** Cartes façon
-  FranceTV (`TopicMediaCard`) : **même largeur** pour tous les rails. Le Top 10 utilise une **carte
+  rails : Top 10 du moment, Tes sujets suivis, Nouveaux thèmes, Pour toi (si intérêts).** Cartes
+  `TopicMediaCard` : **même largeur** pour tous les rails. Le Top 10 utilise une **carte
   5:8 à toutes les tailles** (affiche + **pied intégré** titre/catégorie) ; les autres sections
   utilisent le **paysage 16:9** avec le même pied intégré (hauteur 64 px, même espacement
-  titre/catégorie). Rang 1 → 10 : **SVG officiels FranceTV** dans une gouttière de 42 px,
-  largeurs intrinsèques (le chevauchement par la carte varie donc par chiffre, comme la
-  référence) et hauteur commune ; le SVG du 1 est recadré à gauche pour que son glyphe démarre
-  au bord du rail (gouttière de page en tactile, bord du contenu en desktop), et **la première
-  carte suit ce recadrage** (gouttière de 25,3 px au lieu de 42, chevauchement de 2 px
-  conservé) ; les SVG sont **inversés en thème clair** (`.qu-rank`) avec un **liseré sombre net** ;
-  **rayon 10 px, bordure 1 px `--border`**, **à plat en clair** (aucune ombre) et ombre noire
-  `--qu-home-card-shadow` **en sombre**. Les actions de section (« Tout voir »,
+  titre/catégorie). Rang 1 → 10 : **chiffre Geist Mono** posé derrière la carte, dans une gouttière de 42 px ;
+  **rayon 12 px, bordure 1 px `--border`, à plat dans les deux thèmes**. Les actions de section (« Tout voir »,
   « Explorer le catalogue ») restent **visibles en compact** avec un libellé réduit
   (`SectionHeader.compactActionLabel`), par exemple « Catalogue » pour le Top 10. Le libellé de
   catégorie du pied de carte prend la **couleur éditoriale de sa catégorie**
-  (`categoryTextColor`, mélange 70 % avec `--foreground` pour rester lisible dans les deux thèmes).
+  (`categoryTextColor`, mélange 60 % avec `--foreground` pour rester lisible dans les deux thèmes).
 - Coquille : sidebar, **topbar collante** en **surface pleine au repos** puis **verre dépoli dès
   que le contenu passe dessous** (`data-scrolled` sur le scroll root, seuil 8 px ; la nav basse
   reste en verre permanent), palette ⌘K,
@@ -210,7 +204,7 @@ Application web de Joutio (Lot 1) :
   du seul initiateur via `RoomView.canCancel`).
   Tant que l'adversaire **nommé** n'est pas là (salle de défi/appariement, jamais le bot), un bouton
   **« Wizzer »** (Zap) relance l'attente « façon MSN » — en **pied de salle, au-dessus de
-  l'annulation**, en **action primaire (bleu)**, pleine largeur 380 px, visible par les deux
+  l'annulation**, en **action primaire (ambre)**, pleine largeur 380 px, visible par les deux
   joueurs : `POST /rooms/{id}/wizz` (cadence **10 s par
   joueur**, bouton grisé avec compte à rebours dérivé du fold `ROOM_WIZZED`, cadence optimiste dès
   l'envoi), confirmation locale (secousse de sa propre fenêtre + motif `WIZZ_CHIME`) ; le
@@ -419,13 +413,13 @@ Application web de Joutio (Lot 1) :
   scopes imbriqués. Ne jamais basculer `modal` à `false` sur la feuille hôte pendant qu'elle est
   ouverte : Radix remplace alors `DialogContentModal` par `DialogContentNonModal`, ce qui
   **remonte tout le contenu** (perte du premier clic sur le signalement et flash à la fermeture).
-  Bilan : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
+  Bilan : issue colorée (victoire `correct` / défaite `wrong` / égalité neutre) avec **mention du
   forfait** (« Ton adversaire a abandonné » / « Tu as abandonné » — `forfeiterId` du fold de revue),
   avatars à anneaux colorés + scores animés hors avatars, Elo **figé à l'instant de la partie**
   (vue `/result`), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP du
   sujet** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
-  client), **anneau de maîtrise du sujet** (`MasteryRing` : corail = XP gagnée sur le duel, blanc =
-  XP restante avant le palier suivant, rouge dérivé du bouton Rejouer ; remplissage de l'arc +
+  client), **anneau de maîtrise du sujet** (`MasteryRing` : ambre = XP gagnée sur le duel, blanc =
+  XP restante avant le palier suivant ; remplissage de l'arc +
   **deux compteurs solidaires** animés au reveal de la récompense — `useRingReveal` : « XP gagnée »
   monte de 0 à sa valeur pendant que « XP avant le palier » **décompte** du restant d'avant le duel
   à celui d'après ; les callouts sont ancrés au conteneur pleine largeur, donc le libellé replie
@@ -467,7 +461,7 @@ Application web de Joutio (Lot 1) :
   bannière métallique `src/assets/ruban/ruban-{fer..diamant}.svg` — copies de `product/ruban/*`
   avec le texte baké retiré —, titre **centré** sur le bandeau droit, ajusté en corps puis
   comprimé s'il déborde ; **échelle calée sur l'interface** : 18 rem de large ≈ 73 px de haut,
-  bandeau ~33 px, titre ~18 px, police **Inter** (police d'interface, graisse 800) — le rendu
+  bandeau ~33 px, titre ~18 px, police **Geist** (police d'interface) — le rendu
   gravé a été abandonné au profit de la lisibilité) quand un titre thématique est équipé —
   la ligne d'info ne le reprend pas ; dans le
   bandeau, la
@@ -502,7 +496,7 @@ Application web de Joutio (Lot 1) :
   un bandeau collant **en surface pleine au repos puis verre dépoli au scroll**, onglet « Style »
   + onglets par groupe collants, sections en
   cards, enregistrement explicite Valider/Annuler — confirmation par toast). L'onglet **Style**
-  est toujours visible : **Avatar de base** gratuit (icône Lucide `UserRound` pleine, fond
+  est toujours visible : **Avatar de base** gratuit (icône Phosphor `User` en Fill, fond
   personnalisable depuis la **palette Micah** `BACKGROUND_COLORS` ; gris `#e4e4e7` par défaut,
   icône gris ardoise translucide fixe `rgba(24,24,27,.35)`, jamais dérivée du fond ni du thème) et
   **Micah** débloqué par la récompense `MICAH_AVATAR` (7 jours d'activité consécutive) ou Premium,
@@ -944,9 +938,9 @@ via `joutio/joutio-reusable-workflows`.
   (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up`
   (`src/index.css`).
   `compact` (< 640 px) = nav basse + modales plein écran + bottom sheets ; `tablet` (640–1023 px) =
-  sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
+  sidebar en rail replié, sheets conservés, tailles de `design/` ; `desktop` (≥ 1024 px) = sidebar étendue,
   densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
-  (44 px sous `touch`), jamais en patch de page ; gouttières via `--page-gutter-x`, topbar via
+  (tailles de `design/`), jamais en patch de page ; gouttières via `--page-gutter-x`, topbar via
   `--topbar-h` (64 px en compact, **gouttière dédiée `--topbar-gutter-x`** = max 20 px, +
   safe-areas horizontales `--qu-safe-left/right` ; offset des bandes collantes inclus) ; typo =
   échelle Tailwind + `text-2xs`
@@ -954,7 +948,7 @@ via `joutio/joutio-reusable-workflows`.
   [`best-practices/.frontend/responsive-sizing.md`](../../best-practices/.frontend/responsive-sizing.md).
 - **Garde-fous responsive** : `src/shared/theme/responsive-guard.test.ts` (Vitest statique :
   classes arbitraires, anciens breakpoints, `matchMedia` hors hook device) + `e2e/responsive.spec.ts`
-  (matrice 320/393/768/1280 : aucun débordement horizontal, cibles ≥ 44 px et champs ≥ 16 px sous
+  (matrice 320/393/768/1280 : aucun débordement horizontal, cibles ≥ 36 px (Jo Button S) et champs ≥ 16 px sous
   1024, chrome par classe, bandes collantes calées).
 - **Formulaires** : disposition unique « Réglages » via `shared/components/form-section.tsx`
   (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
@@ -1044,14 +1038,12 @@ via `joutio/joutio-reusable-workflows`.
   dès 640 px (`minmax(6rem, 1fr)` — tuiles ~98-110 px, elles ne s'étirent pas sur grand écran
   et les pistes vides d'une grille presque vide sont conservées, `auto-fill` et non `auto-fit`)
   — espacement resserré en compact (`gap-x-1 gap-y-2`) puis `gap-3` —, Personnes sur
-  **3 colonnes** puis le même auto-fill. **Exception — Accueil façon FranceTV** : les trois rails
+  **3 colonnes** puis le même auto-fill. **Exception — Accueil** : les trois rails
   utilisent `TopicMediaCard`, pas les tuiles springboard, avec une **largeur unique**
   (`w-[58vw]` plafonné à 230 px puis `w-48`/`w-52`) : **carte 5:8 à toutes les tailles**
   (affiche + pied titre/catégorie intégré) pour « Top 10 du moment » ; **paysage 16:9** pour les
-  autres sections. Le Top 10 ajoute une gouttière de **42 px**, un écart de **16 px** et les
-  **SVG de rang officiels FranceTV** (1 → 10) : largeurs intrinsèques variables, hauteur commune
-  (~76 px), `top: 16 px`, donc un chevauchement par la carte identique à la référence pour chaque
-  chiffre. Le voyant de présence est ancré en pourcentage
+  autres sections. Le Top 10 ajoute une gouttière de **42 px**, un écart de **16 px** et le **rang en Geist Mono**
+  (1 → 10) derrière la carte. Le voyant de présence est ancré en pourcentage
   (`right-[6%] bottom-[6%]`) et les visuels couvrent leur conteneur en positionnement absolu
   (`absolute inset-0`) **sans fond forcé** : les zones transparentes laissent voir la surface
   porteuse, sans liseré blanc.
@@ -1085,37 +1077,20 @@ via `joutio/joutio-reusable-workflows`.
   (`animate-pulse bg-muted/50`, `motion-reduce` respecté) puis l'image apparaît en fondu
   (`onError` = état chargé, ref `complete` pour les images en cache).
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
-- **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
-  radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
-  couleur de sa catégorie** (`categoryColor`) ; profil : `--primary` fixe. **`BackgroundBeams` est
-  actuellement désactivé** (usages retirés, composant conservé dans `components/ui/` avec ses
-  réglages `--beams-web-opacity` / `--beams-gradient-opacity`). Le motif de fond de page
-  (`PagePattern`, `assets/background.svg` — le **papier peint doodle officiel de WhatsApp**,
-  planche de 374 × 666) est
-  carrelé en **masque**. Le **canvas de contenu** (`SidebarInset`) reprend la surface
-  `--sidebar` en clair (`--qu-shell-bg`) et `--background` en sombre ; la topbar et les
-  cartes restent claires. Le shell utilise la tuile native de **374 px** dans **les deux thèmes**
-  (`--qu-shell-pattern-size`, gribouillis ~48 px) ; seul le duel garde la tuile par défaut de
-  **280 px** (gribouillis ~36 px, la maille d'une conversation).
-  Opacité `--qu-pattern-opacity` : `0.05` en clair, **`0.08` en sombre**. Le fichier
-  **n'est pas un motif raccord** (tracés coupés au bord de la planche) : ce sont ces tokens,
-  et eux seuls, qui règlent le rendu.
-- **Thème sombre « WhatsApp »** (`:root.dark`, version **neutre** de la capture) : gris **étagés**
-  — fond `#121212`, surfaces `#1f1f1f` (cartes/popovers), champs et bordures `#2e2e2e`
-  (**opaques** : c'est la pile de surfaces qui les fait lire), textes `#e9e9e9` / `#a0a0a0`,
-  destructif `#f15c6d`, sidebar `#161616`, toasts alignés. **Aucune teinte froide** (la première
-  passe bleutée `#0B141A`/`#202C33` a été écartée : trop bleue par rapport à WhatsApp).
-  **L'accent de marque est inchangé** (primaire, charts, V/N/D, paliers de badges). La scène du
-  duel suit : `--duel-bg` et le fond du mockup desktop passent à `#0b0b0b` (neutre).
-- **Sidebar — état actif** : les tokens clair sont ceux du preset shadcn **natif**
-  (`--sidebar: oklch(0.985 0 0)`, `--sidebar-primary: oklch(0.205 0 0)`,
-  `--sidebar-accent: oklch(0.97 0 0)`, etc.). La **surface** active est celle du composant
-  natif (`bg-sidebar-accent`, `#f5f5f5`) ; son **libellé et son icône** prennent le bleu
-  `--primary` en clair (AA, 4,8:1) au lieu du noir `sidebar-accent-foreground` — règle hors
-  layer dans `index.css`, stable au survol et à l'appui. Le survol d'un item inactif reste
-  sur `sidebar-accent` ; `aria-current="page"` est posé par `AppSidebar`. En **sombre**,
-  l'actif conserve l'accent gris WhatsApp (`#2a2a2a`) et son texte clair.
-- **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
+- **Banners et fond de page** : surfaces plates, **aucun dégradé, halo ni motif de fond**. Une
+  bannière image reçoit un voile plat `bg-background/75` pour garder le texte lisible.
+- **Thèmes** : jetons de `design/tokens.json`, en sombre (défaut, toujours imposé en immersif) et
+  en clair. L'ambre est porté par `--primary` (fond, texte noir `--primary-foreground`) ; en
+  texte, utiliser **`text-accent-ink`**, jamais `text-primary`. `--accent` reste le fond de survol
+  shadcn. Un seul bouton ambre par écran.
+- **Icônes** : Phosphor uniquement (`@phosphor-icons/react`, imports `*Icon`, `lucide-react` bloqué
+  par ESLint). Regular partout, Fill pour l'onglet actif et les tuiles de catégorie.
+- **Cadre Elo** (`UserAvatar`, `.qu-elo-frame`) : cadre complet dès 40 px, anneau plein en dessous ;
+  les reflets partagent une horloge commune (`--elo-clock`).
+- **Sidebar — état actif** : surface `bg-sidebar-accent`, libellé `--accent-ink`, icône en Fill
+  (règle hors layer dans `index.css`, stable au survol et à l'appui) ; `aria-current="page"` est
+  posé par `AppSidebar`.
+- **Scrollbar opaque** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
   scroller principal. Les bordures des surfaces sont **opaques** (`--border`/`--input` =
   `#2e2e2e` en sombre, ≈ `#e5e5e5` en clair), avec la pile de surfaces neutres (`#121212` →
@@ -1137,8 +1112,7 @@ via `joutio/joutio-reusable-workflows`.
   laisse passer le motif de page). Le focus clavier reste porté par l'élément interactif parent
   (lien/bouton). Les ombres restent réservées aux **overlays** (dialogs, menus, popovers,
   toasts, panneaux flottants — `--shadow-floating`), aux visuels springboard (`TopicIcon`), aux
-  célébrations et aux **cartes de l'Accueil en sombre** (`--qu-home-card-shadow` ; à plat en
-  clair) ; les tuiles de badge
+  célébrations ; les tuiles de badge
   restent **sans ombre**. Les tuiles springboard
   Sujets/Personnes et les écrans immersifs (arène, résultat, salle, recherche, join) gardent leur
   langage propre.
@@ -1154,10 +1128,8 @@ via `joutio/joutio-reusable-workflows`.
   `rounded-card`.
   **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 5:8 du Top 10 ou paysage 16:9 ;
   pied titre + catégorie intégré à toutes les tailles, hauteur 64 px, sur la **surface de la carte**
-  `bg-card` — aucune teinte custom `bg-muted` dans le pied ; rang SVG FranceTV inversé en thème
-  clair avec un liseré sombre, rendu d'origine en sombre) ne suit pas la recette `Card` : **rayon
-  10 px (`rounded-lg`), bordure 1 px `--border`, à plat en clair (bordure seule) et ombre noire
-  `--qu-home-card-shadow` en sombre** (exception assumée à la carte à plat). Le visuel est rendu par
+  `bg-card` — aucune teinte custom `bg-muted` dans le pied ; rang en Geist Mono) ne suit pas la recette
+  `Card` : **rayon 12 px (`rounded-md`), bordure 1 px `--border`, à plat**. Le visuel est rendu par
   `TopicIcon` en mode `fill` (chargement/fondu/repli partagés) ;
   seul le focus clavier porte un `ring`. Les actions de section restent visibles en compact
   (libellé réduit). Le libellé de catégorie est teinté par `categoryTextColor` (couleur de la
@@ -1255,7 +1227,7 @@ via `joutio/joutio-reusable-workflows`.
 ### Dimensionnement responsive (contrat device)
 
 - **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ; hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
-- **Tokens** (`index.css`) : `--control-h-xs/sm/md/lg` (tactile 36/44/44/48, desktop 24/32/36/40),
+- **Tokens** (`index.css`) : `--control-h-sm/md/lg` (Jo Button S/M/L, sur tous les appareils), `--control-h-field` (Jo Field), `--control-h-xs` (contrôles embarqués),
   `--page-gutter-x` (14/20/24), `--topbar-gutter-x` (max 18 px, topbar), `--topbar-h` (56/64),
   `--bottom-nav-h`, `--qu-safe-left/right` ; `--qu-topbar-offset`
   dérivé + `--qu-chrome-shift` (repli animé) consommés par toutes les bandes collantes (mobile
@@ -1268,7 +1240,7 @@ via `joutio/joutio-reusable-workflows`.
   `StickyHeaderProvider`/`StickyHeaderSlot`/`StickyHeaderFilters` (portail du filtre actif),
   `EmptyState` (8 copies),
   `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge Elo du profil ;
-  capsule **`h-4` + `rounded-full`** alignée sur la barre V/N/D via `ProgressTrack`, couleurs
+  barre fine via `ProgressTrack` (spec Jo Progress Bar), couleurs
   shadcn ; même gabarit pour les barres de badge et de titre — la barre d'étape du wizard
   reste un élément shadcn standard plus fin, pas une barre de progression),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.

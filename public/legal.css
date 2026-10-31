@@ -1,19 +1,19 @@
 :root {
   color-scheme: light dark;
-  --bg: #ffffff;
-  --fg: #111111;
-  --muted: #666666;
-  --border: #e5e5e5;
-  --link: #0b63ce;
+  --bg: #f6f5f1;
+  --fg: #121210;
+  --muted: #64625c;
+  --border: #d9d6cd;
+  --link: #8a5e0f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #121212;
-    --fg: #e9e9e9;
-    --muted: #a0a0a0;
-    --border: #2e2e2e;
-    --link: #7cc4ff;
+    --bg: #000000;
+    --fg: #ffffff;
+    --muted: #9b9b9b;
+    --border: #313131;
+    --link: #e8b04a;
   }
 }
 
@@ -26,7 +26,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family:
-    Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    Geist, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
   font-size: 15px;
   line-height: 1.65;

@@ -1,7 +1,12 @@
 import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Globe, MapPin, SlidersHorizontal, Users } from "lucide-react"
+import {
+  GlobeHemisphereWestIcon,
+  MapPinIcon,
+  SlidersHorizontalIcon,
+  UsersIcon,
+} from "@phosphor-icons/react"
 import { cn } from "cn"
 import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -44,18 +49,18 @@ const PERIODS: { value: LeaderboardPeriod; labelKey: TranslationKey }[] = [
 const SCOPES: {
   value: LeaderboardScope
   labelKey: TranslationKey
-  icon: typeof Globe
+  icon: typeof GlobeHemisphereWestIcon
 }[] = [
-  { value: "WORLD", labelKey: "topic.leaderboard.scope.world", icon: Globe },
+  { value: "WORLD", labelKey: "topic.leaderboard.scope.world", icon: GlobeHemisphereWestIcon },
   {
     value: "FOLLOWING",
     labelKey: "topic.leaderboard.scope.following",
-    icon: Users,
+    icon: UsersIcon,
   },
   {
     value: "COUNTRY",
     labelKey: "topic.leaderboard.scope.country",
-    icon: MapPin,
+    icon: MapPinIcon,
   },
 ]
 
@@ -194,7 +199,7 @@ export function TopicLeaderboard({
                       "shrink-0"
                     )}
                   >
-                    <SlidersHorizontal className="size-4" />
+                    <SlidersHorizontalIcon className="size-4" />
                   </button>
                 }
                 footer={

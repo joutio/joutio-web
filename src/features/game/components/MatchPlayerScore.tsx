@@ -52,7 +52,7 @@ export function MatchPlayerScore({
     fontFamily: TOKEN.fontDisplay,
     fontWeight: 700,
     lineHeight: 1.1,
-    fontVariantNumeric: "tabular-nums",
+    fontVariantNumeric: "font-mono tabular-nums",
   } as const
 
   const info = (
@@ -87,7 +87,7 @@ export function MatchPlayerScore({
             marginTop: 1,
             fontSize: 11,
             lineHeight: 1.2,
-            color: first ? TOKEN.timer : TOKEN.duelSurfaceMuted,
+            color: first ? TOKEN.score : TOKEN.duelSurfaceMuted,
           }}
         >
           {first ? `${t("game.arena.first")} · ${note}` : note}

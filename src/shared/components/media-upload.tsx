@@ -1,6 +1,6 @@
 import { useRef, useState, type ChangeEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { Loader2, X } from "lucide-react"
+import { CircleNotchIcon, XIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useUploadMedia } from "@/features/media"
@@ -135,7 +135,7 @@ export function MediaUpload({
           />
           {uploading ? (
             <div className="absolute inset-0 grid place-items-center bg-background/60">
-              <Loader2 className="size-5 animate-spin" aria-hidden />
+              <CircleNotchIcon className="size-5 animate-spin" aria-hidden />
             </div>
           ) : null}
         </div>
@@ -173,7 +173,7 @@ export function MediaUpload({
               onChange(null)
             }}
           >
-            <X className="size-4" aria-hidden />
+            <XIcon className="size-4" aria-hidden />
             {t("shared.media.remove")}
           </Button>
         ) : null}

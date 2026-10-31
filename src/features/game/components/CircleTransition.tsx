@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react"
+import { LightningIcon } from "@phosphor-icons/react"
 import { TOKEN } from "@/shared/theme/tokens"
 
 interface CircleTransitionProps {
@@ -37,7 +37,7 @@ export function CircleTransition({ elapsedMs = 0 }: CircleTransitionProps) {
           className="qu-iris-bolt flex items-center justify-center"
           style={delay}
         >
-          <Zap size={50} fill={TOKEN.fg} color={TOKEN.fg} strokeWidth={0} />
+          <LightningIcon size={50} weight="fill" color={TOKEN.fg} />
         </span>
       </div>
     </div>

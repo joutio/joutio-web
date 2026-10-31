@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Crown } from "lucide-react"
+import { CrownIcon } from "@phosphor-icons/react"
 import { Toggle } from "@/components/ui/toggle"
 import { SearchToolbar } from "@/shared/components/search-toolbar"
 import {
@@ -62,7 +62,7 @@ export function TitleFilterBar({
           pressed={equippedOnly}
           onPressedChange={() => onEquippedOnlyChange(!equippedOnly)}
         >
-          <Crown />
+          <CrownIcon />
           {t("progression.profileTitles.filters.equippedOnly")}
         </Toggle>
       }
@@ -107,7 +107,7 @@ export function TitleFilterBar({
               selected={equippedOnly}
               onSelect={() => onEquippedOnlyChange(!equippedOnly)}
             >
-              <Crown className="size-4" />
+              <CrownIcon className="size-4" />
               {t("progression.profileTitles.filters.equippedOnly")}
             </FilterOption>
           </FilterSection>

@@ -1,4 +1,4 @@
-import { Bot, Check, Sparkles } from "lucide-react"
+import { CheckIcon, RobotIcon, SparkleIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { useTopicName } from "@/features/shell"
@@ -82,8 +82,8 @@ export function FirstDuelStep({
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-primary" aria-hidden />
-          <span className="text-xs font-semibold tracking-wide text-primary uppercase">
+          <SparkleIcon className="size-4 text-accent-ink" aria-hidden />
+          <span className="text-xs font-semibold tracking-wide text-accent-ink uppercase">
             {t("home.onboarding.recommendedForYou")}
           </span>
         </div>
@@ -110,18 +110,17 @@ export function FirstDuelStep({
               <div
                 className="absolute inset-0"
                 style={{
-                  background: `linear-gradient(135deg, ${coverColor} 0%, color-mix(in oklab, ${coverColor} 62%, black) 100%)`,
+                  background: coverColor,
                 }}
               >
-                <div className="absolute -top-10 -right-8 size-44 rounded-full bg-white/15 blur-3xl" />
                 <div className="absolute inset-0 grid place-items-center">
-                  <TopicIcon topic={primary} size={88} className="shadow-xl" />
+                  <TopicIcon topic={primary} size={88} />
                 </div>
               </div>
             )}
             {selected.topicId === primary.topicId && (
-              <span className="absolute top-3 right-3 grid size-7 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                <Check className="size-4" strokeWidth={3} aria-hidden />
+              <span className="absolute top-3 right-3 grid size-7 place-items-center rounded-full bg-primary text-primary-foreground">
+                <CheckIcon className="size-4" aria-hidden />
               </span>
             )}
           </div>
@@ -183,8 +182,8 @@ export function FirstDuelStep({
                     </span>
                   </span>
                   {isSelected && (
-                    <Check
-                      className="size-4 shrink-0 text-primary"
+                    <CheckIcon
+                      className="size-4 shrink-0 text-accent-ink"
                       aria-hidden
                     />
                   )}
@@ -197,7 +196,7 @@ export function FirstDuelStep({
 
       <div className="flex items-start gap-3 rounded-card border border-border bg-muted/30 p-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-background">
-          <Bot className="size-5 text-primary" aria-hidden />
+          <RobotIcon className="size-5 text-accent-ink" aria-hidden />
         </span>
         <div className="flex flex-col gap-1">
           <p className="font-heading text-sm font-bold">

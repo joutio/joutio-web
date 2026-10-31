@@ -1,15 +1,5 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
-import rank1Url from "@/assets/top-10/rank-1.svg"
-import rank2Url from "@/assets/top-10/rank-2.svg"
-import rank3Url from "@/assets/top-10/rank-3.svg"
-import rank4Url from "@/assets/top-10/rank-4.svg"
-import rank5Url from "@/assets/top-10/rank-5.svg"
-import rank6Url from "@/assets/top-10/rank-6.svg"
-import rank7Url from "@/assets/top-10/rank-7.svg"
-import rank8Url from "@/assets/top-10/rank-8.svg"
-import rank9Url from "@/assets/top-10/rank-9.svg"
-import rank10Url from "@/assets/top-10/rank-10.svg"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { categoryLabel, categoryTextColor } from "@/shared/utils/categories"
 import type { TopicCard } from "@/features/topics/domain/topic"
@@ -18,30 +8,12 @@ import { useTopicName } from "@/features/shell"
 /** Format d'une affiche d'accueil : portrait du Top 10 ou paysage des autres sections. */
 export type TopicMediaFormat = "poster" | "landscape"
 
-/** Chiffres officiels FranceTV : largeurs intrinsèques variables, hauteur commune (~76 px). */
-const RANK_IMAGES: readonly string[] = [
-  rank1Url,
-  rank2Url,
-  rank3Url,
-  rank4Url,
-  rank5Url,
-  rank6Url,
-  rank7Url,
-  rank8Url,
-  rank9Url,
-  rank10Url,
-]
-
 /**
- * Affiche de sujet de l'Accueil (style FranceTV) : visuel plein cadre, **pied de carte intégré**
- * (titre + catégorie sur la surface `bg-card` de la carte) et bordure de surface. **À plat en
- * clair** (bordure seule), ombre profonde en sombre. Le format
- * `poster` (Top 10) est une carte **5:8 à toutes les tailles** (affiche +
- * pied) ; `landscape` reste une carte 16:9 avec pied intégré pour les autres sections.
- * Le rang optionnel est le chiffre SVG officiel FranceTV, placé derrière l'affiche portrait sur
- * une gouttière de 42 px. Chaque chiffre garde sa largeur intrinsèque : la carte le chevauche
- * donc exactement comme la référence, avec la même hauteur pour 1 → 10. En clair, `.qu-rank`
- * inverse le chiffre et lui donne un liseré sombre net ; en sombre, le SVG garde son rendu.
+ * Affiche de sujet de l'Accueil : visuel plein cadre, **pied de carte intégré** (titre +
+ * catégorie sur la surface `bg-card`) et filet de 1 px, à plat dans les deux thèmes. Le format
+ * `poster` (Top 10) est une carte **5:8 à toutes les tailles** ; `landscape` reste une carte
+ * 16:9. Le rang optionnel est un chiffre Geist Mono posé derrière l'affiche, sur une gouttière
+ * de 42 px.
  */
 export function TopicMediaCard({
   topic,
@@ -85,19 +57,17 @@ export function TopicMediaCard({
   return (
     <div className={cn("relative", className)}>
       {rankValue !== undefined && (
-        <img
-          src={RANK_IMAGES[rankValue - 1]}
-          alt=""
+        <span
           aria-hidden
           data-slot="topic-rank"
           data-rank={rankValue}
-          draggable={false}
-          loading={priority ? "eager" : "lazy"}
           className={cn(
-            "pointer-events-none absolute top-4 z-0 h-auto w-auto qu-rank select-none",
-            rankValue === 1 ? "-left-[25.346px]" : "-left-[42px]"
+            "pointer-events-none absolute top-3 -left-[42px] z-0 w-[40px] text-right font-mono leading-none font-semibold text-muted-foreground select-none",
+            rankValue === 10 ? "text-3xl tracking-tighter" : "type-display"
           )}
-        />
+        >
+          {rankValue}
+        </span>
       )}
       <button
         type="button"
@@ -106,14 +76,14 @@ export function TopicMediaCard({
         aria-label={rankLabel ? `${rankLabel} — ${title}` : title}
         onClick={() => onOpen(topic.topicId)}
         className={cn(
-          "group relative z-10 block w-full overflow-hidden rounded-lg border border-border bg-card text-left shadow-none dark:shadow-[var(--qu-home-card-shadow)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
+          "group relative z-10 block w-full overflow-hidden rounded-md border border-border bg-card text-left shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
           isPoster && "flex aspect-[5/8] flex-col"
         )}
       >
         <span
           data-slot="topic-card-media"
           className={cn(
-            "relative block overflow-hidden rounded-t-[calc(var(--radius-lg)-1px)] bg-muted",
+            "relative block overflow-hidden rounded-t-[calc(var(--radius-md)-1px)] bg-muted",
             isPoster ? "min-h-0 flex-1" : "aspect-video"
           )}
         >
@@ -132,13 +102,13 @@ export function TopicMediaCard({
             category ? "justify-between" : "justify-center"
           )}
         >
-          <span className="block truncate font-heading text-base leading-tight font-bold text-foreground">
+          <span className="block truncate text-sm leading-5 font-semibold text-foreground">
             {title}
           </span>
           {category && (
             <span
               data-slot="topic-card-category"
-              className="block truncate text-2xs font-semibold tracking-wide uppercase"
+              className="block truncate text-xs leading-4 font-semibold"
               style={{ color: categoryColorValue }}
             >
               {category}

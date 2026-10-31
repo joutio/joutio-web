@@ -1,4 +1,4 @@
-import { RefreshCw, X } from "lucide-react"
+import { ArrowsClockwiseIcon, XIcon } from "@phosphor-icons/react"
 import { AnimatePresence, motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
@@ -23,8 +23,8 @@ export function UpdateBanner() {
           transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
           className="flex items-center gap-3 border-b bg-primary/[0.06] px-(--page-gutter-x) py-2.5"
         >
-          <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-            <RefreshCw className="size-4" aria-hidden />
+          <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-accent-ink">
+            <ArrowsClockwiseIcon className="size-4" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">{t("shell.update.title")}</p>
@@ -42,7 +42,7 @@ export function UpdateBanner() {
             className="shrink-0"
             onClick={dismiss}
           >
-            <X className="size-4" />
+            <XIcon className="size-4" />
           </Button>
         </motion.div>
       )}

@@ -1,10 +1,11 @@
-import { Bot, Sparkles } from "lucide-react"
+import { RobotIcon, SparkleIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { useTopicName } from "@/features/shell"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { TOKEN } from "@/shared/theme/tokens"
 import {
   categoryColor,
+  categoryTextColor,
   categoryIcon,
   categoryLabel,
 } from "@/shared/utils/categories"
@@ -46,7 +47,7 @@ function ThemesPreview({ interests }: { interests: string[] }) {
   return (
     <div className="relative flex flex-col gap-5">
       <div className="flex items-center gap-2">
-        <Sparkles
+        <SparkleIcon
           className="size-4"
           style={{ color: TOKEN.gauge }}
           aria-hidden
@@ -89,7 +90,7 @@ function ThemesPreview({ interests }: { interests: string[] }) {
             >
               <Icon
                 className="size-6"
-                style={{ color: categoryColor(code) }}
+                style={{ color: categoryTextColor(code) }}
                 aria-hidden
               />
               <span className="line-clamp-2 text-2xs font-semibold">
@@ -115,7 +116,7 @@ function DuelPreview({ topic }: { topic?: TopicCard | null }) {
   return (
     <div className="relative flex flex-col gap-5">
       <div className="flex items-center gap-2">
-        <Bot
+        <RobotIcon
           className="size-4"
           style={{ color: TOKEN.correctAccent }}
           aria-hidden
@@ -153,7 +154,7 @@ function DuelPreview({ topic }: { topic?: TopicCard | null }) {
       <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
         <div className="flex items-center gap-2">
           <span className="grid size-9 place-items-center rounded-full bg-white/10">
-            <Bot className="size-4" aria-hidden />
+            <RobotIcon className="size-4" aria-hidden />
           </span>
           <div>
             <p className="text-sm font-semibold">

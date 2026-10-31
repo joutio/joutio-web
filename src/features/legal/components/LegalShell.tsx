@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
-import { Zap } from "lucide-react"
+import { JoutioMark } from "@/shared/components/joutio-mark"
 
 interface LegalShellProps {
   title: string
@@ -19,14 +19,7 @@ export function LegalShell({ title, updatedAt, children }: LegalShellProps) {
       <header className="border-b border-border">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4 px-6 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <span className="inline-flex size-7 items-center justify-center rounded-lg bg-foreground">
-              <Zap
-                size={15}
-                className="text-background"
-                fill="currentColor"
-                strokeWidth={0}
-              />
-            </span>
+            <JoutioMark className="size-7" />
             <span className="text-sm font-semibold">Joutio</span>
           </Link>
           <Link
@@ -39,7 +32,7 @@ export function LegalShell({ title, updatedAt, children }: LegalShellProps) {
       </header>
 
       <main className="mx-auto w-full max-w-3xl px-6 py-10">
-        <h1 className="font-heading text-3xl font-extrabold tracking-[-0.02em]">
+        <h1 className="type-large-title">
           {title}
         </h1>
         <p className="mt-2 text-xs text-muted-foreground">

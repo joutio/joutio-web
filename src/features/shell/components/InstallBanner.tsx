@@ -1,4 +1,4 @@
-import { Download, X } from "lucide-react"
+import { DownloadSimpleIcon, XIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { useInstallStore } from "@/shared/stores/useInstallStore"
@@ -26,8 +26,8 @@ export function InstallBanner() {
 
   return (
     <div className="flex items-center gap-3 border-b bg-primary/[0.06] px-(--page-gutter-x) py-2.5">
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-        <Download className="size-4" aria-hidden />
+      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-accent-ink">
+        <DownloadSimpleIcon className="size-4" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium">{t("shell.install.bannerTitle")}</p>
@@ -49,7 +49,7 @@ export function InstallBanner() {
         className="shrink-0"
         onClick={dismissBanner}
       >
-        <X className="size-4" />
+        <XIcon className="size-4" />
       </Button>
     </div>
   )

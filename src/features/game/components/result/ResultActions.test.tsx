@@ -18,14 +18,15 @@ const BASE_PROPS = {
 }
 
 describe("ResultActions", () => {
-  it("rend le signalement comme une action jaune pleine largeur", () => {
+  it("rend le signalement comme une action secondaire pleine largeur", () => {
     render(
       <ResultActions {...BASE_PROPS} reportable onReportOpponent={vi.fn()} />
     )
 
     const report = screen.getByRole("button", { name: "Signaler" })
     expect(report).toHaveClass("w-full")
-    expect(report.getAttribute("style")).toContain("var(--duel-gauge)")
+    expect(report.getAttribute("style")).toContain("var(--duel-answer)")
+    expect(report.getAttribute("style")).not.toContain("var(--primary)")
     expect(report).toBeEnabled()
   })
 

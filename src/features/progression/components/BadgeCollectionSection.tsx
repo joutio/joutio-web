@@ -141,7 +141,7 @@ export function BadgeCollectionSection({
                       {t(FAMILY_KEYS[group.family])}
                     </span>
                     {totals && (
-                      <span className="text-2xs text-muted-foreground tabular-nums">
+                      <span className="text-2xs text-muted-foreground font-mono tabular-nums">
                         {t("progression.badgesCount", {
                           earned: totals.earned,
                           total: totals.total,

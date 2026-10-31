@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, Pencil, X } from "lucide-react"
+import { CheckIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -82,20 +82,20 @@ export function QuestionReportsDialog({
             {t("authoring.reports.close")}
           </Button>
           <Button variant="outline" onClick={onEdit}>
-            <Pencil /> {t("authoring.reports.edit")}
+            <PencilSimpleIcon /> {t("authoring.reports.edit")}
           </Button>
           <Button
             onClick={() => closeAll("RESOLVED")}
             disabled={openReports.length === 0 || resolve.isPending}
           >
-            <Check /> {t("authoring.reports.resolveAll")}
+            <CheckIcon /> {t("authoring.reports.resolveAll")}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-4">
         {question.suspended && (
-          <p className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-700">
+          <p className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-accent-ink">
             {t("authoring.reports.suspended")}
           </p>
         )}
@@ -171,9 +171,9 @@ function ReportCard({
           variant="outline"
           className={
             opened
-              ? "border-amber-500/40 bg-amber-500/10 text-amber-700"
+              ? "border-primary/40 bg-primary/10 text-accent-ink"
               : report.status === "RESOLVED"
-                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
+                ? "border-correct/40 bg-correct/10 text-correct"
                 : undefined
           }
         >
@@ -206,10 +206,10 @@ function ReportCard({
       {opened && (
         <div className="mt-3 flex justify-end gap-1.5">
           <Button size="sm" variant="ghost" onClick={onDismiss} disabled={busy}>
-            <X /> {t("authoring.reports.dismiss")}
+            <XIcon /> {t("authoring.reports.dismiss")}
           </Button>
           <Button size="sm" variant="outline" onClick={onResolve} disabled={busy}>
-            <Check /> {t("authoring.reports.resolve")}
+            <CheckIcon /> {t("authoring.reports.resolve")}
           </Button>
         </div>
       )}
@@ -246,7 +246,7 @@ function SnapshotView({ snapshot }: { snapshot: QuestionReportSnapshot }) {
             key={answer.choice}
             className={
               answer.choice === snapshot.correctAnswer
-                ? "rounded-md bg-emerald-500/15 px-2 py-1 text-xs font-medium text-emerald-700"
+                ? "rounded-md bg-correct/15 px-2 py-1 text-xs font-medium text-correct"
                 : "rounded-md px-2 py-1 text-xs text-muted-foreground"
             }
           >

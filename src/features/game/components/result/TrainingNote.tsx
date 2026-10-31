@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Bot } from "lucide-react"
+import { RobotIcon } from "@phosphor-icons/react"
 import { TOKEN, veil } from "@/shared/theme/tokens"
 
 /**
@@ -19,7 +19,7 @@ export function TrainingNote() {
         padding: "clamp(10px, 1.8dvh, 16px) clamp(12px, 3vw, 18px)",
       }}
     >
-      <Bot
+      <RobotIcon
         size={22}
         aria-hidden
         style={{ color: TOKEN.gauge, flexShrink: 0 }}

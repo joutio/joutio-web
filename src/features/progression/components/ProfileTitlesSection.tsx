@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, Crown } from "lucide-react"
+import { CheckIcon, CrownIcon } from "@phosphor-icons/react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { ExpandableCard } from "@/components/arc/expandable-card/expandable-card"
@@ -108,7 +108,7 @@ export function ProfileTitlesSection({
       <PageContainer>
         <div className="py-8">
           <EmptyState
-            icon={<Crown className="size-6 text-muted-foreground" />}
+            icon={<CrownIcon className="size-6 text-muted-foreground" />}
             title={t("progression.profileTitles.emptyTitle")}
             description={t("progression.profileTitles.emptyDescription")}
           >
@@ -159,7 +159,7 @@ export function ProfileTitlesSection({
 
         {filtered.length === 0 ? (
           <EmptyState
-            icon={<Crown className="size-6 text-muted-foreground" />}
+            icon={<CrownIcon className="size-6 text-muted-foreground" />}
             title={t("progression.profileTitles.filters.emptyTitle")}
             description={t(
               "progression.profileTitles.filters.emptyDescription"
@@ -188,7 +188,7 @@ export function ProfileTitlesSection({
                         style={TITLE_CARD_ACCENT.acquiredCheck}
                         aria-hidden
                       >
-                        <Check className="size-4" strokeWidth={3} />
+                        <CheckIcon className="size-4" />
                       </span>
                       <span
                         className="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full ring-2 ring-card"
@@ -215,13 +215,13 @@ export function ProfileTitlesSection({
                     </p>
 
                     {equipped ? (
-                      <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
-                        <Check className="size-3.5" />
+                      <span className="flex items-center gap-1.5 text-xs font-semibold text-accent-ink">
+                        <CheckIcon className="size-3.5" />
                         {t("progression.titleEquipped")}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1.5 text-xs font-semibold text-success-600">
-                        <Check className="size-3.5" />
+                        <CheckIcon className="size-3.5" />
                         {t("progression.titleUnlocked")}
                       </span>
                     )}

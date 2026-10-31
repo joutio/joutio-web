@@ -1,6 +1,6 @@
 import { forwardRef } from "react"
 import type { ButtonHTMLAttributes } from "react"
-import { X } from "lucide-react"
+import { XIcon } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 
@@ -30,7 +30,7 @@ export const CloseButton = forwardRef<HTMLButtonElement, CloseButtonProps>(
         )}
         {...props}
       >
-        <X className="size-4" aria-hidden />
+        <XIcon className="size-4" aria-hidden />
       </button>
     )
   }

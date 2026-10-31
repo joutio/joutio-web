@@ -23,13 +23,6 @@ export function WaitingTopic({ topic, size = 64 }: WaitingTopicProps) {
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="relative">
-        <div
-          className="qu-halo absolute -inset-5 rounded-full"
-          style={{
-            background: `radial-gradient(circle, color-mix(in srgb, ${color} 55%, transparent), color-mix(in srgb, ${color} 0%, transparent) 70%)`,
-            filter: "blur(6px)",
-          }}
-        />
         <TopicIcon
           topic={{
             emoji: topic.emoji ?? "❔",
@@ -38,11 +31,11 @@ export function WaitingTopic({ topic, size = 64 }: WaitingTopicProps) {
             category: topic.category ?? null,
           }}
           size={size}
-          className="relative shadow-2xl ring-1 ring-white/10"
+          className="relative ring-1 ring-white/10"
         />
       </div>
       <div className="text-center">
-        <div className="font-heading text-lg font-extrabold tracking-tight">
+        <div className="font-heading text-lg font-bold tracking-tight">
           {topic.name}
         </div>
         {topic.categoryLabel && (

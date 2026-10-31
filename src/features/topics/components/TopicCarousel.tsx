@@ -49,7 +49,7 @@ export function TopicCarousel({
             key={topic.topicId}
             className={cn(
               "shrink-0",
-              rank !== undefined && (rank === 1 ? "pl-[25.346px]" : "pl-[42px]")
+              rank !== undefined && "pl-[42px]"
             )}
           >
             <TopicMediaCard

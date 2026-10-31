@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { MotionConfig, motion } from "framer-motion"
-import type { LucideIcon } from "lucide-react"
+import { type Icon as IconType } from "@phosphor-icons/react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 
@@ -9,7 +9,7 @@ const LABEL_WIDTH = 84
 export interface BottomNavItem {
   id: string
   label: string
-  icon: LucideIcon
+  icon: IconType
   /** Badge optionnel (compteur de non-lues…) rendu en pastille sur l'icône. */
   badge?: ReactNode
 }
@@ -54,15 +54,15 @@ export function BottomNavBar({
           opacity: hidden ? 0 : 1,
           y: hidden ? 96 : 0,
         }}
-        transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
         role="navigation"
         aria-label={t("shared.navigation.aria")}
         aria-hidden={hidden}
         className={cn(
           "fixed inset-x-0 z-30 hidden compact:flex",
           floating
-            ? "bottom-[var(--bottom-nav-offset)] mx-auto h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-1 rounded-full border border-border/60 bg-card/70 p-2 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60"
-            : "bottom-0 h-[calc(var(--bottom-nav-h)+var(--qu-safe-bottom))] items-stretch border-t border-border/60 bg-card/85 pb-[var(--qu-safe-bottom)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/75",
+            ? "bottom-[var(--bottom-nav-offset)] mx-auto h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-1 rounded-full border border-border bg-glass p-2 shadow-jo backdrop-blur-xl"
+            : "bottom-0 h-[calc(var(--bottom-nav-h)+var(--qu-safe-bottom))] items-stretch border-t border-border bg-glass pb-[var(--qu-safe-bottom)] backdrop-blur-xl",
           hidden && "pointer-events-none",
           className
         )}
@@ -84,12 +84,16 @@ export function BottomNavBar({
                   "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 transition-colors duration-200",
                   "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                   isActive
-                    ? "text-primary"
+                    ? "text-accent-ink"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span className="relative">
-                  <Icon size={24} strokeWidth={2} aria-hidden />
+                  <Icon
+                  size={24}
+                  weight={isActive ? "fill" : "regular"}
+                  aria-hidden
+                />
                   {item.badge}
                 </span>
                 <span className="max-w-full truncate text-xs font-medium select-none">
@@ -111,12 +115,16 @@ export function BottomNavBar({
                 "relative flex h-16 min-h-16 min-w-11 items-center rounded-full px-2.5 py-2 transition-colors duration-200",
                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 isActive
-                  ? "gap-2 bg-primary/10 text-primary"
-                  : "bg-transparent text-muted-foreground hover:bg-muted"
+                  ? "gap-2 bg-primary/10 text-accent-ink"
+                  : "bg-transparent text-muted-foreground hover:bg-hover"
               )}
             >
               <span className="relative">
-                <Icon size={24} strokeWidth={2} aria-hidden />
+                <Icon
+                  size={24}
+                  weight={isActive ? "fill" : "regular"}
+                  aria-hidden
+                />
                 {item.badge}
               </span>
 
@@ -138,7 +146,7 @@ export function BottomNavBar({
                   title={item.label}
                   className={cn(
                     "overflow-hidden text-xs leading-[1.9] font-medium text-ellipsis whitespace-nowrap select-none",
-                    isActive ? "text-primary" : "opacity-0"
+                    isActive ? "text-accent-ink" : "opacity-0"
                   )}
                 >
                   {item.label}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Swords } from "lucide-react"
+import { SwordIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { useAcceptChallenge, useDeclineChallenge } from "@/features/challenges"
 import { useImmersiveNavigate } from "@/features/shell"
@@ -148,7 +148,7 @@ export function RematchRequestDialog() {
             {t("social.rematchRequest.description", { name })}
           </p>
           <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Swords className="size-3.5 shrink-0" aria-hidden />
+            <SwordIcon className="size-3.5 shrink-0" aria-hidden />
             {t("social.rematchRequest.hint")}
           </p>
         </div>

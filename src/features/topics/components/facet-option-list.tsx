@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Check } from "lucide-react"
+import { CheckIcon } from "@phosphor-icons/react"
 
 export interface FacetOption {
   value: string
@@ -33,7 +33,7 @@ export function FacetOptionList({
         className="flex min-h-11 w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
       >
         <span className="flex-1">{t("topics.filters.all")}</span>
-        {value === null && <Check className="size-4" />}
+        {value === null && <CheckIcon className="size-4" />}
       </button>
 
       {options.map((option) => {
@@ -51,11 +51,11 @@ export function FacetOptionList({
             />
             <span className="min-w-0 flex-1 truncate">{option.label}</span>
             {option.count != null && (
-              <span className="text-xs text-muted-foreground tabular-nums">
+              <span className="text-xs text-muted-foreground font-mono tabular-nums">
                 {option.count}
               </span>
             )}
-            {selected && <Check className="size-4 shrink-0" />}
+            {selected && <CheckIcon className="size-4 shrink-0" />}
           </button>
         )
       })}

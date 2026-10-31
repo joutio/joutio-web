@@ -23,11 +23,11 @@ export const RIBBON_TITLE_SIZE = 58
 export const RIBBON_TITLE_MIN_SIZE = 40
 
 /**
- * Police du titre : **Inter** (la police d'interface, déjà auto-hébergée). Le rendu « gravé »
+ * Police du titre : **Geist** (la police d'interface, déjà auto-hébergée). Le rendu « gravé »
  * (didone Bodoni Moda) a été abandonné au profit de la lisibilité aux petites tailles.
  */
 export const RIBBON_TITLE_FONT =
-  "'Inter Variable', Inter, system-ui, -apple-system, sans-serif"
+  "'Geist Variable', Geist, system-ui, -apple-system, sans-serif"
 
 /**
  * Largeur utile du titre : le bandeau fait 640 unités (`x 150→790`), on conserve une marge de

@@ -1,14 +1,14 @@
 import {
-  Bot,
-  Flame,
-  Gauge,
-  Globe,
-  Link2,
-  Smile,
-  Swords,
-  UserCheck,
-  Users,
-} from "lucide-react"
+  FireIcon,
+  GaugeIcon,
+  GlobeHemisphereWestIcon,
+  LinkIcon,
+  RobotIcon,
+  SmileyIcon,
+  SwordIcon,
+  UserCheckIcon,
+  UsersIcon,
+} from "@phosphor-icons/react"
 import type { BotDifficulty } from "../../domain/game-dto"
 import type { PlayerSource } from "../../domain/opponents"
 
@@ -19,25 +19,25 @@ export type Opponent = "world" | "player" | "bot" | "private"
 export const DIFFICULTIES = [
   {
     value: "EASY",
-    icon: Smile,
+    icon: SmileyIcon,
     labelKey: "game.playMode.difficulties.easy.label",
     hintKey: "game.playMode.difficulties.easy.hint",
   },
   {
     value: "NORMAL",
-    icon: Gauge,
+    icon: GaugeIcon,
     labelKey: "game.playMode.difficulties.normal.label",
     hintKey: "game.playMode.difficulties.normal.hint",
   },
   {
     value: "HARD",
-    icon: Flame,
+    icon: FireIcon,
     labelKey: "game.playMode.difficulties.hard.label",
     hintKey: "game.playMode.difficulties.hard.hint",
   },
 ] as const satisfies readonly {
   value: BotDifficulty
-  icon: typeof Globe
+  icon: typeof GlobeHemisphereWestIcon
   labelKey: string
   hintKey: string
 }[]
@@ -68,25 +68,25 @@ export const PLAYER_SOURCE_KEYS: Record<
 export const OPPONENT_CHOICES = [
   {
     id: "world",
-    icon: Globe,
+    icon: GlobeHemisphereWestIcon,
     titleKey: "game.playMode.choices.world.title",
     descKey: "game.playMode.choices.world.description",
   },
   {
     id: "player",
-    icon: Swords,
+    icon: SwordIcon,
     titleKey: "game.playMode.choices.player.title",
     descKey: "game.playMode.choices.player.description",
   },
   {
     id: "bot",
-    icon: Bot,
+    icon: RobotIcon,
     titleKey: "game.playMode.choices.bot.title",
     descKey: "game.playMode.choices.bot.description",
   },
   {
     id: "private",
-    icon: Link2,
+    icon: LinkIcon,
     titleKey: "game.playMode.choices.private.title",
     descKey: "game.playMode.choices.private.description",
   },
@@ -96,19 +96,19 @@ export const OPPONENT_CHOICES = [
 export const PLAYER_SOURCE_CHOICES = [
   {
     id: "following",
-    icon: UserCheck,
+    icon: UserCheckIcon,
     titleKey: "game.playMode.sources.following.title",
     descKey: "game.playMode.sources.following.description",
   },
   {
     id: "followers",
-    icon: Users,
+    icon: UsersIcon,
     titleKey: "game.playMode.sources.followers.title",
     descKey: "game.playMode.sources.followers.description",
   },
   {
     id: "all",
-    icon: Globe,
+    icon: GlobeHemisphereWestIcon,
     titleKey: "game.playMode.sources.all.title",
     descKey: "game.playMode.sources.all.description",
   },
