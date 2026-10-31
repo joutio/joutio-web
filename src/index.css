@@ -231,6 +231,63 @@
 [data-elo-tier="DIAMANT"] { --elo-ring: #5DB4E2; }
 [data-elo-tier="PROVISIONAL"] { --elo-ring: var(--border); }
 
+/* Cadre Elo (spec `Elo Avatar`) : métal conique, reflet et halo selon le rang. La couleur du
+   rang reste sur le cadre, jamais en aplat de fond d'écran. */
+[data-elo-tier="FER"] { --elo-metal: #3f444c; --elo-gap: 5%; }
+[data-elo-tier="BRONZE"] { --elo-metal: conic-gradient(from 200deg, #6e3412, #d4925a, #8a4a20, #eab07a, #7a3e18, #c27a42, #6e3412); --elo-gap: 7.5%; }
+[data-elo-tier="ARGENT"] { --elo-metal: conic-gradient(from 200deg, #6f7783, #eef1f5, #8c95a3, #ffffff, #6f7783, #c9cfd8, #6f7783); --elo-gap: 8%; --elo-line: rgba(180, 188, 200, 0.5); }
+[data-elo-tier="OR"] { --elo-metal: conic-gradient(from 210deg, #8a6410, #ffe08a, #c9971c, #fff3c4, #a87a12, #ffd76a, #8a6410); --elo-gap: 8.5%; --elo-line: rgba(232, 190, 90, 0.55); --elo-halo: radial-gradient(circle, rgba(232, 176, 74, 0.34) 34%, transparent 68%); --elo-halo-size: -14%; }
+[data-elo-tier="PLATINE"] { --elo-metal: conic-gradient(from 200deg, #56658f, #eef2fd, #8c9fc9, #ffffff, #65749f, #d5ddf2, #56658f); --elo-gap: 9%; --elo-line: rgba(190, 204, 238, 0.6); --elo-halo: radial-gradient(circle, rgba(150, 170, 220, 0.36) 32%, transparent 68%); --elo-halo-size: -16%; --elo-shine: conic-gradient(transparent 0 38%, rgba(255, 255, 255, 0.85) 46%, transparent 54% 100%); --elo-spin: 5s; }
+[data-elo-tier="EMERAUDE"] { --elo-metal: conic-gradient(from 200deg, #0a5e38, #9df5c9, #2fbf77, #e4fff0, #107446, #5fdc9e, #0a5e38); --elo-gap: 9.5%; --elo-line: rgba(95, 220, 158, 0.65); --elo-halo: radial-gradient(circle, rgba(47, 191, 119, 0.4) 30%, transparent 68%); --elo-halo-size: -18%; --elo-shine: conic-gradient(transparent 0 30%, rgba(230, 255, 240, 0.85) 38%, transparent 46% 80%, rgba(230, 255, 240, 0.5) 86%, transparent 92% 100%); --elo-spin: 4.5s; }
+[data-elo-tier="DIAMANT"] { --elo-metal: conic-gradient(#5db4e2, #eaf8ff, #a58cf0, #5db4e2, #c9f0ff, #7fe0d0, #ffffff, #5db4e2); --elo-gap: 10%; --elo-line: rgba(180, 228, 255, 0.75); --elo-halo: radial-gradient(circle, rgba(120, 200, 255, 0.45) 26%, rgba(170, 140, 255, 0.18) 48%, transparent 70%); --elo-halo-size: -22%; --elo-shine: conic-gradient(transparent 0 40%, rgba(255, 255, 255, 0.9) 47%, transparent 54% 100%); --elo-spin: 3.5s; }
+[data-elo-tier="PROVISIONAL"] { --elo-gap: 8%; }
+
+.qu-elo-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--elo-metal, transparent);
+  outline: 1px solid var(--elo-line, transparent);
+  outline-offset: 6cqw;
+}
+[data-elo-tier="PROVISIONAL"] > .qu-elo-frame {
+  border: 2px dashed var(--border);
+}
+.qu-elo-frame::before {
+  content: "";
+  position: absolute;
+  inset: var(--elo-halo-size, 0);
+  z-index: -1;
+  border-radius: 9999px;
+  background: var(--elo-halo, none);
+}
+.qu-elo-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--elo-shine, none);
+  animation: qu-elo-spin var(--elo-spin, 0s) linear infinite;
+  animation-delay: var(--elo-clock, 0ms);
+}
+.qu-elo-portrait {
+  position: absolute;
+  inset: var(--elo-gap, 8%);
+  width: auto !important;
+  height: auto !important;
+  box-shadow: 0 0 0 1.5cqw var(--elo-surface, var(--background));
+}
+@keyframes qu-elo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qu-elo-frame::after {
+    animation: none;
+  }
+}
+
 /* `:root.dark` (et non `.dark`) pour battre `:root[data-theme="dark"]` d'Arc UI à
    spécificité égale, la fondation Arc étant importée avant ce fichier. */
 :root.dark {

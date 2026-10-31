@@ -54,15 +54,15 @@ export function BottomNavBar({
           opacity: hidden ? 0 : 1,
           y: hidden ? 96 : 0,
         }}
-        transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
         role="navigation"
         aria-label={t("shared.navigation.aria")}
         aria-hidden={hidden}
         className={cn(
           "fixed inset-x-0 z-30 hidden compact:flex",
           floating
-            ? "bottom-[var(--bottom-nav-offset)] mx-auto h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-1 rounded-full border border-border/60 bg-card/70 p-2 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60"
-            : "bottom-0 h-[calc(var(--bottom-nav-h)+var(--qu-safe-bottom))] items-stretch border-t border-border/60 bg-card/85 pb-[var(--qu-safe-bottom)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/75",
+            ? "bottom-[var(--bottom-nav-offset)] mx-auto h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-1 rounded-full border border-border bg-glass p-2 shadow-jo backdrop-blur-xl"
+            : "bottom-0 h-[calc(var(--bottom-nav-h)+var(--qu-safe-bottom))] items-stretch border-t border-border bg-glass pb-[var(--qu-safe-bottom)] backdrop-blur-xl",
           hidden && "pointer-events-none",
           className
         )}
@@ -116,7 +116,7 @@ export function BottomNavBar({
                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 isActive
                   ? "gap-2 bg-primary/10 text-accent-ink"
-                  : "bg-transparent text-muted-foreground hover:bg-muted"
+                  : "bg-transparent text-muted-foreground hover:bg-hover"
               )}
             >
               <span className="relative">

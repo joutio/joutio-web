@@ -19,14 +19,25 @@ function avatarOf(container: HTMLElement): HTMLElement {
 }
 
 describe("UserAvatar", () => {
-  it("applique une bordure Elo proportionnelle à la taille réelle", () => {
+  it("porte le cadre complet du rang dès 40 px", () => {
     const { container } = render(
       <UserAvatar name="Alice" rating={200} size={40} />
+    )
+
+    expect(container.querySelector(".qu-elo-frame")).not.toBeNull()
+    expect(avatarOf(container)).toHaveClass("qu-elo-portrait")
+    expect(avatarOf(container).style.outlineWidth).toBe("")
+  })
+
+  it("applique un anneau plein proportionnel sous 40 px", () => {
+    const { container } = render(
+      <UserAvatar name="Alice" rating={200} size={32} />
     )
     const wrapper = container.firstElementChild as HTMLElement
 
     expect(wrapper).toHaveAttribute("data-elo-tier", "FER")
     expect(wrapper.style.containerType).toBe("inline-size")
+    expect(container.querySelector(".qu-elo-frame")).toBeNull()
     expect(avatarOf(container).style.outlineWidth).toBe("clamp(1px, 5cqw, 4px)")
     expect(avatarOf(container).style.outlineOffset).toBe("0px")
   })
