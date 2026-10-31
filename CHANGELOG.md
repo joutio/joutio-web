@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/joutio/joutio-web/compare/v1.1.0...v1.2.0) (2026-10-31)
+
+### Features
+
+* **design:** align joutio-web with design system 3.0 ([bc00199](https://github.com/joutio/joutio-web/commit/bc0019985173e51e67d974e03b891ba3dd01e8b1))
+
 ## [1.1.0](https://github.com/joutio/joutio-web/compare/v1.0.0...v1.1.0) (2026-10-31)
 
 ### Features
