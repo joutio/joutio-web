@@ -1,3 +1,22 @@
+## [1.1.0](https://github.com/joutio/joutio-web/compare/v1.0.0...v1.1.0) (2026-10-31)
+
+### Features
+
+* **design:** add Elo frames and component surface recipes ([1937f0b](https://github.com/joutio/joutio-web/commit/1937f0bdb95e0f8a5118c19971df1f393340375c))
+* **design:** adopt Joutio 2.1 color, radius and motion tokens ([205aa90](https://github.com/joutio/joutio-web/commit/205aa90e933dcec707b396ddb28c184a8d9d7001))
+* **design:** adopt the 17 category colors from tokens.json ([5ea6e61](https://github.com/joutio/joutio-web/commit/5ea6e616e998a8c06a5b1e81df5538ab4d08cc11))
+* **design:** align controls and shared components with design specs ([e1c0bcb](https://github.com/joutio/joutio-web/commit/e1c0bcbcad224cf4a450db72e15bc0a4e4aed3f7))
+* **design:** remove third-party assets and background effects ([04b1efb](https://github.com/joutio/joutio-web/commit/04b1efbe06edc46e62017a36e4f0ec11cadd7183))
+* **design:** replace Lucide with Phosphor icons ([048ca5f](https://github.com/joutio/joutio-web/commit/048ca5fd48bda2a46e5205c565232e1af60b82a6))
+* **design:** restyle the duel and clear residual colors ([67145f9](https://github.com/joutio/joutio-web/commit/67145f9d5797e078736aeab1818abd9f96871690))
+* **design:** switch to Geist, new brand mark and type scale ([24d1c7f](https://github.com/joutio/joutio-web/commit/24d1c7feec910770befa752acc44cbee552cd01b))
+
+### Bug Fixes
+
+* **design:** flatten login panel and use inverted active tabs ([5bf65cb](https://github.com/joutio/joutio-web/commit/5bf65cb1084caca78ae5d2eb9ab3e2e56114f420))
+* **design:** follow topic tile spec and guard hard-coded colors ([3aea5fe](https://github.com/joutio/joutio-web/commit/3aea5fed4dbd145494777843f426ac6c30489a07))
+* **design:** set sidebar to 240 px and apply type scale to shared titles ([89cc93c](https://github.com/joutio/joutio-web/commit/89cc93c71c55b773e8d1a3d4c801b4ecf6be9447))
+
 ## 1.0.0 (2026-10-27)
 
 ### Features
