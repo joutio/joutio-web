@@ -88,26 +88,9 @@ describe("TopicMediaCard", () => {
     ).toHaveClass("h-16", "bg-card")
     const rank = container.querySelector('[data-slot="topic-rank"]')
     expect(rank).toHaveAttribute("data-rank", "3")
-    expect(rank?.getAttribute("src")).toMatch(/^data:image\/svg\+xml/)
-    expect(rank).toHaveAttribute("alt", "")
+    expect(rank).toHaveTextContent("3")
     expect(rank).toHaveAttribute("aria-hidden", "true")
-    expect(rank).toHaveClass(
-      "top-4",
-      "-left-[42px]",
-      "h-auto",
-      "w-auto",
-      "qu-rank"
-    )
-  })
-
-  it("aligne le rang 1 sur le bord du ScrollArea", () => {
-    const { container } = render(
-      <TopicMediaCard topic={TOPIC} onOpen={vi.fn()} format="poster" rank={1} />
-    )
-
-    expect(container.querySelector('[data-slot="topic-rank"]')).toHaveClass(
-      "-left-[25.346px]"
-    )
+    expect(rank).toHaveClass("-left-[42px]", "font-mono")
   })
 
   it("affiche le rang 10 avec le même gabarit que les autres rangs", () => {
@@ -125,14 +108,8 @@ describe("TopicMediaCard", () => {
     ).toBeInTheDocument()
     const rank = container.querySelector('[data-slot="topic-rank"]')
     expect(rank).toHaveAttribute("data-rank", "10")
-    expect(rank?.getAttribute("src")).toMatch(/^data:image\/svg\+xml/)
-    expect(rank).toHaveClass(
-      "top-4",
-      "-left-[42px]",
-      "h-auto",
-      "w-auto",
-      "qu-rank"
-    )
+    expect(rank).toHaveTextContent("10")
+    expect(rank).toHaveClass("-left-[42px]", "font-mono")
   })
 
   it("utilise la couverture en poster", () => {

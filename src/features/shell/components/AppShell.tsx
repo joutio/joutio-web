@@ -5,7 +5,6 @@ import { cn } from "cn"
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary"
 import { clearReturnTo, readReturnTo, useSessionRefresh } from "@/features/auth"
 import { useStopSoundsOnNavigate } from "@/shared/hooks/useStopSoundsOnNavigate"
-import { PagePattern } from "@/shared/components/page-pattern"
 import { ScrollContainerProvider } from "@/shared/components/scroll-container-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
@@ -145,8 +144,7 @@ export function AppShell() {
       >
         {/* Duel : la sidebar disparaît complètement pour rendre l'arène plein écran (desktop). */}
         {!inMatch && <AppSidebar />}
-        <SidebarInset className="flex min-h-0 flex-col overflow-hidden bg-[var(--qu-shell-bg)] dark:bg-background">
-          <PagePattern size="var(--qu-shell-pattern-size)" />
+        <SidebarInset className="flex min-h-0 flex-col overflow-hidden bg-background">
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
             {/* Reprise de partie : épinglée hors du scroll, donc visible quel que soit le défilement. */}
             {!inMatch && <ResumeBanner />}
@@ -192,17 +190,11 @@ export function AppShell() {
                 {inMatch ? (
                   // Flux immersif desktop : toutes les pages (duel, résultat, salons,
                   // matchmaking, join) partagent un cadre paysage 3:2 (largeur dérivée de la
-                  // hauteur, 1320 px max) centré sur un fond plus profond, texturé par le papier
-                  // peint doodle. En tactile, le cadre disparaît : plein écran natif.
-                  <div className="relative flex h-full items-center justify-center desktop:bg-[#0b0b0b]">
-                    <PagePattern
-                      tint="var(--duel-surface)"
-                      opacity={0.06}
-                      className="hidden desktop:block"
-                    />
+                  // hauteur, 1320 px max) centré sur le canvas. En tactile, le cadre disparaît : plein écran natif.
+                  <div className="relative flex h-full items-center justify-center desktop:bg-[#0c0c0b]">
                     <div
                       data-slot="game-frame"
-                      className="relative h-full w-full overflow-hidden desktop:aspect-[3/2] desktop:h-auto desktop:w-[min(100%,calc((100dvh-3rem)*3/2))] desktop:max-w-[1320px] desktop:rounded-[28px] desktop:border desktop:border-white/10 desktop:bg-[var(--duel-bg)] desktop:shadow-2xl"
+                      className="relative h-full w-full overflow-hidden desktop:aspect-[3/2] desktop:h-auto desktop:w-[min(100%,calc((100dvh-3rem)*3/2))] desktop:max-w-[1320px] desktop:rounded-xl desktop:border desktop:border-[#313131] desktop:bg-[var(--duel-bg)]"
                     >
                       <ErrorBoundary key={pathname}>
                         <Outlet />

@@ -56,7 +56,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/ta
 import { AnimatedSwitch } from "@/components/spectrumui/animated-switch"
 import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
 import { AppDialog } from "@/shared/components/app-dialog"
-import { PagePattern } from "@/shared/components/page-pattern"
 import { showToast } from "@/shared/utils/toast"
 import { useTheme } from "@/features/shell"
 
@@ -973,21 +972,19 @@ export function DesignSystemPage() {
         <Section
           id="shell"
           title="Shell et surfaces"
-          description="Le canvas de contenu reprend la surface de la sidebar en clair et --background en sombre ; la topbar et les cartes restent claires."
+          description="Fond --background, surfaces plates et filet 1 px dans les deux thèmes."
         >
           <Card size="sm" className="overflow-hidden p-0">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3 text-xs text-muted-foreground">
               <span>
-                Canvas <TokenLabel>--qu-shell-bg</TokenLabel> · tuile{" "}
-                <TokenLabel>--qu-shell-pattern-size</TokenLabel>
+                Canvas <TokenLabel>--background</TokenLabel>
               </span>
               <span>
-                clair : 374 px / 5 % · sombre : 374 px / 8 %
+                surfaces plates, filet 1 px
               </span>
             </div>
-            <div className="relative overflow-hidden bg-[var(--qu-shell-bg)] p-4">
-              <PagePattern size="var(--qu-shell-pattern-size)" />
-              <div className="relative z-10 overflow-hidden rounded-card border border-border bg-background/80 shadow-sm backdrop-blur-xl">
+            <div className="relative overflow-hidden bg-background p-4">
+              <div className="relative z-10 overflow-hidden rounded-card border border-border bg-background">
                 <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="grid size-7 place-items-center rounded-lg bg-primary text-primary-foreground">

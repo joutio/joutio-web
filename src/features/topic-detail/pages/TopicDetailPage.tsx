@@ -8,7 +8,6 @@ import {
   SwordIcon,
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { BannerGlow } from "@/shared/components/banner-glow"
 import { EmptyState } from "@/shared/components/empty-state"
 import { StatStrip } from "@/shared/components/stat-strip"
 import { PageHeaderBar } from "@/shared/components/page-header-bar"
@@ -46,7 +45,6 @@ import { usePeopleList } from "@/features/follows"
 import { masteryTierKeyOf } from "@/features/progression"
 import { useTopicDuelState } from "@/features/social"
 import {
-  categoryColor,
   categoryLabel,
   categoryTagline,
   categoryTextColor,
@@ -167,14 +165,9 @@ export function TopicDetailPage() {
                 className="pointer-events-none absolute inset-0 h-full w-full object-cover"
               />
               {/* Voile pour garder le titre/contrôles lisibles sur n'importe quelle bannière. */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/55 via-background/75 to-background" />
+              <div className="pointer-events-none absolute inset-0 bg-background/75" />
             </>
           ) : null}
-          {/* Halo dynamique : couleur éditoriale du sujet, repli couleur de sa catégorie.
-            (Beams désactivés pour le moment — composant conservé dans components/ui.) */}
-          <BannerGlow
-            color={topic.color ?? categoryColor(topic.category ?? "")}
-          />
           <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
             <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
               <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">

@@ -192,7 +192,6 @@
   --radius-control: 0.5rem;
   --radius-panel: 1rem;
   --radius-surface: 1.5rem;
-  --qu-shell-bg: var(--background);
   --sidebar: #ffffff;
   --sidebar-foreground: #121210;
   --sidebar-primary: #e8b04a;
@@ -408,11 +407,11 @@
 
 @media (width >= 64rem) {
   :root {
-    /* Desktop : densité compacte (tactile 36/40/44/48), topbar plus haute. */
+    /* Desktop : boutons 48 / 40 / 32 du design system, topbar plus haute. */
     --control-h-xs: 1.5rem;
     --control-h-sm: 2rem;
-    --control-h-md: 2.25rem;
-    --control-h-lg: 2.5rem;
+    --control-h-md: 2.5rem;
+    --control-h-lg: 3rem;
     --topbar-h: 4rem;
     --page-gutter-x: 1.5rem; /* 24 px */
 
@@ -600,31 +599,6 @@
   font-size: 16px;
 }
 
-/* Texture du fond de page : le **papier peint doodle officiel de WhatsApp** (`background.svg`,
-   planche de 374 × 666) sert de masque, la teinte vient de `background-color`.
-   La tuile par défaut est à **280 px** (gribouillis ~36 px, la maille de la toile du duel) ; le
-   shell utilise la tuile native de **374 px** via `--qu-shell-pattern-size` (gribouillis ~48 px,
-   l'échelle de la capture WhatsApp), dans les deux thèmes. Surcharge ponctuelle via
-   `--qu-pattern-size` (ex. la toile du duel). */
-.qu-pattern {
-  -webkit-mask-image: url("./assets/background.svg");
-  mask-image: url("./assets/background.svg");
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: var(--qu-pattern-size, 280px);
-  mask-size: var(--qu-pattern-size, 280px);
-}
-/* Rang du Top 10 : en clair, le chiffre officiel est inversé (corps clair) et cerné d'un liseré
-   sombre net — le dégradé clair du SVG, une fois inversé, ne donne qu'un gris mou. En sombre, le
-   SVG garde son rendu d'origine (corps sombre, liseré clair). */
-.qu-rank {
-  filter: invert(1) drop-shadow(0 0 0.75px rgb(0 0 0 / 0.8));
-}
-:root.dark .qu-rank {
-  filter: none;
-}
 @layer base {
   .qu-root input::placeholder {
     color: var(--muted-foreground);
@@ -1046,18 +1020,6 @@
     border-color 0.14s ease,
     color 0.14s ease,
     transform 0.14s ease;
-}
-
-/* Motif de fond de page : opacité uniforme clair/sombre, ajustable via `--qu-pattern-opacity`.
-   Contraste doux (5 %) : c'est ce qui fait « papier peint » plutôt que « texte qui passe ».
-   Sur le canvas clair du shell, la teinte `var(--foreground)` à 5 % donne un doodle discret.
-   En sombre, 8 % pour atteindre le ton des doodles de la capture (gris légèrement plus clair
-   que le fond `#121212`). */
-.page-pattern {
-  opacity: var(--qu-pattern-opacity, 0.05);
-}
-:root.dark .page-pattern {
-  opacity: var(--qu-pattern-opacity, 0.08);
 }
 
 /* Zoom navigateur (ex. 130 %) : stabilise les animations de dialogue (transform fractionnaire). */
