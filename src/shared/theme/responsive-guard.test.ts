@@ -18,6 +18,27 @@ const ALLOWED_MATCHMEDIA = [
   "/shell/providers/ThemeProvider.tsx",
 ]
 
+/** Hex légitimes : palettes de contenu, métaux, marques tierces, repères système. */
+const ALLOWED_HEX = [
+  "/avatar/",
+  "/components/avatar-editor.tsx",
+  "/components/joutio-mark.tsx",
+  "/components/topic-icon.tsx",
+  "/utils/categories.ts",
+  "/utils/person-color.ts",
+  "/utils/share.ts",
+  "/account/domain/topics-played-chart.ts",
+  "/account/components/TopicsPlayedDonut.tsx",
+  "/auth/components/AuthField.tsx",
+  "/game/components/Confetti.tsx",
+  "/game/components/result/palette.ts",
+  "/game/components/versus/VersusScreen.tsx",
+  "/matchmaking/components/SearchingScreen.tsx",
+  "/progression/domain/",
+  "/shell/providers/ThemeProvider.tsx",
+  "/topic-authoring/pages/CreateTopicPage.tsx",
+]
+
 interface Rule {
   readonly name: string
   readonly pattern: RegExp
@@ -33,6 +54,13 @@ const RULES: Rule[] = [
     name: "palette Tailwind directe — utiliser les jetons du design system",
     pattern:
       /\b(?:bg|text|border|ring)-(?:cyan|pink|rose|orange|yellow|blue|green|red|emerald|amber|violet|purple|indigo|sky|teal|lime|fuchsia)-\d{2,3}\b/,
+  },
+  {
+    name: "couleur hex en dur — utiliser un jeton (design/tokens.json)",
+    pattern: /["'`\s]#[0-9a-fA-F]{6}\b/,
+    isAllowed: (file) =>
+      file.includes(".test.") ||
+      ALLOWED_HEX.some((path) => file.includes(path)),
   },
   {
     name: "ancien breakpoint Tailwind (max-sm/max-md/max-lg) — utiliser compact:/tablet:/touch:",

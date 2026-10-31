@@ -63,7 +63,7 @@ export function TopicMediaCard({
           data-rank={rankValue}
           className={cn(
             "pointer-events-none absolute top-3 -left-[42px] z-0 w-[40px] text-right font-mono leading-none font-semibold text-muted-foreground select-none",
-            rankValue === 10 ? "text-4xl tracking-tighter" : "type-display"
+            rankValue === 10 ? "text-3xl tracking-tighter" : "type-display"
           )}
         >
           {rankValue}

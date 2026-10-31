@@ -144,7 +144,8 @@ export function TopicIcon({
       ) : category ? (
         createElement(categoryIcon(category), {
           className: fill ? "size-1/3" : "size-1/2",
-          style: { color: "#ffffff" },
+          weight: "fill",
+          style: { color: "#000000", opacity: 0.82 },
         })
       ) : (
         <span aria-hidden className={cn(stretches && "text-[50cqw]")}>

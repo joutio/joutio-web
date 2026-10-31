@@ -938,9 +938,9 @@ via `joutio/joutio-reusable-workflows`.
   (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up`
   (`src/index.css`).
   `compact` (< 640 px) = nav basse + modales plein écran + bottom sheets ; `tablet` (640–1023 px) =
-  sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
+  sidebar en rail replié, sheets conservés, tailles de `design/` ; `desktop` (≥ 1024 px) = sidebar étendue,
   densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
-  (44 px sous `touch`), jamais en patch de page ; gouttières via `--page-gutter-x`, topbar via
+  (tailles de `design/`), jamais en patch de page ; gouttières via `--page-gutter-x`, topbar via
   `--topbar-h` (64 px en compact, **gouttière dédiée `--topbar-gutter-x`** = max 20 px, +
   safe-areas horizontales `--qu-safe-left/right` ; offset des bandes collantes inclus) ; typo =
   échelle Tailwind + `text-2xs`
@@ -948,7 +948,7 @@ via `joutio/joutio-reusable-workflows`.
   [`best-practices/.frontend/responsive-sizing.md`](../../best-practices/.frontend/responsive-sizing.md).
 - **Garde-fous responsive** : `src/shared/theme/responsive-guard.test.ts` (Vitest statique :
   classes arbitraires, anciens breakpoints, `matchMedia` hors hook device) + `e2e/responsive.spec.ts`
-  (matrice 320/393/768/1280 : aucun débordement horizontal, cibles ≥ 44 px et champs ≥ 16 px sous
+  (matrice 320/393/768/1280 : aucun débordement horizontal, cibles ≥ 36 px (Jo Button S) et champs ≥ 16 px sous
   1024, chrome par classe, bandes collantes calées).
 - **Formulaires** : disposition unique « Réglages » via `shared/components/form-section.tsx`
   (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
@@ -1227,7 +1227,7 @@ via `joutio/joutio-reusable-workflows`.
 ### Dimensionnement responsive (contrat device)
 
 - **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ; hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
-- **Tokens** (`index.css`) : `--control-h-xs/sm/md/lg` (tactile 36/44/44/48, desktop 24/32/36/40),
+- **Tokens** (`index.css`) : `--control-h-sm/md/lg` (Jo Button S/M/L, sur tous les appareils), `--control-h-field` (Jo Field), `--control-h-xs` (contrôles embarqués),
   `--page-gutter-x` (14/20/24), `--topbar-gutter-x` (max 18 px, topbar), `--topbar-h` (56/64),
   `--bottom-nav-h`, `--qu-safe-left/right` ; `--qu-topbar-offset`
   dérivé + `--qu-chrome-shift` (repli animé) consommés par toutes les bandes collantes (mobile
@@ -1240,7 +1240,7 @@ via `joutio/joutio-reusable-workflows`.
   `StickyHeaderProvider`/`StickyHeaderSlot`/`StickyHeaderFilters` (portail du filtre actif),
   `EmptyState` (8 copies),
   `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge Elo du profil ;
-  capsule **`h-4` + `rounded-full`** alignée sur la barre V/N/D via `ProgressTrack`, couleurs
+  barre fine via `ProgressTrack` (spec Jo Progress Bar), couleurs
   shadcn ; même gabarit pour les barres de badge et de titre — la barre d'étape du wizard
   reste un élément shadcn standard plus fin, pas une barre de progression),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
