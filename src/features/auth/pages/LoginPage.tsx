@@ -97,7 +97,7 @@ export function LoginPage() {
           )
         )}
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="font-heading text-2xl font-bold tracking-[-0.02em]">
+          <h1 className="type-title-1">
             {t("auth.login.title")}
           </h1>
           <p className="text-sm leading-normal text-muted-foreground">

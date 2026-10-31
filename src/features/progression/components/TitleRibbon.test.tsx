@@ -24,7 +24,7 @@ describe("TitleRibbon", () => {
     const { region, art, text } = ribbon("Maréchal d'Empire")
     expect(region).toBeInTheDocument()
     // Le visuel du ruban est décoratif : le libellé n'est annoncé qu'une fois (l'overlay).
-    expect(art?.getAttribute("src")).toContain("ruban-or")
+    expect(art).toHaveAttribute("data-rank", "OR")
     expect(art).toHaveAttribute("aria-hidden")
     // Le texte est centré dans le repère de l'asset, sur la ligne du bandeau.
     expect(text).toHaveTextContent("Maréchal d'Empire")
@@ -42,13 +42,13 @@ describe("TitleRibbon", () => {
     const { rerender } = render(<TitleRibbon label="Fer" rank="FER" />)
 
     let { art, text } = ribbon("Fer")
-    expect(art?.getAttribute("src")).toContain("ruban-fer")
+    expect(art).toHaveAttribute("data-rank", "FER")
     expect(text).toHaveAttribute("fill", RIBBON_INK.FER.fill)
 
     rerender(<TitleRibbon label="Fer" rank="DIAMANT" />)
 
     ;({ art, text } = ribbon("Fer"))
-    expect(art?.getAttribute("src")).toContain("ruban-diamant")
+    expect(art).toHaveAttribute("data-rank", "DIAMANT")
     expect(text).toHaveAttribute("fill", RIBBON_INK.DIAMANT.fill)
   })
 

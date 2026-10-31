@@ -127,7 +127,7 @@ export function CreateTopicPage() {
       </Button>
 
       <div className="mb-5">
-        <h1 className="font-heading text-xl font-bold">
+        <h1 className="type-title-2">
           {t("authoring.create.title")}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">

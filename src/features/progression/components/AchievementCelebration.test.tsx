@@ -142,7 +142,7 @@ describe("AchievementCelebration", () => {
     const ribbon = screen.getByRole("img", { name: "Historien de fer" })
     const art = ribbon.parentElement?.querySelector("img")
     // Le ruban du rang porte le titre, comme sur le profil.
-    expect(art?.getAttribute("src")).toContain("ruban-fer")
+    expect(art).toHaveAttribute("data-rank", "FER")
     expect(ribbon).toHaveTextContent("Historien de fer")
     // Plus de palier ni de pastille de rang en doublon.
     expect(screen.queryByRole("heading", { name: "Fer" })).toBeNull()

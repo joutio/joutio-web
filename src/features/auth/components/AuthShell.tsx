@@ -30,7 +30,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
 
         <div className="relative z-10 flex flex-col items-center gap-[18px] p-10 text-center">
           <JoutioMark className="size-32" />
-          <div className="font-heading text-2xl font-bold tracking-[-0.03em] text-foreground">
+          <div className="type-title-1 text-foreground">
             {t("shell.brand.tagline")}
           </div>
           <p className="max-w-[34ch] text-sm leading-relaxed text-muted-foreground">

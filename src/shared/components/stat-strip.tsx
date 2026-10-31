@@ -33,11 +33,11 @@ export function StatStrip({ items, className }: StatStripProps) {
             i > 0 && "border-l border-border"
           )}
         >
-          <span className="text-2xs font-semibold tracking-wide text-muted-foreground uppercase">
+          <span className="text-xs text-muted-foreground">
             {it.label}
           </span>
           <span
-            className="font-heading text-xl leading-tight font-bold font-mono tabular-nums tablet-up:text-2xl"
+            className="font-mono type-title-2 tabular-nums"
             style={it.accent ? { color: it.accent } : undefined}
           >
             {it.value}

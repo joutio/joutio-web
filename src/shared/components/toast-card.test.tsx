@@ -41,7 +41,7 @@ describe("ToastCard", () => {
     expect(container.querySelector(".min-h-10")).toBeNull()
     const title = container.querySelector("span[title]")
     expect(title?.textContent).toBe("Sans détail")
-    expect(title?.className).toContain("min-h-6")
+    expect(title?.className).toContain("min-h-5")
   })
 
   it("affiche la description entière : la hauteur suit le contenu", () => {

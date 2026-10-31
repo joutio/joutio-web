@@ -103,7 +103,7 @@ function BotProfile({
           avatarOptions={profile.avatarOptions ?? undefined}
           size={112}
         />
-        <h1 className="font-heading text-3xl font-bold tracking-tight">
+        <h1 className="type-large-title">
           {name}
         </h1>
       </div>
@@ -245,7 +245,7 @@ function PlayerProfileContent({
           face-à-face portent `bg-background`, la liste reste sur le fond de page. */}
       <PageHeaderBar>
         <div className="flex w-full flex-col gap-3">
-          <h2 className="font-heading text-xl font-bold tracking-tight">
+          <h2 className="type-title-2">
             {t("player.profile.versusTitle", { name })}
           </h2>
           {commonGames > 0 && headToHead.data ? (

@@ -23,14 +23,12 @@ describe("StreakCalendar", () => {
       .find((cell) => cell.getAttribute("aria-label")?.includes("jour manqué"))
 
     expect(missed).toBeDefined()
-    expect(missed?.getAttribute("style")).toContain("--loss")
-    expect(missed?.getAttribute("style")).toContain("80%")
-    expect(missed?.getAttribute("style")).toContain("black")
-    expect(missed?.className).toContain("text-white")
+    expect(missed?.getAttribute("style")).toContain("--wrong")
+    expect(missed?.className).toContain("text-wrong")
     expect(missed?.querySelector('[data-glyph="x"]')).not.toBeNull()
   })
 
-  it("affiche les jours validés en vert avec une coche blanche", () => {
+  it("affiche les jours validés en ambre avec une coche noire", () => {
     const referenceDate = new Date()
     referenceDate.setDate(referenceDate.getDate() - 7)
     const key = `${referenceDate.getFullYear()}-${String(referenceDate.getMonth() + 1).padStart(2, "0")}-${String(referenceDate.getDate()).padStart(2, "0")}`
@@ -49,10 +47,8 @@ describe("StreakCalendar", () => {
       .getAllByRole("gridcell")
       .find((cell) => cell.getAttribute("aria-label")?.includes("série active"))
 
-    expect(active?.getAttribute("style")).toContain("--success-600")
-    expect(active?.getAttribute("style")).toContain("80%")
-    expect(active?.getAttribute("style")).toContain("black")
-    expect(active?.className).toContain("text-white")
+    expect(active?.getAttribute("style")).toContain("--primary")
+    expect(active?.className).toContain("text-primary-foreground")
     expect(active?.querySelector('[data-glyph="check"]')).not.toBeNull()
   })
 

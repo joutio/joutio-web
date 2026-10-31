@@ -120,7 +120,7 @@ export function ToastCard({
         <span
           title={title}
           className={cn(
-            "min-h-6 text-base leading-6 font-semibold break-words",
+            "min-h-5 text-sm leading-5 font-semibold break-words",
             TONE_TITLE[key]
           )}
         >

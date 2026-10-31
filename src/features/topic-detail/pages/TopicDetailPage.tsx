@@ -191,7 +191,7 @@ export function TopicDetailPage() {
                       topic.categoryLabel ?? undefined
                     )}
                   </div>
-                  <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight">
+                  <h1 className="mt-1 type-large-title">
                     {resolveName(topic.names)}
                   </h1>
                   <p className="mt-1 text-sm text-muted-foreground">

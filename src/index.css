@@ -408,9 +408,10 @@
        la densité compacte. Toute taille de contrôle doit passer par ces tokens.
        ---------------------------------------------------------------------- */
   --control-h-xs: 2.25rem; /* 36 px */
-  --control-h-sm: 2.75rem; /* 44 px — cible tactile pleine */
-  --control-h-md: 2.75rem; /* 44 px */
-  --control-h-lg: 3rem; /* 48 px */
+  --control-h-sm: 2.25rem; /* Jo Button S */
+  --control-h-md: 2.75rem; /* Jo Button M */
+  --control-h-lg: 3.25rem; /* Jo Button L */
+  --control-h-field: 3.25rem; /* Jo Field */
   --topbar-h: 4rem; /* 64 px — les contrôles tactiles ne touchent plus les bords */
   --bottom-nav-h: 5rem; /* 80 px — hauteur native Android (Material 3) */
   --page-gutter-x: 0.875rem; /* 14 px */
@@ -468,11 +469,8 @@
 
 @media (width >= 64rem) {
   :root {
-    /* Desktop : boutons 48 / 40 / 32 du design system, topbar plus haute. */
+    /* Desktop : seuls les contrôles embarqués se densifient, topbar plus haute. */
     --control-h-xs: 1.5rem;
-    --control-h-sm: 2rem;
-    --control-h-md: 2.5rem;
-    --control-h-lg: 3rem;
     --topbar-h: 4rem;
     --page-gutter-x: 1.5rem; /* 24 px */
 

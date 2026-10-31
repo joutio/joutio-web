@@ -107,7 +107,7 @@ export function ProfileBanner({
             </span>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center justify-center gap-2.5 tablet-up:justify-start">
-                <h1 className="font-heading text-3xl font-bold tracking-tight">
+                <h1 className="type-large-title">
                   {name}
                 </h1>
               </div>

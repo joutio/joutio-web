@@ -32,7 +32,7 @@ export function LegalShell({ title, updatedAt, children }: LegalShellProps) {
       </header>
 
       <main className="mx-auto w-full max-w-3xl px-6 py-10">
-        <h1 className="font-heading text-3xl font-bold tracking-[-0.02em]">
+        <h1 className="type-large-title">
           {title}
         </h1>
         <p className="mt-2 text-xs text-muted-foreground">

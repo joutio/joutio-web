@@ -142,7 +142,7 @@ export function AchievementCelebration({
           />
         )}
         {achievement.kind !== "TITLE" && (
-          <h2 className="font-heading text-xl font-bold">
+          <h2 className="type-title-2">
             {achievement.kind === "BADGE" && badgeLabel}
           </h2>
         )}
