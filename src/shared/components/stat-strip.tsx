@@ -37,7 +37,7 @@ export function StatStrip({ items, className }: StatStripProps) {
             {it.label}
           </span>
           <span
-            className="font-heading text-xl leading-tight font-extrabold tabular-nums tablet-up:text-2xl"
+            className="font-heading text-xl leading-tight font-bold font-mono tabular-nums tablet-up:text-2xl"
             style={it.accent ? { color: it.accent } : undefined}
           >
             {it.value}

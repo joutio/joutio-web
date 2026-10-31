@@ -42,7 +42,7 @@ export function WaitingTopic({ topic, size = 64 }: WaitingTopicProps) {
         />
       </div>
       <div className="text-center">
-        <div className="font-heading text-lg font-extrabold tracking-tight">
+        <div className="font-heading text-lg font-bold tracking-tight">
           {topic.name}
         </div>
         {topic.categoryLabel && (

@@ -67,7 +67,7 @@ export function WinLossBar({
         ))}
       </div>
       <div
-        className="mt-3 grid text-sm font-bold tabular-nums"
+        className="mt-3 grid text-sm font-bold font-mono tabular-nums"
         style={{ gridTemplateColumns: columns }}
       >
         {segments.map((segment) => (

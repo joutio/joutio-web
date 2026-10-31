@@ -74,7 +74,7 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
                 target: badge.target,
               })}
             </span>
-            <span className="text-muted-foreground tabular-nums">
+            <span className="text-muted-foreground font-mono tabular-nums">
               {percent} %
             </span>
           </span>

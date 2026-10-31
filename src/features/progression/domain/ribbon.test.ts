@@ -60,7 +60,7 @@ describe("repère du ruban", () => {
   })
 
   it("compose le titre dans la police d'interface", () => {
-    expect(RIBBON_TITLE_FONT).toContain("'Inter Variable'")
+    expect(RIBBON_TITLE_FONT).toContain("'Geist Variable'")
     expect(RIBBON_TITLE_FONT).toContain("sans-serif")
   })
 })

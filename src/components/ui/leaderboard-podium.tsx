@@ -265,7 +265,7 @@ const LeaderboardPodium = React.forwardRef<
               {showValue && (
                 <span
                   className={cn(
-                    "text-muted-foreground tabular-nums",
+                    "text-muted-foreground font-mono tabular-nums",
                     size === "sm" ? "text-xs" : "text-sm"
                   )}
                 >

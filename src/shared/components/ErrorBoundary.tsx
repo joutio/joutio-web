@@ -18,7 +18,7 @@ function ErrorFallback({ error }: { error?: Error }) {
   return (
     <div className="grid min-h-svh place-items-center bg-background p-6 text-center">
       <div className="flex max-w-md flex-col items-center gap-3">
-        <h1 className="font-heading text-xl font-extrabold">
+        <h1 className="font-heading text-xl font-bold">
           {t("shell.error.title")}
         </h1>
         <p className="text-sm text-muted-foreground">

@@ -27,7 +27,7 @@ export function ProgressBanner({
         <span className="text-2xs font-semibold tracking-wide text-muted-foreground uppercase">
           {label}
         </span>
-        <span className="text-xs font-semibold text-muted-foreground tabular-nums">
+        <span className="text-xs font-semibold text-muted-foreground font-mono tabular-nums">
           {detail ? `${detail} · ` : ""}
           {Math.round(pct)} %
         </span>

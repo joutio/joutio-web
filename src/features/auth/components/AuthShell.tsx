@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Zap } from "lucide-react"
+import { JoutioMark } from "@/shared/components/joutio-mark"
 import { HexagonBackground } from "@/components/animate-ui/components/backgrounds/hexagon"
 
 /**
@@ -15,14 +15,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-svh w-full">
       <div className="flex min-w-0 flex-1 flex-col p-6 tablet-up:p-10">
         <div className="flex items-center justify-center gap-2 tablet-up:justify-start">
-          <div className="inline-flex size-7 items-center justify-center rounded-lg bg-foreground">
-            <Zap
-              size={15}
-              className="text-background"
-              fill="currentColor"
-              strokeWidth={0}
-            />
-          </div>
+          <JoutioMark className="size-7" />
           <span className="text-sm font-semibold">Joutio</span>
         </div>
 
@@ -50,15 +43,8 @@ export function AuthShell({ children }: { children: ReactNode }) {
         />
 
         <div className="relative z-10 flex flex-col items-center gap-[18px] p-10 text-center">
-          <div className="inline-flex size-32 items-center justify-center rounded-full border-[3px] border-[var(--duel-surface)] bg-[var(--duel-bg)]">
-            <Zap
-              size={52}
-              className="text-[var(--duel-surface)]"
-              fill="currentColor"
-              strokeWidth={0}
-            />
-          </div>
-          <div className="font-heading text-2xl font-extrabold tracking-[-0.03em] text-[var(--duel-surface)]">
+          <JoutioMark className="size-32" />
+          <div className="font-heading text-2xl font-bold tracking-[-0.03em] text-[var(--duel-surface)]">
             {t("shell.brand.tagline")}
           </div>
           <p className="max-w-[34ch] text-sm leading-relaxed text-[var(--duel-surface-muted)]">

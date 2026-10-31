@@ -188,7 +188,7 @@ export function TopicTitlesTab({
                           target: progressTarget.toLocaleString(i18n.language),
                         })}
                       </span>
-                      <span className="text-muted-foreground tabular-nums">
+                      <span className="text-muted-foreground font-mono tabular-nums">
                         {t("topic.detail.titles.percent", { percent })}
                       </span>
                     </span>

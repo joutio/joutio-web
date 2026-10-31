@@ -432,7 +432,7 @@ export function DesignSystemPage() {
         <Section
           id="typography"
           title="Typographie"
-          description="Inter Variable. Échelle courte et stable ; le plancher 11 px est réservé aux badges et surtitres."
+          description="Geist et Geist Mono. Échelle de design/tokens.json, plancher 12 px."
         >
           <Card>
             <CardContent className="divide-y divide-border p-0">

@@ -51,7 +51,7 @@ export function FacetOptionList({
             />
             <span className="min-w-0 flex-1 truncate">{option.label}</span>
             {option.count != null && (
-              <span className="text-xs text-muted-foreground tabular-nums">
+              <span className="text-xs text-muted-foreground font-mono tabular-nums">
                 {option.count}
               </span>
             )}

@@ -1,9 +1,51 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./styles/shadcn-tailwind.css";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 
 @custom-variant dark (&:is(.dark *));
+
+/* Échelle typographique (design/tokens.json) : le palier large suit `tablet-up`. */
+@utility type-display {
+  font-size: 3rem;
+  line-height: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+@utility type-large-title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+@utility type-title-1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+@utility type-title-2 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@utility type-headline {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+}
+@utility type-callout {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+@utility type-caption {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+}
 
 /* Contrat device (source unique : shared/theme/tokens.ts, doc : best-practices/.frontend/responsive-sizing.md).
    `compact` < 640 px · `tablet` 640-1023 px · `desktop` >= 1024 px · `touch` = compact + tablette. */
@@ -23,9 +65,10 @@
 
 @theme inline {
   --font-heading: var(--font-sans);
-  --font-sans: "Inter Variable", sans-serif;
+  --font-sans: "Geist Variable", system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
   /* Plancher typographique : badges et surtitres denses (contrat responsive-sizing.md). */
-  --text-2xs: 0.6875rem;
+  --text-2xs: 0.75rem;
   --text-2xs--line-height: 1rem;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -145,6 +188,7 @@
   /* Recette de carte : rayon 16 du design system. */
   --qu-card-radius: 1rem;
   /* Rayons Arc UI recalés sur l'échelle du design system (feuille = 24). */
+  --font-body: var(--font-sans);
   --radius-control: 0.5rem;
   --radius-panel: 1rem;
   --radius-surface: 1.5rem;
@@ -267,7 +311,7 @@
    (le thème de base vient du preset shadcn ci-dessus)
    ====================================================================== */
 :root {
-  --font-display: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Geist Variable", system-ui, sans-serif;
 
   --duel-bg: #000000;
   --duel-surface: #ffffff;

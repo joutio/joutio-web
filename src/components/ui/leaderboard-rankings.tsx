@@ -174,7 +174,7 @@ const LeaderboardRankings = React.forwardRef<
                 )}
               >
                 <div className="flex w-12 items-center gap-1">
-                  <span className="w-4 text-sm font-semibold tabular-nums">
+                  <span className="w-4 text-sm font-semibold font-mono tabular-nums">
                     {ranking.rank}
                   </span>
                   {showCrown ? (
@@ -240,7 +240,7 @@ const LeaderboardRankings = React.forwardRef<
                       {Math.abs(ranking.rankChange)}
                     </p>
                   ) : null}
-                  <p className="leading-none font-semibold tabular-nums">
+                  <p className="leading-none font-semibold font-mono tabular-nums">
                     {formatLeaderboardValue(ranking.value)}
                   </p>
                 </div>

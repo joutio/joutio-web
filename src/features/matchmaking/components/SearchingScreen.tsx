@@ -164,7 +164,7 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
           trailing={
             secondsLeft != null ? (
               <span
-                className="tabular-nums"
+                className="font-mono tabular-nums"
                 style={{ letterSpacing: "0.02em" }}
               >
                 {t("game.matchmaking.seconds", { count: secondsLeft })}
