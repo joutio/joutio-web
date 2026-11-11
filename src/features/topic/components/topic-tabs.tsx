@@ -2,6 +2,7 @@ import type { GameHistoryItemView, GameOutcome, LeaderboardEntryView, TopicOverv
 import { SwordIcon, TrophyIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguageStore, useT } from '@/lib/i18n'
+import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { toCategoryCode, topicName } from '@/shared/topics'
@@ -104,6 +105,7 @@ export function GamesTab({ topicId }: { topicId: string }) {
 export function MyBoardRow({ entry }: { entry: LeaderboardEntryView }) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
+  const src = useUserAvatar(entry)
   return (
     <div className="-mx-4 -my-2">
       <PlayerRow
@@ -111,11 +113,29 @@ export function MyBoardRow({ entry }: { entry: LeaderboardEntryView }) {
         last
         rank={entry.rank}
         name={entry.pseudonym}
+        src={src}
         tier={entry.provisional ? undefined : tierOf(entry.rating)}
         sub={t('topic.totalXp', { xp: formatNumber(entry.totalXp, language) })}
         trail={formatNumber(entry.totalXp, language)}
       />
     </div>
+  )
+}
+
+/** Ligne de classement avec l'avatar du joueur (ses options DiceBear). */
+function BoardRow({ entry, sub, trail, highlight, last }: { entry: LeaderboardEntryView; sub: string; trail: string; highlight: boolean; last: boolean }) {
+  const src = useUserAvatar(entry)
+  return (
+    <PlayerRow
+      rank={entry.rank}
+      name={entry.pseudonym}
+      src={src}
+      tier={entry.provisional ? undefined : tierOf(entry.rating)}
+      sub={sub}
+      trail={trail}
+      highlight={highlight}
+      last={last}
+    />
   )
 }
 
@@ -128,6 +148,7 @@ export function BoardTab({ topicId }: { topicId: string }) {
   const entries = board.data?.entries.content ?? []
   const [first, second, third, ...rest] = entries
   const podium = [first, second, third].filter((entry): entry is LeaderboardEntryView => entry !== undefined)
+  const avatars = [useUserAvatar(first), useUserAvatar(second), useUserAvatar(third)]
   const sub = (entry: LeaderboardEntryView) => (entry.provisional ? t('topic.provisional') : tokens.tier[tierOf(entry.rating)].label)
 
   return (
@@ -153,8 +174,9 @@ export function BoardTab({ topicId }: { topicId: string }) {
       ) : (
         <>
           <Podium
-            players={podium.map((entry) => ({
+            players={podium.map((entry, index) => ({
               name: entry.pseudonym,
+              src: avatars[index],
               tier: entry.provisional ? undefined : tierOf(entry.rating),
               value: formatNumber(entry.totalXp, language),
             }))}
@@ -162,11 +184,9 @@ export function BoardTab({ topicId }: { topicId: string }) {
           {rest.length > 0 && (
             <div className="overflow-hidden rounded-jo-lg bg-jo-surface">
               {rest.map((entry, index) => (
-                <PlayerRow
+                <BoardRow
                   key={entry.userId}
-                  rank={entry.rank}
-                  name={entry.pseudonym}
-                  tier={entry.provisional ? undefined : tierOf(entry.rating)}
+                  entry={entry}
                   sub={sub(entry)}
                   trail={formatNumber(entry.totalXp, language)}
                   highlight={entry.userId === board.data?.me?.userId}

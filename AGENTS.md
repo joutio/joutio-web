@@ -25,7 +25,9 @@
 
 `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `zustand`, `zod`, `react-hook-form`,
 `@stomp/stompjs`, `@phosphor-icons/react`, `class-variance-authority`, `clsx`, `tailwind-merge`,
-`@fontsource-variable/geist`, `@fontsource-variable/geist-mono`, `@joutio/client-domain`.
+`@fontsource-variable/geist`, `@fontsource-variable/geist-mono`, `@joutio/client-domain`, `@dicebear/core` et
+`@dicebear/styles` (avatars des joueurs, mêmes options et même rendu que le lab et le mobile ; décision du 2026-11-11,
+moteur dans `src/shared/avatar/`, styles chargés à la demande par `import()`).
 Dev : Vite 8, `@vitejs/plugin-react`, Tailwind v4 (`@tailwindcss/vite`), TypeScript ~6 strict, ESLint, Vitest
 (jsdom, Testing Library).
 
@@ -113,6 +115,6 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         notifications et recherche en écrans d'attente. Le BFF n'a pas de slug de sujet : `/topics/{topicId}` en attendant
   - [x] Sujets `/topics` (recherche, puces et feuille Filtres, tri, masquage des suivis côté app comme le mobile)
   - [x] Fiche sujet `/topics/{topicId}` (Pill d'univers, Suivre optimiste avec retour arrière, Copier le lien, onglets
-        Parties / Classement / Progression, titre porté optimiste) ; « Lancer un duel » inactif jusqu'à l'écran n° 5 ;
-        avatars en initiales tant que DiceBear n'est pas admis (§ 2)
+        Parties / Classement / Progression, titre porté optimiste, avatars DiceBear) ; « Lancer un duel » inactif jusqu'à
+        l'écran n° 5
 - [ ] Bascule (merge de `rewrite/web-kit`)

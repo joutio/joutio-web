@@ -13,6 +13,8 @@
     "sync:design": "node scripts/sync-design.mjs"
   },
   "dependencies": {
+    "@dicebear/core": "10.7.0",
+    "@dicebear/styles": "10.6.0",
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
     "@joutio/client-domain": "1.0.0",
