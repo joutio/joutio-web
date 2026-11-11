@@ -89,6 +89,23 @@ export const fr = {
   'pending.topic': "Sujet",
   'pending.notifications': "Notifications",
   'pending.search': "Recherche",
+  'topics.search': "Chercher un sujet",
+  'topics.filters': "Filtres",
+  'topics.universes': "Univers",
+  'topics.sortBy': "Trier par",
+  'topics.display': "Affichage",
+  'topics.sortPopular': "Les plus suivis",
+  'topics.sortPlayed': "Les plus joués",
+  'topics.sortRecent': "Nouveautés",
+  'topics.hideFollowed': "Masquer les sujets suivis",
+  'topics.countOne': "{count} sujet",
+  'topics.countMany': "{count} sujets",
+  'topics.show': "Afficher {count}",
+  'topics.reset': "Réinitialiser",
+  'topics.errorTitle': "Impossible de charger les sujets",
+  'topics.emptyTitle': "Aucun sujet trouvé",
+  'topics.emptyText': "Essaie un autre mot ou retire des filtres.",
+  'topics.end': "Tu as vu tous les sujets",
 }
 
 export type Messages = Record<keyof typeof fr, string>

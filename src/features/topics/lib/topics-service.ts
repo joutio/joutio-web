@@ -17,7 +17,12 @@ export type TopicFilters = {
   sort: TopicSort
   /** Uniquement les sujets suivis : `GET /api/topics?followed=true`. */
   followed?: boolean
+  /** Écart BFF (`sujets.md` § 5) : sujets suivis retirés de chaque page côté app (une page peut compter moins de 20). */
+  hideFollowed?: boolean
 }
+
+/** Tri par défaut du catalogue : « Les plus suivis ». */
+export const DEFAULT_TOPIC_SORT: TopicSort = 'POPULAR'
 
 export type TopicPage = { topics: TopicCardView[]; last: boolean }
 
@@ -43,6 +48,7 @@ export const topicsService = {
     let topics = pages.flatMap((result) => result.content)
     const sorter = compare[filters.sort]
     if (pages.length > 1 && sorter) topics = [...topics].sort(sorter)
+    if (filters.hideFollowed) topics = topics.filter((topic) => !topic.followed)
     return { topics, last: pages.every((result) => result.last) }
   },
 
