@@ -115,6 +115,9 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         notifications et recherche en écrans d'attente. Le BFF n'a pas de slug de sujet : `/topics/{topicId}` en attendant
   - [x] Sujets `/topics` (recherche, puces et feuille Filtres, tri, masquage des suivis côté app comme le mobile)
   - [x] Fiche sujet `/topics/{topicId}` (Pill d'univers, Suivre optimiste avec retour arrière, Copier le lien, onglets
-        Parties / Classement / Progression, titre porté optimiste, avatars DiceBear) ; « Lancer un duel » inactif jusqu'à
-        l'écran n° 5
+        Parties / Classement / Progression, titre porté optimiste, avatars DiceBear)
+  - [x] Lancer une partie, Matchmaking, Rejoindre : feuille des 4 modes (difficulté du robot sur l'appareil, défi d'un
+        abonnement/abonné), salon `/rooms/{id}` temps réel (présence, étapes, décompte, wizz, lien, fermeture),
+        matchmaking `/play?ticket=` (entraînement automatique, panneau sans adversaire), `/join/{id}` public (connexion
+        puis retour) ; horloge serveur et `useEventStream`. Arène `/games/{id}` en écran d'attente
 - [ ] Bascule (merge de `rewrite/web-kit`)
