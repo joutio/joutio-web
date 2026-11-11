@@ -1,7 +1,0 @@
-export * from "./domain/matchmaking"
-export * from "./domain/matchmaking-notification"
-export * from "./lib/matchmaking"
-export * from "./hooks/useMatchmaking"
-export * from "./components/SearchingScreen"
-export * from "./components/matchmaking-map"
-export * from "./stores/useMatchmakingPreferencesStore"
