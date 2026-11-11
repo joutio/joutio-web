@@ -119,5 +119,8 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
   - [x] Lancer une partie, Matchmaking, Rejoindre : feuille des 4 modes (difficulté du robot sur l'appareil, défi d'un
         abonnement/abonné), salon `/rooms/{id}` temps réel (présence, étapes, décompte, wizz, lien, fermeture),
         matchmaking `/play?ticket=` (entraînement automatique, panneau sans adversaire), `/join/{id}` public (connexion
-        puis retour) ; horloge serveur et `useEventStream`. Arène `/games/{id}` en écran d'attente
+        puis retour) ; horloge serveur et `useEventStream`
+  - [x] Duel `/games/{id}` : arène toujours sombre pilotée par `sceneAt` (face-à-face, intros de manche, lecture de 2 s,
+        question, révélation), réponse optimiste avec rattrapage REST, jauges, abandon confirmé à toute sortie
+        (`useBlocker`), reconnexion, partie expirée ; toasts suspendus. Résultat `/games/{id}/result` en écran d'attente
 - [ ] Bascule (merge de `rewrite/web-kit`)

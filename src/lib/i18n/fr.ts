@@ -254,6 +254,21 @@ export const fr = {
   'pending.duel': "Duel",
   'pending.challenges': "Défis",
   'pending.premium': "Premium",
+  'duel.bot': "Robot",
+  'duel.training': "Entraînement",
+  'duel.score': "Score de {name}",
+  'duel.meta': "{topic} · question {round} sur {total}",
+  'duel.abandonTitle': "Abandonner le duel ?",
+  'duel.abandonText': "{name} gagne la partie. La défaite compte dans ton Elo.",
+  'duel.abandon': "Abandonner",
+  'duel.continue': "Continuer le duel",
+  'duel.abandonError': "Le duel n'a pas pu être abandonné",
+  'duel.expired': "Partie expirée",
+  'duel.expiredText': "La partie n'a pas été jouée à temps. Rien ne change pour ton Elo.",
+  'duel.absent': "Adversaire absent",
+  'duel.absentText': "La partie n'a jamais démarré : un joueur ne s'est pas présenté. Rien ne change pour ton Elo.",
+  'duel.searchAgain': "Refaire une recherche",
+  'duel.backToTopic': "Retour au sujet",
 }
 
 export type Messages = Record<keyof typeof fr, string>

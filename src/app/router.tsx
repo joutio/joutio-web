@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { DevUiPage } from '@/features/dev'
+import { DuelPage } from '@/features/duel'
 import { OnboardingPage } from '@/features/onboarding'
 import { HomePage } from '@/features/home'
 import { JoinPage, MatchmakingPage, RoomPage } from '@/features/play'
@@ -29,7 +30,7 @@ export const router = createBrowserRouter([
           { path: '/topics/:topicId/leaderboard', element: <PendingScreen title="pending.leaderboard" /> },
           { path: '/me/games', element: <PendingScreen title="pending.games" /> },
           { path: '/games/:gameId/result', element: <PendingScreen title="pending.result" /> },
-          { path: '/games/:gameId', element: <PendingScreen title="pending.duel" /> },
+          { path: '/games/:gameId', element: <DuelPage /> },
           { path: '/rooms/:roomId', element: <RoomPage /> },
           { path: '/play', element: <MatchmakingPage /> },
           { path: '/premium', element: <PendingScreen title="pending.premium" /> },

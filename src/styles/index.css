@@ -151,7 +151,7 @@
 }
 
 .jo-question {
-  --jo-question-read: 1400ms;
+  --jo-question-read: 2000ms;
   --jo-answer-stagger: 120ms;
   container-type: size;
 }
