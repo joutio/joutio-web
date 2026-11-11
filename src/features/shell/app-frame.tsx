@@ -1,0 +1,21 @@
+import { Outlet } from 'react-router-dom'
+import { useT } from '@/lib/i18n'
+import { WebFrame } from '@/ui'
+
+const STORES = {
+  appStore: 'https://apps.apple.com/app/joutio',
+  googlePlay: 'https://play.google.com/store/apps/details?id=com.joutio.app',
+}
+
+/**
+ * Cadre de toute l'app (D16) : plein écran sous 640 px, colonne de 430 px centrée au-delà, marque dans les marges.
+ * La colonne est le conteneur des tailles fluides (`cqw`), des feuilles, dialogues et toasts.
+ */
+export function AppFrame() {
+  const t = useT()
+  return (
+    <WebFrame stores={STORES} tagline={t('frame.tagline')}>
+      <Outlet />
+    </WebFrame>
+  )
+}
