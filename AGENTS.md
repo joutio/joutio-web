@@ -109,4 +109,6 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
 - [x] Étape 3 — Socle de composants (groupes 1 à 5) ; onglets en écrans placeholder
 - [ ] Étape 4 — Écrans dans l'ordre du parcours (`web-kit.md` § 6)
   - [x] Onboarding `/welcome` (connexion code/Google/Facebook, univers, notifications, premier thème, compte suspendu)
+  - [x] Accueil `/` (Top 10, Nouveaux thèmes, Suivis paginés par univers, rang, série, cloche) ; fiche sujet,
+        notifications et recherche en écrans d'attente. Le BFF n'a pas de slug de sujet : `/topics/{topicId}` en attendant
 - [ ] Bascule (merge de `rewrite/web-kit`)

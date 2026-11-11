@@ -4,6 +4,17 @@
  */
 export const queryKeys = {
   me: ['me'] as const,
+  home: ['home'] as const,
+  topics: {
+    list: (filters: object) => ['topics', 'list', filters] as const,
+    facets: (query: string, followed: boolean) => ['topics', 'facets', query, { followed }] as const,
+  },
+  profiles: {
+    activity: (userId: string) => ['profiles', userId, 'activity'] as const,
+  },
+  notifications: {
+    unreadCount: ['notifications', 'unread-count'] as const,
+  },
   onboarding: {
     recommendations: (interests: readonly string[]) => ['onboarding', 'recommendations', [...interests]] as const,
   },
