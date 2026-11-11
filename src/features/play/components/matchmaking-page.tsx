@@ -140,6 +140,11 @@ export function MatchmakingPage() {
   }, [status, topicId])
 
   // Quitter l'écran pendant la recherche (ou perdre la connexion) l'annule : le serveur le constate.
+  // « Annuler la recherche » est une intention du joueur : la commande part, l'écran se ferme sans attendre.
+  const cancelSearch = () => {
+    playService.cancelTicket(ticketId).catch(() => undefined)
+    back()
+  }
   useTicketPresence(ticketId, status === 'SEARCHING')
 
   if (status === 'MATCHED') {
@@ -224,7 +229,7 @@ export function MatchmakingPage() {
             </span>
           )}
         </span>
-        <Button variant="tinted" tone="destructive" size="L" full onClick={back}>
+        <Button variant="tinted" tone="destructive" size="L" full onClick={cancelSearch}>
           {t('mm.cancel')}
         </Button>
       </div>
