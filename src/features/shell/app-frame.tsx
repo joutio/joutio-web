@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { useT } from '@/lib/i18n'
+import { DialogHost } from '@/shared/dialog-host'
 import { ToastHost } from '@/shared/toast-host'
 import { WebFrame } from '@/ui'
 
@@ -18,6 +19,7 @@ export function AppFrame() {
     <WebFrame stores={STORES} tagline={t('frame.tagline')}>
       <Outlet />
       <ToastHost />
+      <DialogHost />
     </WebFrame>
   )
 }

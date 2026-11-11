@@ -1,6 +1,7 @@
 import { CheckIcon, HeartIcon, LightningIcon, LinkIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
 import { forwardRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { DuelSheet } from '@/features/play'
 import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
@@ -51,7 +52,7 @@ function PlayedQuestions({ done, total, percent }: { done: number; total: number
 /**
  * Fiche sujet (`design/specs/screens/fiche-sujet.md`, lab `/screens/fiche-sujet?view=compact`) : image en parallaxe,
  * catégorie en `Pill` d'univers, actions et chiffres du sujet, onglets Parties, Classement et Progression. Le partage
- * devient « Copier le lien » (`web.md`). Le duel arrive avec l'écran Lancer une partie (web-kit § 6, n° 5).
+ * devient « Copier le lien » (`web.md`). « Lancer un duel » ouvre la feuille des quatre modes (`lancer-partie.md`).
  */
 export function TopicPage() {
   const t = useT()
@@ -63,6 +64,7 @@ export function TopicPage() {
   const follow = useFollowTopic(topicId)
   const [tab, setTab] = useState<Tab>('games')
   const [unfollowOpen, setUnfollowOpen] = useState(false)
+  const [duelOpen, setDuelOpen] = useState(false)
   const { actions, docked } = useDockedActions()
 
   const data = overview.data
@@ -70,6 +72,8 @@ export function TopicPage() {
   const name = topic ? topicName(topic.names, language) : ''
   const category = toCategoryCode(topic?.category)
   const followed = topic?.followed ?? false
+  // Brouillon : les nouveaux départs de partie sont désactivés.
+  const playable = topic?.status === 'PUBLISHED'
   const myEntry = board.data?.me
   const showMyRow = tab === 'board' && myEntry && myEntry.rank > BOARD_TOP
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.topics, { replace: true }))
@@ -126,7 +130,7 @@ export function TopicPage() {
         <>
           {docked && (
             <>
-              <IconButton icon={LightningIcon} label={t('topic.duel')} media disabled />
+              <IconButton icon={LightningIcon} label={t('topic.duel')} media disabled={!playable} onClick={() => setDuelOpen(true)} />
               <IconButton
                 icon={followed ? FilledHeart : HeartIcon}
                 label={t(followed ? 'topic.unfollow' : 'topic.follow')}
@@ -142,8 +146,7 @@ export function TopicPage() {
       intro={
         <div className="grid gap-3">
           <div ref={actions} className="grid grid-cols-[65fr_35fr] gap-2">
-            {/* Lancer un duel : feuille des quatre modes avec l'écran n° 5 du kit. */}
-            <Button full icon={LightningIcon} disabled>
+            <Button full icon={LightningIcon} disabled={!playable} onClick={() => setDuelOpen(true)}>
               {t('topic.duel')}
             </Button>
             <Button
@@ -175,6 +178,8 @@ export function TopicPage() {
       bottomBar={showMyRow ? <MyBoardRow entry={myEntry} /> : undefined}
       bottomNav={<TabNav active="topics" />}
       overlay={
+        <>
+        {topic && <DuelSheet open={duelOpen} onClose={() => setDuelOpen(false)} topic={{ topicId: topic.topicId, name, category: topic.category }} />}
         <Dialog
           open={unfollowOpen}
           onClose={() => setUnfollowOpen(false)}
@@ -195,6 +200,7 @@ export function TopicPage() {
             { label: t('topic.cancel'), variant: 'plain', onClick: () => setUnfollowOpen(false) },
           ]}
         />
+        </>
       }
     >
       <div className="pt-1 pb-8">
