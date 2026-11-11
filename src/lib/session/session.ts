@@ -85,6 +85,11 @@ export async function endSession(reason: SessionEndReason): Promise<void> {
   return Promise.resolve()
 }
 
+/** Le joueur a pris connaissance de la fin de session : l'onboarding repasse à la connexion. */
+export function dismissEndReason(): void {
+  useSessionStore.setState({ endReason: null })
+}
+
 /** Restaure la session au démarrage ; renouvelle si l'access token est expiré. */
 export async function initSession(): Promise<void> {
   const tokens = readTokens()

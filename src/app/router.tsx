@@ -1,16 +1,17 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { DevUiPage } from '@/features/dev'
-import { AppFrame, AuthenticatedLayout, CallbackPage, LoginRedirect, PlaceholderScreen, WelcomePage } from '@/features/shell'
+import { OnboardingPage } from '@/features/onboarding'
+import { AppFrame, AuthenticatedLayout, CallbackPage, LoginRedirect, PlaceholderScreen } from '@/features/shell'
 
 /**
- * URLs de `design/specs/platforms/web.md` § 2. Étapes 1 à 3 du kit : écrans encore vides, ils arrivent dans l'ordre du
- * parcours (web-kit § 6).
+ * URLs de `design/specs/platforms/web.md` § 2. Les écrans arrivent dans l'ordre du parcours (web-kit § 6) ;
+ * ceux qui manquent encore sont des placeholders.
  */
 export const router = createBrowserRouter([
   {
     element: <AppFrame />,
     children: [
-      { path: '/welcome', element: <WelcomePage /> },
+      { path: '/welcome', element: <OnboardingPage /> },
       { path: '/login', element: <LoginRedirect /> },
       { path: '/callback', element: <CallbackPage /> },
       ...(import.meta.env.DEV ? [{ path: '/dev/ui', element: <DevUiPage /> }] : []),

@@ -4,4 +4,7 @@
  */
 export const queryKeys = {
   me: ['me'] as const,
+  onboarding: {
+    recommendations: (interests: readonly string[]) => ['onboarding', 'recommendations', [...interests]] as const,
+  },
 } as const

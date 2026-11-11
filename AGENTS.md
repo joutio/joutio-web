@@ -52,8 +52,8 @@ src/
   features/<nom>/     écrans + `lib/` (service → hook React Query), import par le barrel `index.ts` uniquement
 ```
 
-`features/shell` : cadre (`AppFrame`), garde connectée, onglets, bannière de connexion, `/welcome`, `/login`,
-`/callback`. `features/dev` : vitrine `/dev/ui` (dev uniquement) pour comparer le socle au lab.
+`features/shell` : cadre (`AppFrame`), garde connectée (non onboardé → `/welcome`), onglets, bannière de connexion,
+`/login`, `/callback`. `features/onboarding` : `/welcome` (étapes en mémoire, reprise aux univers après le retour OIDC). `features/dev` : vitrine `/dev/ui` (dev uniquement) pour comparer le socle au lab.
 
 ## 4. Jetons et styles
 
@@ -107,5 +107,6 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
 - [x] Étape 1 — Fondations
 - [x] Étape 2 — Plomberie (tests : client HTTP, session, EventStream)
 - [x] Étape 3 — Socle de composants (groupes 1 à 5) ; onglets en écrans placeholder
-- [ ] Étape 4 — Écrans dans l'ordre du parcours (`web-kit.md` § 6), en commençant par l'onboarding
+- [ ] Étape 4 — Écrans dans l'ordre du parcours (`web-kit.md` § 6)
+  - [x] Onboarding `/welcome` (connexion code/Google/Facebook, univers, notifications, premier thème, compte suspendu)
 - [ ] Bascule (merge de `rewrite/web-kit`)
