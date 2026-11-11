@@ -9,10 +9,9 @@ import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
 import { useTopicOverview } from '@/features/topic'
 import { tierOf } from '@/shared/tier'
-import { useLeaveGuard } from '@/shared/use-leave-guard'
 import { toast } from '@/shared/toast'
 import { Avatar, Button, cn, EmptyState, MatchmakingMap, Notice, tokens, type MapPlayer } from '@/ui'
-import { useAutoTrain, useBotDifficulty, useTicket, type PlayTopic } from '../hooks/use-play'
+import { useAutoTrain, useBotDifficulty, useTicket, useTicketPresence, type PlayTopic } from '../hooks/use-play'
 import { playService } from '../lib/play-service'
 import { DuelSheet } from './duel-sheet'
 
@@ -78,7 +77,6 @@ export function MatchmakingPage() {
   const autoTrain = useAutoTrain()
   const difficulty = useBotDifficulty((state) => state.difficulty)
   const [friendOpen, setFriendOpen] = useState(false)
-  const settled = useRef(false)
   const mounted = useRef(true)
   useEffect(
     () => () => {
@@ -108,7 +106,6 @@ export function MatchmakingPage() {
       playService.cancelRoom(id).catch(() => undefined)
       return
     }
-    settled.current = true
     void navigate(ROUTES.room(id), { replace: true, state: { topic } })
   }
   const training = useMutation({
@@ -119,7 +116,6 @@ export function MatchmakingPage() {
   const retry = useMutation({
     mutationFn: () => playService.enqueue(topicId),
     onSuccess: (next) => {
-      settled.current = true
       void navigate(ROUTES.play(next.ticketId), { replace: true, state: { topic } })
     },
     onError: () => toast.error(t('play.matchmakingError'), t('home.errorText')),
@@ -143,16 +139,8 @@ export function MatchmakingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, topicId])
 
-  // Quitter pendant la recherche supprime le ticket.
-  const statusRef = useRef(status)
-  useEffect(() => {
-    statusRef.current = status
-  }, [status])
-  // Quitter l'écran pendant la recherche l'annule.
-  useLeaveGuard(
-    () => !settled.current && statusRef.current === 'SEARCHING',
-    () => void playService.cancelTicket(ticketId).catch(() => undefined),
-  )
+  // Quitter l'écran pendant la recherche (ou perdre la connexion) l'annule : le serveur le constate.
+  useTicketPresence(ticketId, status === 'SEARCHING')
 
   if (status === 'MATCHED') {
     return (

@@ -10,16 +10,20 @@ export const PLAY_ENDPOINTS = {
   rooms: '/api/rooms',
   botRoom: '/api/rooms/bot',
   room: (roomId: string) => `/api/rooms/${id(roomId)}`,
-  join: (roomId: string) => `/api/rooms/${id(roomId)}/join`,
-  leave: (roomId: string) => `/api/rooms/${id(roomId)}/leave`,
   cancel: (roomId: string) => `/api/rooms/${id(roomId)}/cancel`,
   wizz: (roomId: string) => `/api/rooms/${id(roomId)}/wizz`,
   roomNotifications: (roomId: string) => `/api/rooms/${id(roomId)}/notifications`,
   roomTopic: (roomId: string) => `/topic/rooms/${roomId}`,
+  /** Canal de présence : abonné = dans le salon. Le serveur observe l'abonnement, l'app ne déclare rien. */
+  roomPresence: (roomId: string) => `/topic/rooms/${roomId}/presence`,
+  /** Refus d'entrée dans un salon (salle pleine, non invité…), poussé au joueur. */
+  roomPresenceErrors: '/user/queue/room-presence',
   tickets: '/api/matchmaking/tickets',
   cancelTicket: (ticketId: string) => `/api/matchmaking/tickets/${id(ticketId)}/cancel`,
   ticketNotifications: (ticketId: string) => `/api/matchmaking/tickets/${id(ticketId)}/notifications`,
   ticketTopic: (ticketId: string) => `/topic/matchmaking/tickets/${ticketId}`,
+  /** Canal de présence du ticket : quitter l'écran ou perdre la connexion annule la recherche côté serveur. */
+  ticketPresence: (ticketId: string) => `/topic/matchmaking/tickets/${ticketId}/presence`,
   challenges: '/api/challenges',
   contacts: (userId: string, direction: 'following' | 'followers') => `/api/profiles/${id(userId)}/${direction}`,
   autoTrain: (userId: string) => `/api/profiles/${id(userId)}/auto-train`,
@@ -36,9 +40,6 @@ export const playService = {
   createRoom: (topicId: string) => api.post<IdResponse>(PLAY_ENDPOINTS.rooms, { topicId }),
   createBotRoom: (topicId: string, difficulty: BotDifficulty) => api.post<IdResponse>(PLAY_ENDPOINTS.botRoom, { topicId, difficulty }),
   room: (roomId: string) => api.get<RoomView>(PLAY_ENDPOINTS.room(roomId)),
-  /** Apparition dans la salle (idempotent) : présence, et participant pour le second humain. */
-  joinRoom: (roomId: string) => api.post<void>(PLAY_ENDPOINTS.join(roomId)),
-  leaveRoom: (roomId: string) => api.post<void>(PLAY_ENDPOINTS.leave(roomId)),
   cancelRoom: (roomId: string) => api.post<void>(PLAY_ENDPOINTS.cancel(roomId)),
   /** Relance (« wizz ») de l'adversaire nommé absent : cadence de 10 s par joueur côté serveur. */
   wizzRoom: (roomId: string) => api.post<void>(PLAY_ENDPOINTS.wizz(roomId)),

@@ -10,11 +10,11 @@ import { useMe } from '@/features/me'
 import { useT } from '@/lib/i18n'
 import { optimisticUpdate } from '@/lib/optimistic-cache'
 import { queryKeys } from '@/lib/query-keys'
-import { readServerNow, useEventStream } from '@/lib/realtime'
+import { readServerNow, subscribeStomp, useEventStream } from '@/lib/realtime'
 import { showDialog } from '@/shared/dialog'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
-import { playService } from '../lib/play-service'
+import { PLAY_ENDPOINTS, playService } from '../lib/play-service'
 
 /** Sujet passé d'écran en écran (`location.state`) : l'en-tête s'affiche sans attendre le serveur. */
 export type PlayTopic = { topicId: string; name: string; category?: string | null }
@@ -193,35 +193,41 @@ export function useTicket(ticketId: string) {
   )
 }
 
-/** Reprises de l'apparition avant d'afficher l'échec. */
-const JOIN_ATTEMPTS = 3
+type PresenceProblem = { type?: string; title?: string; detail?: string }
 
-/** Présence dans la salle tant que l'écran est monté (idempotent côté serveur) ; `failed` après reprises. */
-export function useRoomPresence(roomId: string, enabled: boolean) {
-  const [failed, setFailed] = useState(false)
+/**
+ * Présence dans le salon tant que l'écran est ouvert : l'app s'abonne au canal de présence et le serveur en
+ * déduit l'entrée, la sortie (écran quitté) et la déconnexion (après une grâce). Rien n'est déclaré par l'app.
+ * Un refus d'entrée arrive sur la file personnelle ; « Réessayer » se réabonne.
+ */
+export function useRoomPresence(roomId: string) {
   const [attempt, setAttempt] = useState(0)
+  const [failure, setFailure] = useState<{ attempt: number; problem: PresenceProblem } | null>(null)
   useEffect(() => {
-    if (!enabled) return
-    let cancelled = false
-    const run = async () => {
-      for (let tries = 0; tries < JOIN_ATTEMPTS; tries += 1) {
-        try {
-          await playService.joinRoom(roomId)
-          if (!cancelled) setFailed(false)
-          return
-        } catch {
-          await new Promise((resolve) => window.setTimeout(resolve, 800 * (tries + 1)))
-          if (cancelled) return
-        }
+    const offErrors = subscribeStomp(PLAY_ENDPOINTS.roomPresenceErrors, (message) => {
+      try {
+        const body = JSON.parse(message.body) as { roomId?: string; problem?: PresenceProblem }
+        if (body.roomId === roomId) setFailure({ attempt, problem: body.problem ?? {} })
+      } catch {
+        // Trame illisible : ignorée.
       }
-      if (!cancelled) setFailed(true)
-    }
-    void run()
+    })
+    const offPresence = subscribeStomp(PLAY_ENDPOINTS.roomPresence(roomId), () => undefined)
     return () => {
-      cancelled = true
+      offPresence()
+      offErrors()
     }
-  }, [roomId, enabled, attempt])
-  return { failed, retry: () => setAttempt((value) => value + 1) }
+  }, [roomId, attempt])
+  const current = failure?.attempt === attempt ? failure.problem : null
+  return { failed: current !== null, problem: current, retry: () => setAttempt((value) => value + 1) }
+}
+
+/** Recherche en cours tant que l'écran est ouvert : le quitter (ou perdre la connexion) l'annule côté serveur. */
+export function useTicketPresence(ticketId: string, enabled: boolean) {
+  useEffect(() => {
+    if (!enabled || !ticketId) return
+    return subscribeStomp(PLAY_ENDPOINTS.ticketPresence(ticketId), () => undefined)
+  }, [ticketId, enabled])
 }
 
 /** Relance de l'adversaire absent, avec la cadence affichée tout de suite. */

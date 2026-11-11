@@ -8,12 +8,10 @@ import { useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
-import { useLeaveGuard } from '@/shared/use-leave-guard'
 import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import { Button, EmptyState, MobileTopBar, Pill, PreparationSteps, RoomPlayers, Screen, type RoomPlayer } from '@/ui'
 import { useCloseRoom, usePlayerProfile, useRoom, useRoomPresence, useWizzRoom, type PlayTopic } from '../hooks/use-play'
-import { playService } from '../lib/play-service'
 
 const TERMINAL: Partial<Record<RoomStatus, { title: MessageKey; text: MessageKey }>> = {
   CANCELLED: { title: 'room.cancelledTitle', text: 'room.cancelledText' },
@@ -60,7 +58,7 @@ export function RoomPage() {
   const userId = me.data?.userId ?? ''
   const myAvatar = useUserAvatar(me.data)
   const { view, room, status } = useRoom(roomId)
-  const presence = useRoomPresence(roomId, true)
+  const presence = useRoomPresence(roomId)
   const wizz = useWizzRoom(roomId)
   const closing = useCloseRoom()
 
@@ -101,24 +99,12 @@ export function RoomPage() {
     void navigate(ROUTES.game(gameId), { replace: true, state: { topic: passed ?? (view.data ? { topicId: view.data.topic.topicId, name: topic, category: view.data.topic.category } : undefined) } })
   }, [gameId, navigate, passed, topic, view.data])
 
-  // Quitter l'écran pendant l'attente : on quitte le salon sans le fermer ; l'annulation est explicite.
-  const closed = useRef(false)
-  const waitingRef = useRef(waiting)
-  useEffect(() => {
-    waitingRef.current = waiting
-  }, [waiting])
-  useLeaveGuard(
-    () => !done.current && !closed.current && waitingRef.current,
-    () => void playService.leaveRoom(roomId).catch(() => undefined),
-  )
+  // Quitter l'écran, fermer l'onglet ou perdre la connexion : le serveur le constate (canal de présence).
 
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.challenges, { replace: true }))
   const cancel = () =>
     closing.mutate(roomId, {
-      onSuccess: () => {
-        closed.current = true
-        back()
-      },
+      onSuccess: () => back(),
     })
   const copyLink = () => {
     void navigator.clipboard
@@ -188,7 +174,7 @@ export function RoomPage() {
         <div className="mt-auto grid gap-3">
           {presence.failed && (
             <div className="grid gap-2">
-              <p className="jo-type-caption m-0 text-center text-jo-muted">{t('room.presenceError')}</p>
+              <p className="jo-type-caption m-0 text-center text-jo-muted">{presence.problem?.detail ?? t('room.presenceError')}</p>
               <Button full variant="gray" tone="neutral" onClick={presence.retry}>
                 {t('common.retry')}
               </Button>
