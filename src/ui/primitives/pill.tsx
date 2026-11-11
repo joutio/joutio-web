@@ -1,7 +1,8 @@
 import type { Icon } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn'
-import { tint } from '../lib/tokens'
+import { categoryColor, categoryInk, tint } from '../lib/tokens'
+import type { CategoryCode } from '../tokens.generated'
 
 type PillTone = 'neutral' | 'online' | 'pending' | 'suspended' | 'correct' | 'wrong'
 
@@ -16,17 +17,23 @@ const TONE_COLOR: Record<PillTone, string> = {
 
 export type PillProps = {
   tone?: PillTone
+  /**
+   * Teinte d'univers (catégorie d'un sujet), à la place de `tone`. Fond **opaque** (couleur de l'univers mêlée au
+   * fond) : lisible posée sur une image, dans les deux thèmes.
+   */
+  category?: CategoryCode
   icon?: Icon
   className?: string
   children: ReactNode
 }
 
-export function Pill({ tone = 'neutral', icon: IconComponent, className, children }: PillProps) {
-  const color = TONE_COLOR[tone]
-  const hasDot = !IconComponent && ['online', 'pending', 'suspended'].includes(tone)
+export function Pill({ tone = 'neutral', category, icon: IconComponent, className, children }: PillProps) {
+  const color = category ? categoryInk(category) : TONE_COLOR[tone]
+  const background = category ? `color-mix(in oklab, ${categoryColor(category)} 22%, var(--jo-bg))` : tint(tone === 'pending' ? 'var(--jo-accent)' : color)
+  const hasDot = !category && !IconComponent && ['online', 'pending', 'suspended'].includes(tone)
   return (
     <span
-      style={{ color, backgroundColor: tint(tone === 'pending' ? 'var(--jo-accent)' : color) }}
+      style={{ color, backgroundColor: background }}
       className={cn(
         'jo-type-caption inline-flex h-6 items-center gap-1 rounded-jo-full px-2 font-semibold whitespace-nowrap',
         className,

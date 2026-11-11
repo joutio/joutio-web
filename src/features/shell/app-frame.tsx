@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { useT } from '@/lib/i18n'
+import { ToastHost } from '@/shared/toast-host'
 import { WebFrame } from '@/ui'
 
 const STORES = {
@@ -16,6 +17,7 @@ export function AppFrame() {
   return (
     <WebFrame stores={STORES} tagline={t('frame.tagline')}>
       <Outlet />
+      <ToastHost />
     </WebFrame>
   )
 }

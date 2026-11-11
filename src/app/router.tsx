@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { DevUiPage } from '@/features/dev'
 import { OnboardingPage } from '@/features/onboarding'
 import { HomePage } from '@/features/home'
+import { TopicPage } from '@/features/topic'
 import { TopicsPage } from '@/features/topics'
 import { AppFrame, AuthenticatedLayout, CallbackPage, LoginRedirect, PendingScreen, PlaceholderScreen } from '@/features/shell'
 
@@ -22,7 +23,10 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <HomePage /> },
           { path: '/topics', element: <TopicsPage /> },
-          { path: '/topics/:topicId', element: <PendingScreen title="pending.topic" /> },
+          { path: '/topics/:topicId', element: <TopicPage /> },
+          { path: '/topics/:topicId/leaderboard', element: <PendingScreen title="pending.leaderboard" /> },
+          { path: '/me/games', element: <PendingScreen title="pending.games" /> },
+          { path: '/games/:gameId/result', element: <PendingScreen title="pending.result" /> },
           { path: '/notifications', element: <PendingScreen title="pending.notifications" /> },
           { path: '/search', element: <PendingScreen title="pending.search" /> },
           { path: '/social', element: <PlaceholderScreen tab="social" /> },

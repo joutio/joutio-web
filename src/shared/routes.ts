@@ -6,6 +6,9 @@ export const ROUTES = {
   home: '/',
   topics: '/topics',
   topic: (topicId: string) => `/topics/${encodeURIComponent(topicId)}`,
+  topicLeaderboard: (topicId: string) => `/topics/${encodeURIComponent(topicId)}/leaderboard`,
+  myGames: (topicId?: string) => (topicId ? `/me/games?topicId=${encodeURIComponent(topicId)}` : '/me/games'),
+  result: (gameId: string) => `/games/${encodeURIComponent(gameId)}/result`,
   notifications: '/notifications',
   search: '/search',
 } as const

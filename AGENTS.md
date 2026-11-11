@@ -112,4 +112,7 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
   - [x] Accueil `/` (Top 10, Nouveaux thèmes, Suivis paginés par univers, rang, série, cloche) ; fiche sujet,
         notifications et recherche en écrans d'attente. Le BFF n'a pas de slug de sujet : `/topics/{topicId}` en attendant
   - [x] Sujets `/topics` (recherche, puces et feuille Filtres, tri, masquage des suivis côté app comme le mobile)
+  - [x] Fiche sujet `/topics/{topicId}` (Pill d'univers, Suivre optimiste avec retour arrière, Copier le lien, onglets
+        Parties / Classement / Progression, titre porté optimiste) ; « Lancer un duel » inactif jusqu'à l'écran n° 5 ;
+        avatars en initiales tant que DiceBear n'est pas admis (§ 2)
 - [ ] Bascule (merge de `rewrite/web-kit`)
