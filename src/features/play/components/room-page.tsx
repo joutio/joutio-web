@@ -8,6 +8,7 @@ import { useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
+import { useLeaveGuard } from '@/shared/use-leave-guard'
 import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import { Button, EmptyState, MobileTopBar, Pill, PreparationSteps, RoomPlayers, Screen, type RoomPlayer } from '@/ui'
@@ -26,8 +27,6 @@ const STEPS: readonly { id: string; label: MessageKey }[] = [
   { id: 'questions', label: 'room.stepQuestions' },
   { id: 'launch', label: 'room.stepLaunch' },
 ]
-
-const pendingLeaves = new Map<string, ReturnType<typeof setTimeout>>()
 
 function countdownOf(expiresAt: string | null, now: number) {
   if (!expiresAt) return null
@@ -108,21 +107,10 @@ export function RoomPage() {
   useEffect(() => {
     waitingRef.current = waiting
   }, [waiting])
-  useEffect(() => {
-    // Un remontage immédiat (StrictMode, retour arrière puis avant) annule le départ programmé.
-    clearTimeout(pendingLeaves.get(roomId))
-    pendingLeaves.delete(roomId)
-    return () => {
-      if (done.current || closed.current || !waitingRef.current) return
-      pendingLeaves.set(
-        roomId,
-        setTimeout(() => {
-          pendingLeaves.delete(roomId)
-          playService.leaveRoom(roomId).catch(() => undefined)
-        }, 300),
-      )
-    }
-  }, [roomId])
+  useLeaveGuard(
+    () => !done.current && !closed.current && waitingRef.current,
+    () => void playService.leaveRoom(roomId).catch(() => undefined),
+  )
 
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.challenges, { replace: true }))
   const cancel = () =>

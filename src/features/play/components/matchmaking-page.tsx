@@ -9,6 +9,7 @@ import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
 import { useTopicOverview } from '@/features/topic'
 import { tierOf } from '@/shared/tier'
+import { useLeaveGuard } from '@/shared/use-leave-guard'
 import { toast } from '@/shared/toast'
 import { Avatar, Button, cn, EmptyState, MatchmakingMap, Notice, tokens, type MapPlayer } from '@/ui'
 import { useAutoTrain, useBotDifficulty, useTicket, type PlayTopic } from '../hooks/use-play'
@@ -29,8 +30,6 @@ const FOUND_MS = 1200
 
 /** Panneau bas d'un état, sur toute la largeur. */
 const PANEL = 'absolute inset-x-4 bottom-[calc(var(--jo-safe-bottom,0px)+16px)]'
-
-const pendingCancels = new Map<string, ReturnType<typeof setTimeout>>()
 
 function useSecondsLeft(deadlineAt: string | null) {
   const [now, setNow] = useState(readServerNow)
@@ -149,21 +148,11 @@ export function MatchmakingPage() {
   useEffect(() => {
     statusRef.current = status
   }, [status])
-  useEffect(() => {
-    // Un remontage immédiat (StrictMode) annule l'abandon programmé : la recherche continue.
-    clearTimeout(pendingCancels.get(ticketId))
-    pendingCancels.delete(ticketId)
-    return () => {
-      if (settled.current || statusRef.current !== 'SEARCHING') return
-      pendingCancels.set(
-        ticketId,
-        setTimeout(() => {
-          pendingCancels.delete(ticketId)
-          playService.cancelTicket(ticketId).catch(() => undefined)
-        }, 300),
-      )
-    }
-  }, [ticketId])
+  // Quitter l'écran pendant la recherche l'annule.
+  useLeaveGuard(
+    () => !settled.current && statusRef.current === 'SEARCHING',
+    () => void playService.cancelTicket(ticketId).catch(() => undefined),
+  )
 
   if (status === 'MATCHED') {
     return (
