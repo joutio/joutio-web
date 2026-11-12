@@ -177,4 +177,10 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         chargées (pas de filtre serveur) ; statuts montrés aussi en brouillon, comme le mobile ; invitation par la
         recherche globale (2 lettres) au lieu d'une liste paginée de candidats ; pas d'entrée Modération sur la Fiche
         sujet (absente du lab)
+  - [x] États système : bannière de connexion, reconnexion, partie expirée, compte suspendu et session expirée déjà en
+        place ; ajout de **Reprendre une partie** (`features/ongoing`) : parties actives (`GET /api/games?active=true`)
+        relues au démarrage, au retour de l'onglet et de la connexion et à chaque défi accepté, salons visités suivis en
+        temps réel (`shared/ongoing-store`), bandeau global « Partie en cours » (Rejoindre) à la place de la bannière de
+        connexion quand elle est absente, sans redirection, masqué dans l'arène de la partie. Pas de suivi publicitaire
+        ni d'`AdSlot` sur le web (aucune régie en V1)
 - [ ] Bascule (merge de `rewrite/web-kit`)

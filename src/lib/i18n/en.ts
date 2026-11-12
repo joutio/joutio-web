@@ -990,4 +990,7 @@ export const en: Messages = {
   'badges.featRule.LIGHTNING': "5 correct answers in under 3 s in a single duel.",
   'badges.featRule.PERFECT': "Score the maximum, 160 points, in a duel.",
   'badges.featRule.STREAK_MASTER': "Win 10 duels in a row.",
+  // Écran 12 : Reprendre une partie.
+  'ongoing.title': "Game in progress",
+  'ongoing.join': "Join",
 }

@@ -25,6 +25,7 @@ export const PLAY_ENDPOINTS = {
   /** Canal de présence du ticket : quitter l'écran ou perdre la connexion annule la recherche côté serveur. */
   ticketPresence: (ticketId: string) => `/topic/matchmaking/tickets/${ticketId}/presence`,
   challenges: '/api/challenges',
+  myRooms: '/api/rooms/mine',
   contacts: (userId: string, direction: 'following' | 'followers') => `/api/profiles/${id(userId)}/${direction}`,
   autoTrain: (userId: string) => `/api/profiles/${id(userId)}/auto-train`,
   profile: (userId: string) => `/api/profiles/${id(userId)}`,
@@ -40,6 +41,8 @@ export const playService = {
   createRoom: (topicId: string) => api.post<IdResponse>(PLAY_ENDPOINTS.rooms, { topicId }),
   createBotRoom: (topicId: string, difficulty: BotDifficulty) => api.post<IdResponse>(PLAY_ENDPOINTS.botRoom, { topicId, difficulty }),
   room: (roomId: string) => api.get<RoomView>(PLAY_ENDPOINTS.room(roomId)),
+  /** Mes salons : ceux à suivre pour le bandeau « Partie en cours ». */
+  myRooms: () => api.get<RoomView[]>(PLAY_ENDPOINTS.myRooms),
   cancelRoom: (roomId: string) => api.post<void>(PLAY_ENDPOINTS.cancel(roomId)),
   /** Relance (« wizz ») de l'adversaire nommé absent : cadence de 10 s par joueur côté serveur. */
   wizzRoom: (roomId: string) => api.post<void>(PLAY_ENDPOINTS.wizz(roomId)),

@@ -6,6 +6,7 @@ import { useMe } from '@/features/me'
 import { useT, useLanguageStore, type MessageKey } from '@/lib/i18n'
 import { useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
+import { useOngoingStore } from '@/shared/ongoing-store'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { toast } from '@/shared/toast'
@@ -58,6 +59,9 @@ export function RoomPage() {
   const userId = me.data?.userId ?? ''
   const myAvatar = useUserAvatar(me.data)
   const { view, room, status } = useRoom(roomId)
+  // Suivi au-delà de l'écran : la partie créée après l'avoir quitté apparaît dans le bandeau « Partie en cours ».
+  const trackRoom = useOngoingStore((state) => state.trackRoom)
+  useEffect(() => trackRoom(roomId), [roomId, trackRoom])
   const presence = useRoomPresence(roomId)
   const wizz = useWizzRoom(roomId)
   const closing = useCloseRoom()

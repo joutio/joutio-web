@@ -989,6 +989,9 @@ export const fr = {
   'badges.featRule.LIGHTNING': "5 bonnes réponses en moins de 3 s dans un même duel.",
   'badges.featRule.PERFECT': "Marquer le score maximal, 160 points, dans un duel.",
   'badges.featRule.STREAK_MASTER': "Gagner 10 duels de suite.",
+  // Écran 12 : Reprendre une partie.
+  'ongoing.title': "Partie en cours",
+  'ongoing.join': "Rejoindre",
 }
 
 export type Messages = Record<keyof typeof fr, string>
