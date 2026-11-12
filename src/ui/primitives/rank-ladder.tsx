@@ -5,7 +5,9 @@ import { tokens, type TierCode } from '../tokens.generated'
 
 export type LadderRung = {
   tier: TierCode
-  /** Condition du palier. */
+  /** Nom de la ligne ; le palier par défaut. Exploits : le nom du haut fait (« Éclair »). */
+  title?: string
+  /** Condition du palier, en entier (passe à la ligne). */
   rule: string
   /** `Acquis`, avancement ou tiret. */
   status: string
@@ -28,8 +30,8 @@ export function RankLadder({ rungs, icon, className }: RankLadderProps) {
         <li key={rung.tier} className={cn('flex min-h-16 items-center gap-3 px-4 py-2', index < rungs.length - 1 && 'border-b border-jo-border')}>
           <TierMedal tier={rung.tier} icon={icon} size={44} state={rung.earned ? 'earned' : 'locked'} />
           <span className="grid min-w-0 flex-1">
-            <span className="jo-type-body truncate">{tokens.tier[rung.tier].label}</span>
-            <span className="jo-type-caption truncate text-jo-muted">{rung.rule}</span>
+            <span className="jo-type-body truncate">{rung.title ?? tokens.tier[rung.tier].label}</span>
+            <span className="jo-type-caption text-pretty text-jo-muted">{rung.rule}</span>
           </span>
           <span className="jo-type-body whitespace-nowrap text-jo-muted">{rung.status}</span>
         </li>

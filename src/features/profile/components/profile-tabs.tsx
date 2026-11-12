@@ -165,7 +165,7 @@ export function BadgesTab({ onOpen }: { onOpen: (family: BadgeFamilySummary) => 
     <div className="grid gap-3 px-4 pt-1 pb-8">
       <span className="jo-type-caption text-jo-muted">{badgesSummary(badges.data!, t)}</span>
       {families.map((family) => (
-        <BadgeFamilyRow key={family.family} name={family.name} icon={family.icon} meta={family.meta} earned={family.earned} progress={family.progress} onClick={() => onOpen(family)} />
+        <BadgeFamilyRow key={family.family} name={family.name} icon={family.icon} remaining={family.remaining} feats={family.feats} earned={family.earned} progress={family.progress} onClick={() => onOpen(family)} />
       ))}
     </div>
   )

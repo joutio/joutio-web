@@ -57,6 +57,9 @@ const UNITS = new Set([
   'ONE_SHOT',
 ])
 
+/** Exploits connus (`Badge` de `joutio-profile`), dont l'app a le nom et le critère traduits. */
+const FEATS = new Set(['FIRST_WIN', 'LIGHTNING', 'PERFECT', 'STREAK_MASTER'])
+
 export type BadgeFamilySummary = {
   family: BadgeFamily
   name: string
@@ -66,8 +69,10 @@ export type BadgeFamilySummary = {
   earned: number
   /** Avancement vers le palier suivant, en %. */
   progress: number
-  /** `Or · 30 / 100`, `Diamant · complet`. */
-  meta: string
+  /** Ce qui reste avant le palier suivant : « Encore 70 réponses rapides » ; absent une fois les 7 acquis. */
+  remaining?: string
+  /** Exploits : hauts faits ponctuels, chacun à son palier, sans échelle (`BadgeFamilyRow` `feats`). */
+  feats?: { tier: TierCode; earned: boolean }[]
   rungs: LadderRung[]
 }
 
@@ -77,18 +82,23 @@ function summarize(family: BadgeFamily, badges: readonly BadgeItemView[], t: T, 
   const sorted = [...badges].sort((a, b) => TIERS.indexOf(a.tier) - TIERS.indexOf(b.tier))
   const earned = sorted.filter((badge) => badge.earned).length
   const current = sorted.find((badge) => !badge.earned)
-  const lastEarned = [...sorted].reverse().find((badge) => badge.earned)
   const progress = current ? Math.round((Math.min(current.progress, current.target) / Math.max(1, current.target)) * 100) : 100
-  const reached = lastEarned ? tokens.tier[lastEarned.tier].label : undefined
   const count = (value: number) => formatNumber(value, language)
-  const meta = current
-    ? [reached, `${count(current.progress)} / ${count(current.target)}`].filter(Boolean).join(' · ')
-    : t('badges.complete', { tier: reached ?? '' })
+  // Unité en toutes lettres et accordée (« Encore 1 victoire », « Encore 1 166 points d'expérience »).
+  const left = current ? Math.max(0, current.target - current.progress) : 0
+  const remaining = current
+    ? UNITS.has(current.metric)
+      ? t(left > 1 ? 'badges.remainingMany' : 'badges.remainingOne', { count: count(left), unit: t(`badges.${left > 1 ? 'unitLong' : 'unitOne'}.${current.metric}` as MessageKey) })
+      : t('badges.remainingPlain', { count: count(left) })
+    : undefined
   const unit = (badge: BadgeItemView) => (UNITS.has(badge.metric) ? t(`badges.unit.${badge.metric}` as MessageKey) : '')
+  // Exploits : un haut fait nommé par ligne, avec son critère de déblocage en toutes lettres (jamais « 1 exploit »).
+  const feat = family === 'EXPLOIT'
   const rungs = sorted.map<LadderRung>((badge) => ({
     tier: badge.tier,
-    rule: `${count(badge.target)} ${unit(badge)}`.trim(),
-    status: badge.earned ? t('badges.earned') : badge === current ? `${count(badge.progress)} / ${count(badge.target)}` : '—',
+    title: feat ? (FEATS.has(badge.code) ? t(`badges.feat.${badge.code}` as MessageKey) : badge.label) : undefined,
+    rule: feat ? (FEATS.has(badge.code) ? t(`badges.featRule.${badge.code}` as MessageKey) : '') : `${count(badge.target)} ${unit(badge)}`.trim(),
+    status: badge.earned ? t('badges.earned') : !feat && badge === current ? `${count(badge.progress)} / ${count(badge.target)}` : '—',
     earned: badge.earned,
   }))
   return {
@@ -98,7 +108,8 @@ function summarize(family: BadgeFamily, badges: readonly BadgeItemView[], t: T, 
     description: known ? t(`badges.family.${family}.text` as MessageKey) : '',
     earned,
     progress,
-    meta,
+    remaining: family === 'EXPLOIT' ? undefined : remaining,
+    feats: family === 'EXPLOIT' ? sorted.map((badge) => ({ tier: badge.tier, earned: badge.earned })) : undefined,
     rungs,
   }
 }

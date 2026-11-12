@@ -7,7 +7,7 @@ import { showDialog } from '@/shared/dialog'
 import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { useBack } from '@/shared/use-back'
-import { Button, EmptyState, ListRow, ParallaxScreen, Pill, SectionHeader, Skeleton, tokens } from '@/ui'
+import { Button, EmptyState, ListRow, ParallaxScreen, Pill, ProgressBar, SectionHeader, Skeleton, tokens } from '@/ui'
 import {
   useCreationLimits,
   useDeleteTopic,
@@ -34,7 +34,7 @@ const approvedOf = (questions: readonly QuestionEditorView[]) => questions.filte
 /**
  * Mon sujet (`creation.md` § 1, lab `MyTopicPage`) : même page en brouillon et publié, sans bottom nav. En-tête en
  * parallaxe comme la Fiche sujet, statut (et rôle s'il n'est pas créateur) ; Sujet (nom FR/EN, univers, vignette,
- * pictogramme) et Contenu (Questions, Équipe, Modération) ; en bas, Publier et Supprimer le brouillon, ou Repasser en
+ * pictogramme) et Contenu (Questions, Équipe, Modération) ; en bas, l'avancement « n / 7 » puis Publier, et Supprimer le brouillon, ou Repasser en
  * brouillon. Un rédacteur ne voit que Questions.
  */
 export function MyTopicPage() {
@@ -101,7 +101,6 @@ export function MyTopicPage() {
   const approved = questions.data ? approvedOf(list) : topic.questionsCount
   const visible = list.filter((question) => question.status !== 'ARCHIVED').length
   const ready = approved >= MIN_QUESTIONS
-  const missing = MIN_QUESTIONS - approved
   const pendingCount = list.filter((question) => question.status === 'PENDING' || question.status === 'SUSPENDED').length
   const reports = queue.data?.length ?? 0
   const todoCount = questions.data && queue.data ? pendingCount + reports : todoTotal(todo.data?.find((item) => item.topicId === topicId))
@@ -154,10 +153,14 @@ export function MyTopicPage() {
       bottomBar={
         !manager ? undefined : draft ? (
           <div className="grid gap-1">
-            <Button full size="L" disabled={!ready} loading={publish.isPending} onClick={() => publish.mutate()}>
-              {t('workshop.publish')}
-            </Button>
-            {!ready && <span className="jo-type-caption text-center text-jo-muted">{t(missing > 1 ? 'workshop.missingMany' : 'workshop.missingOne', { count: missing })}</span>}
+            {/* Tant que le minimum manque, l'avancement remplace un bouton Publier inactif. */}
+            {ready ? (
+              <Button full size="L" loading={publish.isPending} onClick={() => publish.mutate()}>
+                {t('workshop.publish')}
+              </Button>
+            ) : (
+              <ProgressBar className="py-2" label={t('workshop.minimum', { count: approved, min: MIN_QUESTIONS })} value={(approved * 100) / MIN_QUESTIONS} />
+            )}
             {role === 'creator' && (
               <Button full variant="plain" tone="destructive" size="M" icon={TrashIcon} onClick={confirmDelete}>
                 {t('workshop.deleteDraft')}

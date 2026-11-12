@@ -67,7 +67,6 @@ export function QuestionsPage() {
   const draft = topic?.status === 'DRAFT'
   const all = questions.data ?? []
   const count = all.filter((question) => question.status !== 'ARCHIVED').length
-  const approved = all.filter((question) => question.status === 'APPROVED').length
   const atCeiling = premium && count >= limits.questions
   const search = query.trim().toLowerCase()
   const filtered = sortQuestions(
@@ -165,11 +164,8 @@ export function QuestionsPage() {
           />
         ) : (
           <>
-            {draft ? (
-              <ProgressBar label={t('workshop.minimum', { count: approved, min: MIN_QUESTIONS })} value={(Math.min(approved, MIN_QUESTIONS) * 100) / MIN_QUESTIONS} />
-            ) : (
-              <ProgressBar label={t('workshop.ceiling', { count, max: limits.questions })} value={(count * 100) / limits.questions} />
-            )}
+            {/* Brouillon : l'avancement vers la publication est sur Mon sujet. */}
+            {!draft && <ProgressBar label={t('workshop.ceiling', { count, max: limits.questions })} value={(count * 100) / limits.questions} />}
             {atCeiling && <Notice tone="info" title={t('workshop.fullTitle')} message={t('workshop.fullText', { max: limits.questions })} />}
             {all.length === 0 ? (
               <EmptyState

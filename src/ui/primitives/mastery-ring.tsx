@@ -61,7 +61,7 @@ export function MasteryRing({ tier, next, gained, remaining, size = 180, state =
     <div
       ref={root}
       role="img"
-      aria-label={pending ? `Maîtrise ${tier}, XP en cours de calcul` : `Maîtrise ${tier}, ${gained} XP gagnés, ${next ? `${remaining} avant ${next}` : 'palier max'}`}
+      aria-label={pending ? `Maîtrise ${tier}, points d'expérience en cours de calcul` : `Maîtrise ${tier}, ${gained} points d'expérience gagnés, ${next ? `${remaining} avant ${next}` : 'palier max'}`}
       className={cn('relative flex w-full justify-center', className)}
       style={{ height: size }}
     >
