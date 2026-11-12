@@ -18,10 +18,10 @@ export type TopicTileProps = ButtonHTMLAttributes<HTMLButtonElement> & {
  * recadrée au carré, sinon couleur et icône de la catégorie (`TopicCard` n'a que bannière puis catégorie). Une source
  * qui échoue passe à la suivante.
  *
- * Comme `TopicCard`, le visuel est peint par **un seul élément** : l'image en fond de l'élément arrondi, la couleur de
- * catégorie seulement en repli. Une couleur posée derrière une image enfant découpée par l'arrondi transparaît dans
- * l'anticrénelage du bord et dessine un liseré aux coins dès que l'affichage est zoomé. L'image cachée ne sert qu'à
- * détecter l'échec du chargement.
+ * Comme `TopicCard`, le visuel est peint par **un seul élément** : couleur de catégorie et image sont deux fonds du même
+ * élément arrondi, la couleur ne se voit qu'à travers la transparence d'une image (pictogramme ou bannière détourés).
+ * Une couleur posée derrière une image **enfant** découpée par l'arrondi transparaît dans l'anticrénelage du bord et
+ * dessine un liseré aux coins dès que l'affichage est zoomé. L'image cachée ne sert qu'à détecter l'échec du chargement.
  */
 export function TopicTile({ title, category, pictogram, image, className, type = 'button', ...props }: TopicTileProps) {
   const [failed, setFailed] = useState<readonly string[]>([])
@@ -35,7 +35,7 @@ export function TopicTile({ title, category, pictogram, image, className, type =
     >
       <span
         className="grid size-[var(--jo-space-11)] place-items-center rounded-jo-md bg-cover bg-center bg-no-repeat text-jo-on-accent"
-        style={source ? { backgroundImage: `url("${source}")` } : { backgroundColor: categoryColor(category) }}
+        style={{ backgroundColor: categoryColor(category), backgroundImage: source ? `url("${source}")` : undefined }}
       >
         {source ? (
           <img key={source} src={source} alt="" hidden onError={() => setFailed((list) => [...list, source])} />
