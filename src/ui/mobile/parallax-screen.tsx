@@ -112,7 +112,8 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, eyebrow
           <div className="absolute inset-0 bg-linear-to-t from-jo-bg via-jo-bg/40 to-transparent" />
           {/* La barre d'état doit rester lisible : la bannière peut être n'importe quelle image. */}
           <div className="absolute inset-x-0 top-0 h-28 bg-linear-to-b from-jo-bg/80 to-transparent" />
-          <div className={cn('jo-parallax-title absolute inset-x-4 bottom-3 grid gap-1', centered && 'justify-items-center text-center')}>
+          {/* Identité centrée (Profil, Fiche joueur) : 24 px entre l'avatar, dont le cadre de rang déborde, et le pseudonyme. */}
+          <div className={cn('jo-parallax-title absolute inset-x-4 bottom-3 grid', centered ? 'gap-6 justify-items-center text-center' : 'gap-1')}>
             {eyebrow && <div className="jo-type-caption font-semibold">{eyebrow}</div>}
             <h1 className="jo-type-title-1 text-balance">{title}</h1>
           </div>
