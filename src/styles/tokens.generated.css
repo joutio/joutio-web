@@ -24,6 +24,24 @@
   --jo-rank-stroke: #FFFFFF;
   --jo-rank-fill: #161616;
   --jo-shadow: 0 16px 48px rgba(19,18,9,0.6);
+  --jo-category-sports: oklch(0.74 0.125 30);
+  --jo-category-education: oklch(0.74 0.065 250);
+  --jo-category-science: oklch(0.80 0.1 190);
+  --jo-category-technology: oklch(0.66 0.115 235);
+  --jo-category-entertainment: oklch(0.80 0.11 295);
+  --jo-category-literature: oklch(0.65 0.105 320);
+  --jo-category-arts: oklch(0.72 0.135 340);
+  --jo-category-music: oklch(0.82 0.095 10);
+  --jo-category-movies: oklch(0.68 0.12 285);
+  --jo-category-television: oklch(0.84 0.06 285);
+  --jo-category-food-and-drink: oklch(0.83 0.1 65);
+  --jo-category-history: oklch(0.71 0.08 85);
+  --jo-category-games: oklch(0.80 0.115 115);
+  --jo-category-nature: oklch(0.70 0.105 140);
+  --jo-category-business: oklch(0.64 0.03 230);
+  --jo-category-world: oklch(0.87 0.075 150);
+  --jo-category-general: oklch(0.77 0.02 85);
+  --jo-category-ink-strength: 70%;
 }
 
 [data-jo-theme='light'] {
@@ -50,26 +68,27 @@
   --jo-rank-stroke: #121210;
   --jo-rank-fill: #CFCABD;
   --jo-shadow: 0 12px 32px rgba(60,50,20,0.12);
+  --jo-category-sports: oklch(0.66 0.125 30);
+  --jo-category-education: oklch(0.66 0.065 250);
+  --jo-category-science: oklch(0.72 0.1 190);
+  --jo-category-technology: oklch(0.58 0.115 235);
+  --jo-category-entertainment: oklch(0.72 0.11 295);
+  --jo-category-literature: oklch(0.57 0.105 320);
+  --jo-category-arts: oklch(0.64 0.135 340);
+  --jo-category-music: oklch(0.74 0.095 10);
+  --jo-category-movies: oklch(0.60 0.12 285);
+  --jo-category-television: oklch(0.76 0.06 285);
+  --jo-category-food-and-drink: oklch(0.75 0.1 65);
+  --jo-category-history: oklch(0.63 0.08 85);
+  --jo-category-games: oklch(0.72 0.115 115);
+  --jo-category-nature: oklch(0.62 0.105 140);
+  --jo-category-business: oklch(0.56 0.03 230);
+  --jo-category-world: oklch(0.79 0.075 150);
+  --jo-category-general: oklch(0.69 0.02 85);
+  --jo-category-ink-strength: 50%;
 }
 
 :root {
-  --jo-category-sports: oklch(0.76 0.11 200);
-  --jo-category-education: oklch(0.76 0.11 215);
-  --jo-category-science: oklch(0.76 0.11 230);
-  --jo-category-technology: oklch(0.76 0.11 250);
-  --jo-category-entertainment: oklch(0.76 0.11 270);
-  --jo-category-literature: oklch(0.76 0.11 290);
-  --jo-category-arts: oklch(0.76 0.11 310);
-  --jo-category-music: oklch(0.76 0.11 330);
-  --jo-category-movies: oklch(0.76 0.11 350);
-  --jo-category-television: oklch(0.76 0.11 5);
-  --jo-category-food-and-drink: oklch(0.76 0.11 40);
-  --jo-category-history: oklch(0.76 0.11 55);
-  --jo-category-games: oklch(0.76 0.11 105);
-  --jo-category-nature: oklch(0.76 0.11 125);
-  --jo-category-business: oklch(0.76 0.11 170);
-  --jo-category-world: oklch(0.76 0.11 185);
-  --jo-category-general: oklch(0.76 0 0);
   --jo-tier-fer: #3F444C;
   --jo-tier-bronze: #B86A32;
   --jo-tier-argent: #8C95A3;

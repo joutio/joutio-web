@@ -6,7 +6,7 @@ export const categoryColor = (code: CategoryCode) => `var(--jo-category-${slug(c
 
 /** Couleur de catégorie assez contrastée pour du texte, en dark comme en light. */
 export const categoryInk = (code: CategoryCode) =>
-  `color-mix(in oklab, ${categoryColor(code)} 70%, var(--jo-text))`
+  `color-mix(in oklab, ${categoryColor(code)} var(--jo-category-ink-strength), var(--jo-text))`
 
 export const tierColor = (code: TierCode) => `var(--jo-tier-${slug(code)})`
 

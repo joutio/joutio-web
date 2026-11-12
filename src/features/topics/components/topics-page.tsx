@@ -1,6 +1,6 @@
 import type { TopicSort } from '@joutio/client-domain/api-types'
 import { ArrowsDownUpIcon, BellIcon, EyeSlashIcon, MagnifyingGlassIcon, SlidersHorizontalIcon, WarningCircleIcon } from '@phosphor-icons/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUnreadCount } from '@/features/notifications'
 import { TabNav } from '@/features/shell'
@@ -24,12 +24,12 @@ import {
   SearchField,
   SectionHeader,
   Skeleton,
-  TopicCard,
+  TopicTile,
   tokens,
   type CategoryCode,
 } from '@/ui'
 import { useTopicFacets, useTopics } from '../hooks/use-topics'
-import { DEFAULT_TOPIC_SORT } from '../lib/topics-service'
+import { DEFAULT_TOPIC_SORT, pageSizeFor } from '../lib/topics-service'
 
 const UNIVERSES = Object.keys(tokens.category) as CategoryCode[]
 
@@ -84,12 +84,41 @@ function TopicFiltersForm({ selected, onSelected, sort, onSort, hideFollowed, on
   )
 }
 
-function Loading() {
+/**
+ * Grille adaptative de `TopicTile` (`sujets.md`, 2026-11-12) : colonnes d'au moins 96 px, autant que la largeur en
+ * permet — 3 sur téléphone, 5 dans la colonne de 626 px de `WebFrame` —, la place restante répartie entre elles.
+ */
+const GRID = 'grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-x-[var(--jo-space-4)] gap-y-[var(--jo-space-5)] px-4'
+/** Mêmes valeurs que `GRID` : gouttières 16 px, écart 12 px, colonne de 96 px au moins. */
+const columnsFor = (width: number) => Math.max(1, Math.floor((width - 32 + 12) / (96 + 12)))
+
+/** Colonnes que la grille posera, déduites de la largeur du conteneur avant le premier affichage puis à chaque redimensionnement. */
+function useGridColumns(container: RefObject<HTMLElement | null>, fallback = 3) {
+  const [columns, setColumns] = useState(fallback)
+  useLayoutEffect(() => {
+    const element = container.current
+    if (!element) return
+    const measure = () => setColumns(columnsFor(element.clientWidth))
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [container])
+  return columns
+}
+
+function Loading({ columns }: { columns: number }) {
   const t = useT()
   return (
-    <div className="grid grid-cols-2 gap-3 px-4 pb-6" aria-label={t('home.loading')}>
-      {[0, 1, 2, 3].map((index) => (
-        <Skeleton key={index} shape="card" />
+    <div className={`${GRID} pb-6`} aria-label={t('home.loading')}>
+      {Array.from({ length: columns * 3 }, (_, index) => (
+        <div key={index} className="grid justify-items-center gap-[var(--jo-space-3)]">
+          <Skeleton shape="card" className="size-[var(--jo-space-11)] rounded-jo-md" />
+          <div className="grid w-full gap-1">
+            <Skeleton />
+            <Skeleton width="70%" className="justify-self-center" />
+          </div>
+        </div>
       ))}
     </div>
   )
@@ -97,7 +126,9 @@ function Loading() {
 
 /**
  * Sujets (`design/specs/screens/sujets.md`, lab `/screens/sujets?view=compact`) : barre fixe avec recherche et
- * Filtres, puces d'univers, compteur et tri, grille de cartes portrait paginée par 20 côté serveur.
+ * Filtres, puces d'univers, compteur et tri, grille adaptative de `TopicTile` paginée en rangées pleines (environ 20
+ * sujets, `size` multiple du nombre de colonnes). Un changement de largeur qui change les colonnes repart de la
+ * première page : la pagination du BFF est indexée par page.
  */
 export function TopicsPage() {
   const t = useT()
@@ -113,7 +144,9 @@ export function TopicsPage() {
 
   useEffect(toThreshold, [search, selected, sort, hideFollowed, toThreshold])
 
-  const list = useTopics({ query: search, categories: selected, sort, hideFollowed })
+  const container = useRef<HTMLDivElement>(null)
+  const columns = useGridColumns(container)
+  const list = useTopics({ query: search, categories: selected, sort, hideFollowed, size: pageSizeFor(columns) })
   const facets = useTopicFacets(search)
   const topics = list.data?.pages.flatMap((page) => page.topics) ?? []
   const count = facets.data
@@ -182,7 +215,7 @@ export function TopicsPage() {
         </MobileSheet>
       }
     >
-      <div className="flex min-h-full flex-col">
+      <div ref={container} className="flex min-h-full flex-col">
         <div ref={anchor} />
         <div className="jo-no-scrollbar flex flex-none gap-2 overflow-x-auto px-4">
           <Chip selected={selected.length === 0} className="flex-none" onClick={() => setSelected([])}>
@@ -200,7 +233,7 @@ export function TopicsPage() {
             {sortLabel}
           </Chip>
         </div>
-        {list.isPending && <Loading />}
+        {list.isPending && <Loading columns={columns} />}
         {list.isError && !list.data && (
           <EmptyState
             className="flex-1"
@@ -233,18 +266,18 @@ export function TopicsPage() {
           />
         )}
         {topics.length > 0 && (
-          <div className="grid grid-cols-2 gap-3 px-4 pt-1 pb-8">
+          <div className={`${GRID} pt-1 pb-8`}>
             {topics.map((topic) => (
-              <TopicCard
+              <TopicTile
                 key={topic.topicId}
                 title={topicName(topic.names)}
                 category={toCategoryCode(topic.category)}
-                image={topic.imageUrl ?? undefined}
-                orientation="portrait"
+                pictogram={topic.pictogramUrl ?? undefined}
+                image={topic.imageUrl ?? topic.bannerUrl ?? undefined}
                 onClick={() => void navigate(ROUTES.topic(topic.topicId))}
               />
             ))}
-            <div className="col-span-2">
+            <div className="col-span-full">
               <FeedFooter {...feedFooterProps(list)} endLabel={t('topics.end')} />
             </div>
           </div>

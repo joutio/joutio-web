@@ -10,6 +10,9 @@ export const TOPICS_ENDPOINTS = {
 
 export const PAGE_SIZE = 20
 
+/** Page en rangées pleines : environ 20 sujets, arrondis au multiple du nombre de colonnes (`sujets.md`). */
+export const pageSizeFor = (columns: number) => columns * Math.ceil(PAGE_SIZE / columns)
+
 export type TopicFilters = {
   query: string
   /** Univers choisis ; vide = tous. */
@@ -19,6 +22,8 @@ export type TopicFilters = {
   followed?: boolean
   /** Écart BFF (`sujets.md` § 5) : sujets suivis retirés de chaque page côté app (une page peut compter moins de 20). */
   hideFollowed?: boolean
+  /** Taille de page envoyée au BFF ; 20 par défaut. */
+  size?: number
 }
 
 /** Tri par défaut du catalogue : « Les plus suivis ». */
@@ -28,7 +33,7 @@ export type TopicPage = { topics: TopicCardView[]; last: boolean }
 
 const page = (filters: TopicFilters, category: CategoryCode | undefined, index: number) =>
   api.get<PageResponse<TopicCardView>>(TOPICS_ENDPOINTS.list, {
-    query: { q: filters.query || undefined, category, followed: filters.followed || undefined, sort: filters.sort, page: index, size: PAGE_SIZE },
+    query: { q: filters.query || undefined, category, followed: filters.followed || undefined, sort: filters.sort, page: index, size: filters.size ?? PAGE_SIZE },
   })
 
 /** Ordre d'une page fusionnée quand le tri est connu côté client ; sinon on garde l'alternance du serveur. */

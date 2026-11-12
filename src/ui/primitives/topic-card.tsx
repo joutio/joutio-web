@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from 'react'
+import { useState, type ButtonHTMLAttributes } from 'react'
 import { CategoryIcon } from '../brand/category-icon'
 import { cn } from '../lib/cn'
 import { categoryColor, categoryInk } from '../lib/tokens'
@@ -11,6 +11,7 @@ export type TopicCardProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   image?: string
 }
 
+/** Visuel : bannière, sinon couleur et icône de la catégorie (aussi quand la bannière échoue au chargement). */
 export function TopicCard({
   title,
   category,
@@ -21,6 +22,8 @@ export function TopicCard({
   ...props
 }: TopicCardProps) {
   const portrait = orientation === 'portrait'
+  const [failedImage, setFailedImage] = useState<string>()
+  const banner = image && failedImage !== image ? image : undefined
   return (
     <button
       type={type}
@@ -38,10 +41,11 @@ export function TopicCard({
         )}
         style={{
           backgroundColor: categoryColor(category),
-          backgroundImage: image ? `url(${image})` : undefined,
+          backgroundImage: banner ? `url("${banner}")` : undefined,
         }}
       >
-        {!image && (
+        {banner && <img key={banner} src={banner} alt="" hidden onError={() => setFailedImage(banner)} />}
+        {!banner && (
           <CategoryIcon category={category} size={28} weight="fill" className="text-jo-on-accent opacity-80" />
         )}
       </span>

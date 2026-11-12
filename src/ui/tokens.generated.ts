@@ -111,122 +111,224 @@ export const tokens = {
   "category": {
     "SPORTS": {
       "label": "Sport",
-      "hue": 200,
-      "oklch": "oklch(0.76 0.11 200)",
-      "hex": "#46C6CD",
-      "icon": "volleyball"
+      "hue": 30,
+      "icon": "volleyball",
+      "dark": {
+        "oklch": "oklch(0.74 0.125 30)",
+        "hex": "#EF8B7B"
+      },
+      "light": {
+        "oklch": "oklch(0.66 0.125 30)",
+        "hex": "#D47263"
+      }
     },
     "EDUCATION": {
       "label": "Éducation",
-      "hue": 215,
-      "oklch": "oklch(0.76 0.11 215)",
-      "hex": "#4DC3DD",
-      "icon": "graduation-cap"
+      "hue": 250,
+      "icon": "graduation-cap",
+      "dark": {
+        "oklch": "oklch(0.74 0.065 250)",
+        "hex": "#8CAFD3"
+      },
+      "light": {
+        "oklch": "oklch(0.66 0.065 250)",
+        "hex": "#7496B9"
+      }
     },
     "SCIENCE": {
       "label": "Science",
-      "hue": 230,
-      "oklch": "oklch(0.76 0.11 230)",
-      "hex": "#5DBEE9",
-      "icon": "flask"
+      "hue": 190,
+      "icon": "flask",
+      "dark": {
+        "oklch": "oklch(0.80 0.1 190)",
+        "hex": "#67D2CC"
+      },
+      "light": {
+        "oklch": "oklch(0.72 0.1 190)",
+        "hex": "#4AB9B2"
+      }
     },
     "TECHNOLOGY": {
       "label": "Technologie",
-      "hue": 250,
-      "oklch": "oklch(0.76 0.11 250)",
-      "hex": "#79B6F4",
-      "icon": "cpu"
+      "hue": 235,
+      "icon": "cpu",
+      "dark": {
+        "oklch": "oklch(0.66 0.115 235)",
+        "hex": "#3D9DCE"
+      },
+      "light": {
+        "oklch": "oklch(0.58 0.115 235)",
+        "hex": "#1B84B4"
+      }
     },
     "ENTERTAINMENT": {
       "label": "Divertissement",
-      "hue": 270,
-      "oklch": "oklch(0.76 0.11 270)",
-      "hex": "#96AEF7",
-      "icon": "star"
+      "hue": 295,
+      "icon": "star",
+      "dark": {
+        "oklch": "oklch(0.80 0.11 295)",
+        "hex": "#C3B0FD"
+      },
+      "light": {
+        "oklch": "oklch(0.72 0.11 295)",
+        "hex": "#A996E2"
+      }
     },
     "LITERATURE": {
       "label": "Littérature",
-      "hue": 290,
-      "oklch": "oklch(0.76 0.11 290)",
-      "hex": "#B0A5F2",
-      "icon": "book-open-text"
+      "hue": 320,
+      "icon": "book-open-text",
+      "dark": {
+        "oklch": "oklch(0.65 0.105 320)",
+        "hex": "#AC7AB7"
+      },
+      "light": {
+        "oklch": "oklch(0.57 0.105 320)",
+        "hex": "#93629E"
+      }
     },
     "ARTS": {
       "label": "Arts",
-      "hue": 310,
-      "oklch": "oklch(0.76 0.11 310)",
-      "hex": "#C79DE6",
-      "icon": "palette"
+      "hue": 340,
+      "icon": "palette",
+      "dark": {
+        "oklch": "oklch(0.72 0.135 340)",
+        "hex": "#DC81BF"
+      },
+      "light": {
+        "oklch": "oklch(0.64 0.135 340)",
+        "hex": "#C169A6"
+      }
     },
     "MUSIC": {
       "label": "Musique",
-      "hue": 330,
-      "oklch": "oklch(0.76 0.11 330)",
-      "hex": "#D997D2",
-      "icon": "headphones"
+      "hue": 10,
+      "icon": "headphones",
+      "dark": {
+        "oklch": "oklch(0.82 0.095 10)",
+        "hex": "#FBABB6"
+      },
+      "light": {
+        "oklch": "oklch(0.74 0.095 10)",
+        "hex": "#DF929D"
+      }
     },
     "MOVIES": {
       "label": "Cinéma",
-      "hue": 350,
-      "oklch": "oklch(0.76 0.11 350)",
-      "hex": "#E694BB",
-      "icon": "film-slate"
+      "hue": 285,
+      "icon": "film-slate",
+      "dark": {
+        "oklch": "oklch(0.68 0.12 285)",
+        "hex": "#918DDF"
+      },
+      "light": {
+        "oklch": "oklch(0.60 0.12 285)",
+        "hex": "#7974C5"
+      }
     },
     "TELEVISION": {
       "label": "Télévision",
-      "hue": 5,
-      "oklch": "oklch(0.76 0.11 5)",
-      "hex": "#EC93A8",
-      "icon": "television-simple"
+      "hue": 285,
+      "icon": "television-simple",
+      "dark": {
+        "oklch": "oklch(0.84 0.06 285)",
+        "hex": "#C6C6F1"
+      },
+      "light": {
+        "oklch": "oklch(0.76 0.06 285)",
+        "hex": "#ACACD6"
+      }
     },
     "FOOD_AND_DRINK": {
       "label": "Gastronomie",
-      "hue": 40,
-      "oklch": "oklch(0.76 0.11 40)",
-      "hex": "#ED997B",
-      "icon": "pizza"
+      "hue": 65,
+      "icon": "pizza",
+      "dark": {
+        "oklch": "oklch(0.83 0.1 65)",
+        "hex": "#F5BA81"
+      },
+      "light": {
+        "oklch": "oklch(0.75 0.1 65)",
+        "hex": "#DAA168"
+      }
     },
     "HISTORY": {
       "label": "Histoire",
-      "hue": 55,
-      "oklch": "oklch(0.76 0.11 55)",
-      "hex": "#E79E6B",
-      "icon": "bank"
+      "hue": 85,
+      "icon": "bank",
+      "dark": {
+        "oklch": "oklch(0.71 0.08 85)",
+        "hex": "#B89E66"
+      },
+      "light": {
+        "oklch": "oklch(0.63 0.08 85)",
+        "hex": "#9F864E"
+      }
     },
     "GAMES": {
       "label": "Jeux",
-      "hue": 105,
-      "oklch": "oklch(0.76 0.11 105)",
-      "hex": "#BBB55E",
-      "icon": "game-controller"
+      "hue": 115,
+      "icon": "game-controller",
+      "dark": {
+        "oklch": "oklch(0.80 0.115 115)",
+        "hex": "#BBC76D"
+      },
+      "light": {
+        "oklch": "oklch(0.72 0.115 115)",
+        "hex": "#A2AD54"
+      }
     },
     "NATURE": {
       "label": "Nature",
-      "hue": 125,
-      "oklch": "oklch(0.76 0.11 125)",
-      "hex": "#A1BD6E",
-      "icon": "leaf"
+      "hue": 140,
+      "icon": "leaf",
+      "dark": {
+        "oklch": "oklch(0.70 0.105 140)",
+        "hex": "#7BAF6F"
+      },
+      "light": {
+        "oklch": "oklch(0.62 0.105 140)",
+        "hex": "#639658"
+      }
     },
     "BUSINESS": {
       "label": "Business",
-      "hue": 170,
-      "oklch": "oklch(0.76 0.11 170)",
-      "hex": "#5FC8A6",
-      "icon": "briefcase"
+      "hue": 230,
+      "icon": "briefcase",
+      "dark": {
+        "oklch": "oklch(0.64 0.03 230)",
+        "hex": "#7A909B"
+      },
+      "light": {
+        "oklch": "oklch(0.56 0.03 230)",
+        "hex": "#637883"
+      }
     },
     "WORLD": {
       "label": "Monde",
-      "hue": 185,
-      "oklch": "oklch(0.76 0.11 185)",
-      "hex": "#4DC8BA",
-      "icon": "globe-hemisphere-west"
+      "hue": 150,
+      "icon": "globe-hemisphere-west",
+      "dark": {
+        "oklch": "oklch(0.87 0.075 150)",
+        "hex": "#B2E3BB"
+      },
+      "light": {
+        "oklch": "oklch(0.79 0.075 150)",
+        "hex": "#98C9A1"
+      }
     },
     "GENERAL": {
       "label": "Culture générale",
-      "hue": 0,
-      "oklch": "oklch(0.76 0 0)",
-      "hex": "#B1B1B1",
-      "icon": "lightbulb"
+      "hue": 85,
+      "icon": "lightbulb",
+      "dark": {
+        "oklch": "oklch(0.77 0.02 85)",
+        "hex": "#BAB4A6"
+      },
+      "light": {
+        "oklch": "oklch(0.69 0.02 85)",
+        "hex": "#A19B8E"
+      }
     }
   },
   "typography": {

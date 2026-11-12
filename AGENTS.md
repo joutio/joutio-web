@@ -113,7 +113,9 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
   - [x] Onboarding `/welcome` (connexion code/Google/Facebook, univers, notifications, premier thème, compte suspendu)
   - [x] Accueil `/` (Top 10, Nouveaux thèmes, Suivis paginés par univers, rang, série, cloche) ; fiche sujet,
         notifications et recherche en écrans d'attente. Le BFF n'a pas de slug de sujet : `/topics/{topicId}` en attendant
-  - [x] Sujets `/topics` (recherche, puces et feuille Filtres, tri, masquage des suivis côté app comme le mobile)
+  - [x] Sujets `/topics` (recherche, puces et feuille Filtres, tri, masquage des suivis côté app comme le mobile ;
+        grille adaptative de `TopicTile` depuis le 2026-11-12 : pictogramme, sinon vignette, sinon univers ; pages en
+        rangées pleines, `size` multiple du nombre de colonnes ; palettes d'univers claire/sombre synchronisées du lab)
   - [x] Fiche sujet `/topics/{topicId}` (Pill d'univers, Suivre optimiste avec retour arrière, Copier le lien, onglets
         Parties / Classement / Progression, titre porté optimiste, avatars DiceBear)
   - [x] Lancer une partie, Matchmaking, Rejoindre : feuille des 4 modes (difficulté du robot sur l'appareil, défi d'un
