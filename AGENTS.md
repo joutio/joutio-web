@@ -122,5 +122,10 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         puis retour) ; horloge serveur et `useEventStream`
   - [x] Duel `/games/{id}` : arène toujours sombre pilotée par `sceneAt` (face-à-face, intros de manche, lecture de 2 s,
         question, révélation), réponse optimiste avec rattrapage REST, jauges, abandon confirmé à toute sortie
-        (`useBlocker`), reconnexion, partie expirée ; toasts suspendus. Résultat `/games/{id}/result` en écran d'attente
+        (`useBlocker`), reconnexion, partie expirée ; toasts suspendus
+  - [x] Résultat `/games/{id}/result` : séquence de déblocages juste après le duel (rang puis titres, déduits du bilan),
+        en-tête et séries, Elo, anneau de maîtrise (récompense interrogée toutes les 1,5 s), revanche par le flux
+        personnel (fenêtre de 10 s), Nouvel adversaire, Détails du duel, signalement du joueur et de la question.
+        Écarts : pas de chat (le BFF n'a pas de messagerie), pas de Bloquer (aucun point d'entrée), badges non célébrés
+        tant que `BadgeEarnedEvent` ne porte pas de `gameId`, revanche reçue (`RematchPrompt` global) à faire
 - [ ] Bascule (merge de `rewrite/web-kit`)
