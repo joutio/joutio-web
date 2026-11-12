@@ -10,7 +10,7 @@ import { ROUTES } from '@/shared/routes'
 import { isAcceptedImage, uploadImage } from '@/shared/media'
 import { toast } from '@/shared/toast'
 import { Avatar, Button, CategoryTile, EmptyState, Field, ImagePicker, ListRow, MobileSheet, RadioGroup, SearchField, tokens, type CategoryCode } from '@/ui'
-import { useUpdateMe } from '../hooks/use-settings'
+import { usePseudonymCheck, useUpdateMe, type PseudonymCheck } from '../hooks/use-settings'
 import { MAX_BIO, MAX_INTERESTS, MAX_PSEUDONYM } from '../lib/settings-service'
 
 type FieldId = 'pseudonym' | 'bio' | 'country' | 'interests' | 'banner'
@@ -36,6 +36,7 @@ export function useProfileFields(me: MeView | undefined) {
   const [query, setQuery] = useState('')
   const file = useRef<HTMLInputElement>(null)
   const savePseudonym = useUpdateMe('pseudonym')
+  const pseudonymCheck = usePseudonymCheck(field === 'pseudonym' ? pseudonym : (me?.pseudonym ?? ''), me?.pseudonym)
   const saveBio = useUpdateMe('bio')
   const saveCountry = useUpdateMe('country')
   const saveInterests = useUpdateMe('interests')
@@ -111,14 +112,17 @@ export function useProfileFields(me: MeView | undefined) {
         open={field === 'pseudonym'}
         onClose={close}
         title={t('settings.pseudonym')}
-        footer={save(pseudonym.trim() === '' || pseudonym.trim() === me?.pseudonym, () => savePseudonym.mutateAsync(pseudonym.trim()))}
+        footer={save(pseudonymCheck.state !== 'available', () => savePseudonym.mutateAsync(pseudonym.trim()))}
       >
         <Field
           label={t('settings.pseudonym')}
           value={pseudonym}
           maxLength={MAX_PSEUDONYM}
           counter={`${pseudonym.length} / ${MAX_PSEUDONYM}`}
-          hint={t('settings.pseudonymHint')}
+          hint={pseudonymHint(pseudonymCheck, t)}
+          error={pseudonymError(pseudonymCheck, t)}
+          autoCapitalize="none"
+          spellCheck={false}
           autoComplete="nickname"
           onChange={(event) => setPseudonym(event.target.value)}
         />
@@ -199,4 +203,25 @@ export function useProfileFields(me: MeView | undefined) {
   )
 
   return { rows, sheets }
+}
+
+type Translate = ReturnType<typeof useT>
+
+const ISSUE_KEYS = {
+  tooShort: 'settings.pseudonymTooShort',
+  tooLong: 'settings.pseudonymTooLong',
+  firstLetter: 'settings.pseudonymFirstLetter',
+  characters: 'settings.pseudonymCharacters',
+} as const
+
+function pseudonymError(check: PseudonymCheck, t: Translate): string | undefined {
+  if (check.state === 'invalid') return t(ISSUE_KEYS[check.issue])
+  if (check.state === 'taken') return t('settings.pseudonymTaken')
+  return undefined
+}
+
+function pseudonymHint(check: PseudonymCheck, t: Translate): string {
+  if (check.state === 'checking') return t('settings.pseudonymChecking')
+  if (check.state === 'available') return t('settings.pseudonymAvailable')
+  return t('settings.pseudonymRules')
 }

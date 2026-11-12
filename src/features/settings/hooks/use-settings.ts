@@ -1,11 +1,45 @@
 import type { ChallengeView, MeView, NotificationCategory, NotificationPreferenceView, PageResponse, PlayerCardView, PlayerProfileView } from '@joutio/client-domain/api-types'
+import { PSEUDONYM_PROBLEMS, pseudonymIssue, pseudonymKey, type PseudonymIssue } from '@joutio/client-domain/profile'
 import { useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { useMe } from '@/features/me'
+import { isApiError } from '@/lib/api'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { optimisticUpdate } from '@/lib/optimistic-cache'
 import { queryKeys } from '@/lib/query-keys'
 import { toast } from '@/shared/toast'
 import { settingsService } from '../lib/settings-service'
+
+/** État de saisie du pseudonyme : règles locales immédiates, unicité vérifiée par le BFF après une courte pause. */
+export type PseudonymCheck =
+  | { state: 'unchanged' | 'checking' | 'available' | 'taken' }
+  | { state: 'invalid'; issue: PseudonymIssue }
+
+const PSEUDONYM_CHECK_DELAY_MS = 350
+
+export function usePseudonymCheck(value: string, current: string | undefined): PseudonymCheck {
+  const trimmed = value.trim()
+  const unchanged = trimmed === (current ?? '')
+  const issue = unchanged ? null : pseudonymIssue(trimmed)
+  const [debounced, setDebounced] = useState(trimmed)
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebounced(trimmed), PSEUDONYM_CHECK_DELAY_MS)
+    return () => window.clearTimeout(timer)
+  }, [trimmed])
+  const settled = debounced === trimmed
+  const query = useQuery({
+    queryKey: queryKeys.pseudonymAvailability(pseudonymKey(debounced)),
+    queryFn: () => settingsService.pseudonymAvailability(debounced),
+    enabled: !unchanged && issue === null && settled,
+    staleTime: 10_000,
+  })
+  if (unchanged) return { state: 'unchanged' }
+  if (issue) return { state: 'invalid', issue }
+  if (!settled || query.isPending || query.isFetching) return { state: 'checking' }
+  if (query.data && !query.data.valid) return { state: 'invalid', issue: 'characters' }
+  // Vérification indisponible : on laisse le serveur trancher à l'enregistrement.
+  return query.data?.available === false ? { state: 'taken' } : { state: 'available' }
+}
 
 export type MeField = 'pseudonym' | 'bio' | 'country' | 'bannerUrl' | 'language' | 'avatarOptions' | 'interests'
 
@@ -43,11 +77,19 @@ export function useUpdateMe<K extends MeField>(field: K) {
         )
         client.setQueryData<ChallengeView[]>(queryKeys.challenges, (items) => items?.map((challenge) => ({ ...challenge, challenger: mine(challenge.challenger), opponent: mine(challenge.opponent) })))
       }),
-    onError: (_error, _value, context) => {
+    onError: (error, _value, context) => {
       context?.rollback()
       if (field === 'language') {
         const language = client.getQueryData<MeView>(queryKeys.me)?.language
         if (language) setLanguage(language)
+      }
+      if (field === 'pseudonym' && isApiError(error) && error.type === PSEUDONYM_PROBLEMS.taken) {
+        toast.error(t('settings.pseudonymTaken'))
+        return
+      }
+      if (field === 'pseudonym' && isApiError(error) && error.type === PSEUDONYM_PROBLEMS.invalid) {
+        toast.error(t('settings.pseudonymRules'))
+        return
       }
       toast.error(t('settings.saveError'), t('home.errorText'))
     },

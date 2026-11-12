@@ -4,6 +4,7 @@
  */
 export const queryKeys = {
   me: ['me'] as const,
+  pseudonymAvailability: (value: string) => ['me', 'pseudonym-availability', value.toLowerCase()] as const,
   home: ['home'] as const,
   topics: {
     list: (filters: object) => ['topics', 'list', filters] as const,
