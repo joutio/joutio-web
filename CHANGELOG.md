@@ -1,3 +1,9 @@
+## [2.6.0](https://github.com/joutio/joutio-web/compare/v2.5.0...v2.6.0) (2026-11-12)
+
+### Features
+
+* **play:** explain why a room failed to prepare ([10ff9fb](https://github.com/joutio/joutio-web/commit/10ff9fb864c47daf41472e4009f1064c9ede945c))
+
 ## [2.5.0](https://github.com/joutio/joutio-web/compare/v2.4.0...v2.5.0) (2026-11-12)
 
 ### Features
