@@ -7,15 +7,15 @@ import { isApiError } from '@/lib/api'
 import { useUserAvatar } from '@/shared/avatar'
 import { COUNTRY_CODES, countryFlag, countryLabel } from '@/shared/country'
 import { ROUTES } from '@/shared/routes'
+import { isAcceptedImage, uploadImage } from '@/shared/media'
 import { toast } from '@/shared/toast'
 import { Avatar, Button, CategoryTile, EmptyState, Field, ImagePicker, ListRow, MobileSheet, RadioGroup, SearchField, tokens, type CategoryCode } from '@/ui'
 import { useUpdateMe } from '../hooks/use-settings'
-import { MAX_BIO, MAX_INTERESTS, MAX_PSEUDONYM, settingsService } from '../lib/settings-service'
+import { MAX_BIO, MAX_INTERESTS, MAX_PSEUDONYM } from '../lib/settings-service'
 
 type FieldId = 'pseudonym' | 'bio' | 'country' | 'interests' | 'banner'
 
 const UNIVERSES = Object.keys(tokens.category) as CategoryCode[]
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
 /**
  * Lignes « Profil » des Réglages et leurs feuilles (`reglages.md` § 1, lab `profile-fields.tsx`) : Avatar en tête, puis
@@ -53,13 +53,13 @@ export function useProfileFields(me: MeView | undefined) {
 
   const upload = async (picked: File | undefined) => {
     if (!picked) return
-    if (!['image/jpeg', 'image/png'].includes(picked.type) || picked.size > MAX_IMAGE_BYTES) {
+    if (!isAcceptedImage(picked)) {
       toast.error(t('settings.imageError'), t('settings.imageRule'))
       return
     }
     setUploading(true)
     try {
-      setBanner((await settingsService.upload(picked)).url)
+      setBanner((await uploadImage(picked)).url)
     } catch (error) {
       toast.error(t('settings.imageError'), (isApiError(error) && error.detail) || t('settings.imageRule'))
     } finally {

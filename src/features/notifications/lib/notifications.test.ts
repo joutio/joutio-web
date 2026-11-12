@@ -35,8 +35,9 @@ describe('notificationTarget', () => {
     expect(notificationTarget(notice({ type: 'ROOM_ACCEPTED', sourceId: 'r1', expiresAt: '2026-11-12T11:00:00Z' }), now)).toEqual({ kind: 'fallback', challenges: true, expired: true })
   })
 
-  it('opens the workshop for a report, without the reporter', () => {
-    expect(notificationTarget(notice({ type: 'QUESTION_REPORTED', actorId: null, topicId: 't1', sourceId: 'rep1' }), now)).toEqual({ kind: 'workshop', id: 't1' })
+  it('opens the reports of the question for a report, and the topic for a draft', () => {
+    expect(notificationTarget(notice({ type: 'QUESTION_REPORTED', actorId: null, topicId: 't1', sourceId: 'rep1' }), now)).toEqual({ kind: 'report', topicId: 't1', reportId: 'rep1' })
+    expect(notificationTarget(notice({ type: 'TOPIC_DRAFTED', actorId: null, topicId: 't1' }), now)).toEqual({ kind: 'workshop', id: 't1' })
   })
 })
 

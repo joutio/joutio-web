@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { Button, ListRow, MobileSheet } from '@/ui'
-import { usePremiumSheet } from '../premium-store'
+import { usePremiumSheet, type PremiumReason } from '../premium-store'
 
 const PERKS: readonly { icon: typeof ProhibitIcon; label: MessageKey }[] = [
   { icon: ProhibitIcon, label: 'premium.perkAds' },
@@ -13,6 +13,13 @@ const PERKS: readonly { icon: typeof ProhibitIcon; label: MessageKey }[] = [
   { icon: PencilSimpleIcon, label: 'premium.perkCreation' },
 ]
 
+const REASONS: Record<NonNullable<PremiumReason>, MessageKey> = {
+  quota: 'premium.quotaReason',
+  topics: 'premium.limitTopics',
+  questions: 'premium.limitQuestions',
+  team: 'premium.limitTeam',
+}
+
 /**
  * Premium (`design/specs/screens/premium.md`, lab `/screens/premium?view=compact`, variante Bientôt) : couronne,
  * accroche, cinq avantages, puis « Rejoindre la liste ». Ni prix ni essai tant que l'offre n'est pas ouverte.
@@ -20,7 +27,7 @@ const PERKS: readonly { icon: typeof ProhibitIcon; label: MessageKey }[] = [
 export function PremiumHost() {
   const t = useT()
   const { open, reason, joined, close, join } = usePremiumSheet()
-  const pitch = reason === 'quota' ? t('premium.quotaReason') : t('premium.soonPitch')
+  const pitch = reason ? t(REASONS[reason]) : t('premium.soonPitch')
   return (
     <MobileSheet
       open={open}

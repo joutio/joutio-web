@@ -1,7 +1,10 @@
 import { create } from 'zustand'
 
-/** Pourquoi la feuille s'ouvre : une limite atteinte remplace l'accroche par sa raison (`premium.md` § 2). */
-export type PremiumReason = 'quota' | undefined
+/**
+ * Pourquoi la feuille s'ouvre : une limite atteinte remplace l'accroche par sa raison (`premium.md` § 2) — défis,
+ * ou plafonds de création (`creation.md` § 3 : 2e sujet publié, 31e question, Équipe).
+ */
+export type PremiumReason = 'quota' | 'topics' | 'questions' | 'team' | undefined
 
 const WAITLIST_KEY = 'joutio.premiumWaitlist'
 const readWaitlist = () => {

@@ -41,6 +41,16 @@ export const queryKeys = {
     all: ['contacts'] as const,
     list: (userId: string, direction: 'following' | 'followers', query: string, sort: string) => ['contacts', userId, direction, query, sort] as const,
   },
+  /** Atelier de création (`creation.md`). */
+  workshop: {
+    all: ['workshop'] as const,
+    topics: ['workshop', 'topics'] as const,
+    todo: ['workshop', 'todo'] as const,
+    topic: (topicId: string) => ['workshop', topicId, 'workshop'] as const,
+    questions: (topicId: string) => ['workshop', topicId, 'questions'] as const,
+    reports: (topicId: string) => ['workshop', topicId, 'reports'] as const,
+    team: (topicId: string) => ['workshop', topicId, 'team'] as const,
+  },
   onboarding: {
     recommendations: (interests: readonly string[]) => ['onboarding', 'recommendations', [...interests]] as const,
   },

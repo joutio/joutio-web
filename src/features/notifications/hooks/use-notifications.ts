@@ -2,6 +2,7 @@ import type { PageResponse } from '@joutio/client-domain/api-types'
 import { useInfiniteQuery, useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
+import { workshopService } from '@/features/workshop'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { optimisticUpdate } from '@/lib/optimistic-cache'
 import { queryKeys } from '@/lib/query-keys'
@@ -141,8 +142,16 @@ export function useOpenNotification() {
       case 'room':
         return void navigate(ROUTES.room(target.id))
       case 'workshop':
-        // L'atelier (écran 11) n'est pas encore porté : Mes sujets en écran d'attente.
-        return void navigate(ROUTES.myTopics)
+        return void navigate(ROUTES.myTopic(target.id))
+      case 'report':
+        // Signalements de la question, poussés par-dessus la boîte : le retour revient ici (`notifications.md` § 2).
+        return void workshopService
+          .reportDetail(target.reportId)
+          .then((detail) => navigate(ROUTES.questionReports(target.topicId, detail.questionId, target.reportId), { state: { from: 'notifications' } }))
+          .catch(() => {
+            toast.info(t('notifications.unavailable'))
+            void navigate(ROUTES.topicModeration(target.topicId, 'reports'))
+          })
       case 'suspended':
         return void endSession('suspended')
       case 'fallback':

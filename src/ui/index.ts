@@ -99,3 +99,7 @@ export * from './primitives/option-tile.tsx'
 export * from './primitives/color-swatch.tsx'
 export * from './primitives/plan-option.tsx'
 export * from './primitives/image-picker.tsx'
+// Écran 11 : Création.
+export * from './mobile/detent-sheet.tsx'
+export * from './primitives/answer-editor-row.tsx'
+export * from './primitives/moderation-card.tsx'

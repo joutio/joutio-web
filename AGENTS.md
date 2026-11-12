@@ -163,4 +163,18 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         aucun endpoint) ; Revanches, Rangs et badges, Sons du duel et Icônes et points des réponses sont locaux à
         l'appareil (`useDeviceSettings`), seul Défis et salons est persisté (`ROOM`) ; aucun son n'existe encore ;
         l'éditeur ne règle que les options Micah maquettées par le lab (Lorelei et Notionists : style et fond)
+  - [x] Création `/me/topics` (atelier, feature `workshop`) : Mes sujets (À traiter avec pastille, + Nouveau sujet,
+        Premium au-delà du sujet publié gratuit), Mon sujet `/me/topics/{id}` (parallaxe, statut et rôle, nom FR/EN,
+        univers, vignette, pictogramme PNG, Questions / Équipe / Modération, Publier, Supprimer le brouillon, Repasser
+        en brouillon), Questions `…/questions` (recherche, Trier et filtrer, statuts, repère du minimum ou du plafond,
+        10 par page), éditeur `…/questions/{id|new}` (image, FR/EN, description d'image, Juste, Gérer selon le rôle,
+        enregistrement optimiste par opérations de `@joutio/client-domain`), Modération `…/moderation` (À valider /
+        Signalements, rejet motivé), Signalements `…/reports/{questionId}` (file balayable, `DetentSheet`, Actuelle /
+        Signalée, Clore confirmé, Modifier clôt en `RESOLVED`), Équipe `…/team`. Les notifications de signalement
+        ouvrent la file sur leur question (signalement cerclé, retour « Notifications »), celles de brouillon Mon sujet.
+        Écarts : plafonds (1 / 10 sujets, 30 / 150 questions, Équipe Premium) appliqués par l'app seule ; description
+        d'image saisie mais non envoyée (aucun champ backend) ; recherche, tri et filtres sur toutes les questions
+        chargées (pas de filtre serveur) ; statuts montrés aussi en brouillon, comme le mobile ; invitation par la
+        recherche globale (2 lettres) au lieu d'une liste paginée de candidats ; pas d'entrée Modération sur la Fiche
+        sujet (absente du lab)
 - [ ] Bascule (merge de `rewrite/web-kit`)

@@ -16,8 +16,18 @@ export const ROUTES = {
   /** Éditeur d'avatar et suppression du compte : poussés depuis les Réglages (`web.md` § 2 : « Réglages (avatar, suppression) »). */
   avatar: '/me/settings/avatar',
   deleteAccount: '/me/settings/delete',
-  /** Création : Mes sujets et l'atelier (`web.md` § 2). */
+  /** Création : Mes sujets et l'atelier (`web.md` § 2 : `/me/topics`), pages de l'atelier sous le sujet. */
   myTopics: '/me/topics',
+  myTopic: (topicId: string) => `/me/topics/${encodeURIComponent(topicId)}`,
+  topicQuestions: (topicId: string) => `/me/topics/${encodeURIComponent(topicId)}/questions`,
+  /** Éditeur de question ; `resolve` : enregistrer clôt les signalements ouverts (ouvert depuis les Signalements). */
+  questionEditor: (topicId: string, questionId?: string, resolve = false) =>
+    `/me/topics/${encodeURIComponent(topicId)}/questions/${questionId ? encodeURIComponent(questionId) : 'new'}${resolve ? '?resolve=1' : ''}`,
+  topicTeam: (topicId: string) => `/me/topics/${encodeURIComponent(topicId)}/team`,
+  topicModeration: (topicId: string, tab?: 'reports') => `/me/topics/${encodeURIComponent(topicId)}/moderation${tab ? `?tab=${tab}` : ''}`,
+  /** Signalements d'une question, en file ; `highlight` : signalement de la notification. */
+  questionReports: (topicId: string, questionId: string, highlight?: string) =>
+    `/me/topics/${encodeURIComponent(topicId)}/reports/${encodeURIComponent(questionId)}${highlight ? `?highlight=${encodeURIComponent(highlight)}` : ''}`,
   /** Série et Sujets joués : écrans poussés du Profil, absents de `web.md` § 2. */
   myStreak: '/me/streak',
   myPlayedTopics: '/me/played',

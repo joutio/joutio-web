@@ -5,6 +5,7 @@ export type NotificationTarget =
   | { kind: 'challenges' }
   | { kind: 'room'; id: string }
   | { kind: 'workshop'; id: string }
+  | { kind: 'report'; topicId: string; reportId: string }
   | { kind: 'suspended' }
   | { kind: 'fallback'; challenges: boolean; expired: boolean }
 
@@ -12,7 +13,7 @@ const INVITATIONS = new Set<NotificationView['type']>(['CHALLENGE_RECEIVED', 'CH
 
 /**
  * Écran qui propose l'action d'une notification (`notifications.md` § 2, repris du mobile) : abonné ou défi refusé →
- * fiche joueur, défi reçu → Défis, défi accepté ou relance → salon, brouillon ou signalement → atelier du sujet. Aucune
+ * fiche joueur, défi reçu → Défis, défi accepté ou relance → salon, brouillon → Mon sujet, signalement → Signalements de sa question. Aucune
  * URL ne vient du payload.
  */
 export function notificationTarget(notice: NotificationView, now = Date.now()): NotificationTarget {
@@ -32,6 +33,8 @@ export function notificationTarget(notice: NotificationView, now = Date.now()): 
     case 'WIZZ':
       return notice.sourceId ? { kind: 'room', id: notice.sourceId } : fallback
     case 'QUESTION_REPORTED':
+      if (notice.topicId && notice.sourceId) return { kind: 'report', topicId: notice.topicId, reportId: notice.sourceId }
+      return notice.topicId ? { kind: 'workshop', id: notice.topicId } : fallback
     case 'TOPIC_DRAFTED':
       return notice.topicId ? { kind: 'workshop', id: notice.topicId } : fallback
     case 'ACCOUNT_SUSPENDED':

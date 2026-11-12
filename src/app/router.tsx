@@ -15,6 +15,7 @@ import { AvatarEditorPage, DeleteAccountPage, SettingsPage } from '@/features/se
 import { SocialPage } from '@/features/social'
 import { LeaderboardPage, TopicPage } from '@/features/topic'
 import { TopicsPage } from '@/features/topics'
+import { ModerationPage, MyTopicPage, MyTopicsPage, QuestionEditorPage, QuestionReportsPage, QuestionsPage, TeamPage } from '@/features/workshop'
 import { AppFrame, AuthenticatedLayout, CallbackPage, LoginRedirect, PendingScreen } from '@/features/shell'
 import { PersonalRuntime } from './personal-runtime'
 
@@ -55,7 +56,13 @@ export const router = createBrowserRouter([
               { path: '/play', element: <MatchmakingPage /> },
               { path: '/premium', element: <PremiumRoute /> },
               { path: '/notifications', element: <NotificationsPage /> },
-              { path: '/me/topics', element: <PendingScreen title="pending.creation" /> },
+              { path: '/me/topics', element: <MyTopicsPage /> },
+              { path: '/me/topics/:topicId', element: <MyTopicPage /> },
+              { path: '/me/topics/:topicId/questions', element: <QuestionsPage /> },
+              { path: '/me/topics/:topicId/questions/:questionId', element: <QuestionEditorPage /> },
+              { path: '/me/topics/:topicId/team', element: <TeamPage /> },
+              { path: '/me/topics/:topicId/moderation', element: <ModerationPage /> },
+              { path: '/me/topics/:topicId/reports/:questionId', element: <QuestionReportsPage /> },
               { path: '/search', element: <PendingScreen title="pending.search" /> },
               { path: '/social', element: <SocialPage /> },
               { path: '/challenges', element: <ChallengesPage /> },
