@@ -1,4 +1,4 @@
-import { preparationComplete, preparationStep, wizzState, type RoomStatus } from '@joutio/client-domain/rooms'
+import { preparationComplete, preparationStep, roomFailureKind, wizzState, type RoomFailureKind, type RoomStatus } from '@joutio/client-domain/rooms'
 import { LightningIcon, LinkIcon, RobotIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -17,7 +17,14 @@ import { useCloseRoom, usePlayerProfile, useRoom, useRoomPresence, useWizzRoom, 
 const TERMINAL: Partial<Record<RoomStatus, { title: MessageKey; text: MessageKey }>> = {
   CANCELLED: { title: 'room.cancelledTitle', text: 'room.cancelledText' },
   EXPIRED: { title: 'room.expiredTitle', text: 'room.expiredText' },
-  FAILED: { title: 'room.failedTitle', text: 'room.failedText' },
+}
+
+/** Explication d'un échec selon le motif serveur (`ROOM_FAILED.reason`) ; repli générique. */
+const FAILURE_TEXT: Record<RoomFailureKind, MessageKey> = {
+  language: 'room.failedLanguageText',
+  topic: 'room.failedTopicText',
+  timeout: 'room.failedTimeoutText',
+  unknown: 'room.failedText',
 }
 
 const STEPS: readonly { id: string; label: MessageKey }[] = [
@@ -76,7 +83,10 @@ export function RoomPage() {
   const nominative = Boolean(room?.opponentId)
   const shared = !vsBot && !nominative
   const waiting = roomStatus === 'WAITING_PLAYERS'
-  const terminal = TERMINAL[roomStatus]
+  const terminal =
+    roomStatus === 'FAILED'
+      ? { title: 'room.failedTitle' as const, text: FAILURE_TEXT[roomFailureKind(room?.failureReason)] }
+      : TERMINAL[roomStatus]
   const engaged = !waiting && !terminal
 
   const opponentId = vsBot ? null : isInitiator ? (room?.opponentId ?? room?.participantId ?? null) : (room?.initiatorId ?? null)
