@@ -1,3 +1,13 @@
+## [2.3.0](https://github.com/joutio/joutio-web/compare/v2.2.0...v2.3.0) (2026-11-12)
+
+### Features
+
+* **toast:** stacked toasts and realtime notification toasts ([f04e97f](https://github.com/joutio/joutio-web/commit/f04e97ff067b0198ab9b5447db8b3e206163302a))
+
+### Bug Fixes
+
+* **result:** lab swipe pages, unranked frame, lighter review mirror ([ca0dbf8](https://github.com/joutio/joutio-web/commit/ca0dbf8ded0b9ff890eeecc175548a115fe5a19b))
+
 ## [2.2.0](https://github.com/joutio/joutio-web/compare/v2.1.0...v2.2.0) (2026-11-12)
 
 ### Features
