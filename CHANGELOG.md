@@ -1,3 +1,9 @@
+## [2.2.0](https://github.com/joutio/joutio-web/compare/v2.1.0...v2.2.0) (2026-11-12)
+
+### Features
+
+* player identity, premium badge, vertical result pages ([7813174](https://github.com/joutio/joutio-web/commit/781317447eabccc758a99ca77744d86a2ef924f4))
+
 ## [2.1.0](https://github.com/joutio/joutio-web/compare/v2.0.0...v2.1.0) (2026-11-12)
 
 ### Features
