@@ -1,3 +1,9 @@
+## [2.7.0](https://github.com/joutio/joutio-web/compare/v2.6.0...v2.7.0) (2026-11-12)
+
+### Features
+
+* **workshop:** publish progress counts questions in one language ([fc6ce68](https://github.com/joutio/joutio-web/commit/fc6ce68358e6af1a661d0270d115ee0dbb31325b))
+
 ## [2.6.0](https://github.com/joutio/joutio-web/compare/v2.5.0...v2.6.0) (2026-11-12)
 
 ### Features
