@@ -1,12 +1,12 @@
 import type { HomeView, MeView, TitlesView, TopicCardView, TopicOverviewView } from '@joutio/client-domain/api-types'
-import { useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
+import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { useMe } from '@/features/me'
 import type { TopicPage } from '@/features/topics'
 import { useT } from '@/lib/i18n'
 import { optimisticUpdate } from '@/lib/optimistic-cache'
 import { queryKeys } from '@/lib/query-keys'
 import { toast } from '@/shared/toast'
-import { topicService } from '../lib/topic-service'
+import { topicService, type BoardFilters } from '../lib/topic-service'
 
 /** En-tête, chiffres et progression du sujet. */
 export function useTopicOverview(topicId: string) {
@@ -16,6 +16,19 @@ export function useTopicOverview(topicId: string) {
 /** Top 10 depuis toujours et ma ligne. */
 export function useTopicLeaderboard(topicId: string) {
   return useQuery({ queryKey: queryKeys.topic.leaderboard(topicId), queryFn: () => topicService.leaderboard(topicId), enabled: Boolean(topicId), staleTime: 60_000 })
+}
+
+/** Classement complet, paginé : changer un filtre repart de la première page. */
+export function useTopicBoard(topicId: string, filters: BoardFilters) {
+  return useInfiniteQuery({
+    queryKey: queryKeys.topic.board(topicId, filters),
+    queryFn: ({ pageParam }) => topicService.board(topicId, filters, pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (last, pages) => (last.entries.last ? undefined : pages.length),
+    enabled: Boolean(topicId),
+    placeholderData: keepPreviousData,
+    staleTime: 60_000,
+  })
 }
 
 /** Mes 10 dernières parties du sujet. */

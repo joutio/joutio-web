@@ -123,8 +123,10 @@ export function MyBoardRow({ entry }: { entry: LeaderboardEntryView }) {
 }
 
 /** Ligne de classement avec l'avatar du joueur (ses options DiceBear). */
-function BoardRow({ entry, sub, trail, highlight, last }: { entry: LeaderboardEntryView; sub: string; trail: string; highlight: boolean; last: boolean }) {
+/** Une ligne ouvre la fiche du joueur (la mienne : le Profil). */
+export function BoardRow({ entry, sub, trail, highlight, last }: { entry: LeaderboardEntryView; sub: string; trail: string; highlight: boolean; last: boolean }) {
   const src = useUserAvatar(entry)
+  const navigate = useNavigate()
   return (
     <PlayerRow
       rank={entry.rank}
@@ -135,6 +137,7 @@ function BoardRow({ entry, sub, trail, highlight, last }: { entry: LeaderboardEn
       trail={trail}
       highlight={highlight}
       last={last}
+      onClick={() => void navigate(highlight ? ROUTES.me : ROUTES.player(entry.userId))}
     />
   )
 }

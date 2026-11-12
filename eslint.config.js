@@ -58,6 +58,11 @@ export default defineConfig([
     rules: { 'react-refresh/only-export-components': 'off' },
   },
   {
+    // Copies identiques du lab : `TopicsDonut` y remet son avancement dans un effet ; la copie ne diverge pas.
+    files: ['src/ui/**/*.{ts,tsx}'],
+    rules: { 'react-hooks/set-state-in-effect': 'off' },
+  },
+  {
     files: ['scripts/**/*.mjs', 'vite.config.ts'],
     languageOptions: { globals: globals.node },
   },

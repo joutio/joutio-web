@@ -130,4 +130,13 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         personnel (fenêtre de 10 s), Nouvel adversaire, Détails du duel, signalement du joueur et de la question.
         Écarts : pas de chat (le BFF n'a pas de messagerie), pas de Bloquer (aucun point d'entrée), badges non célébrés
         tant que `BadgeEarnedEvent` ne porte pas de `gameId`, revanche reçue (`RematchPrompt` global) à faire
+  - [x] Profil `/me` (bannière en parallaxe, titre porté, rang, pays, compteurs, Copier le lien ; onglets Statistiques,
+        Badges, Titres, Historique ; feuilles Rangs et famille de badges), Série `/me/streak` (calendrier, carte Micah),
+        Sujets joués `/me/played`, Tous les titres `/me/titles` (recherche, rang, tri, porter optimiste), Toutes les
+        parties `/me/games` (`?topicId`, `?opponentId`, filtres Type/Résultat/Tri), Tous les classements
+        `/topics/{id}/leaderboard` (période, périmètre, podium, ma ligne en pied), Fiche joueur `/players/{id}`
+        (Défier par choix du sujet, Suivre optimiste, actions dans la barre compacte, Signaler, bilan et 10 dernières
+        parties ; ma fiche renvoie au Profil) ; les lignes de classement ouvrent la fiche. Réglages `/me/settings` en
+        écran d'attente. Écarts : titres sans date de déblocage (tri « récents » = ordre du serveur), Bloquer absent
+        (aucun endpoint), titre porté d'un autre joueur résolu par l'aperçu de son sujet
 - [ ] Bascule (merge de `rewrite/web-kit`)

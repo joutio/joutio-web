@@ -2,10 +2,13 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { DevUiPage } from '@/features/dev'
 import { DuelPage } from '@/features/duel'
 import { OnboardingPage } from '@/features/onboarding'
+import { HistoryPage } from '@/features/history'
 import { HomePage } from '@/features/home'
 import { JoinPage, MatchmakingPage, RoomPage } from '@/features/play'
+import { PlayerPage } from '@/features/player'
+import { PlayedTopicsPage, ProfilePage, StreakPage, TitlesPage } from '@/features/profile'
 import { ResultPage } from '@/features/result'
-import { TopicPage } from '@/features/topic'
+import { LeaderboardPage, TopicPage } from '@/features/topic'
 import { TopicsPage } from '@/features/topics'
 import { AppFrame, AuthenticatedLayout, CallbackPage, LoginRedirect, PendingScreen, PlaceholderScreen } from '@/features/shell'
 
@@ -28,8 +31,13 @@ export const router = createBrowserRouter([
           { path: '/', element: <HomePage /> },
           { path: '/topics', element: <TopicsPage /> },
           { path: '/topics/:topicId', element: <TopicPage /> },
-          { path: '/topics/:topicId/leaderboard', element: <PendingScreen title="pending.leaderboard" /> },
-          { path: '/me/games', element: <PendingScreen title="pending.games" /> },
+          { path: '/topics/:topicId/leaderboard', element: <LeaderboardPage /> },
+          { path: '/me/games', element: <HistoryPage /> },
+          { path: '/me/titles', element: <TitlesPage /> },
+          { path: '/me/streak', element: <StreakPage /> },
+          { path: '/me/played', element: <PlayedTopicsPage /> },
+          { path: '/me/settings', element: <PendingScreen title="profile.settings" /> },
+          { path: '/players/:userId', element: <PlayerPage /> },
           { path: '/games/:gameId/result', element: <ResultPage /> },
           { path: '/games/:gameId', element: <DuelPage /> },
           { path: '/rooms/:roomId', element: <RoomPage /> },
@@ -39,7 +47,7 @@ export const router = createBrowserRouter([
           { path: '/search', element: <PendingScreen title="pending.search" /> },
           { path: '/social', element: <PlaceholderScreen tab="social" /> },
           { path: '/challenges', element: <PlaceholderScreen tab="challenges" /> },
-          { path: '/me', element: <PlaceholderScreen tab="profile" /> },
+          { path: '/me', element: <ProfilePage /> },
         ],
       },
       { path: '*', element: <Navigate to="/" replace /> },

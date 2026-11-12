@@ -36,7 +36,8 @@ export type ReportPlayerSheetProps = {
   onClose: () => void
   userId: string
   name: string
-  gameId: string
+  /** Duel en contexte ; absent depuis la Fiche joueur. */
+  gameId?: string
   /** Contexte, par exemple « Ce duel · Rois de France ». */
   subtitle: string
 }
