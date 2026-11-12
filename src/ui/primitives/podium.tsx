@@ -3,6 +3,7 @@ import { cn } from '../lib/cn'
 import { tierColor, tint } from '../lib/tokens'
 import type { TierCode } from '../tokens.generated'
 import { Avatar } from './avatar'
+import { PlayerLink, PlayerName } from './player-name'
 
 /** Couleur et hauteur de chaque marche, de la 1re à la 3e place. */
 const STEPS: { tier: TierCode; height: number }[] = [
@@ -17,6 +18,9 @@ export type PodiumPlayer = {
   src?: string
   /** Score, en mono sous le nom. */
   value: string
+  premium?: boolean
+  /** Avatar et pseudonyme ouvrent la fiche du joueur. */
+  onOpen?: () => void
 }
 
 export type PodiumProps = {
@@ -31,8 +35,10 @@ function Step({ player, rank }: { player: PodiumPlayer; rank: number }) {
   return (
     <li className="grid min-w-0 flex-1 justify-items-center gap-1 text-center">
       <CrownSimpleIcon size={20} weight="fill" style={{ color }} aria-hidden />
-      <Avatar name={player.name} src={player.src} tier={player.tier} size="lg" />
-      <strong className="jo-type-callout mt-1 max-w-full truncate font-semibold">{player.name}</strong>
+      <PlayerLink onOpen={player.onOpen} name={player.name} className="grid justify-items-center gap-1">
+        <Avatar name={player.name} src={player.src} tier={player.tier} size="lg" />
+        <PlayerName name={player.name} premium={player.premium} badgeSize={16} className="jo-type-callout mt-1 justify-center font-semibold" />
+      </PlayerLink>
       <span className="jo-type-caption font-mono text-jo-muted">{player.value}</span>
       <span className="jo-type-title-2 mt-1 grid w-full place-items-center rounded-t-jo-md font-mono font-bold" style={{ height, backgroundColor: tint(color), color }}>
         {rank}

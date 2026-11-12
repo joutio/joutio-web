@@ -3,6 +3,7 @@ import { ClockCounterClockwiseIcon, MagnifyingGlassIcon, WarningCircleIcon, Wifi
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { api } from '@/lib/api'
 import { useConnectionStore } from '@/lib/realtime'
@@ -36,7 +37,8 @@ const writeRecents = (recents: readonly string[]) => {
 
 function PlayerResult({ player, last, onOpen }: { player: SuggestionView; last: boolean; onOpen: () => void }) {
   const src = useUserAvatar({ userId: player.id, avatarOptions: player.avatarOptions })
-  return <PlayerRow name={player.label} src={src} sub={player.subtitle ?? undefined} chevron onClick={onOpen} last={last} />
+  const identity = usePlayerIdentity()
+  return <PlayerRow name={player.label} premium={identity.premium(player, player.id)} src={src} sub={player.subtitle ?? undefined} chevron onClick={onOpen} last={last} />
 }
 
 /**

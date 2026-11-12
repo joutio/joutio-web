@@ -1,7 +1,9 @@
 import { CaretLeftIcon } from '@phosphor-icons/react'
 import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
+import { PremiumBadge } from '../brand/premium-badge'
 import { useGlobalBanner } from '../primitives/banner'
+import { PlayerName } from '../primitives/player-name'
 import { IconButton } from '../primitives/icon-button'
 
 /** Hauteur de la zone image, safe area comprise. */
@@ -18,6 +20,8 @@ export type ParallaxScreenProps = {
   /** Absente : fond uni, pour une bannière facultative. */
   image?: string
   title: string
+  /** Joueur Premium (Profil, Fiche joueur) : `PremiumBadge` après le titre, sur l'image et dans la barre compacte. */
+  premium?: boolean
   /** Au-dessus du titre, par exemple la catégorie. */
   eyebrow?: ReactNode
   /** Titre centré sur l'image, pour une identité plutôt qu'un sujet. */
@@ -52,7 +56,7 @@ export type ParallaxScreenProps = {
  * Écran à en-tête image : l'image glisse en parallaxe et se replie en barre compacte, le bloc `sticky`
  * reste accroché dessous. `right` garde les mêmes boutons sur l'image et sur la barre. Reprend le « Details Header » de sticky-parallax-header.
  */
-export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, eyebrow, centered = false, barTitleStart = false, back = true, onBack, right, intro, sticky, floating, bottomBar, bottomNav, overlay, banner: own, className, children }: ParallaxScreenProps) {
+export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium = false, eyebrow, centered = false, barTitleStart = false, back = true, onBack, right, intro, sticky, floating, bottomBar, bottomNav, overlay, banner: own, className, children }: ParallaxScreenProps) {
   const banner = useGlobalBanner() ?? own
   const root = useRef<HTMLDivElement>(null)
   const main = useRef<HTMLElement>(null)
@@ -117,7 +121,10 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, eyebrow
           {/* Identité centrée (Profil, Fiche joueur) : 24 px entre l'avatar, dont le cadre de rang déborde, et le pseudonyme. */}
           <div className={cn('jo-parallax-title absolute inset-x-4 bottom-3 grid', centered ? 'gap-6 justify-items-center text-center' : 'gap-1')}>
             {eyebrow && <div className="jo-type-caption font-semibold">{eyebrow}</div>}
-            <h1 className="jo-type-title-1 text-balance">{title}</h1>
+            <h1 className={cn('jo-type-title-1 text-balance', premium && 'flex items-center gap-1', premium && centered && 'justify-center')}>
+              {title}
+              {premium && <PremiumBadge size={22} />}
+            </h1>
           </div>
         </div>
         {intro && <div className="px-4 pt-1 pb-2">{intro}</div>}
@@ -141,7 +148,11 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, eyebrow
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-jo-border" style={{ opacity: 'calc(var(--jo-header-edge, 0) * (1 - var(--jo-tabs-dock, 0)))' }} />
         <div className={cn('jo-parallax-buttons absolute inset-x-0 bottom-0 grid h-[52px] items-center gap-2 px-3', barTitleStart ? 'grid-cols-[auto_minmax(0,1fr)_auto]' : 'grid-cols-[minmax(44px,1fr)_minmax(0,auto)_minmax(max-content,1fr)]')}>
           <span className="pointer-events-auto justify-self-start">{back && <IconButton icon={CaretLeftIcon} label="Retour" media onClick={onBack} />}</span>
-          <strong className="jo-parallax-bar-title jo-type-headline max-w-[220px] truncate">{title}</strong>
+          {premium ? (
+            <PlayerName name={title} premium badgeSize={18} className="jo-parallax-bar-title jo-type-headline max-w-[220px]" />
+          ) : (
+            <strong className="jo-parallax-bar-title jo-type-headline max-w-[220px] truncate">{title}</strong>
+          )}
           <span className="pointer-events-auto flex gap-2 justify-self-end">{right}</span>
         </div>
       </div>

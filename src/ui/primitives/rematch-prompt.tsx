@@ -2,12 +2,14 @@ import { useEffect, useId, useRef } from 'react'
 import { trapTab } from '../lib/focus'
 import { cn } from '../lib/cn'
 import type { TierCode } from '../tokens.generated'
+import { PremiumBadge } from '../brand/premium-badge'
 import { Avatar } from './avatar'
 import { Button } from './button'
 import { isTimerUrgent } from './timer-bar'
 
 export type RematchPromptProps = {
   name: string
+  premium?: boolean
   tier?: TierCode
   src?: string
   topic: string
@@ -25,7 +27,7 @@ export type RematchPromptProps = {
 }
 
 /** Proposition de revanche, posée par l'écran au-dessus d'un voile. */
-export function RematchPrompt({ name, tier, src, topic, seconds, total = 10, low = false, lowAt = 3, onAccept, onDecline, className }: RematchPromptProps) {
+export function RematchPrompt({ name, premium = false, tier, src, topic, seconds, total = 10, low = false, lowAt = 3, onAccept, onDecline, className }: RematchPromptProps) {
   const percent = Math.min(100, Math.max(0, (seconds / total) * 100))
   // Même règle que `TimerBar` et `DuelHeader`.
   const urgent = isTimerUrgent(seconds, low ? 'low' : 'running', lowAt)
@@ -55,7 +57,10 @@ export function RematchPrompt({ name, tier, src, topic, seconds, total = 10, low
       <span role="timer" aria-label={`${seconds} ${seconds > 1 ? 'secondes' : 'seconde'} pour répondre`} className={cn('jo-type-caption font-mono', urgent ? 'font-semibold text-jo-wrong' : 'text-jo-muted')}>
         {seconds} s
       </span>
-      <strong className="jo-type-title-2 text-balance">{name} veut sa revanche</strong>
+      <strong className="jo-type-title-2 text-balance">
+        {name}
+        {premium && <PremiumBadge size={22} className="ml-1 align-[-3px]" />} veut sa revanche
+      </strong>
       <span id={topicId} className="jo-type-callout text-jo-muted">Même sujet : {topic}</span>
       <div className="mt-2 grid w-full grid-cols-2 gap-2">
         <Button variant="tinted" tone="destructive" full onClick={onDecline}>

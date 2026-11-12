@@ -12,7 +12,7 @@ import { FlagIcon } from '@phosphor-icons/react'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useBlocker, useLocation, useNavigate, useParams, type BlockerFunction } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe, usePlayerIdentity } from '@/features/me'
 import { usePlayerProfile, type PlayTopic } from '@/features/play'
 import { useTopicOverview } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
@@ -41,6 +41,9 @@ import { useDuelArena } from '../hooks/use-duel-arena'
 import { useGameStream, usePrefetchQuestionImages } from '../hooks/use-game'
 import { gameService } from '../lib/game-service'
 import { DuelCancelled } from './duel-cancelled'
+
+/** Marge pendant laquelle l'intro de manche finit son animation après le début de la question (ms). */
+const INTRO_TAIL_MS = 400
 
 /** Pastilles des manches, d'après les réponses du joueur. */
 function roundResults(game: GameState, userId: string, current: number): RoundResult[] {
@@ -82,6 +85,7 @@ export function DuelPage() {
   useToastSuppression()
   useServerClock()
   const me = useMe().data
+  const identity = usePlayerIdentity()
   const userId = me?.userId ?? ''
   const passed = (location.state as { topic?: PlayTopic } | null)?.topic
   const stream = useGameStream(gameId)
@@ -156,6 +160,9 @@ export function DuelPage() {
   }
 
   const [introDone, setIntroDone] = useState<number | null>(null)
+  // Intro de manche réellement montée : seule celle-ci peut déborder sur le début de la question.
+  const [introSeen, setIntroSeen] = useState<number | null>(null)
+  if (scene.kind === 'roundIntro' && introSeen !== scene.round) setIntroSeen(scene.round)
   const myName = me?.pseudonym ?? ''
   const opponentName = (isPlayer1 ? game?.player2Name : game?.player1Name) ?? (vsBot ? t('duel.bot') : t('topic.opponent'))
   const myTier = me?.progression && !me.progression.provisional ? tierOf(me.progression.rating) : undefined
@@ -179,7 +186,10 @@ export function DuelPage() {
   // L'arène reste montée sous l'intro de manche : l'intro la recouvre puis se retire.
   const inRound = scene.kind === 'question' || scene.kind === 'reveal' || scene.kind === 'roundIntro'
   const revealed = scene.kind === 'reveal'
-  const introOpen = scene.kind === 'roundIntro' && introDone !== scene.round
+  // L'intro reste posée jusqu'à la fin de son animation : la scène de question qui la suit peut arriver une image plus tôt
+  // (rendu, horloge), ce qui coupait le retrait du bandeau. Au-delà de la marge, la scène serveur l'emporte.
+  const introRound = scene.kind === 'roundIntro' ? scene.round : scene.kind === 'question' && scene.round === introSeen && scene.elapsedMs < INTRO_TAIL_MS ? scene.round : null
+  const introOpen = introRound !== null && introDone !== introRound
   // Réponses : seulement dans la scène de question (la lecture de 2 s est jouée par l'animation, calée sur
   // `revealAt` du serveur) ou à la révélation, jamais derrière l'intro.
   const answersShown = !introOpen && (scene.kind === 'question' || scene.kind === 'reveal')
@@ -210,8 +220,8 @@ export function DuelPage() {
             className="flex-none"
           />
           <DuelHeader
-            me={{ name: myName, src: myAvatar, score: arena.myScore, tier: myTier, scoreState: gaugeYou }}
-            opponent={{ name: opponentName, src: opponentAvatar, score: arena.theirScore, scoreState: gaugeThem }}
+            me={{ name: myName, src: myAvatar, score: arena.myScore, tier: myTier, scoreState: gaugeYou, premium: identity.myPremium }}
+            opponent={{ name: opponentName, src: opponentAvatar, score: arena.theirScore, scoreState: gaugeThem, premium: !vsBot && identity.premium(opponentProfile.data, opponentId) }}
             seconds={seconds}
             timerState={timerState}
             className="flex-none"
@@ -234,20 +244,21 @@ export function DuelPage() {
           </div>
         </div>
       )}
-      {introOpen && scene.kind === 'roundIntro' && (
+      {introOpen && introRound !== null && (
         <div className="absolute inset-0">
           <RoundIntro
-            key={`intro-${scene.round}`}
-            round={scene.round + 1}
+            key={`intro-${introRound}`}
+            round={introRound + 1}
             total={ROUNDS}
             topic={topic}
             category={category}
             results={roundResults(game, userId, arena.roundIndex)}
-            bonus={scene.bonus}
-            // Arrivé en cours d'intro : l'état tenu, sans rejouer l'ouverture.
-            animated={scene.elapsedMs <= LATE_JOIN_MS}
+            bonus={isBonusRound(introRound)}
+            animated
             duration={ROUND_INTRO_MS}
-            onComplete={() => setIntroDone(scene.round)}
+            // Arrivé en cours d'intro : la séquence reprend à l'instant serveur (`sceneAt`), comme le mobile.
+            elapsedMs={scene.kind === 'roundIntro' && scene.elapsedMs > LATE_JOIN_MS ? scene.elapsedMs : 0}
+            onComplete={() => setIntroDone(introRound)}
           />
         </div>
       )}
@@ -255,8 +266,8 @@ export function DuelPage() {
         <div className="absolute inset-0">
           <VersusIntro
             key="versus"
-            me={{ name: myName, src: myAvatar, tier: myTier, detail: myTier && me?.progression ? `${tokens.tier[myTier].label} · ${me.progression.rating}` : undefined }}
-            opponent={{ name: opponentName, src: opponentAvatar, detail: vsBot ? t('duel.training') : undefined }}
+            me={{ name: myName, src: myAvatar, tier: myTier, premium: identity.myPremium, detail: myTier && me?.progression ? `${tokens.tier[myTier].label} · ${me.progression.rating}` : undefined }}
+            opponent={{ name: opponentName, src: opponentAvatar, premium: !vsBot && identity.premium(opponentProfile.data, opponentId), detail: vsBot ? t('duel.training') : undefined }}
             topic={topic}
             category={category}
             rounds={ROUNDS}

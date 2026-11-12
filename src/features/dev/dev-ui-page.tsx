@@ -21,6 +21,9 @@ import {
   MobileTopBar,
   Notice,
   Pill,
+  PlayerName,
+  PlayerRow,
+  Podium,
   Screen,
   SearchField,
   SectionHeader,
@@ -207,6 +210,9 @@ export function DevUiPage() {
               Ouvrir le dialogue
             </Button>
           </div>
+          <PlayerName name="Nadjim" premium className="jo-type-title-2" badgeSize={22} />
+          <PlayerRow name="Camille Durand" premium sub="En ligne" chevron last />
+          <Podium players={[{ name: 'Nadjim', premium: true, value: '1 200', onOpen: () => undefined }, { name: 'Idriss B.', value: '980' }, { name: 'Léa', value: '870', premium: true }]} />
           <Toast tone="success" title="Lien copié" />
           <Toast title="Camille te défie" description="Histoire de France" actor={{ name: 'Camille Durand', tier: 'OR' }} />
           <Notice tone="info" title="Notifications du navigateur désactivées" action={{ label: 'Activer' }} />

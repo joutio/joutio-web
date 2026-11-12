@@ -302,8 +302,9 @@
 
 /* Timeline de l'intro : ouverture, tenue, fermeture vers la droite. */
 .jo-round-clock {
-  --jo-round-timing: var(--jo-round-duration, 1900ms) var(--jo-motion-base-easing) both;
-  animation: jo-round-clock var(--jo-round-duration, 1900ms) linear both;
+  /* `--jo-round-delay` négatif : la séquence reprend à l'instant serveur de la fenêtre d'intro. */
+  --jo-round-timing: var(--jo-round-duration, 1900ms) var(--jo-motion-base-easing) var(--jo-round-delay, 0ms) both;
+  animation: jo-round-clock var(--jo-round-duration, 1900ms) linear var(--jo-round-delay, 0ms) both;
 }
 
 .jo-round-band {
@@ -561,6 +562,22 @@
   }
 }
 
+/* Reflet du `PremiumBadge` : un passage de 0,6 s toutes les 2,2 s. */
+.jo-premium-shine {
+  animation: jo-premium-shine 2.2s ease-in-out infinite;
+}
+
+@keyframes jo-premium-shine {
+  0% {
+    transform: translateX(0);
+  }
+
+  27%,
+  100% {
+    transform: translateX(36px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .jo-parallax-image {
     transform: none;
@@ -594,6 +611,7 @@
   .jo-drop,
   .jo-cascade,
   .jo-spin,
+  .jo-premium-shine,
   .jo-frame-spin,
   .jo-frame-counter,
   .jo-frame-pulse,

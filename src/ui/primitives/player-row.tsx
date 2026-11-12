@@ -6,11 +6,14 @@ import type { TierCode } from '../tokens.generated'
 import { Avatar, type AvatarProps } from './avatar'
 import { Button, type ButtonProps } from './button'
 import { IconButton } from './icon-button'
+import { PlayerName } from './player-name'
 
 const PODIUM: Record<number, TierCode> = { 1: 'OR', 2: 'ARGENT', 3: 'BRONZE' }
 
 export type PlayerRowProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'name'> & {
   name: string
+  /** `PremiumBadge` après le pseudonyme. */
+  premium?: boolean
   sub?: string
   src?: string
   tier?: TierCode
@@ -34,6 +37,7 @@ const withName = (label: string, name: string) => (label.includes(name) ? label 
 
 export function PlayerRow({
   name,
+  premium = false,
   sub,
   src,
   tier,
@@ -77,7 +81,7 @@ export function PlayerRow({
         )}
         <Avatar name={name} src={src} tier={tier} presence={presence} size="list" />
         <span className="grid min-w-0 flex-1">
-          <strong className="jo-type-headline truncate">{name}</strong>
+          <PlayerName name={name} premium={premium} className="jo-type-headline" />
           {sub && <span className="jo-type-caption truncate text-jo-muted">{sub}</span>}
         </span>
         {trail && <span className="jo-type-callout flex-none font-mono font-semibold">{trail}</span>}

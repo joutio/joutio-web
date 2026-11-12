@@ -1,5 +1,5 @@
 import { LightningIcon } from '@phosphor-icons/react'
-import type { CSSProperties } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { CategoryIcon } from '../brand/category-icon'
 import { cn } from '../lib/cn'
 import { categoryColor } from '../lib/tokens'
@@ -18,21 +18,28 @@ export type RoundIntroProps = {
   animated?: boolean
   /** Durée de la séquence, en ms. */
   duration?: number
+  /**
+   * Temps déjà écoulé de la fenêtre serveur (`sceneAt`), en ms : la séquence démarre à cet endroit et se termine avec
+   * la fenêtre, comme sur le mobile, au lieu de repartir de zéro et d'être coupée avant sa fin.
+   */
+  elapsedMs?: number
   /** Fin de la séquence, y compris en mouvement réduit. */
   onComplete?: () => void
   className?: string
 }
 
 /** Annonce plein écran d'une manche. Toujours sombre. */
-export function RoundIntro({ round, total, topic, category, results, bonus = false, animated = false, duration = 1900, onComplete, className }: RoundIntroProps) {
+export function RoundIntro({ round, total, topic, category, results, bonus = false, animated = false, duration = 1900, elapsedMs = 0, onComplete, className }: RoundIntroProps) {
   const rise = animated && 'jo-round-rise'
+  // Figé au montage : un nouveau délai relancerait l'animation en cours.
+  const [startAt] = useState(() => -Math.min(Math.max(0, elapsedMs), duration))
   return (
     <div
       data-jo-theme="dark"
       onAnimationEnd={(event) => {
         if (event.target === event.currentTarget) onComplete?.()
       }}
-      style={{ '--jo-round-duration': `${duration}ms` } as CSSProperties}
+      style={{ '--jo-round-duration': `${duration}ms`, '--jo-round-delay': `${startAt}ms` } as CSSProperties}
       className={cn('grid h-full content-center gap-6 overflow-hidden bg-jo-bg text-jo-text', animated && 'jo-round-clock', className)}
     >
       <div className={cn('flex items-center justify-center gap-2', rise)}>

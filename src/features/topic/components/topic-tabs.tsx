@@ -1,6 +1,7 @@
 import type { GameHistoryItemView, GameOutcome, LeaderboardEntryView, TopicOverviewView } from '@joutio/client-domain/api-types'
 import { SwordIcon, TrophyIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
+import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
@@ -106,6 +107,7 @@ export function MyBoardRow({ entry }: { entry: LeaderboardEntryView }) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const src = useUserAvatar(entry)
+  const identity = usePlayerIdentity()
   return (
     <div className="-mx-4 -my-2">
       <PlayerRow
@@ -113,6 +115,8 @@ export function MyBoardRow({ entry }: { entry: LeaderboardEntryView }) {
         last
         rank={entry.rank}
         name={entry.pseudonym}
+        premium={identity.premium(entry)}
+        onClick={identity.open(entry.userId)}
         src={src}
         tier={entry.provisional ? undefined : tierOf(entry.rating)}
         sub={t('topic.totalXp', { xp: formatNumber(entry.totalXp, language) })}
@@ -126,18 +130,19 @@ export function MyBoardRow({ entry }: { entry: LeaderboardEntryView }) {
 /** Une ligne ouvre la fiche du joueur (la mienne : le Profil). */
 export function BoardRow({ entry, sub, trail, highlight, last }: { entry: LeaderboardEntryView; sub: string; trail: string; highlight: boolean; last: boolean }) {
   const src = useUserAvatar(entry)
-  const navigate = useNavigate()
+  const identity = usePlayerIdentity()
   return (
     <PlayerRow
       rank={entry.rank}
       name={entry.pseudonym}
+      premium={identity.premium(entry)}
       src={src}
       tier={entry.provisional ? undefined : tierOf(entry.rating)}
       sub={sub}
       trail={trail}
       highlight={highlight}
       last={last}
-      onClick={() => void navigate(highlight ? ROUTES.me : ROUTES.player(entry.userId))}
+      onClick={identity.open(entry.userId)}
     />
   )
 }
@@ -152,6 +157,7 @@ export function BoardTab({ topicId }: { topicId: string }) {
   const [first, second, third, ...rest] = entries
   const podium = [first, second, third].filter((entry): entry is LeaderboardEntryView => entry !== undefined)
   const avatars = [useUserAvatar(first), useUserAvatar(second), useUserAvatar(third)]
+  const identity = usePlayerIdentity()
   const sub = (entry: LeaderboardEntryView) => (entry.provisional ? t('topic.provisional') : tokens.tier[tierOf(entry.rating)].label)
 
   return (
@@ -182,6 +188,8 @@ export function BoardTab({ topicId }: { topicId: string }) {
               src: avatars[index],
               tier: entry.provisional ? undefined : tierOf(entry.rating),
               value: formatNumber(entry.totalXp, language),
+              premium: identity.premium(entry),
+              onOpen: identity.open(entry.userId),
             }))}
           />
           {rest.length > 0 && (

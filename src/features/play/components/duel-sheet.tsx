@@ -2,6 +2,7 @@ import type { PlayerCardView } from '@joutio/client-domain/api-types'
 import type { BotDifficulty } from '@joutio/client-domain/game'
 import { GlobeHemisphereWestIcon, LinkIcon, MagnifyingGlassIcon, RobotIcon, UserPlusIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
+import { usePlayerIdentity } from '@/features/me'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { feedFooterProps } from '@/shared/paging'
@@ -29,9 +30,11 @@ const LEVELS: readonly { value: BotDifficulty; label: MessageKey; sub: MessageKe
 
 function ContactRow({ player, last, onClick }: { player: PlayerCardView; last: boolean; onClick: () => void }) {
   const src = useUserAvatar(player)
+  const identity = usePlayerIdentity()
   return (
     <PlayerRow
       name={player.pseudonym}
+      premium={identity.premium(player)}
       src={src}
       tier={player.rating != null && !player.provisional ? tierOf(player.rating) : undefined}
       chevron

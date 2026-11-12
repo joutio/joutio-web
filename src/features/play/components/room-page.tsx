@@ -2,7 +2,7 @@ import { preparationComplete, preparationStep, wizzState, type RoomStatus } from
 import { LightningIcon, LinkIcon, RobotIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe, usePlayerIdentity } from '@/features/me'
 import { useT, useLanguageStore, type MessageKey } from '@/lib/i18n'
 import { useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
@@ -56,6 +56,7 @@ export function RoomPage() {
   useServerClock()
   const now = useServerNow()
   const me = useMe()
+  const identity = usePlayerIdentity()
   const userId = me.data?.userId ?? ''
   const myAvatar = useUserAvatar(me.data)
   const { view, room, status } = useRoom(roomId)
@@ -127,7 +128,7 @@ export function RoomPage() {
   }
 
   const myTier = me.data?.progression && !me.data.progression.provisional ? tierOf(me.data.progression.rating) : undefined
-  const meSeat: RoomPlayer = { name: me.data?.pseudonym ?? '', src: myAvatar, tier: myTier, away: !myPresent, status: t(myPresent ? 'room.inRoom' : 'room.connecting') }
+  const meSeat: RoomPlayer = { name: me.data?.pseudonym ?? '', src: myAvatar, tier: myTier, premium: identity.myPremium, away: !myPresent, status: t(myPresent ? 'room.inRoom' : 'room.connecting') }
   const opponentRating = opponentView?.rating ?? fetched.data?.progression?.rating ?? null
   const opponentProvisional = opponentView?.provisional ?? fetched.data?.progression?.provisional ?? true
   const opponentSeat: RoomPlayer | undefined = vsBot
@@ -135,6 +136,7 @@ export function RoomPage() {
     : opponentId
       ? {
           name: opponentName ?? t('topic.opponent'),
+          premium: identity.premium(opponentProfile, opponentId),
           src: opponentAvatar,
           tier: opponentRating != null && !opponentProvisional ? tierOf(opponentRating) : undefined,
           away: !opponentPresent,

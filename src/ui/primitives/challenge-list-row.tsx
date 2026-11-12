@@ -2,12 +2,15 @@ import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '../lib/cn'
 import type { TierCode } from '../tokens.generated'
 import { Avatar, type AvatarProps } from './avatar'
+import { PlayerName } from './player-name'
 import { Button, type ButtonProps } from './button'
 
 export type ChallengeAction = { label: string; onClick?: () => void; loading?: boolean; disabled?: boolean }
 
 export type ChallengeListRowProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'name'> & {
   name: string
+  /** `PremiumBadge` après le pseudonyme. */
+  premium?: boolean
   /** Sujet et délai restant, lus en entier : ils décident de la réponse. */
   sub?: string
   src?: string
@@ -23,13 +26,13 @@ export type ChallengeListRowProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 /** Défi en attente : le joueur, puis deux actions sur toute la largeur. */
-export function ChallengeListRow({ name, sub, src, tier, presence, primary, primaryVariant = 'filled', secondary, last = false, className, type = 'button', ...props }: ChallengeListRowProps) {
+export function ChallengeListRow({ name, premium = false, sub, src, tier, presence, primary, primaryVariant = 'filled', secondary, last = false, className, type = 'button', ...props }: ChallengeListRowProps) {
   return (
     <div className={cn('grid gap-2 px-4 pb-3', !last && 'border-b border-jo-border', className)}>
       <button type={type} className="jo-transition jo-focus-inset flex min-h-16 min-w-0 cursor-pointer items-center gap-3 py-2 text-left jo-pressed:opacity-60" {...props}>
         <Avatar name={name} src={src} tier={tier} presence={presence} size="list" />
         <span className="grid min-w-0 flex-1">
-          <strong className="jo-type-headline truncate">{name}</strong>
+          <PlayerName name={name} premium={premium} className="jo-type-headline" />
           {sub && <span className="jo-type-caption truncate text-jo-muted">{sub}</span>}
         </span>
       </button>

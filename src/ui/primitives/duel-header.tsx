@@ -1,6 +1,7 @@
 import type { TierCode } from '../tokens.generated'
 import { cn } from '../lib/cn'
 import { Avatar } from './avatar'
+import { PlayerName } from './player-name'
 import { isTimerUrgent, type TimerState } from './timer-bar'
 
 const SCORE_STATES = { rest: 'text-jo-accent-ink', correct: 'text-jo-correct', wrong: 'text-jo-wrong' }
@@ -12,6 +13,7 @@ export type DuelPlayer = {
   src?: string
   /** Couleur du score à la révélation. */
   scoreState?: keyof typeof SCORE_STATES
+  premium?: boolean
 }
 
 export type DuelHeaderProps = {
@@ -31,7 +33,7 @@ function Side({ player, end }: { player: DuelPlayer; end?: boolean }) {
     <div className={cn('flex min-w-0 items-center gap-3', end && 'flex-row-reverse text-right')}>
       <Avatar name={player.name} src={player.src} tier={player.tier} size="list" className="flex-none" />
       <div className="min-w-0">
-        <div className="jo-type-callout truncate font-semibold">{player.name}</div>
+        <PlayerName as="div" name={player.name} premium={player.premium} badgeSize={16} className={cn('jo-type-callout font-semibold', end && 'justify-end')} />
         <div className={cn('jo-type-numeric-medium', SCORE_STATES[player.scoreState ?? 'rest'])}>{player.score}</div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { CheckCircleIcon, RobotIcon } from '@phosphor-icons/react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { readServerNow, useServerClock } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
@@ -10,7 +11,7 @@ import { topicName } from '@/shared/topics'
 import { useTopicOverview } from '@/features/topic'
 import { tierOf } from '@/shared/tier'
 import { toast } from '@/shared/toast'
-import { Avatar, Button, cn, EmptyState, MatchmakingMap, Notice, tokens, type MapPlayer } from '@/ui'
+import { Avatar, Button, cn, EmptyState, MatchmakingMap, Notice, PlayerName, tokens, type MapPlayer } from '@/ui'
 import { useAutoTrain, useBotDifficulty, useTicket, useTicketPresence, type PlayTopic } from '../hooks/use-play'
 import { playService } from '../lib/play-service'
 import { DuelSheet } from './duel-sheet'
@@ -90,6 +91,7 @@ export function MatchmakingPage() {
   // `MATCHED` porte l'adversaire enrichi ; la salle reste le repli.
   const opponent = ticket.state?.opponent ?? room.data?.opponent ?? null
   const opponentAvatar = useUserAvatar(opponent)
+  const identity = usePlayerIdentity()
   const topicId = topic?.topicId ?? ticket.state?.topicId ?? room.data?.topic.topicId ?? ''
   // Rechargement sans état de navigation : le nom vient de la fiche du sujet.
   const overview = useTopicOverview(topic?.name ? '' : topicId)
@@ -155,7 +157,7 @@ export function MatchmakingPage() {
           <Avatar name={opponent?.pseudonym ?? t('topic.opponent')} src={opponentAvatar} tier={tier} size="lg" />
           <div className="grid min-w-0">
             <span className="jo-type-caption font-semibold text-jo-correct">{t('mm.found')}</span>
-            <strong className="jo-type-headline truncate">{opponent?.pseudonym ?? t('topic.opponent')}</strong>
+            <PlayerName name={opponent?.pseudonym ?? t('topic.opponent')} premium={identity.premium(opponent)} className="jo-type-headline" />
             <span className="jo-type-caption text-jo-muted">{meta}</span>
           </div>
           <CheckCircleIcon size={30} weight="fill" className="text-jo-correct" aria-hidden />

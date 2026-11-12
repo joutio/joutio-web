@@ -2,6 +2,7 @@ import { ClockIcon, LightningIcon, UserPlusIcon } from '@phosphor-icons/react'
 import { cn } from '../lib/cn'
 import type { TierCode } from '../tokens.generated'
 import { Avatar } from './avatar'
+import { PlayerName } from './player-name'
 
 export type RoomPlayer = {
   name: string
@@ -11,6 +12,7 @@ export type RoomPlayer = {
   status?: string
   /** Pas encore arrivé : avatar estompé, horloge, état en gris (2026-11-07). */
   away?: boolean
+  premium?: boolean
 }
 
 export type RoomPlayersProps = {
@@ -36,7 +38,7 @@ function Seat({ player }: { player: RoomPlayer }) {
           {away ? <ClockIcon size={14} weight="bold" /> : <LightningIcon size={14} weight="fill" />}
         </span>
       </span>
-      <strong className="jo-type-headline max-w-full truncate">{player.name}</strong>
+      <PlayerName name={player.name} premium={player.premium} className="jo-type-headline justify-center" />
       <span className={cn('jo-type-caption font-semibold', away ? 'text-jo-muted' : 'text-jo-correct')}>
         {player.status ?? (away ? 'Pas encore là' : 'Dans le salon')}
       </span>

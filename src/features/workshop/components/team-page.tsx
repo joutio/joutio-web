@@ -3,6 +3,7 @@ import type { TeamMember } from '@joutio/client-domain/authoring'
 import { ShieldCheckIcon, TrashIcon, UserPlusIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { showDialog } from '@/shared/dialog'
@@ -19,13 +20,26 @@ const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
 function MemberRow({ member, last, onOpen }: { member: TeamMember; last: boolean; onOpen?: () => void }) {
   const t = useT()
   const src = useUserAvatar(member)
+  const identity = usePlayerIdentity()
   const creator = member.role === 'CREATOR'
-  return <PlayerRow name={member.pseudonym} src={src} sub={creator ? t('workshop.creator') : undefined} chevron={!creator && Boolean(onOpen)} onClick={creator ? undefined : onOpen} last={last} />
+  // La ligne d'un membre ouvre la gestion de son rôle ; celle du créateur, non modifiable, ouvre sa fiche.
+  return (
+    <PlayerRow
+      name={member.pseudonym}
+      premium={identity.premium(member)}
+      src={src}
+      sub={creator ? t('workshop.creator') : undefined}
+      chevron={creator || Boolean(onOpen)}
+      onClick={creator ? identity.open(member.userId) : onOpen}
+      last={last}
+    />
+  )
 }
 
 function CandidateRow({ player, last, onPick }: { player: SuggestionView; last: boolean; onPick: () => void }) {
   const src = useUserAvatar({ userId: player.id, avatarOptions: player.avatarOptions })
-  return <PlayerRow name={player.label} src={src} chevron onClick={onPick} last={last} />
+  const identity = usePlayerIdentity()
+  return <PlayerRow name={player.label} premium={identity.premium(player, player.id)} src={src} chevron onClick={onPick} last={last} />
 }
 
 /**

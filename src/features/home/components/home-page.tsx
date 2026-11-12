@@ -22,6 +22,7 @@ import {
   IconButton,
   JoutioTabs,
   Logo,
+  PlayerName,
   Pill,
   Rail,
   Screen,
@@ -205,9 +206,9 @@ export function HomePage() {
       header={
         <header className="grid min-h-[52px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 pr-1.5 pl-4">
           <Logo variant="lockup" size={28} />
-          <strong aria-hidden={!stuck} className={`jo-transition jo-type-headline max-w-[150px] truncate ${stuck ? 'opacity-100' : 'opacity-0'}`}>
-            {greeting}
-          </strong>
+          <span aria-hidden={!stuck} className={`jo-transition max-w-[170px] ${stuck ? 'opacity-100' : 'opacity-0'}`}>
+            <PlayerName name={greeting} premium={me.data?.premium === true} className="jo-type-headline" />
+          </span>
           <div className="flex items-center gap-2 justify-self-end">
             <IconButton icon={MagnifyingGlassIcon} label={t('home.search')} variant="plain" tone="neutral" onClick={() => void navigate(ROUTES.search)} />
             <IconButton
@@ -225,7 +226,7 @@ export function HomePage() {
     >
       <div className="flex min-h-full flex-col">
         <div className="grid gap-2 px-4 pt-3 pb-2">
-          <h1 className="jo-type-title-2">{greeting}</h1>
+          <PlayerName as="h1" name={greeting} premium={me.data?.premium === true} badgeSize={22} className="jo-type-title-2" />
           {(tier || streak > 0) && (
             <div className="flex flex-wrap items-center gap-2">
               {tier && rating !== undefined && (

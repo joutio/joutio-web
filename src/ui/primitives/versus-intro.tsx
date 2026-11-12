@@ -3,6 +3,7 @@ import { cn } from '../lib/cn'
 import { categoryColor, tierColor } from '../lib/tokens'
 import type { CategoryCode, TierCode } from '../tokens.generated'
 import { Avatar } from './avatar'
+import { PlayerName } from './player-name'
 
 export type VersusPlayer = {
   name: string
@@ -12,6 +13,7 @@ export type VersusPlayer = {
   title?: string
   /** Ligne mono, par exemple « Or · 867 · FR ». */
   detail?: string
+  premium?: boolean
 }
 
 export type VersusIntroProps = {
@@ -44,7 +46,7 @@ function Panel({ player, side, animated }: { player: VersusPlayer; side: 'top' |
       >
         <Avatar name={player.name} src={player.src} tier={player.tier} size="xxl" className="flex-none" />
         <div className="grid min-w-0 gap-1">
-          <span className="jo-type-title-2 truncate font-bold">{player.name}</span>
+          <PlayerName as="span" name={player.name} premium={player.premium} badgeSize={22} className={cn('jo-type-title-2 font-bold', !top && 'justify-end')} />
           {player.title && <span className="jo-type-caption truncate text-jo-muted">{player.title}</span>}
           {player.detail && <span className="jo-type-callout truncate font-mono text-jo-muted">{player.detail}</span>}
         </div>

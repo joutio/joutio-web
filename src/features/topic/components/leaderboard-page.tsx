@@ -2,7 +2,7 @@ import type { LeaderboardEntryView } from '@joutio/client-domain/api-types'
 import { SlidersHorizontalIcon, TrophyIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe, usePlayerIdentity } from '@/features/me'
 import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
@@ -60,6 +60,7 @@ export function LeaderboardPage() {
   const [first, second, third, ...rest] = entries
   const podium = [first, second, third].filter((entry): entry is LeaderboardEntryView => entry !== undefined)
   const avatars = [useUserAvatar(first), useUserAvatar(second), useUserAvatar(third)]
+  const identity = usePlayerIdentity()
   const listed = mine ? entries.some((entry) => entry.userId === mine.userId) : true
   const monthly = filters.period === 'MONTHLY'
   const value = (entry: LeaderboardEntryView) => formatNumber(monthly ? entry.monthlyXp : entry.totalXp, language)
@@ -155,6 +156,8 @@ export function LeaderboardPage() {
                 src: avatars[index],
                 tier: entry.provisional ? undefined : tierOf(entry.rating),
                 value: value(entry),
+                premium: identity.premium(entry),
+                onOpen: identity.open(entry.userId),
               }))}
             />
             {rest.length > 0 && (

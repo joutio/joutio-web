@@ -43,7 +43,8 @@ const Section = ({ title, children }: { title: string; children: ReactNode }) =>
 /**
  * Éditeur d'avatar (`design/specs/screens/avatar.md`, lab `avatar-editor.tsx`) : modale plein écran, sans bottom nav.
  * Annuler, « Mon avatar », Enregistrer (actif au premier changement) ; aperçu fixe de 140 px avec le cadre du rang ;
- * onglets Style, Visage, Cheveux, Lunettes, Fond (l'avatar de base et les styles Premium n'ont que Style et Fond).
+ * onglets Style, Visage, Cheveux, Lunettes, Fond (les styles Premium n'ont que Style et Fond). L'avatar de base est celui
+ * du Profil, les initiales, sans aucun réglage : avec lui, seul l'onglet Style reste (2026-11-12).
  * Enregistrer met `me` à jour sur place, restauré si le BFF refuse.
  */
 export function AvatarEditorPage() {
@@ -72,12 +73,13 @@ export function AvatarEditorPage() {
   const close = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.settings, { replace: true }))
   const preview = (next: AvatarDraft) => previewAvatar(userId, next)
   const micah = draft.style === 'micah'
-  const tabs = TABS.filter(({ value }) => micah || value === 'style' || value === 'background')
+  const tabs = TABS.filter(({ value }) => micah || value === 'style' || (value === 'background' && draft.style !== 'base'))
   const changed = JSON.stringify(draft) !== JSON.stringify(initial)
   const rating = me?.progression && !me.progression.provisional ? me.progression.rating : undefined
 
   const chooseStyle = (style: string) => {
     if (style === draft.style) return
+    if (style === 'base') return setDraft({ style })
     setDraft(style === 'micah' ? { ...MICAH_DEFAULTS, ...draft, style } : { style, backgroundColor: draft.backgroundColor })
   }
   const rule = (entry: StyleEntry) => {
@@ -119,6 +121,7 @@ export function AvatarEditorPage() {
             title={entry.title}
             rule={rule(entry)}
             state={entry.state}
+            avatarName={me?.pseudonym}
             image={preview(entry.id === draft.style ? draft : entry.id === 'micah' ? { ...MICAH_DEFAULTS, style: 'micah', backgroundColor: draft.backgroundColor } : { style: entry.id, backgroundColor: draft.backgroundColor })}
             progress={entry.kind === 'micah' && !entry.usable ? Math.round(((entry.done ?? 0) / Math.max(1, entry.target ?? 7)) * 100) : undefined}
             progressLabel={entry.kind === 'micah' && !entry.usable ? t('streak.progress', { done: entry.done ?? 0, target: entry.target ?? 7 }) : undefined}

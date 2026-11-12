@@ -2,9 +2,8 @@ import { localizedQuestion, type GameRoundState, type GameState } from '@joutio/
 import { CaretLeftIcon, CaretRightIcon, CheckIcon, FlagIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { AnswerTimingRow, Button, Carousel, IconButton, MobileSheet, PageDots, QuestionBlock, RoundReviewTabs, type AnswerCardProps, type ReviewAnswer } from '@/ui'
+import { AnswerTimingRow, Button, Carousel, IconButton, PageDots, QuestionBlock, RoundReviewTabs, SwipeHint, type AnswerCardProps, type ReviewAnswer } from '@/ui'
 import { reviewRoundsOf } from '../lib/review'
-import { ReportQuestionSheet } from './report-sheets'
 
 const answerOf = (round: GameRoundState, playerId: string | null): ReviewAnswer => {
   const answer = playerId ? round.playerAnswers[playerId] : undefined
@@ -14,7 +13,10 @@ const answerOf = (round: GameRoundState, playerId: string | null): ReviewAnswer 
 
 type PageProps = { round: GameRoundState; me: string; opponent: string | null; myName: string; opponentName: string; language: string }
 
-/** Une manche rejouée : qui a répondu, en combien de temps, et les réponses révélées. Pseudonymes, jamais « toi ». */
+/**
+ * Une manche rejouée : qui a répondu, en combien de temps, puis la question avec les mêmes ratios que le duel (image
+ * réduite à la place disponible, réponses en 2 × 2), comme le lab et le mobile. Pseudonymes, jamais « toi ».
+ */
 function ReviewPage({ round, me, opponent, myName, opponentName, language }: PageProps) {
   const { questionText, answers } = localizedQuestion(round, language)
   const mine = round.playerAnswers[me]
@@ -32,42 +34,44 @@ function ReviewPage({ round, me, opponent, myName, opponentName, language }: Pag
       }
     })
   return (
-    <div className="flex min-h-full flex-col gap-3 px-4 pb-2">
+    <div className="flex h-full flex-col gap-3 px-4">
       <AnswerTimingRow
         first={first}
         me={{ name: myName, seconds: mine ? mine.timeMs / 1000 : undefined, points: mine?.points ?? 0 }}
         opponent={{ name: opponentName, seconds: theirs ? theirs.timeMs / 1000 : undefined, points: theirs?.points ?? 0 }}
       />
-      {/* Hauteur plancher : sur un écran court, la manche défile au lieu d'écraser l'image et les réponses. */}
-      <div className="flex min-h-[420px] flex-1">
-        <QuestionBlock text={questionText} image={round.imageUrl ?? undefined} answers={cards} />
+      <div className="min-h-0 flex-1">
+        <QuestionBlock text={questionText} image={round.imageUrl ?? undefined} layout="2x2" answers={cards} />
       </div>
     </div>
   )
 }
 
 export type DuelReviewProps = {
-  open: boolean
-  onClose: () => void
   game: GameState
   me: string
   myName: string
   opponentName: string
+  /** Remonte au résultat (miroir du bandeau « Détails du duel »). */
+  onBack: () => void
+  /** Manches déjà signalées (indices). */
+  reported: readonly number[]
+  /** Ouvre le signalement de la manche affichée : la feuille vit hors du pager, qui est translaté. */
+  onReport: (round: GameRoundState, index: number, count: number) => void
 }
 
 /**
- * Détails du duel (`resultat.md` § 6, lab `resultat.tsx`) : feuille haute (Vaul), onglets des manches, page par manche à balayer (Embla, chaque manche défile si elle dépasse),
- * flèches et « Signaler la question » (aussi à l'entraînement : on signale la question, pas l'adversaire). La manche
- * consultée est gardée d'une ouverture à l'autre ; les images sont préchargées dès le résultat.
+ * Détails du duel (`resultat.md` § 6) : seconde page verticale du résultat, comme `joutio-mobile` (écart assumé avec
+ * la feuille du lab). Miroir « Glisse vers le bas », titre, onglets des manches, page par manche à balayer (Embla),
+ * flèches et points, « Signaler la question » (aussi à l'entraînement). Montée avec le résultat : la manche consultée
+ * est gardée d'une page à l'autre et les images sont préchargées.
  */
-export function DuelReview({ open, onClose, game, me, myName, opponentName }: DuelReviewProps) {
+export function DuelReview({ game, me, myName, opponentName, onBack, reported, onReport }: DuelReviewProps) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const rounds = useMemo(() => reviewRoundsOf(game), [game])
   const opponent = game.player1Id === me ? game.player2Id : game.player1Id
   const [index, setIndex] = useState(0)
-  const [reportOpen, setReportOpen] = useState(false)
-  const [reported, setReported] = useState<readonly number[]>([])
 
   useEffect(() => {
     for (const url of new Set(rounds.map((round) => round.imageUrl).filter(Boolean))) {
@@ -76,6 +80,11 @@ export function DuelReview({ open, onClose, game, me, myName, opponentName }: Du
     }
   }, [rounds])
 
+  const slides = useMemo(
+    () => rounds.map((item) => <ReviewPage key={item.round} round={item} me={me} opponent={opponent} myName={myName} opponentName={opponentName} language={language} />),
+    [rounds, me, opponent, myName, opponentName, language],
+  )
+
   const count = rounds.length
   if (count === 0) return null
   const round = rounds[index]
@@ -83,49 +92,24 @@ export function DuelReview({ open, onClose, game, me, myName, opponentName }: Du
   const tabs = rounds.map((item) => ({ me: answerOf(item, me), opponent: answerOf(item, opponent), points: item.playerAnswers[me]?.points ?? 0 }))
 
   return (
-    <>
-      {/* Tant que le signalement est empilé, Échap et le voile ne ferment que lui. */}
-      <MobileSheet
-        open={open}
-        onClose={reportOpen ? () => setReportOpen(false) : onClose}
-        title={t('result.details')}
-        tall
-        footer={
-          <div className="grid gap-1">
-            <div className="flex items-center justify-between">
-              <IconButton icon={CaretLeftIcon} label={t('result.previous')} variant="gray" tone="neutral" disabled={index === 0} onClick={() => setIndex(index - 1)} />
-              <PageDots count={count} index={index} />
-              <IconButton icon={CaretRightIcon} label={t('result.next')} variant="gray" tone="neutral" disabled={index >= count - 1} onClick={() => setIndex(index + 1)} />
-            </div>
-            <Button variant="plain" tone="neutral" size="M" full icon={done ? CheckIcon : FlagIcon} disabled={done} onClick={() => setReportOpen(true)}>
-              {done ? t('result.questionReported') : t('result.reportQuestion')}
-            </Button>
-          </div>
-        }
-      >
-        <div className="flex h-full flex-col gap-3">
-          <RoundReviewTabs rounds={tabs} value={index} onChange={setIndex} />
-          <Carousel
-            label={t('result.details')}
-            className="-mx-4 flex-1"
-            index={index}
-            onIndexChange={setIndex}
-            slides={rounds.map((item) => (
-              <ReviewPage key={item.round} round={item} me={me} opponent={opponent} myName={myName} opponentName={opponentName} language={language} />
-            ))}
-          />
+    <div className="flex h-full flex-col gap-3 pb-[calc(var(--jo-safe-bottom,0px)+8px)]">
+      <SwipeHint direction="down" hint={t('result.swipeDown')} label={t('result.backToResult')} onClick={onBack} className="flex-none pt-1 pb-1" />
+      <div className="grid flex-none gap-3 px-4">
+        <h2 className="jo-type-headline m-0">{t('result.details')}</h2>
+        <RoundReviewTabs rounds={tabs} value={index} onChange={setIndex} />
+      </div>
+      {/* Pages sans défilement propre : le geste vertical reste au pager du résultat. */}
+      <Carousel label={t('result.details')} className="min-h-0 flex-1" slideClassName="overflow-hidden touch-none" index={index} onIndexChange={setIndex} slides={slides} />
+      <div className="grid flex-none gap-1 px-4">
+        <div className="flex items-center justify-between">
+          <IconButton icon={CaretLeftIcon} label={t('result.previous')} variant="gray" tone="neutral" disabled={index === 0} onClick={() => setIndex(index - 1)} />
+          <PageDots count={count} index={index} />
+          <IconButton icon={CaretRightIcon} label={t('result.next')} variant="gray" tone="neutral" disabled={index >= count - 1} onClick={() => setIndex(index + 1)} />
         </div>
-      </MobileSheet>
-      <ReportQuestionSheet
-        key={`${index}-${reportOpen}`}
-        open={open && reportOpen}
-        onClose={() => setReportOpen(false)}
-        questionId={round?.questionId ?? null}
-        gameId={game.gameId}
-        hasImage={Boolean(round?.imageUrl)}
-        subtitle={t('result.questionOf', { index: index + 1, total: count })}
-        onSent={() => setReported([...reported, index])}
-      />
-    </>
+        <Button variant="plain" tone="neutral" size="M" full icon={done ? CheckIcon : FlagIcon} disabled={done} onClick={() => round && onReport(round, index, count)}>
+          {done ? t('result.questionReported') : t('result.reportQuestion')}
+        </Button>
+      </div>
+    </div>
   )
 }

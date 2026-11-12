@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { DoorOpenIcon, LightningIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe, usePlayerIdentity } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
 import { useCreatePrivateRoom } from '@/features/play'
 import { ChallengeTopicSheet } from '@/features/player'
@@ -58,6 +58,7 @@ function ChallengeRow({ challenge, kind, last, accept, decline, cancel }: RowPro
   const duration = useDuration()
   const player = kind === 'received' ? challenge.challenger : challenge.opponent
   const src = useUserAvatar(player)
+  const identity = usePlayerIdentity()
   const now = readServerNow()
   const status =
     kind === 'received'
@@ -69,8 +70,10 @@ function ChallengeRow({ challenge, kind, last, accept, decline, cancel }: RowPro
     return (
       <ChallengeListRow
         name={player.pseudonym}
+        premium={identity.premium(player)}
         src={src}
         sub={sub}
+        onClick={identity.open(player.userId)}
         last={last}
         primary={{ label: t('challenges.accept'), loading: accept.isPending && accept.variables?.challengeId === id, disabled: accept.isPending, onClick: () => accept.mutate(challenge) }}
         secondary={{ label: t('challenges.decline'), loading: decline.isPending && Boolean(decline.variables?.includes(id)), disabled: decline.isPending, onClick: () => decline.mutate([id]) }}
@@ -79,8 +82,10 @@ function ChallengeRow({ challenge, kind, last, accept, decline, cancel }: RowPro
   return (
     <ChallengeListRow
       name={player.pseudonym}
+      premium={identity.premium(player)}
       src={src}
       sub={sub}
+      onClick={identity.open(player.userId)}
       last={last}
       primaryVariant="tinted"
       // Relancer un défi n'existe pas côté BFF (`defis.md` § 5) : visible, inactif, comme le mobile.

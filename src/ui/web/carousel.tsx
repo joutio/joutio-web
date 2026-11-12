@@ -2,6 +2,12 @@ import useEmblaCarousel from 'embla-carousel-react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 
+/**
+ * Durée de la glisse vers la page voisine (unités Embla, défaut 25). Plus lente qu'Embla par défaut : à 25, le passage
+ * d'une question à l'autre se lisait comme un saut (retour du 2026-11-12) ; 45 approche les 450 ms du mobile.
+ */
+const SWIPE_DURATION = 45
+
 export type CarouselProps = {
   /** Une diapositive par page, dans l'ordre. */
   slides: readonly ReactNode[]
@@ -24,7 +30,7 @@ export type CarouselProps = {
  */
 export function Carousel({ slides, index, onIndexChange, label, className, slideClassName }: CarouselProps) {
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const [viewport, api] = useEmblaCarousel({ startIndex: index })
+  const [viewport, api] = useEmblaCarousel({ startIndex: index, duration: SWIPE_DURATION })
   const report = useRef(onIndexChange)
   useEffect(() => {
     report.current = onIndexChange

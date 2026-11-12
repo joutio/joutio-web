@@ -1,9 +1,9 @@
 import type { MasteryTier } from '@joutio/client-domain/api-types'
-import { isBonusRound, ROUNDS, sortedRounds, type GameResultView, type GameState } from '@joutio/client-domain/game'
-import { CaretUpIcon, FlagIcon, LightningIcon, WarningCircleIcon, XIcon } from '@phosphor-icons/react'
+import { isBonusRound, ROUNDS, sortedRounds, type GameResultView, type GameRoundState, type GameState } from '@joutio/client-domain/game'
+import { FlagIcon, LightningIcon, WarningCircleIcon, XIcon } from '@phosphor-icons/react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe, usePlayerIdentity } from '@/features/me'
 import { useBotDifficulty, usePlayerProfile, useStartMatchmaking, useStartTraining, type PlayTopic } from '@/features/play'
 import { formatNumber, MASTERY_TIERS, MASTERY_XP, useMyTitles, useWearTitle } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
@@ -14,6 +14,7 @@ import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import {
   Button,
+  cn,
   EloSummary,
   EmptyState,
   IconButton,
@@ -22,7 +23,9 @@ import {
   Notice,
   RankPromotion,
   ResultHeader,
+  ResultPages,
   Screen,
+  SwipeHint,
   TitleUnlock,
   tokens,
   UnlockSequence,
@@ -34,7 +37,7 @@ import { useGameHistory, useGameResult, useSendRematch } from '../hooks/use-resu
 import { celebrated } from '../lib/celebrated'
 import { reviewRoundsOf } from '../lib/review'
 import { DuelReview } from './duel-review'
-import { ReportPlayerSheet } from './report-sheets'
+import { ReportPlayerSheet, ReportQuestionSheet } from './report-sheets'
 
 const ORDER = Object.keys(tokens.tier) as TierCode[]
 const masteryOf = (xp: number): MasteryTier => MASTERY_TIERS.reduce<MasteryTier>((best, tier) => (xp >= MASTERY_XP[tier] ? tier : best), MASTERY_TIERS[0] as MasteryTier)
@@ -142,6 +145,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const navigate = useNavigate()
   const language = useLanguageStore((state) => state.language)
   const me = useMe().data
+  const identity = usePlayerIdentity()
   const userId = me?.userId ?? ''
   const myName = me?.pseudonym ?? ''
   const bot = data.botGame
@@ -161,8 +165,11 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const rematch = useSendRematch({ userId, opponentId, topic, gameId })
   const [step, setStep] = useState(0)
   const [sequenceDone, setSequenceDone] = useState(!celebrate)
-  const [reviewOpen, setReviewOpen] = useState(false)
+  // Pages verticales du résultat : 0 le résultat, 1 Détails du duel (`resultat.md` § 6, comme le mobile).
+  const [page, setPage] = useState<0 | 1>(0)
   const [reportOpen, setReportOpen] = useState(false)
+  const [questionReport, setQuestionReport] = useState<{ round: GameRoundState; index: number; count: number } | null>(null)
+  const [reportedRounds, setReportedRounds] = useState<readonly number[]>([])
 
   // Elo à l'instant de la partie (le bilan), jamais celui du profil courant.
   const rating = data.progression.rating
@@ -247,7 +254,18 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
     <Screen
       overlay={
         <>
-          {hasReview && <DuelReview open={reviewOpen} onClose={() => setReviewOpen(false)} game={game} me={userId} myName={myName} opponentName={opponentName} />}
+          {hasReview && (
+            <ReportQuestionSheet
+              key={questionReport ? `question-${questionReport.index}` : 'question'}
+              open={questionReport !== null}
+              onClose={() => setQuestionReport(null)}
+              questionId={questionReport?.round.questionId ?? null}
+              gameId={gameId}
+              hasImage={Boolean(questionReport?.round.imageUrl)}
+              subtitle={questionReport ? t('result.questionOf', { index: questionReport.index + 1, total: questionReport.count }) : ''}
+              onSent={() => questionReport && setReportedRounds([...reportedRounds, questionReport.index])}
+            />
+          )}
           {canReport && opponentId && (
             <ReportPlayerSheet
               key={String(reportOpen)}
@@ -262,14 +280,17 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
         </>
       }
     >
-      <div className="flex min-h-full flex-col">
+      <div className="flex h-full flex-col">
         <div className="flex h-[52px] flex-none items-center justify-between px-2">
           <div className="flex gap-1">
             {canReport && <IconButton icon={FlagIcon} label={t('result.reportPlayer', { name: opponentName })} variant="plain" tone="neutral" onClick={() => setReportOpen(true)} />}
           </div>
           <IconButton icon={XIcon} label={t('result.quit')} variant="plain" tone="neutral" onClick={quit} />
         </div>
-        <div className="flex flex-1 flex-col justify-between gap-4 px-4 pb-2">
+        <div className="min-h-0 flex-1">
+        <ResultPages page={page} onPageChange={setPage} enabled={hasReview}>
+        <div className={cn('flex h-full flex-col', !hasReview && 'pb-[calc(var(--jo-safe-bottom,0px)+8px)]')}>
+        <div className="flex min-h-0 flex-1 flex-col justify-between gap-4 px-4 pb-2">
           <ResultHeader
             outcome={cancelled ? 'draw' : outcome}
             topic={topic.name}
@@ -280,6 +301,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
               score: data.myScore,
               streak: streakOf(game, userId),
               meta: bot ? t('result.unranked', { elo: formatNumber(rating, language) }) : undefined,
+              premium: me?.premium === true,
+              onOpen: identity.open(userId),
             }}
             opponent={{
               name: opponentName,
@@ -288,6 +311,9 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
               score: data.opponentScore,
               streak: streakOf(game, opponentId),
               meta: bot ? botLevel : undefined,
+              premium: !bot && identity.premium(data.opponent ?? opponentProfile.data, opponentId),
+              // Le robot et un compte supprimé n'ont pas de fiche.
+              onOpen: bot || data.opponentDeleted ? undefined : identity.open(opponentId),
             }}
           />
           {bot || cancelled ? (
@@ -324,13 +350,31 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
             </Button>
           </div>
         </div>
+        {/* Bandeau : annonce la page Détails du duel ; un tap y descend, comme le glissé vers le haut. */}
         {hasReview && (
-          <div className="grid flex-none justify-items-center px-4 pb-[calc(var(--jo-safe-bottom,0px)+8px)]">
-            <Button variant="plain" tone="neutral" size="M" icon={CaretUpIcon} onClick={() => setReviewOpen(true)}>
-              {t('result.detailsButton')}
-            </Button>
-          </div>
+          <SwipeHint
+            direction="up"
+            title={t('result.details')}
+            hint={t('result.swipeUp')}
+            label={t('result.openDetails')}
+            onClick={() => setPage(1)}
+            className="flex-none pt-3 pb-[calc(var(--jo-safe-bottom,0px)+12px)]"
+          />
         )}
+        </div>
+        {hasReview ? (
+          <DuelReview
+            game={game}
+            me={userId}
+            myName={myName}
+            opponentName={opponentName}
+            onBack={() => setPage(0)}
+            reported={reportedRounds}
+            onReport={(round, index, count) => setQuestionReport({ round, index, count })}
+          />
+        ) : null}
+        </ResultPages>
+        </div>
       </div>
     </Screen>
   )

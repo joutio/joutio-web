@@ -130,6 +130,7 @@ export function ProfilePage() {
       centered
       image={data?.bannerUrl ?? undefined}
       title={name}
+      premium={data?.premium === true}
       eyebrow={data ? <Avatar name={name} src={src} tier={tier} provisional={progression?.provisional} size="xxl" /> : undefined}
       right={
         <>

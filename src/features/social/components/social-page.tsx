@@ -2,7 +2,7 @@ import type { PeopleSort, PlayerCardView } from '@joutio/client-domain/api-types
 import { MagnifyingGlassIcon, SlidersHorizontalIcon, SwordIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe, usePlayerIdentity } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
 import { useChallengePlayer, useContacts } from '@/features/play'
 import { ChallengeTopicSheet, relativeSeen } from '@/features/player'
@@ -46,11 +46,13 @@ function ContactRow({ player, last, onChallenge }: { player: PlayerCardView; las
   const t = useT()
   const navigate = useNavigate()
   const src = useUserAvatar(player)
+  const identity = usePlayerIdentity()
   const online = player.presence?.status === 'ONLINE'
   const sub = online ? t('presence.online') : player.presence?.lastSeenAt ? capitalize(relativeSeen(player.presence.lastSeenAt, t)) : t('presence.offline')
   return (
     <PlayerRow
       name={player.pseudonym}
+      premium={identity.premium(player)}
       src={src}
       tier={player.provisional ? undefined : tierOf(player.rating)}
       presence={online ? 'online' : 'offline'}

@@ -2,7 +2,7 @@ import { CheckIcon, DotsThreeIcon, FlagIcon, HeartIcon, LightningIcon, MapPinIco
 import { forwardRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { finishedGames, GameGroups, useHistoryGames } from '@/features/history'
-import { useMe } from '@/features/me'
+import { useMe, usePlayerIdentity } from '@/features/me'
 import { useChallengePlayer } from '@/features/play'
 import { ReportPlayerSheet } from '@/features/result'
 import { TabNav } from '@/features/shell'
@@ -52,6 +52,7 @@ export function PlayerPage() {
   const language = useLanguageStore((state) => state.language)
   const navigate = useNavigate()
   const me = useMe()
+  const identity = usePlayerIdentity()
   const profile = usePlayerProfile(userId)
   const head = useHeadToHead(userId)
   const follow = useFollowPlayer(userId)
@@ -102,6 +103,7 @@ export function PlayerPage() {
       onBack={back}
       image={data?.bannerUrl ?? undefined}
       title={name}
+      premium={identity.premium(data)}
       eyebrow={data ? <Avatar name={name} src={src} tier={tier} provisional={progression?.provisional} size="xxl" /> : undefined}
       right={
         data && !data.isMe ? (

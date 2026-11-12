@@ -18,6 +18,8 @@ export type RewardCardProps = {
   rule?: string
   state?: RewardState
   image?: string
+  /** Nom de l'avatar sans image (avatar de base) : ses initiales. Par défaut, le titre. */
+  avatarName?: string
   /** Avancement vers le déblocage, de 0 à 100. */
   progress?: number
   progressLabel?: string
@@ -27,7 +29,7 @@ export type RewardCardProps = {
   className?: string
 }
 
-export function RewardCard({ title, rule, state = 'unlocked', image, progress, progressLabel, cta, onSelect, className }: RewardCardProps) {
+export function RewardCard({ title, rule, state = 'unlocked', image, avatarName, progress, progressLabel, cta, onSelect, className }: RewardCardProps) {
   const { variant, label } = STATES[state]
   const classes = cn(
     'grid grid-cols-[72px_minmax(0,1fr)] items-center gap-4 rounded-jo-lg bg-jo-surface p-4',
@@ -37,7 +39,7 @@ export function RewardCard({ title, rule, state = 'unlocked', image, progress, p
   )
   const content = (
     <>
-      <Avatar name={title} src={image} size="xl" locked={state === 'locked' || state === 'premium'} />
+      <Avatar name={avatarName ?? title} src={image} size="xl" locked={state === 'locked' || state === 'premium'} />
       <div className="grid min-w-0 gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <strong className="jo-type-headline">{title}</strong>

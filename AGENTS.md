@@ -196,4 +196,15 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
       jouée une seule fois par partie (`features/result/lib/celebrated.ts` + état de navigation nettoyé), bannière
       « Joutio est meilleur dans l'app » sur l'Accueil (< 1 024 px, masquée après « Ouvrir »), tirer-pour-rafraîchir
       rendu à `ParallaxScreen`, `public/topics/` retiré (403 au rechargement de `/topics`)
+- [x] Identité d'un joueur (2026-11-12, `design/specs/components/primitives.md` § Identité d'un joueur) : avatar de
+      base = initiales du Profil, sans réglage (style `base` et ancien fond ignorés, éditeur réduit à Style) ; avatar
+      stylé partout via `useUserAvatar` ; `PremiumBadge` après chaque pseudonyme (`PlayerName`, `premium` lu par
+      `usePlayerIdentity` : `me.premium`, puis le champ `premium` des vues dès que le BFF l'expose) ; avatar et pseudonyme
+      ouvrent la fiche (`onOpen` / ligne entière), sauf duel, salon, matchmaking. Écarts : lignes de parties (`MatchRow`)
+      et invitation `/join` sans badge ; ligne d'un rédacteur dans Équipe = gestion de son rôle (le créateur ouvre sa fiche)
+- [x] Résultat en deux pages verticales (2026-11-12, comme `joutio-mobile`, `resultat.md` § 6) : `ResultPages`
+      (bascule 450 ms, tout glissé vertical change de page, molette aussi ; bandeau « Détails du duel » en bas de la page 1,
+      miroir en haut de la page 2) ; plus de feuille Détails du duel. `QuestionBlock` en 2 × 2 qui remplit la place, comme
+      le lab et le mobile ; carrousel Embla ralenti (`duration` 45). `RoundIntro` calé sur `elapsedMs` du serveur et gardé
+      jusqu'à la fin de son animation (400 ms de marge sur la question), il n'est plus coupé
 - [ ] Bascule (merge de `rewrite/web-kit`)
