@@ -1,3 +1,41 @@
+## [2.0.0](https://github.com/joutio/joutio-web/compare/v1.2.0...v2.0.0) (2026-11-12)
+
+### ⚠ BREAKING CHANGES
+
+* the web app is rebuilt from the design lab; screens
+come back step by step.
+
+### Features
+
+* adaptive TopicTile grid in Sujets, topic pictograms and themed category palettes ([e55fbdb](https://github.com/joutio/joutio-web/commit/e55fbdb182c7acffa50aabd0569ce7af4d327a68))
+* component base and app shell ([f0c5f6c](https://github.com/joutio/joutio-web/commit/f0c5f6c36ff3c8b24f6b43fdf4e2d9f1c300f2c9))
+* DiceBear player avatars ([e36d380](https://github.com/joutio/joutio-web/commit/e36d3801968ed30d9004a5a616360c5df4eed7b3))
+* duel arena ([9342418](https://github.com/joutio/joutio-web/commit/93424180acdec68582e0fe48a9cc93de493cb5e2))
+* duel result ([7416217](https://github.com/joutio/joutio-web/commit/74162171fc920d441943875c36221248122f1cec))
+* global search ([8712fe2](https://github.com/joutio/joutio-web/commit/8712fe2487736efb8ad285c85559d85c947a3db9))
+* home screen ([9e78084](https://github.com/joutio/joutio-web/commit/9e78084198547ebcf6f2cf7ef0a818726c1dc8ff))
+* joutio-web rewritten from the design lab ([e7d9e13](https://github.com/joutio/joutio-web/commit/e7d9e1313598d6d30f7b31dfdd745b0bd11cb353))
+* launch a game, room, matchmaking and join ([0731ecc](https://github.com/joutio/joutio-web/commit/0731ecccb184a74696e7151f65f38b388e276847))
+* onboarding ([3c6d4b0](https://github.com/joutio/joutio-web/commit/3c6d4b025e10903b86c3324653e8c65c386c3140))
+* plumbing (HTTP, OIDC session, STOMP, i18n, push, telemetry) ([eb1c07e](https://github.com/joutio/joutio-web/commit/eb1c07e2f1c0da66c23dddd0492fb96e7554e722))
+* profile, player, titles, games and leaderboard pages ([8c5987a](https://github.com/joutio/joutio-web/commit/8c5987ac2c07f80a8e1d44192f8149cbb4aa429a))
+* resume an ongoing game ([386d35b](https://github.com/joutio/joutio-web/commit/386d35b27f06cd74d89eea8d98d2a7affa2bfaf1))
+* settings, avatar editor and premium ([b593419](https://github.com/joutio/joutio-web/commit/b593419116442de363e4977644a7158ace269e3e))
+* social, challenges and notifications pages ([a5e6dce](https://github.com/joutio/joutio-web/commit/a5e6dce1ff2d1cd141ebdd7e2b7a8332195ea03f))
+* start over from the design lab web kit ([503dd0f](https://github.com/joutio/joutio-web/commit/503dd0ff59dbe51bbdb9d626626d87775a7c1e24))
+* topic page ([22e604b](https://github.com/joutio/joutio-web/commit/22e604b2ce800a3ee01e37325cefb4eca2fd1674))
+* topic workshop ([eebafdf](https://github.com/joutio/joutio-web/commit/eebafdf815724379459e6b3fc5095b99416da33a))
+* topics catalogue ([3bddb67](https://github.com/joutio/joutio-web/commit/3bddb6741fb757f07370722ea064fdb40dcb0189))
+* web column capped at 626 px, brand margins from 1024 px ([9a9f3ae](https://github.com/joutio/joutio-web/commit/9a9f3ae4e05af7af9736d47783bf5bffc5845a01))
+
+### Bug Fixes
+
+* 24 px between the avatar and the pseudonym on profile headers ([40cd17e](https://github.com/joutio/joutio-web/commit/40cd17e57c7fca3e70825c29e7a7fb823486ae94))
+* badge rows, publish progress, experience points, TopicTile corners ([ed62d60](https://github.com/joutio/joutio-web/commit/ed62d605cb805017697fcadef9b76267f6c0a102))
+* cancel search is an explicit command ([c07c254](https://github.com/joutio/joutio-web/commit/c07c25403ce7c8a1d3caafd0dc009037cba0420e))
+* leave the room and cancel the search on navigation, not on unmount ([d81d810](https://github.com/joutio/joutio-web/commit/d81d810049a021a6e13e5c4f425d52f4f94acf67))
+* TopicTile paints the category color behind transparent visuals ([07c5fcb](https://github.com/joutio/joutio-web/commit/07c5fcb87dda8e0bfb0d1d91095daa93591e6d0b))
+
 ## [1.2.0](https://github.com/joutio/joutio-web/compare/v1.1.0...v1.2.0) (2026-10-31)
 
 ### Features
