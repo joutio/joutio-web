@@ -1,4 +1,4 @@
-import { isTranslated, MIN_QUESTIONS, questionStatus, questionText, sortQuestions, type QuestionSort, type QuestionStatus } from '@joutio/client-domain/authoring'
+import { isTranslated, MIN_QUESTIONS, workshopRole, questionStatus, questionText, sortQuestions, type QuestionSort, type QuestionStatus } from '@joutio/client-domain/authoring'
 import { ArrowsDownUpIcon, ListChecksIcon, MagnifyingGlassIcon, PlusIcon, SlidersHorizontalIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -7,7 +7,8 @@ import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
 import { useBack } from '@/shared/use-back'
 import { Button, Chip, EmptyState, FeedFooter, IconButton, ListRow, MobileSheet, MobileTopBar, Notice, ProgressBar, RadioGroup, Screen, SearchField, SectionHeader, Skeleton } from '@/ui'
-import { useCreationLimits, useTopicQuestions, useWorkshop } from '../hooks/use-workshop'
+import { useCreationLimits, useFrozen, useTopicQuestions, useWorkshop } from '../hooks/use-workshop'
+import { FrozenNotice } from './frozen-notice'
 import { questionNumber } from '../lib/workshop-service'
 import { STATUS_LABEL } from '../lib/labels'
 import { QuestionStatusIcon } from './question-status'
@@ -54,9 +55,11 @@ export function QuestionsPage() {
   const language = useLanguageStore((state) => state.language)
   const { topicId = '' } = useParams()
   const back = useBack(ROUTES.myTopic(topicId))
-  const { topic } = useWorkshop(topicId)
+  const { topic, permissions } = useWorkshop(topicId)
   const questions = useTopicQuestions(topicId)
   const { premium, limits, askPremium } = useCreationLimits()
+  const { published, locks } = useFrozen()
+  const locked = locks(topic, workshopRole(permissions))
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('all')
   const [translation, setTranslation] = useState<TranslationFilter>('all')
@@ -67,7 +70,7 @@ export function QuestionsPage() {
   const draft = topic?.status === 'DRAFT'
   const all = questions.data ?? []
   const count = all.filter((question) => question.status !== 'ARCHIVED').length
-  const atCeiling = premium && count >= limits.questions
+  const atCeiling = premium && count >= limits.questionsPerTopic
   const search = query.trim().toLowerCase()
   const filtered = sortQuestions(
     all.filter(
@@ -88,7 +91,8 @@ export function QuestionsPage() {
     setPages(1)
   }
   const add = () => {
-    if (!premium && count >= limits.questions) return askPremium('questions')
+    if (locked) return askPremium('frozen')
+    if (!premium && count >= limits.questionsPerTopic) return askPremium('questions')
     void navigate(ROUTES.questionEditor(topicId))
   }
   const sub = (question: (typeof all)[number]) => {
@@ -114,7 +118,7 @@ export function QuestionsPage() {
             title={t('workshop.questions')}
             subtitle={topic ? topicName(topic.names, language) : undefined}
             onBack={back}
-            right={<IconButton icon={PlusIcon} label={t('workshop.addQuestion')} variant="plain" tone="accent" disabled={atCeiling} onClick={add} />}
+            right={<IconButton icon={PlusIcon} label={t('workshop.addQuestion')} variant="plain" tone="accent" disabled={atCeiling || locked} onClick={add} />}
           />
           {all.length > 0 && (
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 pt-1 pb-2">
@@ -165,8 +169,9 @@ export function QuestionsPage() {
         ) : (
           <>
             {/* Brouillon : l'avancement vers la publication est sur Mon sujet. */}
-            {!draft && <ProgressBar label={t('workshop.ceiling', { count, max: limits.questions })} value={(count * 100) / limits.questions} />}
-            {atCeiling && <Notice tone="info" title={t('workshop.fullTitle')} message={t('workshop.fullText', { max: limits.questions })} />}
+            {!draft && <ProgressBar label={t('workshop.ceiling', { count, max: limits.questionsPerTopic })} value={(count * 100) / limits.questionsPerTopic} />}
+            {locked && <FrozenNotice published={published} limit={limits.publishedTopics} />}
+            {atCeiling && <Notice tone="info" title={t('workshop.fullTitle')} message={t('workshop.fullText', { max: limits.questionsPerTopic })} />}
             {all.length === 0 ? (
               <EmptyState
                 icon={ListChecksIcon}

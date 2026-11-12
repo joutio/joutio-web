@@ -1,7 +1,6 @@
 import type { HomeView, Language, PageResponse, TopicCardView, TopicOverviewView } from '@joutio/client-domain/api-types'
 import {
   applyQuestionOperations,
-  limitsFor,
   type QuestionEditorView,
   type QuestionOperation,
   type ReportedQuestion,
@@ -9,6 +8,7 @@ import {
   type TopicTodo,
   type TopicWorkshop,
 } from '@joutio/client-domain/authoring'
+import { isFrozen, planLimits, premiumReasonOf, quotaProblemOf, type PremiumReason } from '@joutio/client-domain/premium'
 import { useMutation, useQuery, useQueryClient, type InfiniteData, type QueryClient } from '@tanstack/react-query'
 import { useMe } from '@/features/me'
 import { showPremium } from '@/features/premium'
@@ -25,6 +25,10 @@ const TOPIC_CACHES = [queryKeys.workshop.all, ['topic'], ['topics'], queryKeys.h
 
 /** Mes sujets, brouillons et publiés. */
 export const useMyTopics = (enabled = true) => useQuery({ queryKey: queryKeys.workshop.topics, queryFn: workshopService.myTopics, staleTime: 30_000, enabled })
+
+/** Sujets dont je suis le créateur (`mine=true`) : comptent seuls dans le plafond de sujets publiés. */
+export const useCreatedTopics = (enabled = true) =>
+  useQuery({ queryKey: queryKeys.workshop.created, queryFn: workshopService.createdTopics, staleTime: 30_000, enabled })
 
 /** Mes sujets › À traiter : actions en attente par sujet géré. */
 export const useTopicTodo = () => useQuery({ queryKey: queryKeys.workshop.todo, queryFn: workshopService.todo, staleTime: 30_000 })
@@ -49,10 +53,29 @@ export const useTeam = (topicId: string) => useQuery({ queryKey: queryKeys.works
 export const usePlayerSearch = (query: string) =>
   useQuery({ queryKey: ['suggestions', 'players', query], queryFn: () => workshopService.players(query), enabled: query.length >= 2, staleTime: 30_000 })
 
-/** Plafonds Gratuit / Premium (appliqués par l'app seule) et feuille Premium avec l'accroche de la limite. */
+/** Limites du plan lues dans `MeView.limits` (appliquées par le BFF) et feuille Premium avec l'accroche de la limite. */
 export function useCreationLimits() {
-  const premium = useMe().data?.premium ?? false
-  return { premium, limits: limitsFor(premium), askPremium: (reason: 'topics' | 'questions' | 'team') => showPremium(reason) }
+  const me = useMe().data
+  return { premium: me?.premium ?? false, limits: planLimits(me), askPremium: (reason: PremiumReason) => showPremium(reason) }
+}
+
+/**
+ * Sujets gelés (`creation.md` § 3, P21) : sans Premium, au-delà du plafond de sujets publiés, mes sujets publiés ne se
+ * modifient plus. Calculé sur les sujets dont je suis le créateur ; le BFF refuse de toute façon (`topic:overQuota`).
+ */
+export function useFrozen() {
+  const me = useMe().data
+  const created = useCreatedTopics(Boolean(me))
+  const published = created.data?.content.filter((topic) => topic.status === 'PUBLISHED').length ?? 0
+  const frozen = isFrozen(me, published)
+  return {
+    frozen,
+    /** Sujets publiés dont je suis le créateur. */
+    published,
+    limit: planLimits(me).publishedTopics,
+    /** Ce sujet est-il gelé pour moi ? Seul son créateur le sait d'avance ; un membre de l'équipe l'apprend du BFF. */
+    locks: (topic: Pick<TopicCardView, 'status'> | undefined, role: string | undefined) => frozen && role === 'creator' && topic?.status === 'PUBLISHED',
+  }
 }
 
 /* ───────────── Caches ───────────── */
@@ -60,7 +83,8 @@ export function useCreationLimits() {
 /** Remplace un de mes sujets partout où il est affiché (Mes sujets, atelier, fiche, catalogue, Accueil). */
 function patchTopic(client: QueryClient, topicId: string, patch: (topic: TopicCardView) => TopicCardView) {
   const apply = (topic: TopicCardView) => (topic.topicId === topicId ? patch(topic) : topic)
-  client.setQueryData<PageResponse<TopicCardView>>(queryKeys.workshop.topics, (page) => (page ? { ...page, content: page.content.map(apply) } : page))
+  for (const key of [queryKeys.workshop.topics, queryKeys.workshop.created])
+    client.setQueryData<PageResponse<TopicCardView>>(key, (page) => (page ? { ...page, content: page.content.map(apply) } : page))
   client.setQueryData<TopicWorkshop>(queryKeys.workshop.topic(topicId), (view) => (view ? { ...view, topic: patch(view.topic) } : view))
   client.setQueryData<TopicOverviewView>(queryKeys.topic.overview(topicId), (view) => (view ? { ...view, topic: patch(view.topic) } : view))
   client.setQueriesData<InfiniteData<TopicPage>>({ queryKey: ['topics', 'list'] }, (data) =>
@@ -108,9 +132,21 @@ function dropFromQueue(client: QueryClient, topicId: string, questionId: string)
   patchQuestion(client, topicId, questionId, (question) => ({ ...question, openReportCount: 0 }))
 }
 
+/** Limite du plan dans une erreur, éventuellement enveloppée (échec partiel : `cause`). */
+const quotaOf = (error: unknown) => quotaProblemOf(error) ?? (error instanceof Error ? quotaProblemOf(error.cause) : null)
+
+/**
+ * Échec d'une écriture : une limite du plan ouvre la feuille Premium avec son accroche (`creation.md` § 3) ; au
+ * plafond Premium, ou pour toute autre erreur, un toast.
+ */
 function useFailure() {
   const t = useT()
-  return (title: MessageKey, text: MessageKey = 'home.errorText') => toast.error(t(title), t(text))
+  const premium = useMe().data?.premium ?? false
+  return (title: MessageKey, text: MessageKey = 'home.errorText', error?: unknown) => {
+    const problem = quotaOf(error)
+    if (problem && !premium) return showPremium(premiumReasonOf(problem))
+    toast.error(t(title), t(problem ? 'workshop.limitText' : text))
+  }
 }
 
 /* ───────────── Sujet ───────────── */
@@ -147,9 +183,9 @@ export function useCreateTopic() {
       patchTopic(client, context.tempId, (topic) => ({ ...topic, topicId: id }))
       client.setQueryData<QuestionEditorView[]>(queryKeys.workshop.questions(id), [])
     },
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       context?.rollback()
-      fail('workshop.createError')
+      fail('workshop.createError', undefined, error)
     },
   })
 }
@@ -174,21 +210,21 @@ export function useUpdateTopicNames(topicId: string) {
     onError: (error, _names, context) => {
       context?.rollback()
       if ('done' in error) patchTopic(client, topicId, (topic) => ({ ...topic, names: { ...topic.names, ...(error.done as Partial<Record<Language, string>>) } }))
-      fail('workshop.nameError')
+      fail('workshop.nameError', undefined, error)
     },
   })
 }
 
 /** Un champ du sujet (univers, vignette, pictogramme), optimiste. */
-function useTopicField<V>(topicId: string, run: (value: V) => Promise<void>, patch: (topic: TopicCardView, value: V) => TopicCardView, error: MessageKey) {
+function useTopicField<V>(topicId: string, run: (value: V) => Promise<void>, patch: (topic: TopicCardView, value: V) => TopicCardView, errorKey: MessageKey) {
   const client = useQueryClient()
   const fail = useFailure()
   return useMutation({
     mutationFn: run,
     onMutate: (value: V) => optimisticUpdate(client, TOPIC_CACHES, () => patchTopic(client, topicId, (topic) => patch(topic, value))),
-    onError: (_error, _value, context) => {
+    onError: (error, _value, context) => {
       context?.rollback()
-      fail(error)
+      fail(errorKey, undefined, error)
     },
   })
 }
@@ -208,9 +244,9 @@ export function usePublishTopic(topicId: string) {
     mutationFn: () => workshopService.publish(topicId),
     onMutate: () => optimisticUpdate(client, TOPIC_CACHES, () => patchTopic(client, topicId, (topic) => ({ ...topic, status: 'PUBLISHED' }))),
     onSuccess: () => toast.success(t('workshop.published')),
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       context?.rollback()
-      fail('workshop.publishError', 'workshop.publishErrorText')
+      fail('workshop.publishError', 'workshop.publishErrorText', error)
     },
   })
 }
@@ -223,9 +259,9 @@ export function useDraftTopic(topicId: string) {
     mutationFn: () => workshopService.draft(topicId),
     onMutate: () => optimisticUpdate(client, TOPIC_CACHES, () => patchTopic(client, topicId, (topic) => ({ ...topic, status: 'DRAFT' }))),
     onSuccess: () => toast.success(t('workshop.drafted')),
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       context?.rollback()
-      fail('workshop.draftError')
+      fail('workshop.draftError', undefined, error)
     },
   })
 }
@@ -239,15 +275,16 @@ export function useDeleteTopic(topicId: string) {
     mutationFn: () => workshopService.deleteTopic(topicId),
     onMutate: () =>
       optimisticUpdate(client, [queryKeys.workshop.all], () => {
-        client.setQueryData<PageResponse<TopicCardView>>(queryKeys.workshop.topics, (page) =>
-          page ? { ...page, content: page.content.filter((topic) => topic.topicId !== topicId), totalElements: Math.max(0, page.totalElements - 1) } : page,
-        )
+        for (const key of [queryKeys.workshop.topics, queryKeys.workshop.created])
+          client.setQueryData<PageResponse<TopicCardView>>(key, (page) =>
+            page ? { ...page, content: page.content.filter((topic) => topic.topicId !== topicId), totalElements: Math.max(0, page.totalElements - 1) } : page,
+          )
         client.setQueryData<TopicTodo[]>(queryKeys.workshop.todo, (items) => items?.filter((todo) => todo.topicId !== topicId))
       }),
     onSuccess: () => toast.success(t('workshop.deleted')),
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       context?.rollback()
-      fail('workshop.deleteError')
+      fail('workshop.deleteError', undefined, error)
     },
   })
 }
@@ -300,7 +337,7 @@ export function useSaveQuestion(topicId: string) {
         applyOperations(client, topicId, error.questionId, error.completedOperations as QuestionOperation[])
         syncApproved(client, topicId)
       }
-      fail('workshop.questionError')
+      fail('workshop.questionError', undefined, error)
     },
   })
 }
@@ -320,9 +357,9 @@ export function useModerateQuestion(topicId: string) {
         syncApproved(client, topicId)
       }),
     onSuccess: (_result, { decision }) => toast.success(t(decision === 'approve' ? 'workshop.approved' : 'workshop.rejected')),
-    onError: (_error, { decision }, context) => {
+    onError: (error, { decision }, context) => {
       context?.rollback()
-      fail(decision === 'approve' ? 'workshop.approveError' : 'workshop.rejectError')
+      fail(decision === 'approve' ? 'workshop.approveError' : 'workshop.rejectError', undefined, error)
     },
   })
 }
@@ -340,9 +377,9 @@ export function useArchiveQuestion(topicId: string) {
         syncApproved(client, topicId, !restore)
       }),
     onSuccess: (_result, { restore }) => toast.success(t(restore ? 'workshop.restored' : 'workshop.archived')),
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       context?.rollback()
-      fail('workshop.lifecycleError')
+      fail('workshop.lifecycleError', undefined, error)
     },
   })
 }
@@ -359,9 +396,9 @@ export function useDeleteQuestion(topicId: string) {
         syncApproved(client, topicId, true)
       }),
     onSuccess: () => toast.success(t('workshop.questionDeleted')),
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       context?.rollback()
-      fail('workshop.questionDeleteError')
+      fail('workshop.questionDeleteError', undefined, error)
     },
   })
 }
@@ -375,9 +412,9 @@ export function useDismissReports(topicId: string) {
     mutationFn: (questionId: string) => workshopService.resolveReports(questionId, 'DISMISSED'),
     onMutate: (questionId: string) => optimisticUpdate(client, [queryKeys.workshop.all], () => dropFromQueue(client, topicId, questionId)),
     onSuccess: () => toast.success(t('workshop.reportsClosed')),
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       context?.rollback()
-      fail('workshop.reportsCloseError')
+      fail('workshop.reportsCloseError', undefined, error)
     },
   })
 }
@@ -402,9 +439,9 @@ export function useTeamChange(topicId: string) {
     onSuccess: (member) => {
       if (member) client.setQueryData<TeamMember[]>(key, (items) => items?.map((item) => (item.userId === member.userId ? member : item)))
     },
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       context?.rollback()
-      fail('workshop.teamError', 'workshop.teamErrorText')
+      fail('workshop.teamError', 'workshop.teamErrorText', error)
     },
   })
 }

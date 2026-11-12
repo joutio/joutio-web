@@ -1,10 +1,11 @@
 import { create } from 'zustand'
+import type { PremiumReason as LimitReason } from '@joutio/client-domain/premium'
 
 /**
  * Pourquoi la feuille s'ouvre : une limite atteinte remplace l'accroche par sa raison (`premium.md` § 2) — défis,
- * ou plafonds de création (`creation.md` § 3 : 2e sujet publié, 31e question, Équipe).
+ * plafonds de création (`creation.md` § 3 : 2e sujet publié, 31e question, Équipe) ou sujets gelés.
  */
-export type PremiumReason = 'quota' | 'topics' | 'questions' | 'team' | undefined
+export type PremiumReason = LimitReason | undefined
 
 const WAITLIST_KEY = 'joutio.premiumWaitlist'
 const readWaitlist = () => {

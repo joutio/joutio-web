@@ -1,4 +1,5 @@
 import type { ChallengeView } from '@joutio/client-domain/api-types'
+import { planLimits } from '@joutio/client-domain/premium'
 import type { RoomView } from '@joutio/client-domain/rooms'
 import { useQueryClient } from '@tanstack/react-query'
 import { DoorOpenIcon, LightningIcon, WarningCircleIcon } from '@phosphor-icons/react'
@@ -18,7 +19,7 @@ import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
 import { Button, ChallengeListRow, Chip, EmptyState, FeedFooter, ListRow, MobileTopBar, Screen, SectionHeader, Skeleton } from '@/ui'
 import { refreshChallenges, useAcceptChallenge, useCancelChallenges, useDeclineChallenges, useMyChallenges, useMyRooms } from '../hooks/use-challenges'
-import { CHALLENGE_LIMIT, openRooms, RECEIVED_PAGE, RECEIVED_PREVIEW, splitChallenges } from '../lib/challenges-service'
+import { openRooms, RECEIVED_PAGE, RECEIVED_PREVIEW, splitChallenges } from '../lib/challenges-service'
 
 type Filter = 'all' | 'received' | 'sent' | 'rooms'
 
@@ -126,7 +127,8 @@ export function ChallengesPage() {
   const navigate = useNavigate()
   const client = useQueryClient()
   const language = useLanguageStore((state) => state.language)
-  const userId = useMe().data?.userId ?? ''
+  const me = useMe()
+  const userId = me.data?.userId ?? ''
   const challenges = useMyChallenges(Boolean(userId))
   const rooms = useMyRooms(Boolean(userId))
   const accept = useAcceptChallenge()
@@ -173,7 +175,7 @@ export function ChallengesPage() {
     <Screen
       header={
         <>
-          <MobileTopBar title={t('nav.challenges')} subtitle={t(sent.length > 1 ? 'challenges.quotaMany' : 'challenges.quotaOne', { count: sent.length, limit: CHALLENGE_LIMIT })} right={<NotificationBell />} />
+          <MobileTopBar title={t('nav.challenges')} subtitle={t(sent.length > 1 ? 'challenges.quotaMany' : 'challenges.quotaOne', { count: sent.length, limit: planLimits(me.data).pendingChallenges })} right={<NotificationBell />} />
           {!empty && !failed && !loading && (
             <div className="jo-no-scrollbar flex gap-2 overflow-x-auto px-4 pt-1 pb-3">
               {FILTERS.map((option) => (

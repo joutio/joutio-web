@@ -23,7 +23,8 @@ import { showDialog } from '@/shared/dialog'
 import { ROUTES } from '@/shared/routes'
 import { useBack } from '@/shared/use-back'
 import { AnswerEditorRow, Button, cn, EmptyState, Field, ImagePicker, ListRow, MobileTopBar, Notice, RadioGroup, Screen, SectionHeader, Segmented, Skeleton } from '@/ui'
-import { useArchiveQuestion, useDeleteQuestion, useSaveQuestion, useTopicQuestions, useWorkshop } from '../hooks/use-workshop'
+import { useArchiveQuestion, useCreationLimits, useDeleteQuestion, useFrozen, useSaveQuestion, useTopicQuestions, useWorkshop } from '../hooks/use-workshop'
+import { FrozenNotice } from './frozen-notice'
 import { questionNumber } from '../lib/workshop-service'
 import { useImageUpload } from '../hooks/use-image-upload'
 
@@ -70,7 +71,9 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
   const [params] = useSearchParams()
   const close = useBack(ROUTES.topicQuestions(topicId))
   const userId = useMe().data?.userId
-  const { permissions } = useWorkshop(topicId)
+  const { topic, permissions } = useWorkshop(topicId)
+  const { limits } = useCreationLimits()
+  const { published, locks } = useFrozen()
   const questions = useTopicQuestions(topicId)
   const all = questions.data ?? []
   const original = questionId ? all.find((question) => question.questionId === questionId) : undefined
@@ -88,12 +91,13 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
   const passed = (location.state as { number?: number } | null)?.number
   const number = passed ?? (questionId ? questionNumber(all, questionId) : all.length + 1)
   const role = workshopRole(permissions)
+  const locked = locks(topic, role)
   const english = translationStatus(draft)
   const filled = frenchFilled(draft)
   const altMissing = missingAlt(draft, imageChanged)
   const mayEdit =
     !original || Boolean((permissions?.canManage && original.status !== 'ARCHIVED') || (original.creatorId === userId && (original.status === 'PENDING' || original.status === 'REJECTED')))
-  const ready = isReady(draft, imageChanged) && !image.uploading && mayEdit
+  const ready = isReady(draft, imageChanged) && !image.uploading && mayEdit && !locked
   const missingCorrect = filled && draft.correct === undefined
   const actions = original ? questionActions(role, original, userId) : []
   const text = draft.texts[language]
@@ -226,6 +230,7 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
           </RadioGroup>
           {missingCorrect && <span className="jo-type-caption text-jo-wrong">{t('workshop.correctMissing')}</span>}
         </section>
+        {locked && <FrozenNotice published={published} limit={limits.publishedTopics} />}
         {role === 'writer' && <Notice tone="info" title={t('workshop.validation')} message={t('workshop.validationText')} />}
         {actions.length > 0 && (
           <section className="grid gap-3 pt-2">

@@ -12,6 +12,7 @@ import {
   useCreationLimits,
   useDeleteTopic,
   useDraftTopic,
+  useFrozen,
   usePublishTopic,
   useReportQueue,
   useTeam,
@@ -23,6 +24,7 @@ import {
   useUpdateTopicPictogram,
   useWorkshop,
 } from '../hooks/use-workshop'
+import { FrozenNotice } from './frozen-notice'
 import { LocalizedFieldSheet, TopicImageSheet, UniverseSheet } from './workshop-sheets'
 
 const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
@@ -47,7 +49,8 @@ export function MyTopicPage() {
   const { topic, permissions } = workshop
   const role = workshopRole(permissions)
   const manager = Boolean(permissions?.canManage)
-  const { premium, askPremium } = useCreationLimits()
+  const { premium, limits, askPremium } = useCreationLimits()
+  const { frozen, published, locks } = useFrozen()
   const questions = useTopicQuestions(topicId)
   const todo = useTopicTodo()
   const queue = useReportQueue(topicId, manager)
@@ -101,6 +104,9 @@ export function MyTopicPage() {
   const approved = questions.data ? approvedOf(list) : topic.questionsCount
   const visible = list.filter((question) => question.status !== 'ARCHIVED').length
   const ready = approved >= MIN_QUESTIONS
+  const locked = locks(topic, role)
+  /** Publier : le BFF vérifie aussi la place libre parmi mes sujets publiés. */
+  const onPublish = () => (role === 'creator' && !premium && published >= limits.publishedTopics ? askPremium(frozen ? 'frozen' : 'topics') : publish.mutate())
   const pendingCount = list.filter((question) => question.status === 'PENDING' || question.status === 'SUSPENDED').length
   const reports = queue.data?.length ?? 0
   const todoCount = questions.data && queue.data ? pendingCount + reports : todoTotal(todo.data?.find((item) => item.topicId === topicId))
@@ -155,7 +161,7 @@ export function MyTopicPage() {
           <div className="grid gap-1">
             {/* Tant que le minimum manque, l'avancement remplace un bouton Publier inactif. */}
             {ready ? (
-              <Button full size="L" loading={publish.isPending} onClick={() => publish.mutate()}>
+              <Button full size="L" loading={publish.isPending} onClick={onPublish}>
                 {t('workshop.publish')}
               </Button>
             ) : (
@@ -216,6 +222,7 @@ export function MyTopicPage() {
       }
     >
       <div className="grid gap-6 px-4 pt-2 pb-8">
+        {locked && <FrozenNotice published={published} limit={limits.publishedTopics} />}
         {manager && (
           <section className="grid gap-3">
             <SectionHeader title={t('workshop.topic')} />
@@ -223,7 +230,8 @@ export function MyTopicPage() {
               <ListRow
                 icon={PencilSimpleIcon}
                 label={t('workshop.name')}
-                control="chevron"
+                control={locked ? 'none' : 'chevron'}
+                disabled={locked}
                 value={topic.names.fr ?? name}
                 sub={english ? `English : ${english}` : t('workshop.englishOptional')}
                 onClick={() => {
@@ -231,9 +239,9 @@ export function MyTopicPage() {
                   setSheet('name')
                 }}
               />
-              <ListRow icon={SquaresFourIcon} label={t('workshop.universe')} control="chevron" value={tokens.category[category].label} onClick={() => setSheet('universe')} />
-              <ListRow icon={ImageIcon} label={t('workshop.thumbnail')} control="chevron" value={t(topic.imageUrl ? 'settings.bannerEdit' : 'settings.bannerAdd')} onClick={() => setSheet('image')} />
-              <ListRow icon={StickerIcon} label={t('workshop.pictogram')} control="chevron" value={t(topic.pictogramUrl ? 'settings.bannerEdit' : 'settings.bannerAdd')} onClick={() => setSheet('pictogram')} last />
+              <ListRow icon={SquaresFourIcon} label={t('workshop.universe')} control={locked ? 'none' : 'chevron'} disabled={locked} value={tokens.category[category].label} onClick={() => setSheet('universe')} />
+              <ListRow icon={ImageIcon} label={t('workshop.thumbnail')} control={locked ? 'none' : 'chevron'} disabled={locked} value={t(topic.imageUrl ? 'settings.bannerEdit' : 'settings.bannerAdd')} onClick={() => setSheet('image')} />
+              <ListRow icon={StickerIcon} label={t('workshop.pictogram')} control={locked ? 'none' : 'chevron'} disabled={locked} value={t(topic.pictogramUrl ? 'settings.bannerEdit' : 'settings.bannerAdd')} onClick={() => setSheet('pictogram')} last />
             </div>
           </section>
         )}

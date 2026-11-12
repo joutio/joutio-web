@@ -1,5 +1,6 @@
 import type { MeView, PeopleSort } from '@joutio/client-domain/api-types'
 import type { BotDifficulty } from '@joutio/client-domain/game'
+import { planLimits, problemLimit, quotaProblemOf } from '@joutio/client-domain/premium'
 import { applyMatchmakingNotification, applyRoomNotification, emptyMatchmaking, emptyRoom, type MatchmakingNotification, type RoomNotification } from '@joutio/client-domain/rooms'
 import { LightningIcon } from '@phosphor-icons/react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -65,25 +66,28 @@ export function useAutoTrain() {
 
 /* ───────────── Lancements ───────────── */
 
-const CHALLENGE_QUOTA = 'urn:joutio:bff:challenge:quotaExceeded'
-const ROOM_QUOTA = 'urn:joutio:bff:room:quotaExceeded'
-
-/** Limite atteinte (`defis.md` § 3) : `Dialog` Voir mes défis, Passer Premium, Fermer. Vrai si l'erreur était un quota. */
+/**
+ * Limite atteinte (`defis.md` § 3) : `Dialog` Voir mes défis, Passer Premium (sans Premium), Fermer. La limite vient de
+ * l'erreur, sinon de `MeView.limits`. Vrai si l'erreur était un quota de défis ou de salons.
+ */
 function useQuotaDialog() {
   const t = useT()
   const navigate = useNavigate()
+  const me = useMe().data
   return (error: unknown) => {
-    const type = (error as { type?: string } | undefined)?.type
-    if (type !== CHALLENGE_QUOTA && type !== ROOM_QUOTA) return false
-    const rooms = type === ROOM_QUOTA
+    const problem = quotaProblemOf(error)
+    if (problem !== 'challenges' && problem !== 'rooms') return false
+    const rooms = problem === 'rooms'
+    const limits = planLimits(me)
+    const limit = problemLimit(error) ?? (rooms ? limits.openRooms : limits.pendingChallenges)
     showDialog({
       title: t(rooms ? 'play.roomQuotaTitle' : 'play.challengeQuotaTitle'),
-      message: t(rooms ? 'play.roomQuotaText' : 'play.challengeQuotaText'),
+      message: t(rooms ? 'play.roomQuotaText' : 'play.challengeQuotaText', { limit }),
       icon: LightningIcon,
       tone: 'accent',
       actions: [
         { label: t('play.seeChallenges'), variant: 'filled', tone: 'accent', onClick: () => void navigate(ROUTES.challenges) },
-        { label: t('play.goPremium'), variant: 'tinted', tone: 'accent', onClick: () => showPremium('quota') },
+        ...(me?.premium ? [] : [{ label: t('play.goPremium'), variant: 'tinted' as const, tone: 'accent' as const, onClick: () => showPremium('quota') }]),
         { label: t('play.close'), variant: 'plain', tone: 'neutral' },
       ],
     })
@@ -93,7 +97,7 @@ function useQuotaDialog() {
 
 function useLaunchError() {
   const t = useT()
-  return (title: Parameters<typeof t>[0]) => toast.error(t(title), t('home.errorText'))
+  return (title: Parameters<typeof t>[0], text: Parameters<typeof t>[0] = 'home.errorText') => toast.error(t(title), t(text))
 }
 
 /** Entraînement contre le robot : la salle bot se prépare, puis le duel s'ouvre. */
@@ -103,7 +107,8 @@ export function useStartTraining() {
   return useMutation({
     mutationFn: ({ topic, difficulty }: { topic: PlayTopic; difficulty: BotDifficulty }) => playService.createBotRoom(topic.topicId, difficulty),
     onSuccess: ({ id }, { topic }) => void navigate(ROUTES.room(id), { state: { topic } }),
-    onError: () => fail('play.trainingError'),
+    // Salons bot : garde-fou anti-spam identique pour tous (P22), Premium n'y change rien.
+    onError: (error) => fail(quotaProblemOf(error) === 'rooms' ? 'play.botQuotaError' : 'play.trainingError', quotaProblemOf(error) === 'rooms' ? 'play.botQuotaText' : undefined),
   })
 }
 

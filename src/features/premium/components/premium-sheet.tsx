@@ -1,6 +1,8 @@
 import { ChartLineUpIcon, CheckIcon, CrownSimpleIcon, LightningIcon, PencilSimpleIcon, ProhibitIcon, UserCircleIcon } from '@phosphor-icons/react'
+import { planLimits, PREMIUM_LIMITS } from '@joutio/client-domain/premium'
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
+import { useMe } from '@/features/me'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { Button, ListRow, MobileSheet } from '@/ui'
 import { usePremiumSheet, type PremiumReason } from '../premium-store'
@@ -18,6 +20,7 @@ const REASONS: Record<NonNullable<PremiumReason>, MessageKey> = {
   topics: 'premium.limitTopics',
   questions: 'premium.limitQuestions',
   team: 'premium.limitTeam',
+  frozen: 'premium.limitFrozen',
 }
 
 /**
@@ -27,7 +30,18 @@ const REASONS: Record<NonNullable<PremiumReason>, MessageKey> = {
 export function PremiumHost() {
   const t = useT()
   const { open, reason, joined, close, join } = usePremiumSheet()
-  const pitch = reason ? t(REASONS[reason]) : t('premium.soonPitch')
+  const limits = planLimits(useMe().data)
+  const premium = PREMIUM_LIMITS
+  // Chiffres lus dans `MeView.limits` (le plan du joueur) et dans les défauts Premium, jamais figés dans les textes.
+  const values: Partial<Record<MessageKey, Record<string, number>>> = {
+    'premium.quotaReason': { limit: limits.pendingChallenges, premium: premium.pendingChallenges },
+    'premium.limitTopics': { premium: premium.publishedTopics },
+    'premium.limitQuestions': { limit: limits.questionsPerTopic, premium: premium.questionsPerTopic },
+    'premium.limitFrozen': { premium: premium.publishedTopics },
+    'premium.perkLimits': { challenges: premium.pendingChallenges, rooms: premium.openRooms },
+    'premium.perkCreation': { topics: premium.publishedTopics, questions: premium.questionsPerTopic },
+  }
+  const pitch = reason ? t(REASONS[reason], values[REASONS[reason]]) : t('premium.soonPitch')
   return (
     <MobileSheet
       open={open}
@@ -53,7 +67,7 @@ export function PremiumHost() {
         </div>
         <div className="overflow-hidden rounded-jo-lg bg-jo-raised">
           {PERKS.map((perk, index) => (
-            <ListRow key={perk.label} icon={perk.icon} label={t(perk.label)} control="none" last={index === PERKS.length - 1} />
+            <ListRow key={perk.label} icon={perk.icon} label={t(perk.label, values[perk.label])} control="none" last={index === PERKS.length - 1} />
           ))}
         </div>
       </div>

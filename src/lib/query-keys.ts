@@ -46,6 +46,7 @@ export const queryKeys = {
   workshop: {
     all: ['workshop'] as const,
     topics: ['workshop', 'topics'] as const,
+    created: ['workshop', 'created'] as const,
     todo: ['workshop', 'todo'] as const,
     topic: (topicId: string) => ['workshop', topicId, 'workshop'] as const,
     questions: (topicId: string) => ['workshop', topicId, 'questions'] as const,

@@ -9,7 +9,8 @@ import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { useBack } from '@/shared/use-back'
 import { Button, EmptyState, Field, IconButton, ListRow, MobileSheet, MobileTopBar, Screen, SectionHeader, Skeleton, TopicRow, tokens, type CategoryCode } from '@/ui'
-import { useCreateTopic, useCreationLimits, useMyTopics, useTopicTodo } from '../hooks/use-workshop'
+import { useCreateTopic, useCreationLimits, useFrozen, useMyTopics, useTopicTodo } from '../hooks/use-workshop'
+import { FrozenNotice } from './frozen-notice'
 import { UniverseSheet } from './workshop-sheets'
 
 const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
@@ -58,17 +59,17 @@ export function MyTopicsPage() {
   const topics = useMyTopics()
   const todo = useTopicTodo()
   const create = useCreateTopic()
-  const { limits, askPremium } = useCreationLimits()
+  const { premium, limits, askPremium } = useCreationLimits()
+  const { frozen, published } = useFrozen()
   const [createOpen, setCreateOpen] = useState(false)
   const [createKey, setCreateKey] = useState(0)
   const list = topics.data?.content ?? []
-  const published = list.filter((topic) => topic.status === 'PUBLISHED').length
   const count = (topic: TopicCardView) => todoTotal(todo.data?.find((item) => item.topicId === topic.topicId))
   const pending = list.filter((topic) => count(topic) > 0)
   const others = list.filter((topic) => count(topic) === 0)
 
   const openCreate = () => {
-    if (published >= limits.topics) return askPremium('topics')
+    if (!premium && published >= limits.publishedTopics) return askPremium(frozen ? 'frozen' : 'topics')
     setCreateKey((key) => key + 1)
     setCreateOpen(true)
   }
@@ -140,6 +141,7 @@ export function MyTopicsPage() {
         />
       ) : (
         <div className="grid gap-6 px-4 pt-1 pb-8">
+          {frozen && <FrozenNotice published={published} limit={limits.publishedTopics} />}
           {pending.length > 0 && (
             <section className="grid gap-3">
               <SectionHeader title={t('workshop.todo')} />

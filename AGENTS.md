@@ -177,7 +177,9 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         Signalements, rejet motivé), Signalements `…/reports/{questionId}` (file balayable, `DetentSheet`, Actuelle /
         Signalée, Clore confirmé, Modifier clôt en `RESOLVED`), Équipe `…/team`. Les notifications de signalement
         ouvrent la file sur leur question (signalement cerclé, retour « Notifications »), celles de brouillon Mon sujet.
-        Écarts : plafonds (1 / 10 sujets, 30 / 150 questions, Équipe Premium) appliqués par l'app seule ; description
+        Plafonds et quotas lus dans `MeView.limits` (`planLimits`, appliqués par le BFF) ; sujets gelés (P21) calculés
+        sur `GET /api/topics?mine=true` (`useFrozen`, bandeau `FrozenNotice`, édition grisée) ; erreurs de limite →
+        feuille Premium (`quotaProblemOf`). Écarts : description
         d'image saisie mais non envoyée (aucun champ backend) ; recherche, tri et filtres sur toutes les questions
         chargées (pas de filtre serveur) ; statuts montrés aussi en brouillon, comme le mobile ; invitation par la
         recherche globale (2 lettres) au lieu d'une liste paginée de candidats ; pas d'entrée Modération sur la Fiche

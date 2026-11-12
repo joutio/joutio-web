@@ -23,12 +23,6 @@ export const challengesService = {
   cancel: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.cancel(challengeId)),
 }
 
-/**
- * Plafond des défis en attente et des salons ouverts (`DuelLimitPolicy` du BFF, 5 par défaut). Le BFF ne l'expose
- * pas : la valeur par défaut est reprise ici, comme le mobile.
- */
-export const CHALLENGE_LIMIT = 5
-
 /** Reçus affichés dans « Tous » ; la liste complète est sous la puce Reçus, 10 par page. */
 export const RECEIVED_PREVIEW = 3
 export const RECEIVED_PAGE = 10

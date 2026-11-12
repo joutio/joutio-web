@@ -25,6 +25,8 @@ export const WORKSHOP_ENDPOINTS = {
 export const workshopService = {
   /** Mes sujets, brouillons et publiés. */
   myTopics: () => api.get<PageResponse<TopicCardView>>(WORKSHOP_ENDPOINTS.contributed, { query: { page: 0, size: 100 } }),
+  /** Sujets dont je suis le créateur (`mine=true`, exclusif des autres filtres). */
+  createdTopics: () => api.get<PageResponse<TopicCardView>>(WORKSHOP_ENDPOINTS.topics, { query: { mine: true, page: 0, size: 100 } }),
   /** Mes sujets › À traiter. */
   todo: () => api.get<TopicTodo[]>(WORKSHOP_ENDPOINTS.todo),
   workshop: (topicId: string) => api.get<TopicWorkshop>(WORKSHOP_ENDPOINTS.workshop(topicId)),
