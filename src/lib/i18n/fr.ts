@@ -992,6 +992,19 @@ export const fr = {
   // Écran 12 : Reprendre une partie.
   'ongoing.title': "Partie en cours",
   'ongoing.join': "Rejoindre",
+  // Écran 13 : Recherche.
+  'search.placeholder': "Sujets et joueurs",
+  'search.label': "Rechercher un sujet ou un joueur",
+  'search.recents': "Récentes",
+  'search.clear': "Effacer",
+  'search.emptyTitle': "Cherche un sujet ou un joueur",
+  'search.emptyText': "Au moins deux lettres.",
+  'search.offline': "Pas de connexion",
+  'search.offlineText': "La recherche reprend dès ton retour en ligne.",
+  'search.noResult': "Aucun résultat pour « {query} »",
+  'search.noResultText': "Vérifie l'orthographe ou essaie un autre mot.",
+  'search.players': "Joueurs",
+  'search.error': "La recherche a échoué",
 }
 
 export type Messages = Record<keyof typeof fr, string>

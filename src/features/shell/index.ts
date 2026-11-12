@@ -1,7 +1,6 @@
 export { AppFrame } from './app-frame'
 export { AuthenticatedLayout } from './authenticated-layout'
 export { CallbackPage } from './callback-page'
-export { PendingScreen } from './placeholder-screen'
 export { TabNav } from './tab-nav'
 export { TABS, type TabKey } from './tabs'
 export { LoginRedirect } from './login-redirect'

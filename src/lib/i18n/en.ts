@@ -993,4 +993,17 @@ export const en: Messages = {
   // Écran 12 : Reprendre une partie.
   'ongoing.title': "Game in progress",
   'ongoing.join': "Join",
+  // Écran 13 : Recherche.
+  'search.placeholder': "Topics and players",
+  'search.label': "Search a topic or a player",
+  'search.recents': "Recent",
+  'search.clear': "Clear",
+  'search.emptyTitle': "Search a topic or a player",
+  'search.emptyText': "At least two letters.",
+  'search.offline': "No connection",
+  'search.offlineText': "Search resumes as soon as you are back online.",
+  'search.noResult': "No results for “{query}”",
+  'search.noResultText': "Check the spelling or try another word.",
+  'search.players': "Players",
+  'search.error': "The search failed",
 }

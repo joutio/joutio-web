@@ -109,7 +109,7 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
 - [x] Étape 1 — Fondations
 - [x] Étape 2 — Plomberie (tests : client HTTP, session, EventStream)
 - [x] Étape 3 — Socle de composants (groupes 1 à 5) ; onglets en écrans placeholder
-- [ ] Étape 4 — Écrans dans l'ordre du parcours (`web-kit.md` § 6)
+- [x] Étape 4 — Écrans dans l'ordre du parcours (`web-kit.md` § 6)
   - [x] Onboarding `/welcome` (connexion code/Google/Facebook, univers, notifications, premier thème, compte suspendu)
   - [x] Accueil `/` (Top 10, Nouveaux thèmes, Suivis paginés par univers, rang, série, cloche) ; fiche sujet,
         notifications et recherche en écrans d'attente. Le BFF n'a pas de slug de sujet : `/topics/{topicId}` en attendant
@@ -183,4 +183,7 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         temps réel (`shared/ongoing-store`), bandeau global « Partie en cours » (Rejoindre) à la place de la bannière de
         connexion quand elle est absente, sans redirection, masqué dans l'arène de la partie. Pas de suivi publicitaire
         ni d'`AdSlot` sur le web (aucune régie en V1)
+  - [x] Recherche `/search` (champ focalisé, récentes sur l'appareil `joutio.search.recents`, Sujets puis Joueurs dès
+        2 lettres par `GET /api/suggestions`, hors connexion, aucun résultat). Écart : sans bottom nav, comme le lab (la
+        spec, encore en brouillon, la mentionne) ; l'écran d'attente `PendingScreen` est retiré, plus aucun écran manquant
 - [ ] Bascule (merge de `rewrite/web-kit`)
