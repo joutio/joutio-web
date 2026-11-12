@@ -1,13 +1,9 @@
 import { Outlet } from 'react-router-dom'
 import { useT } from '@/lib/i18n'
 import { DialogHost } from '@/shared/dialog-host'
+import { STORES } from '@/shared/stores'
 import { ToastHost } from '@/shared/toast-host'
 import { WebFrame } from '@/ui'
-
-const STORES = {
-  appStore: 'https://apps.apple.com/app/joutio',
-  googlePlay: 'https://play.google.com/store/apps/details?id=com.joutio.app',
-}
 
 /**
  * Cadre de toute l'app (D16) : plein écran sous 640 px, colonne de 626 px (iPhone Duo ouvert) centrée au-delà, marque dans les marges dès 1 024 px.

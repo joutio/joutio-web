@@ -575,6 +575,13 @@
     transition: none;
   }
 
+  /* Feuilles Vaul (`MobileSheet`) : mêmes 500 ms et même courbe que `--jo-motion-sheet-*`, coupées ici. */
+  [data-vaul-drawer],
+  [data-vaul-overlay] {
+    animation: none !important;
+    transition: none !important;
+  }
+
   .jo-skeleton,
   .jo-breathe,
   .jo-celebrate,

@@ -2,7 +2,7 @@ import { localizedQuestion, type GameRoundState, type GameState } from '@joutio/
 import { CaretLeftIcon, CaretRightIcon, CheckIcon, FlagIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { AnswerTimingRow, Button, IconButton, MobileSheet, PageDots, QuestionBlock, RoundReviewTabs, TabsScrollView, type AnswerCardProps, type ReviewAnswer } from '@/ui'
+import { AnswerTimingRow, Button, Carousel, IconButton, MobileSheet, PageDots, QuestionBlock, RoundReviewTabs, type AnswerCardProps, type ReviewAnswer } from '@/ui'
 import { reviewRoundsOf } from '../lib/review'
 import { ReportQuestionSheet } from './report-sheets'
 
@@ -32,13 +32,14 @@ function ReviewPage({ round, me, opponent, myName, opponentName, language }: Pag
       }
     })
   return (
-    <div className="flex h-full flex-col gap-3 px-4">
+    <div className="flex min-h-full flex-col gap-3 px-4 pb-2">
       <AnswerTimingRow
         first={first}
         me={{ name: myName, seconds: mine ? mine.timeMs / 1000 : undefined, points: mine?.points ?? 0 }}
         opponent={{ name: opponentName, seconds: theirs ? theirs.timeMs / 1000 : undefined, points: theirs?.points ?? 0 }}
       />
-      <div className="min-h-0 flex-1">
+      {/* Hauteur plancher : sur un écran court, la manche défile au lieu d'écraser l'image et les réponses. */}
+      <div className="flex min-h-[420px] flex-1">
         <QuestionBlock text={questionText} image={round.imageUrl ?? undefined} answers={cards} />
       </div>
     </div>
@@ -55,7 +56,7 @@ export type DuelReviewProps = {
 }
 
 /**
- * Détails du duel (`resultat.md` § 6, lab `resultat.tsx`) : feuille haute, onglets des manches, page par manche à balayer,
+ * Détails du duel (`resultat.md` § 6, lab `resultat.tsx`) : feuille haute (Vaul), onglets des manches, page par manche à balayer (Embla, chaque manche défile si elle dépasse),
  * flèches et « Signaler la question » (aussi à l'entraînement : on signale la question, pas l'adversaire). La manche
  * consultée est gardée d'une ouverture à l'autre ; les images sont préchargées dès le résultat.
  */
@@ -104,15 +105,14 @@ export function DuelReview({ open, onClose, game, me, myName, opponentName }: Du
       >
         <div className="flex h-full flex-col gap-3">
           <RoundReviewTabs rounds={tabs} value={index} onChange={setIndex} />
-          <TabsScrollView
-            contained
-            className="-mx-4 min-h-0 flex-1"
-            value={String(index)}
-            onChange={(value) => setIndex(Number(value))}
-            pages={rounds.map((item, page) => ({
-              value: String(page),
-              content: <ReviewPage round={item} me={me} opponent={opponent} myName={myName} opponentName={opponentName} language={language} />,
-            }))}
+          <Carousel
+            label={t('result.details')}
+            className="-mx-4 flex-1"
+            index={index}
+            onIndexChange={setIndex}
+            slides={rounds.map((item) => (
+              <ReviewPage key={item.round} round={item} me={me} opponent={opponent} myName={myName} opponentName={opponentName} language={language} />
+            ))}
           />
         </div>
       </MobileSheet>

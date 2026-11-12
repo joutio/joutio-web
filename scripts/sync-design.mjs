@@ -20,7 +20,8 @@ const copies = [
   ['src/styles/site.css', 'src/styles/design.css'],
   ['src/design-system/tokens.generated.ts', 'src/ui/tokens.generated.ts'],
   ['public/brand', 'public/brand'],
-  ['public/topics', 'public/topics'],
+  // Pas `public/topics` (images de démonstration du lab) : un dossier `topics/` servi à la racine entre en conflit avec
+  // la route `/topics`, et nginx (`try_files $uri $uri/`) répond 403 au rechargement de la page Sujets.
 ]
 
 for (const [from, to] of copies) {

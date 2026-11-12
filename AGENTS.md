@@ -27,12 +27,14 @@
 `@stomp/stompjs`, `@phosphor-icons/react`, `class-variance-authority`, `clsx`, `tailwind-merge`,
 `@fontsource-variable/geist`, `@fontsource-variable/geist-mono`, `@joutio/client-domain`, `@dicebear/core` et
 `@dicebear/styles` (avatars des joueurs, mêmes options et même rendu que le lab et le mobile ; décision du 2026-11-11,
-moteur dans `src/shared/avatar/`, styles chargés à la demande par `import()`).
+moteur dans `src/shared/avatar/`, styles chargés à la demande par `import()`), `vaul` (feuilles `MobileSheet` : geste
+tirer-pour-fermer, voile, focus, Échap ; rendue dans la colonne, sans portail) et `embla-carousel-react` (`Carousel` de
+`src/ui/web/` : Détails du duel, séquence de déblocages, Signalements d'une question) — décision du 2026-11-12.
 Dev : Vite 8, `@vitejs/plugin-react`, Tailwind v4 (`@tailwindcss/vite`), TypeScript ~6 strict, ESLint, Vitest
 (jsdom, Testing Library).
 
-**Exclues** (bloquées par `no-restricted-imports`) : shadcn, Radix, Base UI, framer-motion / motion, cmdk, sonner,
-embla, oidc-client-ts, i18next, lucide. Toute nouvelle dépendance se justifie ici avant d'être ajoutée.
+**Exclues** (bloquées par `no-restricted-imports`) : shadcn, Radix (seulement en dépendance de Vaul, jamais
+importé), Base UI, framer-motion / motion, cmdk, sonner, oidc-client-ts, i18next, lucide. Toute nouvelle dépendance se justifie ici avant d'être ajoutée.
 
 ## 3. Structure
 
@@ -66,7 +68,10 @@ src/
 | `src/styles/tokens.generated.css` | `src/styles/tokens.generated.css` |
 | `src/styles/site.css` | `src/styles/design.css` |
 | `src/design-system/tokens.generated.ts` | `src/ui/tokens.generated.ts` |
-| `public/brand/`, `public/topics/` | idem |
+| `public/brand/` | idem |
+
+Pas de `public/topics/` : un dossier servi à `/topics/` masque la route Sujets (nginx `try_files $uri $uri/` → 403 au
+rechargement). Aucun dossier de `public/` ne doit porter le nom d'une route.
 
 Typographie en `cqw`, relative à la colonne de `WebFrame`. Thème système / clair / sombre via `data-jo-theme` sur
 `<html>` (script inline d'`index.html` avant le premier rendu, préférence `localStorage` `joutio-theme`) ; les écrans
@@ -186,4 +191,9 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
   - [x] Recherche `/search` (champ focalisé, récentes sur l'appareil `joutio.search.recents`, Sujets puis Joueurs dès
         2 lettres par `GET /api/suggestions`, hors connexion, aucun résultat). Écart : sans bottom nav, comme le lab (la
         spec, encore en brouillon, la mentionne) ; l'écran d'attente `PendingScreen` est retiré, plus aucun écran manquant
+- [x] Ajustements web du 2026-11-12 : feuilles sur Vaul, `TabsScrollView` sans balayage (propre au mobile), `Carousel`
+      Embla (Détails du duel, chaque manche défilable ; séquence de déblocages ; Signalements), séquence de déblocages
+      jouée une seule fois par partie (`features/result/lib/celebrated.ts` + état de navigation nettoyé), bannière
+      « Joutio est meilleur dans l'app » sur l'Accueil (< 1 024 px, masquée après « Ouvrir »), tirer-pour-rafraîchir
+      rendu à `ParallaxScreen`, `public/topics/` retiré (403 au rechargement de `/topics`)
 - [ ] Bascule (merge de `rewrite/web-kit`)

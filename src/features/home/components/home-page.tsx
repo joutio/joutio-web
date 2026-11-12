@@ -36,6 +36,7 @@ import {
   type CategoryCode,
 } from '@/ui'
 import { useHome } from '../hooks/use-home'
+import { useAppBanner } from './app-banner'
 
 const LANDSCAPE_WIDTH = 240
 
@@ -174,6 +175,7 @@ function Loading() {
  * collés, « Bonjour X » apparaît dans la barre. Toucher Accueil dans la bottom nav remonte en haut.
  */
 export function HomePage() {
+  const appBanner = useAppBanner()
   const t = useT()
   const navigate = useNavigate()
   const me = useMe()
@@ -199,6 +201,7 @@ export function HomePage() {
 
   return (
     <Screen
+      banner={appBanner}
       header={
         <header className="grid min-h-[52px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 pr-1.5 pl-4">
           <Logo variant="lockup" size={28} />

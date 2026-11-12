@@ -1,7 +1,7 @@
 import type { MasteryTier } from '@joutio/client-domain/api-types'
 import { isBonusRound, ROUNDS, sortedRounds, type GameResultView, type GameState } from '@joutio/client-domain/game'
 import { CaretUpIcon, FlagIcon, LightningIcon, WarningCircleIcon, XIcon } from '@phosphor-icons/react'
-import { useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useBotDifficulty, usePlayerProfile, useStartMatchmaking, useStartTraining, type PlayTopic } from '@/features/play'
@@ -31,6 +31,7 @@ import {
   type TierCode,
 } from '@/ui'
 import { useGameHistory, useGameResult, useSendRematch } from '../hooks/use-result'
+import { celebrated } from '../lib/celebrated'
 import { reviewRoundsOf } from '../lib/review'
 import { DuelReview } from './duel-review'
 import { ReportPlayerSheet } from './report-sheets'
@@ -87,16 +88,24 @@ function Loading() {
 }
 
 /**
- * Résultat d'un duel (`resultat.md`, lab `resultat.tsx`). Juste après le duel (`celebrate`) : la séquence de
- * déblocages (rang, titres) puis le résultat ; depuis l'historique, le résultat seul. Bilan et manches sont relus en
+ * Résultat d'un duel (`resultat.md`, lab `resultat.tsx`). Juste après le duel (`celebrate`, une seule fois par partie) :
+ * la séquence de déblocages (rang, titres), à balayer, puis le résultat ; ensuite (historique, rechargement, retour),
+ * le résultat seul. Bilan et manches sont relus en
  * REST (la partie est terminée) ; seule la récompense est attendue un instant.
  */
 export function ResultPage() {
   const { gameId = '' } = useParams()
   const location = useLocation()
+  const navigate = useNavigate()
   const t = useT()
   const passed = location.state as { topic?: PlayTopic; celebrate?: boolean } | null
-  const celebrate = passed?.celebrate === true
+  // Lu une seule fois : la séquence ne se rejoue ni au rechargement, ni au retour arrière, ni depuis l'historique.
+  const [celebrate] = useState(() => passed?.celebrate === true && !celebrated.has(gameId))
+  useEffect(() => {
+    if (passed?.celebrate !== true) return
+    celebrated.add(gameId)
+    void navigate(`${location.pathname}${location.search}`, { replace: true, state: { ...passed, celebrate: false } })
+  }, [gameId, location.pathname, location.search, navigate, passed])
   const history = useGameHistory(gameId)
   const result = useGameResult(gameId, celebrate)
 
@@ -163,7 +172,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
 
   const quit = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.topic(topic.topicId), { replace: true }))
 
-  // ─── Séquence de déblocages : un plein écran par déblocage ───
+  // ─── Séquence de déblocages : un plein écran par déblocage, à balayer ───
   if (unlocks.length > 0) {
     const index = Math.min(step, unlocks.length - 1)
     const current = unlocks[index]
@@ -177,27 +186,27 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           .then(() => toast.success(t('topic.linkCopied')))
           .catch(() => undefined)
     }
-    let content = null
-    if (current?.kind === 'rank') {
-      const next = ORDER[ORDER.indexOf(current.tier) + 1]
-      content = (
-        <RankPromotion
-          from={current.from}
-          tier={current.tier}
-          next={next}
-          name={myName}
-          src={myAvatar}
-          text={t('result.rankText')}
-          nextRule={next ? t('result.rankNext', { elo: formatNumber(tokens.tier[next].minElo, language) }) : undefined}
-        />
-      )
-    } else if (current) {
-      const key = `${topic.topicId}:${current.tier}`
-      const next = MASTERY_TIERS[MASTERY_TIERS.indexOf(current.tier) + 1]
-      const name = data.topic.titles?.[language]?.[current.tier] ?? data.topic.titles?.fr?.[current.tier] ?? `${tokens.tier[current.tier as TierCode].label} · ${topic.name}`
-      content = (
+    const slideOf = (unlock: Unlock): ReactNode => {
+      if (unlock.kind === 'rank') {
+        const next = ORDER[ORDER.indexOf(unlock.tier) + 1]
+        return (
+          <RankPromotion
+            from={unlock.from}
+            tier={unlock.tier}
+            next={next}
+            name={myName}
+            src={myAvatar}
+            text={t('result.rankText')}
+            nextRule={next ? t('result.rankNext', { elo: formatNumber(tokens.tier[next].minElo, language) }) : undefined}
+          />
+        )
+      }
+      const key = `${topic.topicId}:${unlock.tier}`
+      const next = MASTERY_TIERS[MASTERY_TIERS.indexOf(unlock.tier) + 1]
+      const name = data.topic.titles?.[language]?.[unlock.tier] ?? data.topic.titles?.fr?.[unlock.tier] ?? `${tokens.tier[unlock.tier as TierCode].label} · ${topic.name}`
+      return (
         <TitleUnlock
-          tier={current.tier as TierCode}
+          tier={unlock.tier as TierCode}
           title={name}
           topic={topic.name}
           text={t('result.titleText')}
@@ -213,12 +222,12 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
         step={index}
         steps={unlocks.length}
         last={last}
+        slides={unlocks.map(slideOf)}
+        onStepChange={setStep}
         onContinue={() => (last ? setSequenceDone(true) : setStep(index + 1))}
         onSkip={() => setSequenceDone(true)}
         onShare={share}
-      >
-        {content}
-      </UnlockSequence>
+      />
     )
   }
 

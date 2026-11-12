@@ -5,7 +5,10 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
-/** Dépendances exclues par le kit web (`design/specs/web-kit.md` § 3) : les composants viennent du lab. */
+/**
+ * Dépendances exclues par le kit web (`design/specs/web-kit.md` § 3) : les composants viennent du lab. Exceptions
+ * du 2026-11-12 : Vaul (feuilles, `MobileSheet`) et Embla (`Carousel`) ; Radix reste interdit en import direct.
+ */
 const EXCLUDED = [
   '@radix-ui/*',
   '@base-ui/*',
@@ -14,7 +17,6 @@ const EXCLUDED = [
   'motion/*',
   'cmdk',
   'sonner',
-  'embla-carousel*',
   'oidc-client-ts',
   'i18next',
   'react-i18next',

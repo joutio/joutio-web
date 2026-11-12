@@ -7,6 +7,7 @@ import {
   Banner,
   BottomNav,
   Button,
+  Carousel,
   Chip,
   Dialog,
   EmptyState,
@@ -27,6 +28,7 @@ import {
   Skeleton,
   Switch,
   Toast,
+  UnlockSequence,
 } from '@/ui'
 import { TABS } from '@/features/shell'
 
@@ -38,6 +40,10 @@ export function DevUiPage() {
   const { preference, setPreference } = useThemeStore()
   const [sheet, setSheet] = useState(false)
   const [dialog, setDialog] = useState(false)
+  const [review, setReview] = useState(false)
+  const [slide, setSlide] = useState(0)
+  const [unlock, setUnlock] = useState(false)
+  const [step, setStep] = useState(0)
   const [toggle, setToggle] = useState(true)
   const [segment, setSegment] = useState<'all' | 'week' | 'month'>('all')
   const [query, setQuery] = useState('')
@@ -59,6 +65,39 @@ export function DevUiPage() {
             <ListRow label="Première ligne" sub="Avec sous-titre" />
             <ListRow label="Interrupteur" control="toggle" on={toggle} onToggle={setToggle} last />
           </MobileSheet>
+          {/* Carrousel (Embla) dans une feuille haute (Vaul) : balayage horizontal, chaque page défile verticalement. */}
+          <MobileSheet open={review} onClose={() => setReview(false)} title="Carrousel" subtitle={`Page ${slide + 1} sur 3`} tall>
+            <Carousel
+              label="Pages"
+              className="-mx-4 h-full"
+              index={slide}
+              onIndexChange={setSlide}
+              slides={[0, 1, 2].map((page) => (
+                <div key={page} className="grid gap-2 px-4">
+                  {Array.from({ length: 24 }, (_, row) => (
+                    <ListRow key={row} label={`Page ${page + 1} · ligne ${row + 1}`} last={row === 23} />
+                  ))}
+                </div>
+              ))}
+            />
+          </MobileSheet>
+          {unlock && (
+            <div className="absolute inset-0 z-30">
+              <UnlockSequence
+                step={step}
+                steps={3}
+                last={step === 2}
+                slides={[0, 1, 2].map((page) => (
+                  <div key={page} className="grid flex-1 place-items-center jo-type-title-1">
+                    Déblocage {page + 1}
+                  </div>
+                ))}
+                onStepChange={setStep}
+                onContinue={() => (step === 2 ? setUnlock(false) : setStep(step + 1))}
+                onSkip={() => setUnlock(false)}
+              />
+            </div>
+          )}
           <Dialog
             open={dialog}
             onClose={() => setDialog(false)}
@@ -149,6 +188,18 @@ export function DevUiPage() {
         <section className="grid gap-3">
           <SectionHeader title="4 · Superpositions et retours" />
           <div className="flex flex-wrap gap-2">
+            <Button variant="gray" onClick={() => setReview(true)}>
+              Carrousel
+            </Button>
+            <Button
+              variant="gray"
+              onClick={() => {
+                setStep(0)
+                setUnlock(true)
+              }}
+            >
+              Déblocages
+            </Button>
             <Button variant="gray" onClick={() => setSheet(true)}>
               Ouvrir la feuille
             </Button>

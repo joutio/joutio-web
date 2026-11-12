@@ -106,7 +106,9 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, eyebrow
       {/* Sous une bande, la safe area haute est déjà prise : l'image et la barre compacte repartent de 0. */}
       <div className="relative flex min-h-0 flex-1 flex-col" style={banner ? ({ '--jo-safe-top': '0px' } as React.CSSProperties) : undefined}>
       <div className="relative min-h-0 flex-1">
-      <main ref={main} onScroll={onScroll} className="jo-no-scrollbar h-full overflow-y-auto overscroll-contain">
+      {/* Sans `overscroll-contain` (écart web du 2026-11-12) : en haut du défilement, le geste rejoint la page et le
+          navigateur mobile peut rafraîchir, comme sur les écrans `Screen` (Fiche sujet, Profil, Fiche joueur). */}
+      <main ref={main} onScroll={onScroll} className="jo-no-scrollbar h-full overflow-y-auto">
         <div className="relative overflow-hidden bg-jo-surface" style={{ height: heroHeight }}>
           {image && <img src={image} alt="" className="jo-parallax-image absolute inset-0 size-full object-cover" />}
           <div className="absolute inset-0 bg-linear-to-t from-jo-bg via-jo-bg/40 to-transparent" />
