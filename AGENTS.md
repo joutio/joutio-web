@@ -151,4 +151,16 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         accepté relue sur `GET /api/challenges/{id}` jusqu'à son `roomId` (pas de recalcul local de l'identifiant),
         brouillon et signalement ouvrent `/me/topics` en écran d'attente (atelier à l'écran 11), pas de toast à la
         réception d'une notification ni de bandeau « Partie en cours »
+  - [x] Réglages `/me/settings` (Profil : avatar, pseudonyme, bio, pays avec drapeaux, centres d'intérêt, bannière
+        envoyée par `POST /api/media` ; Langue ; Apparence Sombre / Clair / Système ; Duel sans Vibrations ;
+        Notifications avec la `Notice` tant que le navigateur ne les autorise pas ; Compte : Premium, Mes sujets, pages
+        légales du site (`VITE_SITE_URL`), Se déconnecter confirmé), Supprimer mon compte `/me/settings/delete` (code
+        envoyé à l'ouverture, Renvoyer le code, confirmation puis retour à la connexion), Éditeur d'avatar
+        `/me/settings/avatar` (onglets du lab Style, Visage, Cheveux, Lunettes, Fond ; droits des styles comme
+        `AvatarEntitlementPolicy` ; enregistrement optimiste), Premium : feuille unique (`PremiumHost`, `showPremium`)
+        ouverte par les Réglages, l'éditeur, Sujets joués et la limite de défis, `/premium` l'ouvre sur l'Accueil.
+        Écarts : Premium en état Bientôt seulement (offre non ouverte, liste d'attente mémorisée sur l'appareil,
+        aucun endpoint) ; Revanches, Rangs et badges, Sons du duel et Icônes et points des réponses sont locaux à
+        l'appareil (`useDeviceSettings`), seul Défis et salons est persisté (`ROOM`) ; aucun son n'existe encore ;
+        l'éditeur ne règle que les options Micah maquettées par le lab (Lorelei et Notionists : style et fond)
 - [ ] Bascule (merge de `rewrite/web-kit`)

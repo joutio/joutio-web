@@ -18,6 +18,7 @@ import { useTopicOverview } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { readServerNow, useConnectionStore, useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
+import { useDeviceSettings } from '@/shared/device-settings'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { toast, useToastSuppression } from '@/shared/toast'
@@ -75,6 +76,8 @@ export function DuelPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const t = useT()
+  // Réglages › Icônes et points des réponses (local à l'appareil, désactivé par défaut).
+  const answerDetails = useDeviceSettings((state) => state.answerDetails)
   const language = useLanguageStore((state) => state.language)
   useToastSuppression()
   useServerClock()
@@ -224,6 +227,7 @@ export function DuelPage() {
                 meta={t('duel.meta', { topic, round: roundNumber, total: ROUNDS })}
                 image={arena.imageUrl ?? undefined}
                 answers={answersShown ? answers : undefined}
+                details={answerDetails}
                 animated={animateQuestion && scene.kind === 'question'}
               />
             </div>

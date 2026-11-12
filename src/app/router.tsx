@@ -8,8 +8,10 @@ import { HomePage } from '@/features/home'
 import { NotificationsPage } from '@/features/notifications'
 import { JoinPage, MatchmakingPage, RoomPage } from '@/features/play'
 import { PlayerPage } from '@/features/player'
+import { PremiumRoute } from '@/features/premium'
 import { PlayedTopicsPage, ProfilePage, StreakPage, TitlesPage } from '@/features/profile'
 import { ResultPage } from '@/features/result'
+import { AvatarEditorPage, DeleteAccountPage, SettingsPage } from '@/features/settings'
 import { SocialPage } from '@/features/social'
 import { LeaderboardPage, TopicPage } from '@/features/topic'
 import { TopicsPage } from '@/features/topics'
@@ -43,13 +45,15 @@ export const router = createBrowserRouter([
               { path: '/me/titles', element: <TitlesPage /> },
               { path: '/me/streak', element: <StreakPage /> },
               { path: '/me/played', element: <PlayedTopicsPage /> },
-              { path: '/me/settings', element: <PendingScreen title="profile.settings" /> },
+              { path: '/me/settings', element: <SettingsPage /> },
+              { path: '/me/settings/avatar', element: <AvatarEditorPage /> },
+              { path: '/me/settings/delete', element: <DeleteAccountPage /> },
               { path: '/players/:userId', element: <PlayerPage /> },
               { path: '/games/:gameId/result', element: <ResultPage /> },
               { path: '/games/:gameId', element: <DuelPage /> },
               { path: '/rooms/:roomId', element: <RoomPage /> },
               { path: '/play', element: <MatchmakingPage /> },
-              { path: '/premium', element: <PendingScreen title="pending.premium" /> },
+              { path: '/premium', element: <PremiumRoute /> },
               { path: '/notifications', element: <NotificationsPage /> },
               { path: '/me/topics', element: <PendingScreen title="pending.creation" /> },
               { path: '/search', element: <PendingScreen title="pending.search" /> },

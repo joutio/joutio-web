@@ -13,6 +13,9 @@ export const ROUTES = {
   me: '/me',
   myTitles: '/me/titles',
   settings: '/me/settings',
+  /** Éditeur d'avatar et suppression du compte : poussés depuis les Réglages (`web.md` § 2 : « Réglages (avatar, suppression) »). */
+  avatar: '/me/settings/avatar',
+  deleteAccount: '/me/settings/delete',
   /** Création : Mes sujets et l'atelier (`web.md` § 2). */
   myTopics: '/me/topics',
   /** Série et Sujets joués : écrans poussés du Profil, absents de `web.md` § 2. */

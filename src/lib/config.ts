@@ -9,6 +9,8 @@ const schema = z.object({
   VITE_OIDC_AUTHORITY: z.url().default('http://localhost:8085'),
   VITE_OIDC_CLIENT_ID: z.string().min(1).default('web'),
   VITE_OIDC_REDIRECT_URI: z.url().optional(),
+  /** Site public (`joutio-landing`) : pages légales des Réglages. */
+  VITE_SITE_URL: z.url().default('https://joutio.com'),
 })
 
 const parsed = schema.safeParse(import.meta.env)
@@ -26,6 +28,8 @@ export const config = {
   /** Issuer OIDC (`joutio-identity`) : connexion, échange et renouvellement des jetons. */
   oidcAuthority: env.VITE_OIDC_AUTHORITY.replace(/\/$/, ''),
   oidcClientId: env.VITE_OIDC_CLIENT_ID,
+  /** Site public : `/privacy`, `/terms`, `/data-deletion`. */
+  siteUrl: env.VITE_SITE_URL.replace(/\/$/, ''),
   oidcRedirectUri: env.VITE_OIDC_REDIRECT_URI ?? `${window.location.origin}/callback`,
   oidcScope: 'openid profile email',
   version: __APP_VERSION__,

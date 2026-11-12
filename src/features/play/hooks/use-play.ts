@@ -11,6 +11,7 @@ import { useT } from '@/lib/i18n'
 import { optimisticUpdate } from '@/lib/optimistic-cache'
 import { queryKeys } from '@/lib/query-keys'
 import { readServerNow, subscribeStomp, useEventStream } from '@/lib/realtime'
+import { showPremium } from '@/features/premium'
 import { showDialog } from '@/shared/dialog'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
@@ -82,7 +83,7 @@ function useQuotaDialog() {
       tone: 'accent',
       actions: [
         { label: t('play.seeChallenges'), variant: 'filled', tone: 'accent', onClick: () => void navigate(ROUTES.challenges) },
-        { label: t('play.goPremium'), variant: 'tinted', tone: 'accent', onClick: () => void navigate(ROUTES.premium) },
+        { label: t('play.goPremium'), variant: 'tinted', tone: 'accent', onClick: () => showPremium('quota') },
         { label: t('play.close'), variant: 'plain', tone: 'neutral' },
       ],
     })

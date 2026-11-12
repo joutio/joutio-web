@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { TabNav } from '@/features/shell'
 import { formatNumber, MASTERY_TIERS, MASTERY_XP } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
+import { showPremium } from '@/features/premium'
 import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { Button, EmptyState, FeedFooter, MobileTopBar, Screen, Skeleton, TopicRow, tokens } from '@/ui'
@@ -75,7 +76,7 @@ export function PlayedTopicsPage() {
             />
             <div className="grid gap-2">
               <p className="jo-type-caption m-0 text-center text-pretty text-jo-muted">{t('profile.premiumDetail')}</p>
-              <Button full variant="tinted" icon={CrownSimpleIcon} onClick={() => void navigate(ROUTES.premium)}>
+              <Button full variant="tinted" icon={CrownSimpleIcon} onClick={() => showPremium()}>
                 {t('profile.discoverPremium')}
               </Button>
             </div>

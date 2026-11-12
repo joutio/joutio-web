@@ -61,3 +61,20 @@ export function useUserAvatar(owner: AvatarOwner | null | undefined): string | u
   }, [result, style])
   return result ?? undefined
 }
+
+/** Options d'avatar éditées (style + attributs), sérialisées telles quelles dans `avatarOptions`. */
+export type AvatarDraft = { style: string } & Record<string, string | undefined>
+
+/** Lit les options d'un joueur ; sans options, l'avatar de base. */
+export function parseAvatarOptions(json: string | null | undefined): AvatarDraft {
+  const config = parse(json)
+  return config ? ({ ...config, style: config.style ?? 'micah' } as AvatarDraft) : { style: 'base', backgroundColor: BACKGROUND_COLORS[1] }
+}
+
+/** Aperçu synchrone (éditeur d'avatar) ; `undefined` tant que le style n'est pas chargé (`loadAvatarStyle`). */
+export function previewAvatar(userId: string, draft: AvatarDraft): string | undefined {
+  return render({ userId, avatarOptions: JSON.stringify(draft) }) ?? undefined
+}
+
+export { loadAvatarStyle } from './styles'
+export { BACKGROUND_COLORS, HAIR_COLORS } from './styles/palettes'

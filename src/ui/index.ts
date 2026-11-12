@@ -94,3 +94,8 @@ export * from './primitives/topics-donut.tsx'
 // Écran 9 : Social, Défis, Notifications.
 export * from './primitives/challenge-list-row.tsx'
 export * from './primitives/notification-row.tsx'
+// Écran 10 : Réglages, Éditeur d'avatar, Premium.
+export * from './primitives/option-tile.tsx'
+export * from './primitives/color-swatch.tsx'
+export * from './primitives/plan-option.tsx'
+export * from './primitives/image-picker.tsx'
