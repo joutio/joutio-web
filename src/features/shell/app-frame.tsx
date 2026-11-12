@@ -10,7 +10,7 @@ const STORES = {
 }
 
 /**
- * Cadre de toute l'app (D16) : plein écran sous 640 px, colonne de 430 px centrée au-delà, marque dans les marges.
+ * Cadre de toute l'app (D16) : plein écran sous 640 px, colonne de 626 px (iPhone Duo ouvert) centrée au-delà, marque dans les marges dès 1 024 px.
  * La colonne est le conteneur des tailles fluides (`cqw`), des feuilles, dialogues et toasts.
  */
 export function AppFrame() {
