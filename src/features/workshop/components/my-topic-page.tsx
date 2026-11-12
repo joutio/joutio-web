@@ -1,4 +1,4 @@
-import { MAX_NAME, MIN_QUESTIONS, todoTotal, workshopRole, type QuestionEditorView } from '@joutio/client-domain/authoring'
+import { MAX_NAME, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client-domain/authoring'
 import { FileDashedIcon, ImageIcon, ListChecksIcon, PencilSimpleIcon, ShieldCheckIcon, SquaresFourIcon, StickerIcon, TrashIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -31,7 +31,6 @@ const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
 
 type Sheet = 'name' | 'universe' | 'image' | 'pictogram'
 
-const approvedOf = (questions: readonly QuestionEditorView[]) => questions.filter((question) => question.status === 'APPROVED').length
 
 /**
  * Mon sujet (`creation.md` § 1, lab `MyTopicPage`) : même page en brouillon et publié, sans bottom nav. En-tête en
@@ -101,7 +100,8 @@ export function MyTopicPage() {
   const category = toCategoryCode(topic.category)
   const draft = topic.status === 'DRAFT'
   const list = questions.data ?? []
-  const approved = questions.data ? approvedOf(list) : topic.questionsCount
+  // Questions jouables (approuvées dans une même langue) : c'est ce que la publication exige.
+  const approved = questions.data ? playableCount(list) : topic.questionsCount
   const visible = list.filter((question) => question.status !== 'ARCHIVED').length
   const ready = approved >= MIN_QUESTIONS
   const locked = locks(topic, role)

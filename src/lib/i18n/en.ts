@@ -861,7 +861,7 @@ export const en: Messages = {
   'workshop.untranslatedLower': "no English",
   'workshop.reportsOne': "{count} report",
   'workshop.reportsMany': "{count} reports",
-  'workshop.minimum': "{count} / {min} minimum to publish",
+  'workshop.minimum': "{count} / {min} questions in one language to publish",
   'workshop.ceiling': "{count} / {max} questions",
   'workshop.fullTitle': "Topic full",
   'workshop.fullText': "{max} questions at most. Remove a question to add another.",

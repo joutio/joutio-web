@@ -860,7 +860,7 @@ export const fr = {
   'workshop.untranslatedLower': "sans anglais",
   'workshop.reportsOne': "{count} signalement",
   'workshop.reportsMany': "{count} signalements",
-  'workshop.minimum': "{count} / {min} minimum pour publier",
+  'workshop.minimum': "{count} / {min} questions dans une même langue pour publier",
   'workshop.ceiling': "{count} / {max} questions",
   'workshop.fullTitle': "Sujet complet",
   'workshop.fullText': "{max} questions au maximum. Retire une question pour en ajouter une autre.",
