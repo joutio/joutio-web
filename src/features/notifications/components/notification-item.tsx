@@ -1,8 +1,8 @@
 import type { ChallengeView } from '@joutio/client-domain/api-types'
-import { BellIcon, CheckIcon, FlagIcon, LightningIcon, ShieldWarningIcon, SwordIcon, UserPlusIcon, WarningIcon, XIcon, type Icon } from '@phosphor-icons/react'
+import { BellIcon } from '@phosphor-icons/react'
 import { useQuery } from '@tanstack/react-query'
 import { usePlayerProfile } from '@/features/player'
-import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
+import { useLanguageStore, useT } from '@/lib/i18n'
 import { queryKeys } from '@/lib/query-keys'
 import type { NotificationView } from '@/lib/realtime'
 import { readServerNow } from '@/lib/realtime'
@@ -12,30 +12,8 @@ import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
 import { NotificationRow } from '@/ui'
 import { useDeleteNotification, useOpenNotification } from '../hooks/use-notifications'
+import { NOTIFICATION_ICONS, notificationActorId, notificationTitleKey } from '../lib/notification-presentation'
 import { isExpired, isUnread } from '../lib/notifications-service'
-
-/** Pictogramme des notifications sans joueur. */
-const ICONS: Record<NotificationView['type'], Icon> = {
-  FOLLOW: UserPlusIcon,
-  CHALLENGE_RECEIVED: SwordIcon,
-  CHALLENGE_DECLINED: XIcon,
-  ROOM_ACCEPTED: CheckIcon,
-  WIZZ: LightningIcon,
-  QUESTION_REPORTED: FlagIcon,
-  TOPIC_DRAFTED: WarningIcon,
-  ACCOUNT_SUSPENDED: ShieldWarningIcon,
-}
-
-const TITLES: Record<NotificationView['type'], MessageKey> = {
-  FOLLOW: 'notifications.follow',
-  CHALLENGE_RECEIVED: 'notifications.challenge',
-  CHALLENGE_DECLINED: 'notifications.declined',
-  ROOM_ACCEPTED: 'notifications.accepted',
-  WIZZ: 'notifications.wizz',
-  QUESTION_REPORTED: 'notifications.reported',
-  TOPIC_DRAFTED: 'notifications.drafted',
-  ACCOUNT_SUSPENDED: 'notifications.suspended',
-}
 
 /** Délai écoulé : « à l'instant », « il y a 12 min », « il y a 3 h », « il y a 2 j », puis la date. */
 function useRelativeTime() {
@@ -64,7 +42,7 @@ export function NotificationItem({ notification, last }: { notification: Notific
   const remove = useDeleteNotification()
   const relative = useRelativeTime()
   const duration = useDuration()
-  const actorId = notification.type === 'QUESTION_REPORTED' ? null : notification.actorId
+  const actorId = notificationActorId(notification)
   const actor = usePlayerProfile(actorId ?? '').data
   const src = useUserAvatar(actor)
   // Défis tenus à jour par le runtime (badge de l'onglet) : lus en cache, sans requête de plus.
@@ -72,8 +50,7 @@ export function NotificationItem({ notification, last }: { notification: Notific
   const challenge = notification.type === 'CHALLENGE_RECEIVED' ? challenges?.find((item) => item.challengeId === notification.sourceId) : undefined
 
   const name = actor?.pseudonym ?? t('notifications.somePlayer')
-  const rematch = notification.type === 'CHALLENGE_RECEIVED' && notification.gameId
-  const title = t(rematch ? 'notifications.rematch' : TITLES[notification.type], { name })
+  const title = t(notificationTitleKey(notification), { name })
   const now = readServerNow()
   const pending = challenge?.status === 'PENDING' && !isExpired(notification, now)
   const when = relative(notification.createdAt, now)
@@ -85,7 +62,7 @@ export function NotificationItem({ notification, last }: { notification: Notific
     <NotificationRow
       title={title}
       sub={sub}
-      icon={actorId ? undefined : (ICONS[notification.type] ?? BellIcon)}
+      icon={actorId ? undefined : (NOTIFICATION_ICONS[notification.type] ?? BellIcon)}
       player={actorId ? { name, src, tier: actor?.progression && !actor.progression.provisional ? tierOf(actor.progression.rating) : undefined } : undefined}
       unread={isUnread(notification)}
       onClick={() => open(notification)}

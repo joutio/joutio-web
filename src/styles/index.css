@@ -630,3 +630,51 @@
     animation: none;
   }
 }
+
+/* Toasts (`toast.md`) : descend en ressort (échelle 0,94 → 1), remonte et s'efface en 200 ms ; fondu seul en mouvement réduit. */
+.jo-toast-slot {
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), opacity 300ms ease;
+  transform-origin: bottom center;
+}
+
+.jo-toast-in {
+  animation: jo-toast-in 450ms cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+
+.jo-toast-out {
+  animation: jo-toast-out 200ms ease-in both;
+}
+
+@keyframes jo-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-110%) scale(0.94);
+  }
+}
+
+@keyframes jo-toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(-110%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jo-toast-slot {
+    transition: opacity 200ms ease;
+  }
+
+  .jo-toast-in {
+    animation: jo-fade 200ms ease both;
+  }
+
+  .jo-toast-out {
+    animation: jo-toast-fade-out 200ms ease both;
+  }
+}
+
+@keyframes jo-toast-fade-out {
+  to {
+    opacity: 0;
+  }
+}

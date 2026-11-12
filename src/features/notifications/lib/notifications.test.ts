@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { NotificationView } from '@/lib/realtime'
 import { durationParts } from '@/shared/duration'
-import { notificationTarget } from './notification-target'
+import { createNotificationDeduplicator, notificationTarget, shouldToast } from './notification-target'
 import { dayOf } from './notifications-service'
 
 const notice = (patch: Partial<NotificationView>): NotificationView => ({
@@ -55,5 +55,32 @@ describe('durationParts', () => {
     expect(durationParts(3 * 86_400_000)).toEqual({ unit: 'days', count: 3 })
     expect(durationParts(23 * 3_600_000 + 1)).toEqual({ unit: 'hours', count: 23 })
     expect(durationParts(10_000)).toEqual({ unit: 'minutes', count: 1 })
+  })
+})
+
+describe('shouldToast', () => {
+  const now = Date.parse('2026-11-12T12:00:00Z')
+
+  it('announces an unread, live notification while the tab is visible', () => {
+    expect(shouldToast(notice({ type: 'CHALLENGE_RECEIVED', sourceId: 'c1' }), true, now)).toBe(true)
+    expect(shouldToast(notice({ type: 'FOLLOW' }), true, now)).toBe(true)
+  })
+
+  it('stays silent for a hidden tab, a read or expired notification, and a rematch', () => {
+    expect(shouldToast(notice({}), false, now)).toBe(false)
+    expect(shouldToast(notice({ readAt: '2026-11-12T11:00:00Z' }), true, now)).toBe(false)
+    expect(shouldToast(notice({ expiresAt: '2026-11-12T11:59:00Z' }), true, now)).toBe(false)
+    expect(shouldToast(notice({ type: 'CHALLENGE_RECEIVED', gameId: 'g1' }), true, now)).toBe(false)
+  })
+})
+
+describe('createNotificationDeduplicator', () => {
+  it('lets each notification through once', () => {
+    const dedupe = createNotificationDeduplicator(2)
+    expect(dedupe('a')).toBe(true)
+    expect(dedupe('a')).toBe(false)
+    expect(dedupe('b')).toBe(true)
+    expect(dedupe('c')).toBe(true)
+    expect(dedupe('a')).toBe(true)
   })
 })

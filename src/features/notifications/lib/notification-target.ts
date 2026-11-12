@@ -43,3 +43,27 @@ export function notificationTarget(notice: NotificationView, now = Date.now()): 
       return fallback
   }
 }
+
+/**
+ * Toast à la réception (`toast.md`, repris du mobile) : seulement non lue, non expirée, onglet visible. Une revanche passe par
+ * sa popup, jamais par un toast ; pendant un duel, le gestionnaire met le toast en attente.
+ */
+export function shouldToast(notice: Pick<NotificationView, 'type' | 'gameId' | 'expiresAt' | 'readAt'>, visible: boolean, now = Date.now()) {
+  return (
+    visible &&
+    notice.readAt === null &&
+    !(notice.expiresAt && Date.parse(notice.expiresAt) <= now) &&
+    !(notice.type === 'CHALLENGE_RECEIVED' && notice.gameId)
+  )
+}
+
+/** Une notification n'est annoncée qu'une fois, même relivrée par le flux (reconnexion STOMP). */
+export function createNotificationDeduplicator(limit = 256) {
+  const seen = new Set<string>()
+  return (id: string) => {
+    if (seen.has(id)) return false
+    seen.add(id)
+    if (seen.size > limit) seen.delete(seen.values().next().value!)
+    return true
+  }
+}

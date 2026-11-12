@@ -1,7 +1,9 @@
 import type { PageResponse } from '@joutio/client-domain/api-types'
 import { useInfiniteQuery, useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
+import { playerProfileQuery } from '@/features/player'
 import { workshopService } from '@/features/workshop'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { optimisticUpdate } from '@/lib/optimistic-cache'
@@ -10,7 +12,9 @@ import { usePersonalNotifications, type NotificationView } from '@/lib/realtime'
 import { endSession } from '@/lib/session'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
-import { notificationTarget } from '../lib/notification-target'
+import { NotificationToast } from '../components/notification-toast'
+import { notificationActorId } from '../lib/notification-presentation'
+import { createNotificationDeduplicator, notificationTarget, shouldToast } from '../lib/notification-target'
 import { notificationsService } from '../lib/notifications-service'
 
 type Pages = InfiniteData<PageResponse<NotificationView>, number>
@@ -27,17 +31,42 @@ export function useNotifications() {
 }
 
 /**
- * Flux personnel STOMP : une notification créée relit la boîte et le compteur de la cloche ; une suppression (autre
- * appareil) la retire sur place. Aucun polling. Monté une fois pour toute l'app connectée.
+ * Flux personnel STOMP : une notification créée relit la boîte et le compteur de la cloche, et s'annonce par un toast
+ * touchable (`toast.md`) ; une suppression (autre appareil) la retire sur place. Aucun polling. Monté une fois pour
+ * toute l'app connectée.
  */
 export function useNotificationsRuntime() {
   const client = useQueryClient()
   const userId = useMe().data?.userId
+  const open = useOpenNotification()
+  const latestOpen = useRef(open)
+  useEffect(() => {
+    latestOpen.current = open
+  })
+  const dedupe = useRef(createNotificationDeduplicator())
+
+  const announce = (notification: NotificationView) => {
+    if (!dedupe.current(notification.notificationId)) return
+    if (!shouldToast(notification, document.visibilityState === 'visible')) return
+    const actorId = notificationActorId(notification)
+    // Fiche du joueur chargée d'abord : le toast arrive avec son nom et son avatar (sans attendre plus de 1,5 s).
+    const ready = actorId ? Promise.race([client.prefetchQuery(playerProfileQuery(actorId)), new Promise((resolve) => window.setTimeout(resolve, 1500))]) : Promise.resolve()
+    void ready.then(() => {
+      toast.show({
+        id: `notification:${notification.notificationId}`,
+        content: <NotificationToast notification={notification} onOpen={() => latestOpen.current(notification)} />,
+      })
+    })
+  }
+
   usePersonalNotifications(userId, (notification, deleted) => {
     if (!deleted) {
+      announce(notification)
       void client.invalidateQueries({ queryKey: queryKeys.notifications.all })
       return
     }
+    // Supprimée ailleurs : son toast se ferme.
+    toast.dismiss(`notification:${notification.notificationId}`)
     const data = client.getQueryData<Pages>(queryKeys.notifications.list)
     const existing = data?.pages.flatMap((page) => page.content).find((item) => item.notificationId === notification.notificationId)
     if (!existing) return

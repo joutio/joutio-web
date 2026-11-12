@@ -7,9 +7,16 @@ import { queryKeys } from '@/lib/query-keys'
 import { toast } from '@/shared/toast'
 import { playerService } from '../lib/player-service'
 
+/** Fiche publique d'un joueur (aussi préchargée avant un toast de notification). */
+export const playerProfileQuery = (userId: string) => ({
+  queryKey: queryKeys.profiles.profile(userId),
+  queryFn: () => playerService.profile(userId),
+  staleTime: 30_000,
+})
+
 /** Fiche publique d'un joueur. */
 export function usePlayerProfile(userId: string) {
-  return useQuery({ queryKey: queryKeys.profiles.profile(userId), queryFn: () => playerService.profile(userId), enabled: Boolean(userId), staleTime: 30_000 })
+  return useQuery({ ...playerProfileQuery(userId), enabled: Boolean(userId) })
 }
 
 /** Mon bilan contre ce joueur. */
