@@ -1,3 +1,9 @@
+## [2.4.0](https://github.com/joutio/joutio-web/compare/v2.3.0...v2.4.0) (2026-11-12)
+
+### Features
+
+* **settings:** live pseudonym availability and stricter rules ([e6a5d40](https://github.com/joutio/joutio-web/commit/e6a5d40fb93fcaa5b16f30767f2ad6363a2b8d17))
+
 ## [2.3.0](https://github.com/joutio/joutio-web/compare/v2.2.0...v2.3.0) (2026-11-12)
 
 ### Features
