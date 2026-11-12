@@ -29,7 +29,8 @@
 `@dicebear/styles` (avatars des joueurs, mêmes options et même rendu que le lab et le mobile ; décision du 2026-11-11,
 moteur dans `src/shared/avatar/`, styles chargés à la demande par `import()`), `vaul` (feuilles `MobileSheet` : geste
 tirer-pour-fermer, voile, focus, Échap ; rendue dans la colonne, sans portail) et `embla-carousel-react` (`Carousel` de
-`src/ui/web/` : Détails du duel, séquence de déblocages, Signalements d'une question) — décision du 2026-11-12.
+`src/ui/web/` : séquence de déblocages) — décision du 2026-11-12. Détails du duel et Signalements d'une question
+balaient comme le lab (`TabsScrollView` `contained`, défilement natif aimanté, 2026-11-12).
 Dev : Vite 8, `@vitejs/plugin-react`, Tailwind v4 (`@tailwindcss/vite`), TypeScript ~6 strict, ESLint, Vitest
 (jsdom, Testing Library).
 
@@ -154,8 +155,7 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         défis, salons, boîte et cloche relus sans polling ; pastille de l'onglet Défis = reçus en attente
         (`useTabBadges` du shell). Écarts : Relancer un défi visible mais inactif (aucun endpoint BFF), salle d'un défi
         accepté relue sur `GET /api/challenges/{id}` jusqu'à son `roomId` (pas de recalcul local de l'identifiant),
-        brouillon et signalement ouvrent `/me/topics` en écran d'attente (atelier à l'écran 11), pas de toast à la
-        réception d'une notification ni de bandeau « Partie en cours »
+        brouillon et signalement ouvrent `/me/topics` en écran d'attente (atelier à l'écran 11)
   - [x] Réglages `/me/settings` (Profil : avatar, pseudonyme, bio, pays avec drapeaux, centres d'intérêt, bannière
         envoyée par `POST /api/media` ; Langue ; Apparence Sombre / Clair / Système ; Duel sans Vibrations ;
         Notifications avec la `Notice` tant que le navigateur ne les autorise pas ; Compte : Premium, Mes sujets, pages
@@ -207,4 +207,13 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
       miroir en haut de la page 2) ; plus de feuille Détails du duel. `QuestionBlock` en 2 × 2 qui remplit la place, comme
       le lab et le mobile ; carrousel Embla ralenti (`duration` 45). `RoundIntro` calé sur `elapsedMs` du serveur et gardé
       jusqu'à la fin de son animation (400 ms de marge sur la question), il n'est plus coupé
+- [x] Toasts (2026-11-12, `design/specs/components/toast.md`) : gestionnaire `shared/toast` en pile de 3 (le plus récent
+      devant, toucher déplie, repli après 4 s sans geste), 4 s relancées à chaque mise à jour par `id`, messages en
+      attente pendant le duel ; toast à la réception d'une notification (`useNotificationsRuntime` : non lue, non
+      expirée, onglet visible, une seule fois ; avatar du joueur ; toucher = lue + écran de l'action, comme la boîte).
+      Écarts : pas de balayage vers le haut ni d'haptique sur le web ; revanche reçue sans toast (popup, spec) alors que
+      le `RematchPrompt` global reste à faire
+- [x] Résultat (2026-11-12) : pages à balayer identiques au lab (Embla retiré de la revue et des Signalements), miroir
+      de la page 2 réduit au caret, joueur non classé sans cadre de rang (adversaire : `progression.provisional` de son
+      profil, `opponentRated` ne suffit pas), pas de promotion célébrée en rang provisoire
 - [ ] Bascule (merge de `rewrite/web-kit`)

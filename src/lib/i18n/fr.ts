@@ -276,7 +276,6 @@ export const fr = {
   'result.details': "Détails du duel",
   'result.detailsButton': "Détails",
   'result.swipeUp': "Glisse vers le haut pour revoir les questions",
-  'result.swipeDown': "Glisse vers le bas pour revenir au résultat",
   'result.openDetails': "Revoir les questions du duel",
   'result.backToResult': "Revenir au résultat",
   'result.previous': "Question précédente",

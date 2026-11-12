@@ -17,7 +17,7 @@ import { showDialog } from '@/shared/dialog'
 import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
 import { useBack } from '@/shared/use-back'
-import { Button, Carousel, cn, DetentSheet, EmptyState, MobileTopBar, Pill, QuestionBlock, Screen, Segmented, Skeleton, type Detent } from '@/ui'
+import { Button, cn, DetentSheet, EmptyState, MobileTopBar, Pill, QuestionBlock, Screen, Segmented, Skeleton, TabsScrollView, type Detent } from '@/ui'
 import { useDismissReports, useReportQueue, useTopicQuestions, useWorkshop } from '../hooks/use-workshop'
 import { questionNumber } from '../lib/workshop-service'
 import { REASON_LABEL } from '../lib/labels'
@@ -58,7 +58,7 @@ function QuestionPage({ question, number, snapshot, peek }: { question: Question
   const answers = snapshot?.answers.length ? snapshot.answers : (content?.answers ?? [])
   const correct = snapshot?.correctAnswer ?? question.correctAnswer
   return (
-    <div className="flex min-h-full flex-col gap-3 px-4 pt-2" style={{ paddingBottom: peek + 12 }}>
+    <div className="flex h-full flex-col gap-3 px-4 pt-2" style={{ paddingBottom: peek + 12 }}>
       <div className="flex items-center justify-between gap-2">
         <span className="jo-type-headline">{number > 0 ? t('workshop.questionNumber', { number }) : t('workshop.question')}</span>
         {question.status === 'SUSPENDED' ? (
@@ -71,8 +71,7 @@ function QuestionPage({ question, number, snapshot, peek }: { question: Question
           </Pill>
         )}
       </div>
-      {/* Hauteur plancher : sur un écran court, la question défile au lieu d'écraser l'image et les réponses. */}
-      <div className="flex min-h-[420px] flex-1">
+      <div className="min-h-0 flex-1">
         <QuestionBlock
           text={snapshot?.questionText ?? content?.text ?? ''}
           image={(snapshot ? snapshot.imageUrl : question.imageUrl) ?? undefined}
@@ -240,23 +239,23 @@ export function QuestionReportsPage() {
         </DetentSheet>
       }
     >
-      <Carousel
-        label={t('workshop.reports')}
+      {/* File à balayer comme le lab : défilement horizontal natif aimanté. */}
+      <TabsScrollView
+        contained
         className="h-full"
-        index={index}
-        onIndexChange={(next) => {
-          const entry = entries[next]
-          if (entry && entry.question.questionId !== item.question.questionId) select(entry.question.questionId)
-        }}
-        slides={entries.map((entry) => (
-          <QuestionPage
-            key={entry.question.questionId}
-            question={entry.question}
-            number={questionNumber(all, entry.question.questionId)}
-            snapshot={entry === item && version === 'reported' ? snapshot : null}
-            peek={peek}
-          />
-        ))}
+        value={item.question.questionId}
+        onChange={select}
+        pages={entries.map((entry) => ({
+          value: entry.question.questionId,
+          content: (
+            <QuestionPage
+              question={entry.question}
+              number={questionNumber(all, entry.question.questionId)}
+              snapshot={entry === item && version === 'reported' ? snapshot : null}
+              peek={peek}
+            />
+          ),
+        }))}
       />
     </Screen>
   )

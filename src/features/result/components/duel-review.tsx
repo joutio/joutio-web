@@ -2,7 +2,7 @@ import { localizedQuestion, type GameRoundState, type GameState } from '@joutio/
 import { CaretLeftIcon, CaretRightIcon, CheckIcon, FlagIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { AnswerTimingRow, Button, Carousel, IconButton, PageDots, QuestionBlock, RoundReviewTabs, SwipeHint, type AnswerCardProps, type ReviewAnswer } from '@/ui'
+import { AnswerTimingRow, Button, IconButton, PageDots, QuestionBlock, RoundReviewTabs, SwipeHint, TabsScrollView, type AnswerCardProps, type ReviewAnswer } from '@/ui'
 import { reviewRoundsOf } from '../lib/review'
 
 const answerOf = (round: GameRoundState, playerId: string | null): ReviewAnswer => {
@@ -62,7 +62,8 @@ export type DuelReviewProps = {
 
 /**
  * Détails du duel (`resultat.md` § 6) : seconde page verticale du résultat, comme `joutio-mobile` (écart assumé avec
- * la feuille du lab). Miroir « Glisse vers le bas », titre, onglets des manches, page par manche à balayer (Embla),
+ * la feuille du lab). Miroir (caret seul), titre, onglets des manches, page par manche à balayer (défilement natif
+ * aimanté, comme le lab),
  * flèches et points, « Signaler la question » (aussi à l'entraînement). Montée avec le résultat : la manche consultée
  * est gardée d'une page à l'autre et les images sont préchargées.
  */
@@ -80,8 +81,12 @@ export function DuelReview({ game, me, myName, opponentName, onBack, reported, o
     }
   }, [rounds])
 
-  const slides = useMemo(
-    () => rounds.map((item) => <ReviewPage key={item.round} round={item} me={me} opponent={opponent} myName={myName} opponentName={opponentName} language={language} />),
+  const pages = useMemo(
+    () =>
+      rounds.map((item, page) => ({
+        value: String(page),
+        content: <ReviewPage round={item} me={me} opponent={opponent} myName={myName} opponentName={opponentName} language={language} />,
+      })),
     [rounds, me, opponent, myName, opponentName, language],
   )
 
@@ -93,13 +98,12 @@ export function DuelReview({ game, me, myName, opponentName, onBack, reported, o
 
   return (
     <div className="flex h-full flex-col gap-3 pb-[calc(var(--jo-safe-bottom,0px)+8px)]">
-      <SwipeHint direction="down" hint={t('result.swipeDown')} label={t('result.backToResult')} onClick={onBack} className="flex-none pt-1 pb-1" />
+      <SwipeHint direction="down" label={t('result.backToResult')} onClick={onBack} className="flex-none pt-1 pb-1" />
       <div className="grid flex-none gap-3 px-4">
         <h2 className="jo-type-headline m-0">{t('result.details')}</h2>
         <RoundReviewTabs rounds={tabs} value={index} onChange={setIndex} />
       </div>
-      {/* Pages sans défilement propre : le geste vertical reste au pager du résultat. */}
-      <Carousel label={t('result.details')} className="min-h-0 flex-1" slideClassName="overflow-hidden touch-none" index={index} onIndexChange={setIndex} slides={slides} />
+      <TabsScrollView contained className="min-h-0 flex-1" value={String(index)} onChange={(value) => setIndex(Number(value))} pages={pages} />
       <div className="grid flex-none gap-1 px-4">
         <div className="flex items-center justify-between">
           <IconButton icon={CaretLeftIcon} label={t('result.previous')} variant="gray" tone="neutral" disabled={index === 0} onClick={() => setIndex(index - 1)} />

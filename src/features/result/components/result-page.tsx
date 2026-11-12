@@ -53,7 +53,8 @@ function unlocksOf(result: GameResultView): Unlock[] {
   if (result.botGame) return []
   const unlocks: Unlock[] = []
   const delta = result.eloDelta ?? 0
-  if (result.rated && delta > 0) {
+  // Rang provisoire : pas encore de palier acquis, donc pas de promotion à célébrer.
+  if (result.rated && delta > 0 && !result.progression.provisional) {
     const from = tierOf(result.progression.rating - delta)
     const tier = tierOf(result.progression.rating)
     if (from !== tier) unlocks.push({ kind: 'rank', from, tier })
@@ -174,7 +175,11 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   // Elo à l'instant de la partie (le bilan), jamais celui du profil courant.
   const rating = data.progression.rating
   const myTier = data.progression.provisional ? undefined : tierOf(rating)
-  const opponentTier = data.opponentRated && data.opponentRating != null ? tierOf(data.opponentRating) : undefined
+  // `opponentRated` dit seulement que la partie a compté pour son Elo, y compris en période provisoire : le cadre
+  // attend un rang acquis (profil non provisoire), comme le mien. Sinon, avatar sans cadre (lab), jamais le Fer.
+  const opponentProgression = opponentProfile.data?.progression
+  const opponentRanked = Boolean(opponentProgression && !opponentProgression.provisional)
+  const opponentTier = data.opponentRated && data.opponentRating != null && opponentRanked ? tierOf(data.opponentRating) : undefined
   const unlocks = celebrate && !sequenceDone ? unlocksOf(data) : []
 
   const quit = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.topic(topic.topicId), { replace: true }))

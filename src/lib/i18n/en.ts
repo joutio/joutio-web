@@ -277,7 +277,6 @@ export const en: Messages = {
   'result.details': "Duel details",
   'result.detailsButton': "Details",
   'result.swipeUp': "Swipe up to review the questions",
-  'result.swipeDown': "Swipe down to go back to the result",
   'result.openDetails': "Review the duel's questions",
   'result.backToResult': "Back to the result",
   'result.previous': "Previous question",
