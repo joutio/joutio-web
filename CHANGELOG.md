@@ -1,3 +1,9 @@
+## [2.5.0](https://github.com/joutio/joutio-web/compare/v2.4.0...v2.5.0) (2026-11-12)
+
+### Features
+
+* **premium:** read plan limits and show frozen topics ([1fae02e](https://github.com/joutio/joutio-web/commit/1fae02e365bd9ab362e5ee74a1a14f5a14805d53))
+
 ## [2.4.0](https://github.com/joutio/joutio-web/compare/v2.3.0...v2.4.0) (2026-11-12)
 
 ### Features
