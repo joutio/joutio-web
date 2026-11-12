@@ -1,3 +1,9 @@
+## [2.1.0](https://github.com/joutio/joutio-web/compare/v2.0.0...v2.1.0) (2026-11-12)
+
+### Features
+
+* vaul sheets, embla carousels, app banner and refresh fixes ([a7b1eb1](https://github.com/joutio/joutio-web/commit/a7b1eb1b727043ea152913f75e3eb96947a46a60))
+
 ## [2.0.0](https://github.com/joutio/joutio-web/compare/v1.2.0...v2.0.0) (2026-11-12)
 
 ### ⚠ BREAKING CHANGES
