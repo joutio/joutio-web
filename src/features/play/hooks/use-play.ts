@@ -150,7 +150,7 @@ export function useChallengePlayer() {
 export function useContacts(direction: 'following' | 'followers', query: string, enabled: boolean, sort: PeopleSort = 'RECENT') {
   const userId = useMe().data?.userId ?? ''
   return useInfiniteQuery({
-    queryKey: ['contacts', userId, direction, query, sort],
+    queryKey: queryKeys.contacts.list(userId, direction, query, sort),
     queryFn: ({ pageParam }) => playService.contacts(userId, direction, query, sort, pageParam),
     initialPageParam: 0,
     getNextPageParam: (last) => (last.last ? undefined : last.page + 1),

@@ -43,5 +43,7 @@ export function useFollowPlayer(userId: string) {
       context?.rollback()
       toast.error(t(follow ? 'player.followError' : 'player.unfollowError'), t('home.errorText'))
     },
+    // Les listes Social (abonnements, abonnés) se relisent : leur contenu et leurs totaux changent.
+    onSettled: () => void client.invalidateQueries({ queryKey: queryKeys.contacts.all }),
   })
 }

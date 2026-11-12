@@ -91,3 +91,6 @@ export * from './primitives/reward-card.tsx'
 export * from './primitives/streak.tsx'
 export * from './primitives/streak-calendar.tsx'
 export * from './primitives/topics-donut.tsx'
+// Écran 9 : Social, Défis, Notifications.
+export * from './primitives/challenge-list-row.tsx'
+export * from './primitives/notification-row.tsx'

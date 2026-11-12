@@ -139,4 +139,16 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         parties ; ma fiche renvoie au Profil) ; les lignes de classement ouvrent la fiche. Réglages `/me/settings` en
         écran d'attente. Écarts : titres sans date de déblocage (tri « récents » = ordre du serveur), Bloquer absent
         (aucun endpoint), titre porté d'un autre joueur résolu par l'aperçu de son sujet
+  - [x] Social `/social` (abonnements / abonnés avec totaux de `MeView`, recherche, feuille « Trier par » dont
+        Présence par défaut, 20 par page côté serveur, épée → choix du sujet → défi, Inviter un ami par partage ou
+        copie), Défis `/challenges` (quota des envoyés en sous-titre, puces avec compteurs, Reçus en aperçu de 3 puis
+        paginés par 10, Tout refuser confirmé, Accepter ouvre la salle, Refuser / Annuler optimistes et par lot, Salons
+        privés, état vide avec Créer un salon privé), Notifications `/notifications` (sections Aujourd'hui / Cette
+        semaine / Plus ancien, défis reçus ouverts en tête, 10 par page, toucher = lue + écran de l'action, balayer =
+        supprimer, Tout marquer comme lu, Tout supprimer confirmé). Flux personnel monté une fois (`PersonalRuntime`) :
+        défis, salons, boîte et cloche relus sans polling ; pastille de l'onglet Défis = reçus en attente
+        (`useTabBadges` du shell). Écarts : Relancer un défi visible mais inactif (aucun endpoint BFF), salle d'un défi
+        accepté relue sur `GET /api/challenges/{id}` jusqu'à son `roomId` (pas de recalcul local de l'identifiant),
+        brouillon et signalement ouvrent `/me/topics` en écran d'attente (atelier à l'écran 11), pas de toast à la
+        réception d'une notification ni de bandeau « Partie en cours »
 - [ ] Bascule (merge de `rewrite/web-kit`)

@@ -29,6 +29,7 @@ export const useToastStore = create<{
 export const toast = {
   success: (title: string, description?: string) => useToastStore.getState().show({ tone: 'success', title, description }),
   error: (title: string, description?: string) => useToastStore.getState().show({ tone: 'danger', title, description }),
+  info: (title: string, description?: string) => useToastStore.getState().show({ tone: 'neutral', title, description }),
 }
 
 /** Suspend les toasts tant que l'écran est monté (duel, intros : toujours plein écran, sans distraction). */

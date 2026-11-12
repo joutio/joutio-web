@@ -9,13 +9,15 @@ import { EmptyState, FeedFooter, MobileSheet, SearchField, Skeleton, TopicRow } 
 
 export type ChallengeTopicSheetProps = {
   player: string
+  /** Titre de la feuille ; « Défier {player} » par défaut. */
+  title?: string
   open: boolean
   onClose: () => void
   onPick: (topic: TopicCardView) => void
 }
 
 /** Choix du sujet d'un défi (lab `challenge-sheet.tsx`) : catalogue paginé et recherche. L'appelant change sa clé à chaque ouverture pour vider la recherche. */
-export function ChallengeTopicSheet({ player, open, onClose, onPick }: ChallengeTopicSheetProps) {
+export function ChallengeTopicSheet({ player, title, open, onClose, onPick }: ChallengeTopicSheetProps) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const [query, setQuery] = useState('')
@@ -23,7 +25,7 @@ export function ChallengeTopicSheet({ player, open, onClose, onPick }: Challenge
   const topics = useTopics({ query: search, categories: [], sort: DEFAULT_TOPIC_SORT }, open)
   const list = topics.data?.pages.flatMap((page) => page.topics) ?? []
   return (
-    <MobileSheet open={open} onClose={onClose} title={t('player.challengeTitle', { name: player })} subtitle={t('player.pickTopic')} tall>
+    <MobileSheet open={open} onClose={onClose} title={title ?? t('player.challengeTitle', { name: player })} subtitle={t('player.pickTopic')} tall>
       <div className="grid gap-3">
         <div className="sticky top-0 z-10 bg-jo-surface pb-1">
           <SearchField value={query} onChange={setQuery} placeholder={t('player.searchTopic')} label={t('player.searchTopic')} />

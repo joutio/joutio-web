@@ -13,6 +13,8 @@ export const ROUTES = {
   me: '/me',
   myTitles: '/me/titles',
   settings: '/me/settings',
+  /** Création : Mes sujets et l'atelier (`web.md` § 2). */
+  myTopics: '/me/topics',
   /** Série et Sujets joués : écrans poussés du Profil, absents de `web.md` § 2. */
   myStreak: '/me/streak',
   myPlayedTopics: '/me/played',

@@ -28,7 +28,18 @@ export const queryKeys = {
   },
   rewards: ['me', 'rewards'] as const,
   notifications: {
+    all: ['notifications'] as const,
+    list: ['notifications', 'list'] as const,
     unreadCount: ['notifications', 'unread-count'] as const,
+  },
+  /** Défis nominatifs du joueur (reçus et envoyés). */
+  challenges: ['challenges', 'mine'] as const,
+  /** Salons du joueur (`/api/rooms/mine`). */
+  myRooms: ['rooms', 'mine'] as const,
+  /** Abonnements / abonnés d'un joueur, par recherche et tri. */
+  contacts: {
+    all: ['contacts'] as const,
+    list: (userId: string, direction: 'following' | 'followers', query: string, sort: string) => ['contacts', userId, direction, query, sort] as const,
   },
   onboarding: {
     recommendations: (interests: readonly string[]) => ['onboarding', 'recommendations', [...interests]] as const,
