@@ -125,7 +125,7 @@ export function DuelPage() {
   useEffect(() => {
     if (!finished || leaving.current) return
     leaving.current = true
-    void navigate(ROUTES.result(gameId), { replace: true, state: { topic: passed ?? (game?.topicId ? { topicId: game.topicId, name: topic, category } : undefined) } })
+    void navigate(ROUTES.result(gameId), { replace: true, state: { celebrate: true, topic: passed ?? (game?.topicId ? { topicId: game.topicId, name: topic, category } : undefined) } })
   }, [finished, gameId, navigate, passed, game?.topicId, topic, category])
 
   // Abandon : toute sortie de l'écran pendant la partie demande confirmation (retour du navigateur compris).

@@ -4,6 +4,7 @@ import { DuelPage } from '@/features/duel'
 import { OnboardingPage } from '@/features/onboarding'
 import { HomePage } from '@/features/home'
 import { JoinPage, MatchmakingPage, RoomPage } from '@/features/play'
+import { ResultPage } from '@/features/result'
 import { TopicPage } from '@/features/topic'
 import { TopicsPage } from '@/features/topics'
 import { AppFrame, AuthenticatedLayout, CallbackPage, LoginRedirect, PendingScreen, PlaceholderScreen } from '@/features/shell'
@@ -29,7 +30,7 @@ export const router = createBrowserRouter([
           { path: '/topics/:topicId', element: <TopicPage /> },
           { path: '/topics/:topicId/leaderboard', element: <PendingScreen title="pending.leaderboard" /> },
           { path: '/me/games', element: <PendingScreen title="pending.games" /> },
-          { path: '/games/:gameId/result', element: <PendingScreen title="pending.result" /> },
+          { path: '/games/:gameId/result', element: <ResultPage /> },
           { path: '/games/:gameId', element: <DuelPage /> },
           { path: '/rooms/:roomId', element: <RoomPage /> },
           { path: '/play', element: <MatchmakingPage /> },
