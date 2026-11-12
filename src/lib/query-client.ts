@@ -1,28 +1,17 @@
-import { QueryClient } from "@tanstack/react-query"
-import type { ApiError } from "@/shared/types/api"
+import { QueryClient } from '@tanstack/react-query'
+import { isApiError } from './api/api-error'
 
 /**
- * On ne retente jamais une erreur client (4xx) : un 401 est déjà géré par le refresh+rejeu
- * du client HTTP, un 403/404/422 est définitif. Seules les erreurs réseau/5xx et les timeouts
- * (408) sont retentés.
+ * Client React Query unique. Les données se rafraîchissent par les notifications temps réel (invalidations ciblées),
+ * pas par polling ni au retour de focus. Une erreur 4xx ne se rejoue pas ; réseau et 5xx, deux fois.
  */
-function shouldRetry(failureCount: number, error: unknown): boolean {
-  const status = (error as ApiError | undefined)?.statusCode
-  if (status && status >= 400 && status < 500 && status !== 408) return false
-  return failureCount < 2
-}
-
-export function createQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 5 * 60 * 1000,
-        refetchOnWindowFocus: false,
-        retry: shouldRetry,
-      },
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      refetchOnWindowFocus: false,
+      retry: (failures, error) => (isApiError(error) && !error.transient ? false : failures < 2),
     },
-  })
-}
-
-/** Instance partagée : permet la purge du cache à la déconnexion hors composant React. */
-export const queryClient = createQueryClient()
+    mutations: { retry: false },
+  },
+})

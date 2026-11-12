@@ -1,132 +1,62 @@
-import { config } from "./config"
-import { ENDPOINTS } from "./endpoints"
-import { sessionGateway } from "./session"
-
-/** Types d'erreur acceptés par l'allowlist BFF. */
-type ClientErrorType =
-  "JS_ERROR" | "UNHANDLED_REJECTION" | "REACT_RENDER" | "API_ERROR"
-
-interface ClientErrorContext {
-  type?: ClientErrorType
-  /** Contexte technique React (jamais de contenu utilisateur). */
-  componentStack?: string
-  /** Origine du signal : window.error, ErrorBoundary, client HTTP… */
-  source?: string
-}
-
-const MAX_MESSAGE = 500
-const MAX_STACK = 4_000
-const ERROR_DEDUPE_MS = 60_000
-const MAX_TRACKED_ERRORS = 50
-
-let installed = false
-const recentErrors = new Map<string, number>()
+import { api } from './api/api-client'
+import { config } from './config'
+import { ENDPOINTS } from './endpoints'
+import { getAccessToken } from './session/session-store'
 
 /**
- * Télémétrie navigateur **best-effort** et 100 % interne : les événements partent vers le BFF,
- * qui les expose en métriques Prometheus et logs Loki/Grafana. Aucun SDK externe, aucune
- * donnée de formulaire, aucun identifiant dans le payload (le BFF connaît déjà l'utilisateur
- * par le JWT).
+ * Télémétrie interne, best-effort : événements de la liste autorisée du BFF et erreurs navigateur. Jamais de SaaS ni de
+ * contenu saisi ; le BFF connaît le joueur par le JWT. Sans session, rien ne part (les endpoints sont authentifiés).
  */
-export function initClientTelemetry(): void {
-  if (installed || typeof window === "undefined") return
-  installed = true
+export type ProductEvent =
+  | 'onboarding_started'
+  | 'onboarding_completed'
+  | 'onboarding_skipped'
+  | 'play_mode_opened'
+  | 'duel_start_requested'
+  | 'matchmaking_expired'
+  | 'result_viewed'
+  | 'paywall_viewed'
 
-  window.addEventListener("error", (event) => {
-    const error =
-      event.error instanceof Error
-        ? event.error
-        : new Error(event.message || "Erreur navigateur")
-    reportClientError(error, { type: "JS_ERROR", source: "window.error" })
-  })
+type ErrorType = 'JS_ERROR' | 'UNHANDLED_REJECTION' | 'REACT_RENDER' | 'API_ERROR'
 
-  window.addEventListener("unhandledrejection", (event) => {
-    reportClientError(toError(event.reason, "Promesse rejetée"), {
-      type: "UNHANDLED_REJECTION",
-      source: "window.unhandledrejection",
-    })
-  })
+const DEDUPE_MS = 60_000
+const recent = new Map<string, number>()
+const truncate = (value: string | undefined, max: number) => (value && value.length > max ? value.slice(0, max) : value)
+
+function send(path: string, body: unknown): void {
+  if (!getAccessToken()) return
+  api.post<void>(path, body).catch(() => undefined)
 }
 
-/** Enregistre une erreur navigateur (dédupliquée par type/message/route sur une minute). */
-export function reportClientError(
-  error: unknown,
-  context: ClientErrorContext = {}
-): void {
-  if (typeof window === "undefined") return
+export function trackEvent(event: ProductEvent, properties?: Record<string, string | number | boolean>): void {
+  send(ENDPOINTS.telemetry.events, { event, properties: properties ?? {} })
+}
 
-  const normalized = toError(error, "Erreur inconnue")
-  if (normalized.name === "AbortError") return
-  const type = context.type ?? "JS_ERROR"
+export function reportClientError(error: unknown, type: ErrorType = 'JS_ERROR', source = ''): void {
+  const normalized = error instanceof Error ? error : new Error(String(error))
+  if (normalized.name === 'AbortError') return
   const route = window.location.pathname
   const signature = `${type}|${normalized.message}|${route}`
   const now = Date.now()
-  const last = recentErrors.get(signature)
-  if (last != null && now - last < ERROR_DEDUPE_MS) return
-
-  recentErrors.set(signature, now)
-  pruneErrors(now)
-
-  void sendTelemetry(ENDPOINTS.telemetry.clientErrors, {
+  if (now - (recent.get(signature) ?? 0) < DEDUPE_MS) return
+  recent.set(signature, now)
+  if (recent.size > 50) recent.delete(recent.keys().next().value as string)
+  send(ENDPOINTS.telemetry.clientErrors, {
     type,
-    message: truncate(normalized.message, MAX_MESSAGE),
-    stack: truncate(normalized.stack, MAX_STACK),
+    message: truncate(normalized.message, 500),
+    stack: truncate(normalized.stack, 4000),
     route,
-    buildId: currentBuildId(),
-    source: truncate(context.source ?? context.componentStack ?? "", 120),
+    buildId: config.buildId,
+    source: truncate(source, 120),
   })
 }
 
-/** Enregistre un événement d'activation allowlisté côté BFF. */
-export function trackProductEvent(
-  name: string,
-  properties: Record<string, string> = {}
-): void {
-  if (typeof window === "undefined") return
-  void sendTelemetry(ENDPOINTS.telemetry.events, { name, properties })
-}
+let installed = false
 
-async function sendTelemetry(
-  path: string,
-  body: Record<string, unknown>
-): Promise<void> {
-  try {
-    const token = sessionGateway.getAccessToken()
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    }
-    if (token) headers.Authorization = `Bearer ${token}`
-
-    await fetch(`${config.apiUrl.replace(/\/$/, "")}${path}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-      keepalive: true,
-    })
-  } catch {
-    // La télémétrie ne doit jamais casser l'expérience ni créer de boucle d'erreur.
-  }
-}
-
-function currentBuildId(): string {
-  return typeof __APP_BUILD_ID__ === "string" ? __APP_BUILD_ID__ : "dev"
-}
-
-function toError(value: unknown, fallback: string): Error {
-  if (value instanceof Error) return value
-  if (typeof value === "string") return new Error(value)
-  return new Error(fallback)
-}
-
-function truncate(value: string | undefined, max: number): string {
-  if (!value) return ""
-  const singleLine = value.replace(/[\r\n]+/g, " ")
-  return singleLine.length <= max ? singleLine : singleLine.slice(0, max)
-}
-
-function pruneErrors(now: number): void {
-  if (recentErrors.size <= MAX_TRACKED_ERRORS) return
-  for (const [key, timestamp] of recentErrors) {
-    if (now - timestamp >= ERROR_DEDUPE_MS) recentErrors.delete(key)
-  }
+/** Erreurs globales du navigateur, installées une fois au démarrage. */
+export function installClientTelemetry(): void {
+  if (installed) return
+  installed = true
+  window.addEventListener('error', (event) => reportClientError(event.error ?? event.message, 'JS_ERROR', 'window.error'))
+  window.addEventListener('unhandledrejection', (event) => reportClientError(event.reason, 'UNHANDLED_REJECTION', 'window.unhandledrejection'))
 }

@@ -1,11 +1,4 @@
-export * from "./components/GameHistorySection"
-export * from "./components/GameHistoryToolbar"
-export * from "./components/MatchList"
-export * from "./components/ProfileBanner"
-export * from "./components/ProfileShareDialog"
-export * from "./domain/history"
-export * from "./domain/presence"
-export * from "./domain/profile"
-export * from "./domain/share"
-export * from "./hooks/usePlayer"
-export * from "./lib/profiles"
+export { PlayerPage } from './components/player-page'
+export { useFollowPlayer, useHeadToHead, usePlayerProfile } from './hooks/use-player'
+export { presenceLine, relativeSeen } from './lib/presence'
+export { ChallengeTopicSheet } from './components/challenge-topic-sheet'

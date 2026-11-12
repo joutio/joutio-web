@@ -1,0 +1,210 @@
+/*
+ * Styles partagés du site public (Lot 8) : correspondance Tailwind des tokens, utilitaires d'interaction,
+ * animations des cadres Elo, menu compact et prose. Importé par le lab (index.css) et copié tel quel dans
+ * joutio-landing (specs/site-kit.md) : à modifier ici seulement. Suppose `@import 'tailwindcss'` et les tokens
+ * (`tokens.generated.css` dans le lab, `tokens.web.css` dans la landing) déjà chargés.
+ */
+
+/* Même style en vrai et dans la galerie, qui force l'état avec data-state. */
+@custom-variant jo-pressed (&:active:enabled, &[data-state='pressed']);
+
+@theme inline {
+  --color-jo-bg: var(--jo-bg);
+  --color-jo-canvas: var(--jo-canvas);
+  --color-jo-surface: var(--jo-surface);
+  --color-jo-raised: var(--jo-raised);
+  --color-jo-hover: var(--jo-hover);
+  --color-jo-border: var(--jo-border);
+  --color-jo-warm: var(--jo-warm);
+  --color-jo-text: var(--jo-text);
+  --color-jo-muted: var(--jo-muted);
+  --color-jo-accent: var(--jo-accent);
+  --color-jo-accent-press: var(--jo-accent-press);
+  --color-jo-accent-ink: var(--jo-accent-ink);
+  --color-jo-on-accent: var(--jo-on-accent);
+  --color-jo-correct: var(--jo-correct);
+  --color-jo-on-correct: var(--jo-on-correct);
+  --color-jo-wrong: var(--jo-wrong);
+  --color-jo-on-wrong: var(--jo-on-wrong);
+  --color-jo-glass: var(--jo-glass);
+  --color-jo-scrim: var(--jo-scrim);
+
+  --radius-jo-xs: var(--jo-radius-xs);
+  --radius-jo-sm: var(--jo-radius-sm);
+  --radius-jo-md: var(--jo-radius-md);
+  --radius-jo-lg: var(--jo-radius-lg);
+  --radius-jo-xl: var(--jo-radius-xl);
+  --radius-jo-full: var(--jo-radius-full);
+
+  --shadow-jo: var(--jo-shadow);
+
+  --font-sans: var(--jo-font-sans);
+  --font-mono: var(--jo-font-mono);
+}
+
+/* Transition d'interaction : couleur, opacité, appui. */
+.jo-transition {
+  transition-property: color, background-color, box-shadow, opacity, transform;
+  transition-duration: var(--jo-motion-micro-duration);
+  transition-timing-function: var(--jo-motion-micro-easing);
+}
+
+.jo-focus:focus-visible,
+.jo-focus[data-state='focus'] {
+  outline: 2px solid var(--jo-text);
+  outline-offset: 2px;
+}
+
+.jo-focus-inset:focus-visible,
+.jo-focus-inset[data-state='focus'] {
+  outline: 2px solid var(--jo-text);
+  outline-offset: -2px;
+}
+
+.jo-no-scrollbar {
+  scrollbar-width: none;
+}
+
+.jo-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.jo-spin {
+  animation: jo-spin 800ms linear infinite;
+}
+
+/* Couches animées des cadres Elo. */
+.jo-frame-spin {
+  animation: jo-spin var(--jo-frame-duration) linear infinite;
+}
+
+.jo-frame-counter {
+  animation: jo-spin var(--jo-frame-duration) linear infinite reverse;
+}
+
+.jo-frame-pulse {
+  animation: jo-pulse 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes jo-pulse {
+  from {
+    opacity: 0.55;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes jo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Site public (Lot 8) : entrée des liens du menu compact, décalée par lien (animation-delay). */
+.jo-site-rise {
+  animation: jo-site-rise var(--jo-motion-base-duration) var(--jo-motion-base-easing) both;
+}
+
+@keyframes jo-site-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jo-site-rise {
+    animation-name: jo-fade-in;
+  }
+}
+
+@keyframes jo-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jo-transition {
+    transition: none;
+  }
+
+  .jo-spin,
+  .jo-frame-spin,
+  .jo-frame-counter,
+  .jo-frame-pulse {
+    animation: none;
+  }
+}
+
+/* Prose du site (pages légales) : contenu sans classes, typographie des variables de tokens. */
+.jo-site-prose {
+  max-width: 760px;
+  color: var(--jo-text);
+  font-size: var(--jo-type-body-size);
+  line-height: var(--jo-type-body-line-height);
+  text-wrap: pretty;
+}
+
+.jo-site-prose h2 {
+  margin: var(--jo-space-8) 0 var(--jo-space-4);
+  font-size: var(--jo-type-title-2-size);
+  line-height: var(--jo-type-title-2-line-height);
+  font-weight: var(--jo-type-title-2-weight);
+  letter-spacing: var(--jo-type-title-2-tracking);
+  text-wrap: balance;
+  scroll-margin-top: var(--jo-space-11);
+}
+
+.jo-site-prose h3 {
+  margin: var(--jo-space-6) 0 var(--jo-space-3);
+  font-size: var(--jo-type-headline-size);
+  line-height: var(--jo-type-headline-line-height);
+  font-weight: var(--jo-type-headline-weight);
+}
+
+.jo-site-prose > :first-child {
+  margin-top: 0;
+}
+
+.jo-site-prose p {
+  margin: 0 0 var(--jo-space-5);
+}
+
+.jo-site-prose ul,
+.jo-site-prose ol {
+  margin: 0 0 var(--jo-space-5);
+  padding-left: var(--jo-space-6);
+}
+
+.jo-site-prose ul {
+  list-style: disc;
+}
+
+.jo-site-prose ol {
+  list-style: decimal;
+}
+
+.jo-site-prose li {
+  margin-bottom: var(--jo-space-2);
+}
+
+.jo-site-prose li::marker {
+  color: var(--jo-muted);
+}
+
+.jo-site-prose strong {
+  font-weight: 600;
+}
+
+.jo-site-prose a {
+  color: var(--jo-accent-ink);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+.jo-site-prose a:hover {
+  text-decoration: underline;
+}

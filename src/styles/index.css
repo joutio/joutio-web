@@ -1,0 +1,607 @@
+@import 'tailwindcss';
+/* Copiés du lab par `npm run sync:design` : ne pas modifier ici (D12). */
+@import './tokens.generated.css' layer(components);
+@import './design.css';
+
+/*
+ * Styles de l'app : base de page, puis classes d'animation et de composants reprises du lab
+ * (`design/src/styles/index.css`, sans la partie propre à la galerie). Un écart se corrige dans le lab d'abord.
+ */
+
+@layer base {
+  :root {
+    /* Safe areas réelles (viewport-fit=cover) ; le lab les met à 0. */
+    --jo-safe-top: env(safe-area-inset-top, 0px);
+    --jo-safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  #root {
+    height: 100dvh;
+  }
+
+  body {
+    margin: 0;
+    background: var(--jo-bg);
+    color: var(--jo-text);
+    font-family: var(--jo-font-sans);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+}
+
+/* Sous cette hauteur, 4 réponses en liste (292 px) ne laissent plus assez de place à l'énoncé. */
+@custom-variant jo-question-short (@container (max-height: 519px));
+
+.jo-unroll {
+  animation: jo-unroll var(--jo-motion-base-duration) var(--jo-motion-base-easing) both;
+}
+
+.jo-drop {
+  animation: jo-drop var(--jo-motion-celebration-duration) var(--jo-motion-celebration-easing) both;
+}
+
+@keyframes jo-unroll {
+  from {
+    clip-path: inset(0 50%);
+    opacity: 0;
+  }
+
+  to {
+    clip-path: inset(0 0);
+  }
+}
+
+@keyframes jo-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-96px);
+  }
+}
+
+/* Toujours la place de deux scores à 3 chiffres : (6 × 0,6 em) + éclair 24 px + gaps 16 px. */
+.jo-result-score {
+  font-size: min(48px, calc((100cqw - 40px) / 3.6));
+  line-height: 1;
+}
+
+.jo-map-land {
+  mask: url('/brand/world-map.svg') center / 100% 100% no-repeat;
+}
+
+.jo-map-scroll {
+  /* Durée et départ posés par le composant, selon `speed`. */
+  animation: jo-map-scroll 90s linear infinite;
+  will-change: transform;
+}
+
+.jo-map-position {
+  margin: -60px 0 0 -24px;
+  transform-origin: 50% 100%;
+}
+
+.jo-map-pin {
+  animation: jo-map-pin 3360ms var(--jo-motion-base-easing) infinite both;
+  will-change: transform, opacity;
+}
+
+/* En cqh et non en % : Firefox donne une largeur nulle à une bande en `w-max`. */
+@keyframes jo-map-scroll {
+  to {
+    transform: translateX(-200cqh);
+  }
+}
+
+@keyframes jo-map-pin {
+  0% {
+    animation-timing-function: var(--jo-motion-celebration-easing);
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  15%,
+  70% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  85% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+.jo-parallax {
+  --jo-parallax-scroll: 0px;
+  --jo-parallax-progress: 0;
+  /* Figé ici : les boutons forcent le thème sombre, pour rester lisibles sur l'image. */
+  --jo-parallax-ink: var(--jo-text);
+}
+
+/* Sur l'image, pastille et icône claire. Sur la barre, sans pastille et à la couleur du thème. */
+.jo-parallax-buttons button {
+  --jo-parallax-bar-amount: min(1, calc(var(--jo-parallax-progress) * 1.3));
+  background-color: color-mix(in oklab, var(--jo-scrim) calc((1 - var(--jo-parallax-bar-amount)) * 100%), transparent);
+  color: color-mix(in oklab, var(--jo-parallax-ink) calc(var(--jo-parallax-bar-amount) * 100%), var(--jo-text));
+}
+
+.jo-parallax-image {
+  transform: translateY(calc(var(--jo-parallax-scroll) * 0.5));
+  will-change: transform;
+}
+
+.jo-parallax-title {
+  opacity: calc(1 - var(--jo-parallax-progress) * 1.6);
+}
+
+/* Opaque avant que le contenu passe dessous. */
+.jo-parallax-bar,
+.jo-parallax-bar-title {
+  opacity: calc(var(--jo-parallax-progress) * 1.3);
+}
+
+.jo-question {
+  --jo-question-read: 2000ms;
+  --jo-answer-stagger: 120ms;
+  container-type: size;
+}
+
+.jo-question-fade {
+  animation: jo-fade var(--jo-motion-base-duration) var(--jo-motion-base-easing) both;
+}
+
+.jo-question-rise {
+  animation: jo-question-rise var(--jo-motion-base-duration) var(--jo-motion-base-easing) both;
+}
+
+.jo-answer-in {
+  animation: jo-answer-in var(--jo-motion-base-duration) var(--jo-motion-base-easing) both;
+  animation-delay: calc(var(--jo-question-read) + var(--jo-answer-index) * var(--jo-answer-stagger));
+}
+
+/* Réponses inactives jusqu'à la fin de l'apparition. Reste actif en mouvement réduit. */
+.jo-question-answers {
+  animation: jo-question-lock calc(var(--jo-question-read) + (var(--jo-answer-count) - 1) * var(--jo-answer-stagger) + var(--jo-motion-base-duration)) linear;
+}
+
+@keyframes jo-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes jo-question-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
+@keyframes jo-answer-in {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+}
+
+@keyframes jo-question-lock {
+  from,
+  to {
+    pointer-events: none;
+  }
+}
+
+.jo-progress-fill {
+  transition: width var(--jo-motion-base-duration) var(--jo-motion-base-easing);
+}
+
+.jo-timer-fill {
+  transition:
+    width 1000ms linear,
+    background-color var(--jo-motion-micro-duration) var(--jo-motion-micro-easing);
+}
+
+.jo-gauge-fill {
+  transition:
+    height 900ms linear,
+    background-color var(--jo-motion-micro-duration) var(--jo-motion-micro-easing);
+}
+
+.jo-skeleton {
+  animation: jo-pulse 1400ms var(--jo-motion-base-easing) infinite alternate;
+}
+
+.jo-breathe {
+  animation: jo-breathe 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes jo-breathe {
+  50% {
+    opacity: 0.6;
+    transform: scale(0.92);
+  }
+}
+
+.jo-celebrate {
+  animation: jo-celebrate var(--jo-motion-celebration-duration) var(--jo-motion-celebration-easing) both;
+}
+
+.jo-cascade {
+  animation: jo-cascade var(--jo-motion-micro-duration) var(--jo-motion-base-easing) both;
+}
+
+@keyframes jo-celebrate {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+
+@keyframes jo-cascade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.jo-sheet-scrim {
+  transition: opacity var(--jo-motion-sheet-duration) var(--jo-motion-sheet-easing);
+}
+
+.jo-sheet-panel {
+  transition: transform var(--jo-motion-sheet-duration) var(--jo-motion-sheet-easing);
+}
+
+/* Timeline du face-à-face : entrée, tenue, repli du VS, ouverture des volets. */
+.jo-versus-clock {
+  --jo-versus-timing: 4000ms var(--jo-motion-base-easing) both;
+  animation: jo-versus-clock 4000ms linear both;
+}
+
+.jo-versus-top {
+  animation: jo-versus-top var(--jo-versus-timing);
+}
+
+.jo-versus-bottom {
+  animation: jo-versus-bottom var(--jo-versus-timing);
+}
+
+.jo-versus-player-me {
+  animation: jo-versus-player-me var(--jo-versus-timing);
+}
+
+.jo-versus-player-opponent {
+  animation: jo-versus-player-opponent var(--jo-versus-timing);
+}
+
+.jo-versus-seam {
+  animation: jo-versus-seam var(--jo-versus-timing);
+}
+
+.jo-versus-disc {
+  animation: jo-versus-disc var(--jo-versus-timing);
+}
+
+.jo-versus-ring {
+  animation: jo-versus-ring var(--jo-versus-timing);
+}
+
+.jo-versus-chip {
+  animation: jo-versus-chip var(--jo-versus-timing);
+}
+
+/* Timeline de l'intro : ouverture, tenue, fermeture vers la droite. */
+.jo-round-clock {
+  --jo-round-timing: var(--jo-round-duration, 1900ms) var(--jo-motion-base-easing) both;
+  animation: jo-round-clock var(--jo-round-duration, 1900ms) linear both;
+}
+
+.jo-round-band {
+  animation: jo-round-band var(--jo-round-timing);
+}
+
+.jo-round-number {
+  animation: jo-round-number var(--jo-round-timing);
+}
+
+.jo-round-word {
+  animation: jo-round-word var(--jo-round-timing);
+}
+
+.jo-round-rise {
+  animation: jo-round-rise var(--jo-round-timing);
+}
+
+/* Le fond masque le dessous tant que les volets ne sont pas sur le point de s'ouvrir. */
+@keyframes jo-versus-clock {
+  0%,
+  74% {
+    background-color: var(--jo-bg);
+  }
+
+  74.01%,
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes jo-versus-top {
+  0%,
+  85%,
+  100% {
+    transform: translateY(-100%);
+  }
+
+  11%,
+  74% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes jo-versus-bottom {
+  0%,
+  85%,
+  100% {
+    transform: translateY(100%);
+  }
+
+  11%,
+  74% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes jo-versus-player-me {
+  0%,
+  7%,
+  74%,
+  100% {
+    opacity: 0;
+    transform: translateX(-110%);
+  }
+
+  20%,
+  62% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes jo-versus-player-opponent {
+  0%,
+  10%,
+  71%,
+  100% {
+    opacity: 0;
+    transform: translateX(110%);
+  }
+
+  23%,
+  59% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes jo-versus-seam {
+  0%,
+  9%,
+  75%,
+  100% {
+    opacity: 1;
+    transform: scaleX(0);
+  }
+
+  14%,
+  70% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  24%,
+  64% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes jo-versus-disc {
+  0%,
+  18% {
+    opacity: 0;
+    transform: scale(0) rotate(-90deg);
+  }
+
+  26%,
+  62% {
+    opacity: 1;
+    transform: scale(1.12) rotate(0);
+  }
+
+  30%,
+  58% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}
+
+@keyframes jo-versus-ring {
+  0%,
+  25%,
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  27%,
+  61% {
+    opacity: 0.7;
+  }
+
+  42%,
+  59% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+@keyframes jo-versus-chip {
+  0%,
+  28%,
+  60%,
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  36%,
+  54% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes jo-round-clock {
+  from,
+  to {
+    --jo-round-tick: 0;
+  }
+}
+
+@keyframes jo-round-band {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  14%,
+  82% {
+    clip-path: inset(0 0 0 0);
+  }
+
+  96%,
+  100% {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+
+@keyframes jo-round-number {
+  0%,
+  6% {
+    opacity: 0;
+    transform: translateX(-48px);
+  }
+
+  20%,
+  80% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  92%,
+  100% {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+}
+
+@keyframes jo-round-word {
+  0%,
+  10% {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+
+  24%,
+  78% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  90%,
+  100% {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+}
+
+@keyframes jo-round-rise {
+  0%,
+  12% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  24%,
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  90%,
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jo-parallax-image {
+    transform: none;
+  }
+
+  .jo-transition,
+  .jo-progress-fill,
+  .jo-timer-fill,
+  .jo-gauge-fill,
+  .jo-sheet-scrim,
+  .jo-sheet-panel {
+    transition: none;
+  }
+
+  .jo-skeleton,
+  .jo-breathe,
+  .jo-celebrate,
+  .jo-unroll,
+  .jo-map-scroll,
+  .jo-map-pin,
+  .jo-question-fade,
+  .jo-question-rise,
+  .jo-answer-in,
+  .jo-drop,
+  .jo-cascade,
+  .jo-spin,
+  .jo-frame-spin,
+  .jo-frame-counter,
+  .jo-frame-pulse,
+  .jo-versus-top,
+  .jo-versus-bottom,
+  .jo-versus-player-me,
+  .jo-versus-player-opponent,
+  .jo-versus-seam,
+  .jo-versus-disc,
+  .jo-versus-ring,
+  .jo-versus-chip,
+  .jo-round-band,
+  .jo-round-number,
+  .jo-round-word,
+  .jo-round-rise {
+    animation: none;
+  }
+}

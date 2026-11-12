@@ -1,7 +1,2 @@
-export * from "./domain/challenge"
-export * from "./lib/challenges"
-export * from "./hooks/useChallengeActions"
-export * from "./hooks/useCreateChallenge"
-export * from "./hooks/useMyChallenges"
-export * from "./hooks/useRematchChallenge"
-export * from "./stores/useSentRematchStore"
+export { ChallengesPage } from './components/challenges-page'
+export { useChallengesRuntime } from './hooks/use-challenges'

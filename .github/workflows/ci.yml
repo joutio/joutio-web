@@ -7,3 +7,5 @@ on:
 jobs:
   ci:
     uses: joutio/joutio-reusable-workflows/.github/workflows/frontend-ci.yml@main
+    secrets:
+      GITHUB_PASSWORD: ${{ secrets.JOUTIO_GITHUB_TOKEN }}

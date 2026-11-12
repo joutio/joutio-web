@@ -1,23 +1,19 @@
-import type { StyleDefinition } from "@dicebear/core"
-import { type Icon as IconType } from "@phosphor-icons/react"
-import type { TranslationKey } from "@/lib/i18n/types"
+/* Repris de joutio-web (shared/avatar/styles) : garder aligné. */
+import type { StyleDefinition } from '@dicebear/core'
+export type TranslationKey = string
 
-export type AvatarStyleId = "micah" | "lorelei" | "notionists"
+export type AvatarStyleId = 'micah' | 'lorelei' | 'notionists'
 
 /**
  * Options d'avatar persistées : le style (défaut `micah` si absent) et une valeur
  * par attribut variant/couleur. Le jeu de champs dépend du style
  * (cf. `AvatarStyleDefinition.variantFields` / `colorFields`).
  */
-export type AvatarOptions = { style?: AvatarStyleId } & Record<
-  string,
-  string | undefined
->
+export type AvatarOptions = { style?: AvatarStyleId } & Record<string, string | undefined>
 
 export interface AvatarStyleSection {
   id: string
   labelKey: TranslationKey
-  icon: IconType
   variantField?: string
   variants?: readonly string[]
   /** Clés de traduction par variante (sinon libellé humanisé). */
@@ -31,7 +27,6 @@ export interface AvatarStyleSection {
 export interface AvatarStyleGroup {
   id: string
   labelKey: TranslationKey
-  icon: IconType
   sections: AvatarStyleSection[]
 }
 

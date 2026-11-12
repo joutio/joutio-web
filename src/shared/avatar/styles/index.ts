@@ -1,123 +1,58 @@
-import { micahStyle } from "./micah"
-import type {
-  AvatarOptions,
-  AvatarStyleDefinition,
-  AvatarStyleId,
-} from "./types"
+import type { AvatarOptions, AvatarStyleDefinition, AvatarStyleId } from './types'
 
-export type {
-  AvatarOptions,
-  AvatarStyleDefinition,
-  AvatarStyleGroup,
-  AvatarStyleId,
-  AvatarStyleSection,
-} from "./types"
-export {
-  NONE_LABEL_KEY,
-  STYLE_GROUP_ID,
-  humanizeVariant,
-  numberedVariants,
-} from "./labels"
-export type { HumanizedVariant } from "./labels"
+export type { AvatarOptions, AvatarStyleDefinition, AvatarStyleGroup, AvatarStyleId, AvatarStyleSection } from './types'
+export { humanizeVariant, NONE_LABEL_KEY } from './labels'
 
-/** Tous les styles **connus** (ids valides : rétrocompat des options persistées). */
-const ALL_AVATAR_STYLE_IDS: AvatarStyleId[] = ["micah", "lorelei", "notionists"]
+export const AVATAR_STYLE_IDS: AvatarStyleId[] = ['micah', 'lorelei', 'notionists']
+
+/** Micah reste le style par défaut (options persistées sans `style`), comme sur le web. */
+export const DEFAULT_AVATAR_STYLE: AvatarStyleId = 'micah'
 
 /**
- * Styles **actifs** : proposés dans l'éditeur et acceptés à la lecture des options persistées.
- * Les trois styles sont proposés ; l'accès reste contrôlé par le compte Premium côté UI/BFF.
+ * Définitions chargées à la demande par `import()` (chunks Vite) : les JSON de Lorelei (~115 Ko) et Notionists
+ * (~364 Ko) ne sont téléchargés qu'au premier avatar de ce style. `getAvatarStyle` lit un style déjà chargé ;
+ * `loadAvatarStyle` le charge.
  */
-export const AVATAR_STYLE_IDS: AvatarStyleId[] = [
-  "micah",
-  "lorelei",
-  "notionists",
-]
-
-/** Micah reste le style historique par défaut (rétrocompat des JSON sans `style`). */
-export const DEFAULT_AVATAR_STYLE: AvatarStyleId = "micah"
-
-/**
- * Définitions chargées **à la demande** : seul `micah` (style actif) est embarqué au boot — les
- * JSON volumineux de `lorelei` (~115 Ko) et `notionists` (~364 Ko) ne sont chargés que si un
- * avatar persisté ou un test les demande (`loadAvatarStyle`).
- */
-const loadedStyles = new Map<AvatarStyleId, AvatarStyleDefinition>([
-  ["micah", micahStyle],
-])
-
-const STYLE_LOADERS: Record<
-  AvatarStyleId,
-  () => Promise<AvatarStyleDefinition>
-> = {
-  micah: () => Promise.resolve(micahStyle),
-  lorelei: () => import("./lorelei").then((module) => module.loreleiStyle),
-  notionists: () =>
-    import("./notionists").then((module) => module.notionistsStyle),
+const LOADERS: Record<AvatarStyleId, () => Promise<AvatarStyleDefinition>> = {
+  micah: () => import('./micah').then((module) => module.micahStyle),
+  lorelei: () => import('./lorelei').then((module) => module.loreleiStyle),
+  notionists: () => import('./notionists').then((module) => module.notionistsStyle),
 }
+const loaded = new Map<AvatarStyleId, AvatarStyleDefinition>()
+const pending = new Map<AvatarStyleId, Promise<AvatarStyleDefinition>>()
 
 export function isAvatarStyleId(value: unknown): value is AvatarStyleId {
-  return (
-    typeof value === "string" &&
-    (ALL_AVATAR_STYLE_IDS as readonly string[]).includes(value)
-  )
+  return typeof value === 'string' && (AVATAR_STYLE_IDS as readonly string[]).includes(value)
 }
 
-/** Style actif — les styles désactivés retombent sur le style par défaut. */
-export function isActiveAvatarStyleId(value: unknown): value is AvatarStyleId {
-  return (
-    typeof value === "string" &&
-    (AVATAR_STYLE_IDS as readonly string[]).includes(value)
-  )
-}
+export const resolveAvatarStyleId = (id: string | undefined): AvatarStyleId => (isAvatarStyleId(id) ? id : DEFAULT_AVATAR_STYLE)
 
-export function resolveAvatarStyleId(id: string | undefined): AvatarStyleId {
-  return isAvatarStyleId(id) ? id : DEFAULT_AVATAR_STYLE
-}
+export const isAvatarStyleLoaded = (id: string | undefined) => loaded.has(resolveAvatarStyleId(id))
 
-/** Définition déjà chargée (`undefined` si le style doit encore l'être). */
-export function getLoadedAvatarStyle(
-  id: string | undefined
-): AvatarStyleDefinition | undefined {
-  return loadedStyles.get(resolveAvatarStyleId(id))
-}
-
-/**
- * Définition **requise en synchrone**. Lève si le style n'a pas été chargé : les appelants
- * doivent passer par `loadAvatarStyle`/`loadAllAvatarStyles` (ou `getLoadedAvatarStyle` pour
- * un rendu différé).
- */
-export function getAvatarStyle(id: string | undefined): AvatarStyleDefinition {
+export function loadAvatarStyle(id: string | undefined): Promise<AvatarStyleDefinition> {
   const styleId = resolveAvatarStyleId(id)
-  const definition = loadedStyles.get(styleId)
-  if (!definition) {
-    throw new Error(
-      `Style d'avatar non chargé : "${styleId}" (appeler loadAvatarStyle avant le rendu).`
-    )
+  const existing = loaded.get(styleId)
+  if (existing) return Promise.resolve(existing)
+  let promise = pending.get(styleId)
+  if (!promise) {
+    promise = LOADERS[styleId]().then((definition) => {
+      loaded.set(styleId, definition)
+      pending.delete(styleId)
+      return definition
+    })
+    pending.set(styleId, promise)
   }
+  return promise
+}
+
+/** Style déjà chargé (`loadAvatarStyle`) ; une erreur sinon. */
+export function getAvatarStyle(id: string | undefined): AvatarStyleDefinition {
+  const definition = loaded.get(resolveAvatarStyleId(id))
+  if (!definition) throw new Error(`Style d'avatar non chargé : ${resolveAvatarStyleId(id)}`)
   return definition
 }
 
-/** Charge la définition d'un style (idempotent, mémoïsé en mémoire). */
-export async function loadAvatarStyle(
-  id: string | undefined
-): Promise<AvatarStyleDefinition> {
-  const styleId = resolveAvatarStyleId(id)
-  const existing = loadedStyles.get(styleId)
-  if (existing) return existing
-  const definition = await STYLE_LOADERS[styleId]()
-  loadedStyles.set(styleId, definition)
-  return definition
-}
-
-/** Charge les styles **actifs** — éditeur d'avatar (sélecteur de styles + presets). */
-export async function loadAllAvatarStyles(): Promise<void> {
-  await Promise.all(AVATAR_STYLE_IDS.map((styleId) => loadAvatarStyle(styleId)))
-}
-
-/** Preset de « Réinitialiser », `style` inclus seulement si ≠ défaut. */
+/** Preset de « Réinitialiser » d'un style, `style` compris. */
 export function defaultOptionsFor(id: AvatarStyleId): AvatarOptions {
-  const { defaults } = getAvatarStyle(id)
-  return id === DEFAULT_AVATAR_STYLE
-    ? { ...defaults }
-    : { ...defaults, style: id }
+  return { ...getAvatarStyle(id).defaults, style: id }
 }

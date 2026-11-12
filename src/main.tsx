@@ -1,35 +1,19 @@
-import { StrictMode } from "react"
-import { createRoot } from "react-dom/client"
+import '@fontsource-variable/geist'
+import '@fontsource-variable/geist-mono'
+import './styles/index.css'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { App } from './app/app'
+import { initSession } from './lib/session'
+import { installClientTelemetry } from './lib/telemetry'
 
-// Tokens Arc UI (bottom sheets) importés avant `index.css` : les tokens de l'app,
-// déclarés plus bas, l'emportent à spécificité égale (cf. gardes dans `index.css`).
-import "@/components/arc/foundation.css"
-import "./index.css"
-// i18n initialisé avant le rendu : les écrans pré-connexion utilisent la dernière langue
-// choisie (localStorage), sinon celle du navigateur (repli fr).
-import "@/lib/i18n"
-import App from "./App.tsx"
-import { initInstallPromptCapture } from "@/shared/stores/useInstallStore"
-import { initClientTelemetry } from "@/lib/telemetry"
+installClientTelemetry()
 
-// `beforeinstallprompt` n'est émis qu'une fois, tôt : la capture doit être branchée avant le
-// rendu (le réglage « Installer Joutio » ne monte que plus tard, sur la page Réglages).
-initInstallPromptCapture()
-// Erreurs JS et promesses rejetées → BFF → Loki/Grafana (aucun SaaS).
-initClientTelemetry()
-
-// Cache client des images externes (Wikimedia) : actif en dev comme en prod. Le SW ne touche
-// qu'aux hôtes d'images (jamais au shell ni aux bundles), donc HMR reste intact.
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js", { updateViaCache: "none" })
-      .catch(() => undefined)
-  })
-}
-
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-)
+// La session est restaurée (et renouvelée si besoin) avant le premier rendu : les gardes de route lisent un état stable.
+void initSession().finally(() => {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+})

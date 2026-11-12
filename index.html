@@ -2,129 +2,28 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/icons/joutio-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
-    />
-    <!-- PWA installée : plein écran, chrome natif minimal (push iOS ≥ 16.4 via écran d'accueil).
-         `theme-color` suit le thème RÉSOLU de l'app (pas prefers-color-scheme) : la barre d'état
-         Android/Chrome reste alignée même si l'utilisateur force Clair/Sombre. -->
     <meta name="theme-color" content="#000000" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Joutio" />
-    <!-- Images des questions (seed Wikimedia) : TLS/DNS pré-établis pour le préchargement duel. -->
-    <link rel="preconnect" href="https://commons.wikimedia.org" />
-    <link rel="preconnect" href="https://upload.wikimedia.org" crossorigin />
     <title>Joutio</title>
     <script>
-      // Anti-FOUC : applique le thème persisté AVANT le premier paint (le store Zustand
-      // `joutio-theme` n'est hydraté qu'au montage de React). Doit rester synchrone.
+      // Thème appliqué avant le premier rendu (pas d'éclair blanc). Même clé et mêmes valeurs que `src/lib/theme`.
       (function () {
+        var pref = 'system'
         try {
-          var raw = localStorage.getItem("joutio-theme");
-          var pref = raw ? JSON.parse(raw).state.theme : "dark";
-          var dark =
-            pref === "dark" ||
-            (pref === "system" &&
-              window.matchMedia("(prefers-color-scheme: dark)").matches);
-          var root = document.documentElement;
-          root.classList.toggle("dark", dark);
-          root.style.colorScheme = dark ? "dark" : "light";
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", dark ? "#000000" : "#f6f5f1");
-          // Habillage de la nav basse (mobile) : appliqué avant le paint pour éviter un saut.
-          var navRaw = localStorage.getItem("joutio-bottom-nav");
-          var nav = navRaw ? JSON.parse(navRaw).state.variant : "floating";
-          if (nav === "fixed") root.dataset.bottomNav = "fixed";
-        } catch (e) {
-          document.documentElement.classList.add("dark");
-        }
-      })();
+          pref = localStorage.getItem('joutio-theme') || 'system'
+        } catch (e) {}
+        var dark = pref === 'dark' || (pref !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.dataset.joTheme = dark ? 'dark' : 'light'
+      })()
     </script>
   </head>
-  <body class="qu-root">
+  <body>
     <div id="root"></div>
-    <!-- Splash de démarrage : même marque que la coquille (cercle + éclair), thème résolu par
-         le script anti-FOUC ci-dessus. Masqué dès que React a monté l'app (`#root` non vide). -->
-    <div id="boot-splash" aria-hidden="true">
-      <div class="boot-mark">
-        <svg viewBox="0 0 100 100" width="64" height="64">
-          <rect width="100" height="100" rx="28" fill="#181818" />
-          <path d="M60 44V66A18 18 0 0 1 42 84H36" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
-          <circle cx="60" cy="24" r="7" fill="#e8b04a" />
-        </svg>
-      </div>
-      <p class="boot-title">Joutio</p>
-      <p class="boot-sub">Duels de culture</p>
-    </div>
-    <style>
-      #boot-splash {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        display: grid;
-        place-content: center;
-        justify-items: center;
-        gap: 14px;
-        background: #f6f5f1;
-        color: #121210;
-      }
-      html.dark #boot-splash {
-        background: #000000;
-        color: #ffffff;
-      }
-      #boot-splash .boot-mark {
-        display: grid;
-        place-items: center;
-        width: 64px;
-        height: 64px;
-        animation: boot-pulse 1.4s ease-in-out infinite;
-      }
-      #boot-splash .boot-mark svg {
-        color: #000000;
-      }
-      html.dark #boot-splash .boot-mark svg {
-        color: #000000;
-      }
-      #boot-splash .boot-title {
-        margin: 0;
-        font-family: system-ui, sans-serif;
-        font-size: 18px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-      #boot-splash .boot-sub {
-        margin: 0;
-        font-family: system-ui, sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        opacity: 0.6;
-      }
-      #root:not(:empty) ~ #boot-splash {
-        display: none;
-      }
-      @keyframes boot-pulse {
-        0%,
-        100% {
-          transform: scale(1);
-          opacity: 1;
-        }
-        50% {
-          transform: scale(0.94);
-          opacity: 0.8;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        #boot-splash .boot-mark {
-          animation: none;
-        }
-      }
-    </style>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

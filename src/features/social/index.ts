@@ -1,3 +1,1 @@
-export * from "./domain/pending-duel"
-export * from "./hooks/useSocialPending"
-export * from "./hooks/useTopicDuelState"
+export { SocialPage } from './components/social-page'
