@@ -1,5 +1,5 @@
 import type { TopicSort } from '@joutio/client-domain/api-types'
-import { ArrowsDownUpIcon, BellIcon, EyeSlashIcon, MagnifyingGlassIcon, SlidersHorizontalIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { ArrowsDownUpIcon, BellIcon, HeartIcon, MagnifyingGlassIcon, PencilSimpleIcon, SlidersHorizontalIcon, SquaresFourIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUnreadCount } from '@/features/notifications'
@@ -29,7 +29,7 @@ import {
   type CategoryCode,
 } from '@/ui'
 import { useTopicFacets, useTopics } from '../hooks/use-topics'
-import { DEFAULT_TOPIC_SORT, pageSizeFor } from '../lib/topics-service'
+import { DEFAULT_TOPIC_SORT, pageSizeFor, type TopicScope } from '../lib/topics-service'
 
 const UNIVERSES = Object.keys(tokens.category) as CategoryCode[]
 
@@ -40,6 +40,13 @@ const SORTS: readonly { value: TopicSort; label: MessageKey }[] = [
   { value: 'RECENT', label: 'topics.sortRecent' },
 ]
 
+/** « Mes thèmes » (`sujets.md` § 2, 2026-11-13) : remplace « Masquer les sujets suivis ». */
+const SCOPES: readonly { value: TopicScope; label: MessageKey; icon: Icon }[] = [
+  { value: 'ALL', label: 'topics.scopeAll', icon: SquaresFourIcon },
+  { value: 'FOLLOWED', label: 'topics.scopeFollowed', icon: HeartIcon },
+  { value: 'MINE', label: 'topics.scopeMine', icon: PencilSimpleIcon },
+]
+
 const toggle = (list: CategoryCode[], category: CategoryCode) => (list.includes(category) ? list.filter((item) => item !== category) : [...list, category])
 
 type FiltersProps = {
@@ -47,12 +54,12 @@ type FiltersProps = {
   onSelected: (selected: CategoryCode[]) => void
   sort: TopicSort
   onSort: (sort: TopicSort) => void
-  hideFollowed: boolean
-  onHideFollowed: (hide: boolean) => void
+  scope: TopicScope
+  onScope: (scope: TopicScope) => void
 }
 
 /** Univers, tri et sujets suivis : contenu de la feuille Filtres. */
-function TopicFiltersForm({ selected, onSelected, sort, onSort, hideFollowed, onHideFollowed }: FiltersProps) {
+function TopicFiltersForm({ selected, onSelected, sort, onSort, scope, onScope }: FiltersProps) {
   const t = useT()
   return (
     <div className="grid gap-6">
@@ -75,10 +82,20 @@ function TopicFiltersForm({ selected, onSelected, sort, onSort, hideFollowed, on
         </RadioGroup>
       </section>
       <section className="grid gap-3">
-        <SectionHeader title={t('topics.display')} />
-        <div className="overflow-hidden rounded-jo-lg bg-jo-raised">
-          <ListRow icon={EyeSlashIcon} label={t('topics.hideFollowed')} control="toggle" on={hideFollowed} onToggle={onHideFollowed} last />
-        </div>
+        <SectionHeader title={t('topics.scope')} />
+        <RadioGroup label={t('topics.scope')} className="overflow-hidden rounded-jo-lg bg-jo-raised">
+          {SCOPES.map((option, index) => (
+            <ListRow
+              key={option.value}
+              icon={option.icon}
+              label={t(option.label)}
+              control="radio"
+              on={scope === option.value}
+              onToggle={() => onScope(option.value)}
+              last={index === SCOPES.length - 1}
+            />
+          ))}
+        </RadioGroup>
       </section>
     </div>
   )
@@ -138,16 +155,16 @@ export function TopicsPage() {
   const search = useDebounced(query.trim())
   const [selected, setSelected] = useState<CategoryCode[]>([])
   const [sort, setSort] = useState<TopicSort>(DEFAULT_TOPIC_SORT)
-  const [hideFollowed, setHideFollowed] = useState(false)
+  const [scope, setScope] = useState<TopicScope>('ALL')
   const [sheetOpen, setSheetOpen] = useState(false)
   const { anchor, toThreshold, toTop } = useStickyAnchor()
 
-  useEffect(toThreshold, [search, selected, sort, hideFollowed, toThreshold])
+  useEffect(toThreshold, [search, selected, sort, scope, toThreshold])
 
   const container = useRef<HTMLDivElement>(null)
   const columns = useGridColumns(container)
-  const list = useTopics({ query: search, categories: selected, sort, hideFollowed, size: pageSizeFor(columns) })
-  const facets = useTopicFacets(search)
+  const list = useTopics({ query: search, categories: selected, sort, followed: scope === 'FOLLOWED', mine: scope === 'MINE', size: pageSizeFor(columns) })
+  const facets = useTopicFacets(search, scope)
   const topics = list.data?.pages.flatMap((page) => page.topics) ?? []
   const count = facets.data
     ? selected.length === 0
@@ -161,7 +178,7 @@ export function TopicsPage() {
   const reset = () => {
     setSelected([])
     setSort(DEFAULT_TOPIC_SORT)
-    setHideFollowed(false)
+    setScope('ALL')
   }
 
   return (
@@ -188,7 +205,7 @@ export function TopicsPage() {
               label={t('topics.filters')}
               variant="gray"
               tone="neutral"
-              badge={selected.length || undefined}
+              badge={selected.length + (scope === 'ALL' ? 0 : 1) || undefined}
               onClick={() => setSheetOpen(true)}
             />
           </div>
@@ -211,7 +228,7 @@ export function TopicsPage() {
             </Button>
           }
         >
-          <TopicFiltersForm selected={selected} onSelected={setSelected} sort={sort} onSort={setSort} hideFollowed={hideFollowed} onHideFollowed={setHideFollowed} />
+          <TopicFiltersForm selected={selected} onSelected={setSelected} sort={sort} onSort={setSort} scope={scope} onScope={setScope} />
         </MobileSheet>
       }
     >

@@ -2,7 +2,20 @@ import type { Language } from '@joutio/client-domain/api-types'
 import { useState } from 'react'
 import { useT } from '@/lib/i18n'
 import { useImageUpload } from '../hooks/use-image-upload'
-import { Button, Field, ImagePicker, ListRow, MobileSheet, RadioGroup, Segmented, tokens, type CategoryCode } from '@/ui'
+import {
+  MASTERY_TIER_LABELS,
+  MASTERY_TIERS,
+  normalizeTitles,
+  TITLE_MAX_LENGTH,
+  titleLabel,
+  titlesChanged,
+  titlesDraft,
+  tooLongTitle,
+  type TitleLanguage,
+  type TopicTitles,
+} from '@joutio/client-domain/authoring'
+import { formatNumber, MASTERY_XP } from '@/features/topic'
+import { Badge, Button, Field, ImagePicker, ListRow, MobileSheet, RadioGroup, Segmented, tokens, type CategoryCode } from '@/ui'
 
 const UNIVERSES = Object.keys(tokens.category) as CategoryCode[]
 
@@ -105,6 +118,73 @@ export function TopicImageSheet({ open, title, subtitle, hint, image, png = fals
     <MobileSheet open={open} onClose={onClose} title={title} subtitle={subtitle}>
       <ImagePicker image={image ?? undefined} hint={uploading ? t('settings.uploading') : hint} onPick={pick} onRemove={() => onChange(null)} />
       {field}
+    </MobileSheet>
+  )
+}
+
+/**
+ * Titres par palier (`creation.md` § 1, Titres, 2026-11-13) : le créateur nomme librement chacun des 7 paliers, en
+ * français et en anglais. Un champ vide garde le repli « Or · Sujet », affiché en indication. Un seul Enregistrer.
+ * Monter avec une `key` à chaque ouverture : le brouillon repart des titres enregistrés.
+ */
+export function TopicTitlesSheet({ open, topicName, titles, saving, onClose, onSave }: {
+  open: boolean
+  topicName: string
+  titles: TopicTitles | null
+  saving?: boolean
+  onClose: () => void
+  onSave: (titles: TopicTitles | null) => void
+}) {
+  const t = useT()
+  const [language, setLanguage] = useState<TitleLanguage>('fr')
+  const [draft, setDraft] = useState(() => titlesDraft(titles))
+  const invalid = tooLongTitle(draft) !== null
+  return (
+    <MobileSheet
+      open={open}
+      onClose={onClose}
+      title={t('workshop.titles')}
+      subtitle={topicName}
+      tall
+      footer={
+        <Button full loading={saving} disabled={invalid || !titlesChanged(titles, draft)} onClick={() => onSave(normalizeTitles(draft))}>
+          {t('settings.save')}
+        </Button>
+      }
+    >
+      <div className="grid gap-4">
+        <p className="jo-type-callout m-0 text-pretty text-jo-muted">{t('workshop.titlesText', { topic: topicName })}</p>
+        <Segmented
+          label={t('workshop.language')}
+          options={[
+            { value: 'fr', label: 'Français' },
+            { value: 'en', label: 'English' },
+          ]}
+          value={language}
+          onChange={setLanguage}
+        />
+        {MASTERY_TIERS.map((tier) => {
+          const value = draft[language][tier]
+          return (
+            <div key={`${language}-${tier}`} className="grid gap-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="tier" tier={tier}>
+                  {MASTERY_TIER_LABELS[tier]}
+                </Badge>
+                <span className="jo-type-caption text-jo-muted">{`${formatNumber(MASTERY_XP[tier])} XP`}</span>
+              </div>
+              <Field
+                label={language === 'fr' ? t('workshop.titleLabel', { tier: MASTERY_TIER_LABELS[tier] }) : t('workshop.inEnglish', { label: t('workshop.titleLabel', { tier: MASTERY_TIER_LABELS[tier] }) })}
+                placeholder={language === 'en' ? titleLabel(normalizeTitles(draft), tier, topicName, 'fr') : `${MASTERY_TIER_LABELS[tier]} · ${topicName}`}
+                value={value}
+                maxLength={TITLE_MAX_LENGTH}
+                counter={`${value.length} / ${TITLE_MAX_LENGTH}`}
+                onChange={(event) => setDraft({ ...draft, [language]: { ...draft[language], [tier]: event.target.value } })}
+              />
+            </div>
+          )
+        })}
+      </div>
     </MobileSheet>
   )
 }

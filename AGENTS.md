@@ -172,7 +172,8 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         aucun endpoint) ; Revanches, Rangs et badges, Sons du duel et Icônes et points des réponses sont locaux à
         l'appareil (`useDeviceSettings`), seul Défis et salons est persisté (`ROOM`) ; aucun son n'existe encore ;
         l'éditeur ne règle que les options Micah maquettées par le lab (Lorelei et Notionists : style et fond)
-  - [x] Création `/me/topics` (atelier, feature `workshop`) : Mes sujets (À traiter avec pastille, + Nouveau sujet,
+  - [x] Création (atelier, feature `workshop`) : Mes sujets — **onglet Création de l'Accueil** depuis le 2026-11-13
+        (`/?tab=creation`, `MyTopicsList` ; `/me/topics` y redirige, retiré des Réglages) — (À traiter avec pastille, + Nouveau sujet,
         Premium au-delà du sujet publié gratuit), Mon sujet `/me/topics/{id}` (parallaxe, statut et rôle, nom FR/EN,
         univers, vignette, pictogramme PNG, Questions / Équipe / Modération, Publier, Supprimer le brouillon, Repasser
         en brouillon), Questions `…/questions` (recherche, Trier et filtrer, statuts, repère du minimum ou du plafond,
@@ -223,3 +224,13 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
       de la page 2 réduit au caret, joueur non classé sans cadre de rang (adversaire : `progression.provisional` de son
       profil, `opponentRated` ne suffit pas), pas de promotion célébrée en rang provisoire
 - [ ] Bascule (merge de `rewrite/web-kit`)
+
+### Retours d'usage — 2026-11-13
+
+- Accueil : onglets Pour toi / Suivis / **Création** (onglet dans l'URL `?tab=`) ; rail « Selon tes centres
+  d'intérêt » (`recommendedTopics`), carte d'invitation vers Réglages › Jeu sans intérêt.
+- Sujets : « Mes thèmes » (Tous / Suivis / Mes sujets : `followed` ou `mine`, facettes de la même portée) remplace
+  « Masquer les sujets suivis ».
+- Atelier : ligne et feuille **Titres** (`TopicTitlesSheet`, `useUpdateTopicTitles`, `PUT /api/topics/{id}/titles`),
+  libellés via `customTitle` de `@joutio/client-domain/authoring`.
+- Avatar de base : fond `raised` relevé vers le texte + filet `border`.

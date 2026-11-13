@@ -1,3 +1,4 @@
+import { customTitle } from '@joutio/client-domain/authoring'
 import type { GameHistoryItemView, GameOutcome, LeaderboardEntryView, TopicOverviewView } from '@joutio/client-domain/api-types'
 import { SwordIcon, TrophyIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
@@ -223,7 +224,7 @@ export function ProgressTab({ overview }: { overview: TopicOverviewView }) {
   const reached = progress ? MASTERY_TIERS.indexOf(progress.tier) : -1
   // Le premier titre demande au moins une partie humaine terminée (`ProfileUpdateService.updateEquippedTitle`).
   const played = (progress?.games ?? 0) > 0
-  const label = (tier: (typeof MASTERY_TIERS)[number]) => overview.titles?.[language]?.[tier] ?? overview.titles?.fr?.[tier] ?? `${tokens.tier[tier].label} · ${name}`
+  const label = (tier: (typeof MASTERY_TIERS)[number]) => customTitle(overview.titles, tier, language) ?? `${tokens.tier[tier].label} · ${name}`
 
   return (
     <div className="grid gap-4 px-4">

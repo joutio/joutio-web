@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { ROUTES } from '@/shared/routes'
 import { ChallengesPage } from '@/features/challenges'
 import { DevUiPage } from '@/features/dev'
 import { DuelPage } from '@/features/duel'
@@ -17,7 +18,7 @@ import { SearchPage } from '@/features/search'
 import { SocialPage } from '@/features/social'
 import { LeaderboardPage, TopicPage } from '@/features/topic'
 import { TopicsPage } from '@/features/topics'
-import { ModerationPage, MyTopicPage, MyTopicsPage, QuestionEditorPage, QuestionReportsPage, QuestionsPage, TeamPage } from '@/features/workshop'
+import { ModerationPage, MyTopicPage, QuestionEditorPage, QuestionReportsPage, QuestionsPage, TeamPage } from '@/features/workshop'
 import { AppFrame, AuthenticatedLayout, CallbackPage, LoginRedirect } from '@/features/shell'
 import { PersonalRuntime } from './personal-runtime'
 
@@ -59,7 +60,8 @@ export const router = createBrowserRouter([
               { path: '/play', element: <MatchmakingPage /> },
               { path: '/premium', element: <PremiumRoute /> },
               { path: '/notifications', element: <NotificationsPage /> },
-              { path: '/me/topics', element: <MyTopicsPage /> },
+              // Mes sujets vit dans l'onglet Création de l'Accueil (2026-11-13) : l'ancienne URL y mène.
+              { path: '/me/topics', element: <Navigate to={ROUTES.myTopics} replace /> },
               { path: '/me/topics/:topicId', element: <MyTopicPage /> },
               { path: '/me/topics/:topicId/questions', element: <QuestionsPage /> },
               { path: '/me/topics/:topicId/questions/:questionId', element: <QuestionEditorPage /> },

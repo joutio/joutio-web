@@ -1,5 +1,5 @@
 import type { IdResponse, Language, PageResponse, SuggestionView, TopicCardView } from '@joutio/client-domain/api-types'
-import type { QuestionEditorView, QuestionOperation, ReportDetail, ReportedQuestion, TeamMember, TeamRole, TopicTodo, TopicWorkshop } from '@joutio/client-domain/authoring'
+import type { QuestionEditorView, QuestionOperation, ReportDetail, ReportedQuestion, TeamMember, TeamRole, TopicTitles, TopicTodo, TopicWorkshop } from '@joutio/client-domain/authoring'
 import { api } from '@/lib/api'
 
 const id = encodeURIComponent
@@ -13,7 +13,7 @@ export const WORKSHOP_ENDPOINTS = {
   todo: '/api/topics/contributed/todo',
   topic: (topicId: string) => `/api/topics/${id(topicId)}`,
   workshop: (topicId: string) => `/api/topics/${id(topicId)}/workshop`,
-  field: (topicId: string, field: 'name' | 'category' | 'image-url' | 'pictogram-url' | 'publish' | 'draft' | 'questions' | 'team') => `/api/topics/${id(topicId)}/${field}`,
+  field: (topicId: string, field: 'name' | 'category' | 'image-url' | 'pictogram-url' | 'titles' | 'publish' | 'draft' | 'questions' | 'team') => `/api/topics/${id(topicId)}/${field}`,
   member: (topicId: string, userId: string) => `/api/topics/${id(topicId)}/team/${id(userId)}`,
   question: (questionId: string, action?: string) => `/api/questions/${id(questionId)}${action ? `/${action}` : ''}`,
   reportQueue: (topicId: string) => `/api/question-reports/topics/${id(topicId)}`,
@@ -36,6 +36,8 @@ export const workshopService = {
   updateCategory: (topicId: string, category: string) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'category'), { category }),
   updateImageUrl: (topicId: string, imageUrl: string | null) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'image-url'), { imageUrl }),
   updatePictogramUrl: (topicId: string, pictogramUrl: string | null) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'pictogram-url'), { pictogramUrl }),
+  /** Titres par palier ; `null` efface tout (repli « Or · Sujet »). */
+  updateTitles: (topicId: string, titles: TopicTitles | null) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'titles'), { titles }),
   publish: (topicId: string) => api.post<void>(WORKSHOP_ENDPOINTS.field(topicId, 'publish')),
   /** Repasse un sujet publié en brouillon. */
   draft: (topicId: string) => api.post<void>(WORKSHOP_ENDPOINTS.field(topicId, 'draft')),

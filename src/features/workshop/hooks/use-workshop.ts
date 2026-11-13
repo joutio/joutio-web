@@ -5,6 +5,7 @@ import {
   type QuestionOperation,
   type ReportedQuestion,
   type TeamMember,
+  type TopicTitles,
   type TopicTodo,
   type TopicWorkshop,
 } from '@joutio/client-domain/authoring'
@@ -36,7 +37,7 @@ export const useTopicTodo = () => useQuery({ queryKey: queryKeys.workshop.todo, 
 /** Un sujet de l'atelier et mes droits dessus. */
 export function useWorkshop(topicId: string) {
   const query = useQuery({ queryKey: queryKeys.workshop.topic(topicId), queryFn: () => workshopService.workshop(topicId), enabled: Boolean(topicId) })
-  return { ...query, topic: query.data?.topic, permissions: query.data?.permissions }
+  return { ...query, topic: query.data?.topic, permissions: query.data?.permissions, titles: query.data?.titles ?? null }
 }
 
 /** Toutes les questions du sujet. */
@@ -235,6 +236,26 @@ export const useUpdateTopicImage = (topicId: string) =>
   useTopicField(topicId, (imageUrl: string | null) => workshopService.updateImageUrl(topicId, imageUrl), (topic, imageUrl) => ({ ...topic, imageUrl }), 'workshop.imageError')
 export const useUpdateTopicPictogram = (topicId: string) =>
   useTopicField(topicId, (pictogramUrl: string | null) => workshopService.updatePictogramUrl(topicId, pictogramUrl), (topic, pictogramUrl) => ({ ...topic, pictogramUrl }), 'workshop.pictogramError')
+
+/** Titres par palier : l'atelier et la fiche sujet (onglet Progression) changent tout de suite. */
+export function useUpdateTopicTitles(topicId: string) {
+  const client = useQueryClient()
+  const t = useT()
+  const fail = useFailure()
+  return useMutation({
+    mutationFn: (titles: TopicTitles | null) => workshopService.updateTitles(topicId, titles),
+    onMutate: (titles: TopicTitles | null) =>
+      optimisticUpdate(client, [queryKeys.workshop.topic(topicId), queryKeys.topic.overview(topicId)], () => {
+        client.setQueryData<TopicWorkshop>(queryKeys.workshop.topic(topicId), (workshop) => (workshop ? { ...workshop, titles } : workshop))
+        client.setQueryData<TopicOverviewView>(queryKeys.topic.overview(topicId), (overview) => (overview ? { ...overview, titles } : overview))
+      }),
+    onSuccess: () => toast.success(t('workshop.titlesSaved')),
+    onError: (error, _titles, context) => {
+      context?.rollback()
+      fail('workshop.titlesError', undefined, error)
+    },
+  })
+}
 
 export function usePublishTopic(topicId: string) {
   const client = useQueryClient()

@@ -23,8 +23,8 @@ export const ROUTES = {
   /** Éditeur d'avatar et suppression du compte : poussés depuis les Réglages (`web.md` § 2 : « Réglages (avatar, suppression) »). */
   avatar: '/me/settings/avatar',
   deleteAccount: '/me/settings/delete',
-  /** Création : Mes sujets et l'atelier (`web.md` § 2 : `/me/topics`), pages de l'atelier sous le sujet. */
-  myTopics: '/me/topics',
+  /** Création : Mes sujets = onglet Création de l'Accueil (2026-11-13) ; l'atelier reste sous `/me/topics/{id}`. */
+  myTopics: '/?tab=creation',
   myTopic: (topicId: string) => `/me/topics/${encodeURIComponent(topicId)}`,
   topicQuestions: (topicId: string) => `/me/topics/${encodeURIComponent(topicId)}/questions`,
   /** Éditeur de question ; `resolve` : enregistrer clôt les signalements ouverts (ouvert depuis les Signalements). */

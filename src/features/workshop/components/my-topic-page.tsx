@@ -1,5 +1,5 @@
-import { MAX_NAME, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client-domain/authoring'
-import { FileDashedIcon, ImageIcon, ListChecksIcon, PencilSimpleIcon, ShieldCheckIcon, SquaresFourIcon, StickerIcon, TrashIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { customizedTierCount, MASTERY_TIERS, MAX_NAME, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client-domain/authoring'
+import { CrownSimpleIcon, FileDashedIcon, ImageIcon, ListChecksIcon, PencilSimpleIcon, ShieldCheckIcon, SquaresFourIcon, StickerIcon, TrashIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useLanguageStore, useT } from '@/lib/i18n'
@@ -22,14 +22,15 @@ import {
   useUpdateTopicImage,
   useUpdateTopicNames,
   useUpdateTopicPictogram,
+  useUpdateTopicTitles,
   useWorkshop,
 } from '../hooks/use-workshop'
 import { FrozenNotice } from './frozen-notice'
-import { LocalizedFieldSheet, TopicImageSheet, UniverseSheet } from './workshop-sheets'
+import { LocalizedFieldSheet, TopicImageSheet, TopicTitlesSheet, UniverseSheet } from './workshop-sheets'
 
 const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
 
-type Sheet = 'name' | 'universe' | 'image' | 'pictogram'
+type Sheet = 'name' | 'universe' | 'image' | 'pictogram' | 'titles'
 
 
 /**
@@ -45,7 +46,7 @@ export function MyTopicPage() {
   const { topicId = '' } = useParams()
   const back = useBack(ROUTES.myTopics)
   const workshop = useWorkshop(topicId)
-  const { topic, permissions } = workshop
+  const { topic, permissions, titles } = workshop
   const role = workshopRole(permissions)
   const manager = Boolean(permissions?.canManage)
   const { premium, limits, askPremium } = useCreationLimits()
@@ -58,6 +59,8 @@ export function MyTopicPage() {
   const saveCategory = useUpdateTopicCategory(topicId)
   const saveImage = useUpdateTopicImage(topicId)
   const savePictogram = useUpdateTopicPictogram(topicId)
+  const saveTitles = useUpdateTopicTitles(topicId)
+  const [titlesKey, setTitlesKey] = useState(0)
   const publish = usePublishTopic(topicId)
   const unpublish = useDraftTopic(topicId)
   const remove = useDeleteTopic(topicId)
@@ -217,6 +220,15 @@ export function MyTopicPage() {
               onClose={close}
               onChange={(url) => savePictogram.mutate(url)}
             />
+            <TopicTitlesSheet
+              key={`titles-${titlesKey}`}
+              open={sheet === 'titles'}
+              topicName={topic.names.fr ?? name}
+              titles={titles}
+              saving={saveTitles.isPending}
+              onClose={close}
+              onSave={(next) => saveTitles.mutate(next, { onSuccess: close })}
+            />
           </>
         ) : undefined
       }
@@ -241,7 +253,20 @@ export function MyTopicPage() {
               />
               <ListRow icon={SquaresFourIcon} label={t('workshop.universe')} control={locked ? 'none' : 'chevron'} disabled={locked} value={tokens.category[category].label} onClick={() => setSheet('universe')} />
               <ListRow icon={ImageIcon} label={t('workshop.thumbnail')} control={locked ? 'none' : 'chevron'} disabled={locked} value={t(topic.imageUrl ? 'settings.bannerEdit' : 'settings.bannerAdd')} onClick={() => setSheet('image')} />
-              <ListRow icon={StickerIcon} label={t('workshop.pictogram')} control={locked ? 'none' : 'chevron'} disabled={locked} value={t(topic.pictogramUrl ? 'settings.bannerEdit' : 'settings.bannerAdd')} onClick={() => setSheet('pictogram')} last />
+              <ListRow icon={StickerIcon} label={t('workshop.pictogram')} control={locked ? 'none' : 'chevron'} disabled={locked} value={t(topic.pictogramUrl ? 'settings.bannerEdit' : 'settings.bannerAdd')} onClick={() => setSheet('pictogram')} />
+              <ListRow
+                icon={CrownSimpleIcon}
+                label={t('workshop.titles')}
+                sub={t('workshop.titlesSub')}
+                control={locked ? 'none' : 'chevron'}
+                disabled={locked}
+                value={`${customizedTierCount(titles)} / ${MASTERY_TIERS.length}`}
+                onClick={() => {
+                  setTitlesKey((key) => key + 1)
+                  setSheet('titles')
+                }}
+                last
+              />
             </div>
           </section>
         )}

@@ -1,6 +1,6 @@
 export { ModerationPage } from './components/moderation-page'
 export { MyTopicPage } from './components/my-topic-page'
-export { MyTopicsPage } from './components/my-topics-page'
+export { MyTopicsList } from './components/my-topics-list'
 export { QuestionEditorPage } from './components/question-editor-page'
 export { QuestionReportsPage } from './components/question-reports-page'
 export { QuestionsPage } from './components/questions-page'

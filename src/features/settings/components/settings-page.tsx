@@ -5,7 +5,6 @@ import {
   GiftIcon,
   LifebuoyIcon,
   PaletteIcon,
-  PencilSimpleIcon,
   ShieldCheckIcon,
   SignOutIcon,
   UserCircleIcon,
@@ -66,7 +65,6 @@ export function SettingsPage() {
         <ListRow icon={PaletteIcon} label={t('settings.display')} value={`${appearance} · ${language}`} control="chevron" onClick={open('display')} last />
       </Group>
       <Group>
-        <ListRow icon={PencilSimpleIcon} label={t('pending.creation')} control="chevron" onClick={() => void navigate(ROUTES.myTopics)} />
         <ListRow icon={GiftIcon} label={t('settings.invite')} sub={t('settings.inviteSub')} control="chevron" onClick={open('invite')} last />
       </Group>
       <Group>

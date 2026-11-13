@@ -1,3 +1,4 @@
+import { customTitle } from '@joutio/client-domain/authoring'
 import type { TitleView } from '@joutio/client-domain/api-types'
 import { formatNumber } from '@/features/topic'
 import type { MessageKey } from '@/lib/i18n'
@@ -32,4 +33,4 @@ export function rankProgress(tier: TierCode, rating: number, t: T, language: str
 
 /** Libellé d'un titre : nom thématique du sujet s'il existe, sinon « palier · sujet » (composé côté client). */
 export const titleLabel = (title: TitleView, language: string) =>
-  title.topic.titles?.[language]?.[title.tier] ?? title.topic.titles?.fr?.[title.tier] ?? `${tokens.tier[title.tier].label} · ${topicName(title.topic.names, language)}`
+  customTitle(title.topic.titles, title.tier, language) ?? `${tokens.tier[title.tier].label} · ${topicName(title.topic.names, language)}`

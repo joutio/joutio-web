@@ -1,11 +1,12 @@
 import type { TopicCardView } from '@joutio/client-domain/api-types'
-import { BellIcon, CompassIcon, FireIcon, GearSixIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { BellIcon, CompassIcon, FireIcon, GearSixIcon, HeartIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useUnreadCount } from '@/features/notifications'
 import { useMyActivity } from '@/features/profile'
 import { TabNav } from '@/features/shell'
+import { MyTopicsList } from '@/features/workshop'
 import { PAGE_SIZE, useTopicFacets, useTopics, type TopicFilters } from '@/features/topics'
 import { useT } from '@/lib/i18n'
 import { feedFooterProps } from '@/shared/paging'
@@ -41,7 +42,9 @@ import { useAppBanner } from './app-banner'
 
 const LANDSCAPE_WIDTH = 240
 
-type Tab = 'for-you' | 'followed'
+type Tab = 'for-you' | 'followed' | 'creation'
+const TABS: readonly Tab[] = ['for-you', 'followed', 'creation']
+const isTab = (value: string | null): value is Tab => TABS.includes(value as Tab)
 
 const imageOf = (topic: TopicCardView) => topic.imageUrl ?? undefined
 
@@ -73,7 +76,32 @@ function TopicRail({ title, topics, onSeeAll }: { title: string; topics: TopicCa
   )
 }
 
-function ForYou({ trending, fresh }: { trending: TopicCardView[]; fresh: TopicCardView[] }) {
+/** Sans centre d'intérêt, la sélection « Pour toi » est vide : invitation à les choisir (Réglages › Jeu). */
+function InterestsInvite() {
+  const t = useT()
+  const navigate = useNavigate()
+  return (
+    <section className="mx-4 grid gap-2 rounded-jo-lg bg-jo-surface p-4">
+      <h2 className="jo-type-headline m-0">{t('home.interestsTitle')}</h2>
+      <p className="jo-type-callout m-0 text-pretty text-jo-muted">{t('home.interestsText')}</p>
+      <Button className="justify-self-start" icon={HeartIcon} onClick={() => void navigate(ROUTES.settingsPage('game'), { state: { from: 'home' } })}>
+        {t('home.interestsAction')}
+      </Button>
+    </section>
+  )
+}
+
+function ForYou({
+  trending,
+  fresh,
+  recommended,
+  hasInterests,
+}: {
+  trending: TopicCardView[]
+  fresh: TopicCardView[]
+  recommended: TopicCardView[]
+  hasInterests: boolean
+}) {
   const t = useT()
   const navigate = useNavigate()
   const open = useOpenTopic()
@@ -92,6 +120,8 @@ function ForYou({ trending, fresh }: { trending: TopicCardView[]; fresh: TopicCa
         />
       )}
       {fresh.length > 0 && <TopicRail title={t('home.newTopics')} topics={fresh} onSeeAll={seeAll} />}
+      {/* Sélection du BFF (`recommendedTopics` : intérêts enregistrés, sujets suivis exclus) ; rien si elle est vide. */}
+      {hasInterests ? recommended.length > 0 && <TopicRail title={t('home.recommended')} topics={recommended} onSeeAll={seeAll} /> : <InterestsInvite />}
     </>
   )
 }
@@ -172,7 +202,7 @@ function Loading() {
 
 /**
  * Accueil (`design/specs/screens/accueil.md`, lab `/screens/accueil?view=compact`) : barre fixe (logo, recherche,
- * cloche), bonjour + rang + série qui défilent, onglets « Pour toi » / « Suivis » collés sous la barre. Une fois
+ * cloche), bonjour + rang + série qui défilent, onglets « Pour toi » / « Suivis » / « Création » collés sous la barre. Une fois
  * collés, « Bonjour X » apparaît dans la barre. Toucher Accueil dans la bottom nav remonte en haut.
  */
 export function HomePage() {
@@ -183,12 +213,17 @@ export function HomePage() {
   const home = useHome()
   const unread = useUnreadCount().data?.count ?? 0
   const streak = useMyActivity().data?.currentStreak ?? 0
-  const [tab, setTab] = useState<Tab>('for-you')
+  const [params, setParams] = useSearchParams()
+  const requested = params.get('tab')
+  const [tab, setTab] = useState<Tab>(isTab(requested) ? requested : 'for-you')
   const followed = tab === 'followed'
+  const creation = tab === 'creation'
   const [stuck, setStuck] = useState(false)
   const { anchor, toThreshold, toTop } = useStickyAnchor()
   const changeTab = (next: Tab) => {
     setTab(next)
+    // L'onglet est dans l'URL (`/?tab=creation`) : le retour de l'atelier rouvre Création.
+    setParams(next === 'for-you' ? {} : { tab: next }, { replace: true })
     toThreshold()
   }
 
@@ -197,7 +232,8 @@ export function HomePage() {
   const rating = me.data?.progression?.rating
   const tier = rating !== undefined ? tierOf(rating) : undefined
   const data = home.data
-  const empty = data && (followed ? data.followedTopics.length === 0 : data.trendingTopics.length === 0 && data.newTopics.length === 0)
+  const empty = !creation && data && (followed ? data.followedTopics.length === 0 : data.trendingTopics.length === 0 && data.newTopics.length === 0)
+  const hasInterests = (me.data?.interests ?? []).length > 0
   const explore = () => void navigate(ROUTES.topics)
 
   return (
@@ -251,6 +287,7 @@ export function HomePage() {
             options={[
               { value: 'for-you', label: t('home.forYou') },
               { value: 'followed', label: t('home.followed') },
+              { value: 'creation', label: t('home.creation') },
             ]}
             value={tab}
             onChange={changeTab}
@@ -265,7 +302,12 @@ export function HomePage() {
             action={<Button onClick={explore}>{t('home.explore')}</Button>}
           />
         )}
-        {home.isError && !data && (
+        {creation && (
+          <div className="pt-4 pb-8">
+            <MyTopicsList />
+          </div>
+        )}
+        {!creation && home.isError && !data && (
           <EmptyState
             className="flex-1"
             icon={WarningCircleIcon}
@@ -278,10 +320,16 @@ export function HomePage() {
             }
           />
         )}
-        {(home.isPending || (data && !empty)) && (
+        {!creation && (home.isPending || (data && !empty)) && (
           <div className="grid gap-8 pt-4 pb-8">
             {home.isPending && <Loading />}
-            {data && !empty && (followed ? <Followed /> : <ForYou trending={data.trendingTopics} fresh={data.newTopics} />)}
+            {data &&
+              !empty &&
+              (followed ? (
+                <Followed />
+              ) : (
+                <ForYou trending={data.trendingTopics} fresh={data.newTopics} recommended={data.recommendedTopics ?? []} hasInterests={hasInterests} />
+              ))}
           </div>
         )}
       </div>

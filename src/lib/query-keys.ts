@@ -8,7 +8,7 @@ export const queryKeys = {
   home: ['home'] as const,
   topics: {
     list: (filters: object) => ['topics', 'list', filters] as const,
-    facets: (query: string, followed: boolean) => ['topics', 'facets', query, { followed }] as const,
+    facets: (query: string, scope: string) => ['topics', 'facets', query, { scope }] as const,
   },
   topic: {
     all: (topicId: string) => ['topic', topicId] as const,

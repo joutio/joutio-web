@@ -50,7 +50,8 @@ export function Avatar({ name, src, size = 'md', tier, provisional = false, lock
       aria-label={name}
       style={{ fontSize: Math.max(12, px * 0.36) }}
       className={cn(
-        'grid size-full place-items-center rounded-jo-full bg-jo-raised leading-none font-semibold text-jo-muted',
+        // Avatar de base lisible sur toute surface (2026-11-13) : `raised` seul se fondait dans les lignes des feuilles.
+        'grid size-full place-items-center rounded-jo-full border border-jo-border bg-[color-mix(in_oklab,var(--jo-raised)_88%,var(--jo-text))] leading-none font-semibold text-jo-muted',
         locked && 'opacity-55',
       )}
     >

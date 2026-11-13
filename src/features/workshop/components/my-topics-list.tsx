@@ -3,12 +3,10 @@ import { MAX_NAME, MIN_QUESTIONS, todoTotal } from '@joutio/client-domain/author
 import { PencilSimpleIcon, PlusIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
-import { useBack } from '@/shared/use-back'
-import { Button, EmptyState, Field, IconButton, ListRow, MobileSheet, MobileTopBar, Screen, SectionHeader, Skeleton, TopicRow, tokens, type CategoryCode } from '@/ui'
+import { Button, EmptyState, Field, ListRow, MobileSheet, SectionHeader, Skeleton, TopicRow, tokens, type CategoryCode } from '@/ui'
 import { useCreateTopic, useCreationLimits, useFrozen, useMyTopics, useTopicTodo } from '../hooks/use-workshop'
 import { FrozenNotice } from './frozen-notice'
 import { UniverseSheet } from './workshop-sheets'
@@ -47,15 +45,15 @@ function CreateTopicSheet({ open, onClose, onCreate }: { open: boolean; onClose:
 }
 
 /**
- * Mes sujets (`design/specs/screens/creation.md`, lab `/screens/creation?view=compact`) : écran de Réglages, avec la
- * bottom nav. « À traiter » en tête (questions à valider, signalements ouverts, pastille), puis Mes sujets ; + crée un
- * brouillon (Premium au-delà du sujet publié gratuit). Un sujet s'ouvre sur Mon sujet, brouillon ou publié.
+ * Mes sujets (`design/specs/screens/creation.md`, lab `/screens/creation?view=compact`) : onglet **Création** de
+ * l'Accueil (2026-11-13, remplace l'entrée par Réglages). « Créer un sujet » en tête, puis « À traiter » (questions à
+ * valider, signalements ouverts, pastille) et Mes sujets ; Premium au-delà du sujet publié gratuit. Un sujet s'ouvre
+ * sur Mon sujet, brouillon ou publié.
  */
-export function MyTopicsPage() {
+export function MyTopicsList() {
   const t = useT()
   const navigate = useNavigate()
   const language = useLanguageStore((state) => state.language)
-  const back = useBack(ROUTES.settings)
   const topics = useMyTopics()
   const todo = useTopicTodo()
   const create = useCreateTopic()
@@ -94,30 +92,25 @@ export function MyTopicsPage() {
   )
 
   return (
-    <Screen
-      header={<MobileTopBar variant="inline" back={t('profile.settings')} title={t('pending.creation')} onBack={back} right={<IconButton icon={PlusIcon} label={t('workshop.create')} variant="plain" tone="accent" onClick={openCreate} />} />}
-      bottomNav={<TabNav active="profile" />}
-      overlay={
-        <CreateTopicSheet
-          key={createKey}
-          open={createOpen}
-          onClose={() => setCreateOpen(false)}
-          onCreate={({ name, category }) => {
-            setCreateOpen(false)
-            create.mutate({ name, category }, { onSuccess: ({ id }) => void navigate(ROUTES.myTopic(id)) })
-          }}
-        />
-      }
-    >
+    <>
+      <CreateTopicSheet
+        key={createKey}
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreate={({ name, category }) => {
+          setCreateOpen(false)
+          create.mutate({ name, category }, { onSuccess: ({ id }) => void navigate(ROUTES.myTopic(id)) })
+        }}
+      />
       {topics.isPending ? (
-        <div className="grid gap-2 px-4 pt-1" aria-label={t('common.loading')}>
+        <div className="grid gap-2 px-4" aria-label={t('common.loading')}>
           {[0, 1, 2].map((index) => (
             <Skeleton key={index} shape="row" className="h-16" />
           ))}
         </div>
       ) : topics.isError && !topics.data ? (
         <EmptyState
-          className="pt-16"
+          className="pt-8"
           icon={WarningCircleIcon}
           title={t('workshop.topicsError')}
           description={t('home.errorText')}
@@ -129,7 +122,7 @@ export function MyTopicsPage() {
         />
       ) : list.length === 0 ? (
         <EmptyState
-          className="pt-16"
+          className="pt-8"
           icon={PencilSimpleIcon}
           title={t('workshop.emptyTitle')}
           description={t('workshop.emptyText', { min: MIN_QUESTIONS })}
@@ -140,7 +133,10 @@ export function MyTopicsPage() {
           }
         />
       ) : (
-        <div className="grid gap-6 px-4 pt-1 pb-8">
+        <div className="grid gap-6 px-4">
+          <Button full icon={PlusIcon} onClick={openCreate}>
+            {t('workshop.create')}
+          </Button>
           {frozen && <FrozenNotice published={published} limit={limits.publishedTopics} />}
           {pending.length > 0 && (
             <section className="grid gap-3">
@@ -156,6 +152,6 @@ export function MyTopicsPage() {
           )}
         </div>
       )}
-    </Screen>
+    </>
   )
 }
