@@ -1,3 +1,9 @@
+## [2.8.0](https://github.com/joutio/joutio-web/compare/v2.7.0...v2.8.0) (2026-11-13)
+
+### Features
+
+* **profile:** edit profile page, settings tree and universal sharing ([918281f](https://github.com/joutio/joutio-web/commit/918281f245600e432e005055398420eaedbf75da))
+
 ## [2.7.0](https://github.com/joutio/joutio-web/compare/v2.6.0...v2.7.0) (2026-11-12)
 
 ### Features
