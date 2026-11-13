@@ -57,7 +57,8 @@ export function PlayedTopicsPage() {
                   key={topic.topicId}
                   title={topicName(topic.names, language)}
                   category={toCategoryCode(topic.category)}
-                  image={topic.pictogramUrl ?? topic.imageUrl ?? undefined}
+                  pictogram={topic.pictogramUrl ?? undefined}
+                  image={topic.imageUrl ?? undefined}
                   sub={t('profile.topicSub', {
                     games: t(topic.games > 1 ? 'profile.gamesMany' : 'profile.gamesOne', { count: formatNumber(topic.games, language) }),
                     tier: tokens.tier[mastery(topic.xp)].label,

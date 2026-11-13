@@ -59,6 +59,12 @@ function SwipePages<T extends string>({ pages, value, onChange, className }: Tab
   const scroller = useRef<HTMLDivElement>(null)
   /** Page visée par un scroll programmé : les pages traversées ne changent pas l'onglet. */
   const target = useRef<number | null>(null)
+  /**
+   * Page signalée par le balayage lui-même : l'écran la renvoie en `value`, mais le défilement y est déjà (ou l'aimant
+   * natif l'y amène). Relancer un `scrollTo` animé pendant que le doigt ou l'inertie travaillent les faisait se battre :
+   * saccades au toucher sur téléphone (2026-11-13), invisibles à la molette sur ordinateur.
+   */
+  const swiped = useRef<number | null>(null)
   const mounted = useRef(false)
   const resetScroll = useParallaxScrollReset()
   const index = Math.max(0, pages.findIndex((page) => page.value === value))
@@ -66,6 +72,11 @@ function SwipePages<T extends string>({ pages, value, onChange, className }: Tab
   useEffect(() => {
     const element = scroller.current
     if (!element) return
+    if (swiped.current === index) {
+      swiped.current = null
+      return
+    }
+    swiped.current = null
     const left = index * element.clientWidth
     if (Math.abs(element.scrollLeft - left) < 2) return
     const instant = !mounted.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -90,7 +101,10 @@ function SwipePages<T extends string>({ pages, value, onChange, className }: Tab
       return
     }
     const page = pages[current]
-    if (page && page.value !== value) onChange(page.value)
+    if (page && page.value !== value) {
+      swiped.current = current
+      onChange(page.value)
+    }
   }
 
   // `contain` : les pages prennent la largeur donnée, jamais celle de leur contenu. `overflow-y-hidden` : l'axe
@@ -99,7 +113,7 @@ function SwipePages<T extends string>({ pages, value, onChange, className }: Tab
     <div
       ref={scroller}
       onScroll={onScroll}
-      className={cn('jo-no-scrollbar flex snap-x snap-mandatory items-stretch overflow-x-auto overflow-y-hidden [contain:inline-size]', className)}
+      className={cn('jo-no-scrollbar flex snap-x snap-mandatory items-stretch overflow-x-auto overflow-y-hidden overscroll-x-contain [contain:inline-size] [-webkit-overflow-scrolling:touch]', className)}
     >
       {pages.map((page, pageIndex) => (
         <section key={page.value} aria-hidden={pageIndex !== index} className="min-h-0 w-full flex-none snap-start snap-always">

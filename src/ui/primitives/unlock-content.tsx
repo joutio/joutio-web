@@ -7,8 +7,13 @@ import { cn } from '../lib/cn'
 /** Au-delà, le titre passe en `heroSmall` pour tenir sur deux lignes. */
 const LONG_HEADLINE = 12
 
+/** Couleur d'un déblocage sans rang (série) : halo, fil et mot d'appel. */
+export type UnlockAccent = { glow: string; ink: string; label: string }
+
 type UnlockContentProps = {
-  tier: TierCode
+  /** Rang du déblocage ; sans rang, `accent` donne la couleur et le bout du fil. */
+  tier?: TierCode
+  accent?: UnlockAccent
   /** Devant le fil, avatar ou icône de famille. */
   crumbLead?: ReactNode
   crumbFrom: string
@@ -20,16 +25,18 @@ type UnlockContentProps = {
   text: string
   /** Action secondaire ou son état, sous la phrase. */
   extra?: ReactNode
-  next?: { tier: TierCode; preview: ReactNode; rule: string }
+  /** Palier suivant : `tier` (son nom en couleur), ou `label` libre pour un déblocage sans rang. */
+  next?: { tier?: TierCode; label?: string; preview: ReactNode; rule: string }
 }
 
 /**
  * Contenu commun d'un déblocage : halo du rang, fil, héros, titre, texte, action et palier suivant.
  * Les points, « Tout passer », Partager et Continuer appartiennent à `UnlockSequence`.
  */
-export function UnlockContent({ tier, crumbLead, crumbFrom, hero, heroMotion, eyebrow, headline, text, extra, next }: UnlockContentProps) {
-  const ink = tierInk(tier)
-  const glow = tierColor(tier)
+export function UnlockContent({ tier, accent, crumbLead, crumbFrom, hero, heroMotion, eyebrow, headline, text, extra, next }: UnlockContentProps) {
+  const ink = tier ? tierInk(tier) : (accent?.ink ?? 'var(--jo-accent-ink)')
+  const glow = tier ? tierColor(tier) : (accent?.glow ?? 'var(--jo-accent)')
+  const crumbTo = tier ? tokens.tier[tier].label : (accent?.label ?? '')
   return (
     <div className="relative flex flex-[1_0_auto] flex-col items-center gap-3 px-6 pt-4 text-center">
       <div
@@ -43,7 +50,7 @@ export function UnlockContent({ tier, crumbLead, crumbFrom, hero, heroMotion, ey
         {crumbLead}
         {crumbFrom}
         <ArrowRightIcon size={14} aria-hidden />
-        <span style={{ color: ink }}>{tokens.tier[tier].label}</span>
+        <span style={{ color: ink }}>{crumbTo}</span>
       </div>
       <div className={cn('grid h-[236px] flex-none place-items-center', heroMotion)}>{hero}</div>
       <span className="jo-type-callout font-semibold" style={{ color: ink }}>
@@ -58,8 +65,8 @@ export function UnlockContent({ tier, crumbLead, crumbFrom, hero, heroMotion, ey
           <div className="grid h-14 place-items-center">{next.preview}</div>
           <span className="jo-type-caption text-jo-muted">
             Prochain :{' '}
-            <strong className="font-semibold" style={{ color: tierInk(next.tier) }}>
-              {tokens.tier[next.tier].label}
+            <strong className="font-semibold" style={{ color: next.tier ? tierInk(next.tier) : ink }}>
+              {next.tier ? tokens.tier[next.tier].label : next.label}
             </strong>{' '}
             {next.rule}
           </span>

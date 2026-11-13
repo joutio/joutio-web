@@ -14,11 +14,10 @@ import { useMe } from '@/features/me'
 import { showPremium } from '@/features/premium'
 import { useT } from '@/lib/i18n'
 import { logout } from '@/lib/session'
-import { useThemeStore } from '@/lib/theme'
 import { showDialog } from '@/shared/dialog'
 import { ROUTES, type SettingsPage as Category } from '@/shared/routes'
 import { ListRow, Notice } from '@/ui'
-import { APPEARANCE, LANGUAGES, useSettingsOrigin } from '../lib/settings-options'
+import { useSettingsOrigin } from '../lib/settings-options'
 import { Group, SettingsScreen } from './settings-screen'
 
 /**
@@ -31,10 +30,7 @@ export function SettingsPage() {
   const navigate = useNavigate()
   const from = useSettingsOrigin()
   const me = useMe().data
-  const theme = useThemeStore((state) => state.preference)
   const open = (page: Category) => () => void navigate(ROUTES.settingsPage(page), { state: { from } })
-  const appearance = t(APPEARANCE.find((option) => option.value === theme)?.label ?? 'settings.system')
-  const language = LANGUAGES.find((option) => option.value === me?.language)?.label ?? 'Français'
 
   const confirmLogout = () =>
     showDialog({
@@ -62,7 +58,7 @@ export function SettingsPage() {
         <ListRow icon={ShieldCheckIcon} label={t('settings.privacyCategory')} control="chevron" onClick={open('privacy')} />
         <ListRow icon={BellIcon} label={t('home.notifications')} control="chevron" onClick={open('notifications')} />
         <ListRow icon={GameControllerIcon} label={t('settings.game')} sub={t('settings.gameSub')} control="chevron" onClick={open('game')} />
-        <ListRow icon={PaletteIcon} label={t('settings.display')} value={`${appearance} · ${language}`} control="chevron" onClick={open('display')} last />
+        <ListRow icon={PaletteIcon} label={t('settings.display')} control="chevron" onClick={open('display')} last />
       </Group>
       <Group>
         <ListRow icon={GiftIcon} label={t('settings.invite')} sub={t('settings.inviteSub')} control="chevron" onClick={open('invite')} last />

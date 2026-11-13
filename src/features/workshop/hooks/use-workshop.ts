@@ -1,3 +1,4 @@
+import { descriptionsDraft } from '@joutio/client-domain/authoring'
 import type { HomeView, Language, PageResponse, TopicCardView, TopicOverviewView } from '@joutio/client-domain/api-types'
 import {
   applyQuestionOperations,
@@ -236,6 +237,18 @@ export const useUpdateTopicImage = (topicId: string) =>
   useTopicField(topicId, (imageUrl: string | null) => workshopService.updateImageUrl(topicId, imageUrl), (topic, imageUrl) => ({ ...topic, imageUrl }), 'workshop.imageError')
 export const useUpdateTopicPictogram = (topicId: string) =>
   useTopicField(topicId, (pictogramUrl: string | null) => workshopService.updatePictogramUrl(topicId, pictogramUrl), (topic, pictogramUrl) => ({ ...topic, pictogramUrl }), 'workshop.pictogramError')
+
+/** Description dans une langue ; le champ `description` historique suit la française. */
+export const useUpdateTopicDescription = (topicId: string) =>
+  useTopicField(
+    topicId,
+    ({ description, language }: { description: string | null; language: 'fr' | 'en' }) => workshopService.updateDescription(topicId, description, language),
+    (topic, { description, language }) => {
+      const kept = Object.fromEntries(Object.entries({ ...descriptionsDraft(topic), [language]: description ?? '' }).filter(([, value]) => value !== ''))
+      return { ...topic, descriptions: kept, description: kept.fr ?? null }
+    },
+    'workshop.descriptionError',
+  )
 
 /** Titres par palier : l'atelier et la fiche sujet (onglet Progression) changent tout de suite. */
 export function useUpdateTopicTitles(topicId: string) {

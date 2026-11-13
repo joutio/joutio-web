@@ -1,3 +1,4 @@
+import { topicDescription } from '@joutio/client-domain/authoring'
 import { CheckIcon, HeartIcon, LightningIcon, ShareNetworkIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
 import { forwardRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -69,6 +70,8 @@ export function TopicPage() {
 
   const data = overview.data
   const topic = data?.topic
+  // Description dans la langue du joueur, sinon la française (2026-11-13).
+  const description = topic ? topicDescription(topic, language) : null
   const name = topic ? topicName(topic.names, language) : ''
   const category = toCategoryCode(topic?.category)
   const followed = topic?.followed ?? false
@@ -144,6 +147,8 @@ export function TopicPage() {
       }
       intro={
         <div className="grid gap-3">
+          {/* Description du sujet, sous le titre de l'image (2026-11-13), saisie dans l'atelier. */}
+          {description && <p className="jo-type-body m-0 whitespace-pre-line text-jo-muted">{description}</p>}
           <div ref={actions} className="grid grid-cols-[65fr_35fr] gap-2">
             <Button full icon={LightningIcon} disabled={!playable} onClick={() => setDuelOpen(true)}>
               {t('topic.duel')}

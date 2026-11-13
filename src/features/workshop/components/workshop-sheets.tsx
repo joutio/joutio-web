@@ -13,6 +13,7 @@ import {
   tooLongTitle,
   type TitleLanguage,
   type TopicTitles,
+  MAX_DESCRIPTION,
 } from '@joutio/client-domain/authoring'
 import { formatNumber, MASTERY_XP } from '@/features/topic'
 import { Badge, Button, Field, ImagePicker, ListRow, MobileSheet, RadioGroup, Segmented, tokens, type CategoryCode } from '@/ui'
@@ -94,6 +95,59 @@ export function LocalizedFieldSheet({ open, title, label, initial, max, placehol
           value={value}
           maxLength={max}
           counter={`${value.length} / ${max}`}
+          onChange={(event) => setDraft({ ...draft, [language]: event.target.value })}
+        />
+      </div>
+    </MobileSheet>
+  )
+}
+
+/** Description du sujet (2026-11-13) : une par langue comme le nom, facultative ; seules les langues modifiées partent. */
+export function DescriptionSheet({ open, initial, saving, onClose, onSave }: {
+  open: boolean
+  initial: Localized
+  saving?: boolean
+  onClose: () => void
+  onSave: (changes: { language: Language; description: string | null }[]) => void
+}) {
+  const t = useT()
+  const [language, setLanguage] = useState<Language>('fr')
+  const [draft, setDraft] = useState<Localized>(initial)
+  const value = draft[language]
+  const changes = (['fr', 'en'] as const)
+    .filter((code) => draft[code].trim() !== initial[code].trim())
+    .map((code) => ({ language: code, description: draft[code].trim() === '' ? null : draft[code].trim() }))
+  return (
+    <MobileSheet
+      open={open}
+      onClose={onClose}
+      title={t('workshop.description')}
+      subtitle={t('workshop.descriptionSub')}
+      footer={
+        <Button full loading={saving} disabled={changes.length === 0} onClick={() => onSave(changes)}>
+          {t('settings.save')}
+        </Button>
+      }
+    >
+      <div className="grid gap-4">
+        <Segmented
+          label={t('workshop.language')}
+          options={[
+            { value: 'fr', label: 'Français' },
+            { value: 'en', label: 'English' },
+          ]}
+          value={language}
+          onChange={setLanguage}
+        />
+        <Field
+          key={language}
+          label={language === 'fr' ? t('workshop.description') : t('workshop.inEnglish', { label: t('workshop.description') })}
+          placeholder={language === 'fr' ? t('workshop.descriptionPlaceholder') : 'What players will find in this topic'}
+          hint={language === 'en' ? t('workshop.englishHint', { text: draft.fr.trim() || '—' }) : undefined}
+          multiline
+          value={value}
+          maxLength={MAX_DESCRIPTION}
+          counter={`${value.length} / ${MAX_DESCRIPTION}`}
           onChange={(event) => setDraft({ ...draft, [language]: event.target.value })}
         />
       </div>

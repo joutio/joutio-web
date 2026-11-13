@@ -1,5 +1,5 @@
-import { customizedTierCount, MASTERY_TIERS, MAX_NAME, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client-domain/authoring'
-import { CrownSimpleIcon, FileDashedIcon, ImageIcon, ListChecksIcon, PencilSimpleIcon, ShieldCheckIcon, SquaresFourIcon, StickerIcon, TrashIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { customizedTierCount, descriptionsDraft, topicDescription, MASTERY_TIERS, MAX_NAME, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client-domain/authoring'
+import { CrownSimpleIcon, FileDashedIcon, ImageIcon, ListChecksIcon, PencilSimpleIcon, ShieldCheckIcon, SquaresFourIcon, StickerIcon, TextAlignLeftIcon, TrashIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useLanguageStore, useT } from '@/lib/i18n'
@@ -19,6 +19,7 @@ import {
   useTopicQuestions,
   useTopicTodo,
   useUpdateTopicCategory,
+  useUpdateTopicDescription,
   useUpdateTopicImage,
   useUpdateTopicNames,
   useUpdateTopicPictogram,
@@ -26,11 +27,11 @@ import {
   useWorkshop,
 } from '../hooks/use-workshop'
 import { FrozenNotice } from './frozen-notice'
-import { LocalizedFieldSheet, TopicImageSheet, TopicTitlesSheet, UniverseSheet } from './workshop-sheets'
+import { DescriptionSheet, LocalizedFieldSheet, TopicImageSheet, TopicTitlesSheet, UniverseSheet } from './workshop-sheets'
 
 const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
 
-type Sheet = 'name' | 'universe' | 'image' | 'pictogram' | 'titles'
+type Sheet = 'name' | 'description' | 'universe' | 'image' | 'pictogram' | 'titles'
 
 
 /**
@@ -57,6 +58,8 @@ export function MyTopicPage() {
   const team = useTeam(manager && premium ? topicId : '')
   const saveNames = useUpdateTopicNames(topicId)
   const saveCategory = useUpdateTopicCategory(topicId)
+  const saveDescription = useUpdateTopicDescription(topicId)
+  const [descriptionKey, setDescriptionKey] = useState(0)
   const saveImage = useUpdateTopicImage(topicId)
   const savePictogram = useUpdateTopicPictogram(topicId)
   const saveTitles = useUpdateTopicTitles(topicId)
@@ -200,6 +203,19 @@ export function MyTopicPage() {
                 close()
               }}
             />
+            <DescriptionSheet
+              key={`description-${descriptionKey}`}
+              open={sheet === 'description'}
+              initial={descriptionsDraft(topic)}
+              saving={saveDescription.isPending}
+              onClose={close}
+              onSave={(changes) => {
+                if (changes.length === 0) return close()
+                void Promise.all(changes.map((change) => saveDescription.mutateAsync(change)))
+                  .then(close)
+                  .catch(() => undefined)
+              }}
+            />
             <UniverseSheet open={sheet === 'universe'} value={category} onClose={close} onChange={(next) => saveCategory.mutate(next)} />
             <TopicImageSheet
               open={sheet === 'image'}
@@ -249,6 +265,18 @@ export function MyTopicPage() {
                 onClick={() => {
                   setNameKey((key) => key + 1)
                   setSheet('name')
+                }}
+              />
+              <ListRow
+                icon={TextAlignLeftIcon}
+                label={t('workshop.description')}
+                control={locked ? 'none' : 'chevron'}
+                disabled={locked}
+                value={t(topicDescription(topic) ? 'settings.bannerEdit' : 'settings.bannerAdd')}
+                sub={topicDescription(topic, language) ?? t('workshop.descriptionSub')}
+                onClick={() => {
+                  setDescriptionKey((key) => key + 1)
+                  setSheet('description')
                 }}
               />
               <ListRow icon={SquaresFourIcon} label={t('workshop.universe')} control={locked ? 'none' : 'chevron'} disabled={locked} value={tokens.category[category].label} onClick={() => setSheet('universe')} />

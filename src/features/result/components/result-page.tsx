@@ -22,6 +22,7 @@ import {
   MasteryRing,
   Notice,
   RankPromotion,
+  StreakUnlock,
   ResultHeader,
   ResultPages,
   Screen,
@@ -33,7 +34,8 @@ import {
   type RoundResult,
   type TierCode,
 } from '@/ui'
-import { useGameHistory, useGameResult, useSendRematch } from '../hooks/use-result'
+import { useGameHistory, useGameResult, useSendRematch, useStreakUnlock } from '../hooks/use-result'
+import { nextStreakMilestone } from '@joutio/client-domain/profile'
 import { celebrated } from '../lib/celebrated'
 import { reviewRoundsOf } from '../lib/review'
 import { DuelReview } from './duel-review'
@@ -42,16 +44,16 @@ import { ReportPlayerSheet, ReportQuestionSheet } from './report-sheets'
 const ORDER = Object.keys(tokens.tier) as TierCode[]
 const masteryOf = (xp: number): MasteryTier => MASTERY_TIERS.reduce<MasteryTier>((best, tier) => (xp >= MASTERY_XP[tier] ? tier : best), MASTERY_TIERS[0] as MasteryTier)
 
-type Unlock = { kind: 'rank'; from: TierCode; tier: TierCode } | { kind: 'title'; tier: MasteryTier }
+type Unlock = { kind: 'streak'; days: number } | { kind: 'rank'; from: TierCode; tier: TierCode } | { kind: 'title'; tier: MasteryTier }
 
 /**
- * Déblocages de la partie, dans l'ordre de la spec (rang, puis titres), déduits du bilan comme sur le mobile : palier
- * d'Elo avant / après, chaque palier de maîtrise franchi. Les badges attendent que le BFF les rattache à la partie
- * (`resultat.md` § 8).
+ * Déblocages de la partie, dans l'ordre de la spec (série, rang, puis titres), déduits du bilan comme sur le mobile :
+ * nouveau jour de série (première partie classée du jour, 2026-11-13), palier d'Elo avant / après, chaque palier de
+ * maîtrise franchi. Les badges attendent que le BFF les rattache à la partie (`resultat.md` § 8).
  */
-function unlocksOf(result: GameResultView): Unlock[] {
+function unlocksOf(result: GameResultView, streakDays: number | null): Unlock[] {
   if (result.botGame) return []
-  const unlocks: Unlock[] = []
+  const unlocks: Unlock[] = streakDays ? [{ kind: 'streak', days: streakDays }] : []
   const delta = result.eloDelta ?? 0
   // Rang provisoire : pas encore de palier acquis, donc pas de promotion à célébrer.
   if (result.rated && delta > 0 && !result.progression.provisional) {
@@ -181,21 +183,32 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const opponentProgression = opponentProfile.data?.progression
   const opponentRanked = Boolean(opponentProgression && !opponentProgression.provisional)
   const opponentTier = data.opponentRated && data.opponentRating != null && opponentRanked ? tierOf(data.opponentRating) : undefined
-  const unlocks = celebrate && !sequenceDone ? unlocksOf(data) : []
+  // La série est lue avant d'ouvrir la séquence : son écran vient en premier et ne doit pas s'insérer en cours de route.
+  const streak = useStreakUnlock(gameId, userId, celebrate && !bot)
+  const streakPending = celebrate && !sequenceDone && !bot && !streak.isFetched
+  const unlocks = celebrate && !sequenceDone && !streakPending ? unlocksOf(data, streak.data ?? null) : []
 
   const quit = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.topic(topic.topicId), { replace: true }))
 
   // ─── Séquence de déblocages : un plein écran par déblocage, à balayer ───
+  // Lecture de la série (une requête courte) : fond seul, sans montrer le résultat avant la séquence.
+  if (streakPending) return <div className="min-h-dvh bg-jo-bg" aria-busy="true" />
   if (unlocks.length > 0) {
     const index = Math.min(step, unlocks.length - 1)
     const current = unlocks[index]
     const last = index === unlocks.length - 1
     const share = () => {
-      const text = current?.kind === 'rank' ? t('result.shareRank', { tier: tokens.tier[current.tier].label }) : t('result.shareTitle', { topic: topic.name })
+      const text =
+        current?.kind === 'streak'
+          ? t('result.shareStreak', { days: current.days })
+          : current?.kind === 'rank'
+            ? t('result.shareRank', { tier: tokens.tier[current.tier].label })
+            : t('result.shareTitle', { topic: topic.name })
       // Lien universel du sujet, avec le code de parrainage du joueur (`partage.md` § 4).
       shareLink({ kind: 'topic', id: topic.topicId, title: t('profile.share'), text })
     }
     const slideOf = (unlock: Unlock): ReactNode => {
+      if (unlock.kind === 'streak') return <StreakUnlock days={unlock.days} nextRule={nextStreakMilestone(unlock.days) === 7 ? t('result.streakMicah') : undefined} />
       if (unlock.kind === 'rank') {
         const next = ORDER[ORDER.indexOf(unlock.tier) + 1]
         return (

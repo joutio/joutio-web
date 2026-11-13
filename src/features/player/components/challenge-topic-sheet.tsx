@@ -42,7 +42,8 @@ export function ChallengeTopicSheet({ player, title, open, onClose, onPick }: Ch
                   key={topic.topicId}
                   title={topicName(topic.names, language)}
                   category={toCategoryCode(topic.category)}
-                  image={topic.pictogramUrl ?? topic.imageUrl ?? undefined}
+                  pictogram={topic.pictogramUrl ?? undefined}
+                  image={topic.imageUrl ?? undefined}
                   onClick={() => {
                     onPick(topic)
                     onClose()

@@ -141,7 +141,8 @@ export function SearchPage() {
                         key={topic.id}
                         title={name}
                         category={toCategoryCode(topic.category)}
-                        image={topic.pictogramUrl ?? topic.imageUrl ?? undefined}
+                        pictogram={topic.pictogramUrl ?? undefined}
+                        image={topic.imageUrl ?? undefined}
                         onClick={() => {
                           remember(name)
                           void navigate(ROUTES.topic(topic.id))

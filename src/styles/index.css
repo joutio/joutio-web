@@ -46,6 +46,23 @@
   animation: jo-drop var(--jo-motion-celebration-duration) var(--jo-motion-celebration-easing) both;
 }
 
+/* Nouveau jour de série : la flamme s'allume — part petite et pâle, dépasse un peu, se pose (2026-11-13, lab). */
+.jo-ignite {
+  animation: jo-ignite var(--jo-motion-celebration-duration) var(--jo-motion-celebration-easing) both;
+  transform-origin: 50% 80%;
+}
+
+@keyframes jo-ignite {
+  from {
+    opacity: 0;
+    transform: scale(0.4) translateY(24px);
+  }
+
+  60% {
+    opacity: 1;
+  }
+}
+
 @keyframes jo-unroll {
   from {
     clip-path: inset(0 50%);
@@ -603,6 +620,7 @@
   .jo-breathe,
   .jo-celebrate,
   .jo-unroll,
+  .jo-ignite,
   .jo-map-scroll,
   .jo-map-pin,
   .jo-question-fade,

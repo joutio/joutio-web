@@ -234,3 +234,15 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
 - Atelier : ligne et feuille **Titres** (`TopicTitlesSheet`, `useUpdateTopicTitles`, `PUT /api/topics/{id}/titles`),
   libellés via `customTitle` de `@joutio/client-domain/authoring`.
 - Avatar de base : fond `raised` relevé vers le texte + filet `border`.
+
+### Lot du 2026-11-13 (soir)
+
+- `RematchHost` (Défis) monté dans `PersonalRuntime` : la proposition de revanche (`CHALLENGE_RECEIVED` avec `gameId`)
+  s'affiche sur un voile, hors duel ; elle n'existait pas sur le web.
+- Détails du duel sans flèches ; `TabsScrollView` `contained` ne relance plus de `scrollTo` sur une page signalée par le
+  balayage (saccades au toucher sur téléphone).
+- Accueil : « Fraîchement mis à jour », rails sans « Tout voir » ; Réglages : « Affichage et langue » sans valeur.
+- Éditeur d'avatar piloté par `shared/avatar/styles` comme le mobile (tous les styles et sections), libellés
+  `shared/avatar/i18n` ; avatar provisionnel sans désaturation (le « voile »).
+- `TopicRow` au visuel de `TopicTile` ; description **localisée** du sujet (atelier, fiche) ; `StreakUnlock` en tête de la
+  séquence de déblocages.

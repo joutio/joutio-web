@@ -1,35 +1,19 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { showPremium } from '@/features/premium'
 import { useMyBadges, useMyRewards } from '@/features/profile'
 import { formatNumber } from '@/features/topic'
-import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
-import { BACKGROUND_COLORS, HAIR_COLORS, loadAvatarStyle, parseAvatarOptions, previewAvatar, type AvatarDraft } from '@/shared/avatar'
+import { useLanguageStore, useT } from '@/lib/i18n'
+import { loadAvatarStyle, parseAvatarOptions, previewAvatar, type AvatarDraft } from '@/shared/avatar'
+import { t as avatarLabel } from '@/shared/avatar/i18n'
+import { defaultOptionsFor, getAvatarStyle, humanizeVariant, isAvatarStyleLoaded, NONE_LABEL_KEY, type AvatarStyleSection } from '@/shared/avatar/styles'
+import type { AvatarStyleId } from '@/shared/avatar/styles/types'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { Avatar, ColorSwatch, JoutioTabs, MobileTopBar, OptionTile, RadioGroup, RewardCard, Screen, SectionHeader, TabsScrollView, type TabsScrollPage } from '@/ui'
 import { useUpdateMe } from '../hooks/use-settings'
 import { styleEntries, type StyleEntry } from '../lib/avatar-styles'
-
-type Tab = 'style' | 'face' | 'hair' | 'glasses' | 'background'
-
-const TABS: readonly { value: Tab; label: MessageKey }[] = [
-  { value: 'style', label: 'avatar.tabStyle' },
-  { value: 'face', label: 'avatar.tabFace' },
-  { value: 'hair', label: 'avatar.tabHair' },
-  { value: 'glasses', label: 'avatar.tabGlasses' },
-  { value: 'background', label: 'avatar.tabBackground' },
-]
-
-/** Variantes Micah maquettées par le lab (`fixtures/avatars.ts`), dans le même ordre. */
-const HAIR = ['fonze', 'dannyPhantom', 'dougFunny', 'full', 'mrClean', 'mrT', 'pixie', 'turban'] as const
-const EYES = ['eyes', 'eyesShadow', 'round', 'smiling', 'smilingShadow'] as const
-const MOUTHS = ['laughing', 'smile', 'smirk', 'surprised', 'nervous', 'pucker', 'frown', 'sad'] as const
-const GLASSES = ['none', 'round', 'square'] as const
-
-/** Réglages Micah par défaut (lab `DEFAULT_AVATAR`), posés en passant à Micah depuis un autre style. */
-const MICAH_DEFAULTS = { hair: 'fonze', hairColor: '#18181b', eyes: 'eyes', mouth: 'laughing', glasses: 'none' }
 
 const STYLES_TO_LOAD = ['micah', 'lorelei', 'notionists'] as const
 
@@ -40,12 +24,28 @@ const Section = ({ title, children }: { title: string; children: ReactNode }) =>
   </section>
 )
 
+/** Libellé d'une variante : celui du dictionnaire, sinon « Variante 3 », sinon l'identifiant (comme le mobile). */
+function variantLabel(section: AvatarStyleSection, variant: string) {
+  const key = section.labelKeys?.[variant]
+  if (key) return avatarLabel(key)
+  const humanized = humanizeVariant(variant)
+  return humanized ? avatarLabel(humanized.key, { number: humanized.number }) : variant
+}
+
+/** Un autre style part de ses réglages de référence, fond conservé ; l'avatar de base n'a aucun réglage. */
+function withStyle(draft: AvatarDraft, style: string): AvatarDraft {
+  if (style === draft.style) return draft
+  if (style === 'base') return { style: 'base' }
+  return { ...(defaultOptionsFor(style as AvatarStyleId) as AvatarDraft), style, ...(draft.backgroundColor ? { backgroundColor: draft.backgroundColor } : {}) }
+}
+
 /**
- * Éditeur d'avatar (`design/specs/screens/avatar.md`, lab `avatar-editor.tsx`) : modale plein écran, sans bottom nav.
- * Annuler, « Mon avatar », Enregistrer (actif au premier changement) ; aperçu fixe de 140 px avec le cadre du rang ;
- * onglets Style, Visage, Cheveux, Lunettes, Fond (les styles Premium n'ont que Style et Fond). L'avatar de base est celui
- * du Profil, les initiales, sans aucun réglage : avec lui, seul l'onglet Style reste (2026-11-12).
- * Enregistrer met `me` à jour sur place, restauré si le BFF refuse.
+ * Éditeur d'avatar (`design/specs/screens/avatar.md`), aligné sur `joutio-mobile` (2026-11-13) : onglet Style, puis les
+ * groupes du style choisi (Micah : Visage, Cheveux, Accessoires, Vêtements, Couleurs ; Lorelei et Notionists : les
+ * leurs), chaque section avec ses variantes (« Aucun » si l'élément est facultatif) et sa palette. L'avatar de base est
+ * celui du Profil, les initiales, sans aucun réglage : avec lui, seul l'onglet Style reste (2026-11-12). Aperçu fixe de
+ * 140 px avec le cadre du rang ; Enregistrer (actif au premier changement) met `me` à jour sur place, restauré si le
+ * BFF refuse.
  */
 export function AvatarEditorPage() {
   const t = useT()
@@ -57,7 +57,7 @@ export function AvatarEditorPage() {
   const save = useUpdateMe('avatarOptions')
   const [initial] = useState(() => parseAvatarOptions(me?.avatarOptions))
   const [draft, setDraft] = useState<AvatarDraft>(initial)
-  const [tab, setTab] = useState<Tab>('style')
+  const [tab, setTab] = useState<string>('style')
   const [, setLoaded] = useState(0)
   const userId = me?.userId ?? ''
 
@@ -72,16 +72,13 @@ export function AvatarEditorPage() {
 
   const close = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.editProfile, { replace: true }))
   const preview = (next: AvatarDraft) => previewAvatar(userId, next)
-  const micah = draft.style === 'micah'
-  const tabs = TABS.filter(({ value }) => micah || value === 'style' || (value === 'background' && draft.style !== 'base'))
+  const dicebear = draft.style !== 'base' && isAvatarStyleLoaded(draft.style)
+  const definition = useMemo(() => (dicebear ? getAvatarStyle(draft.style) : undefined), [dicebear, draft.style])
+  const tabs = [{ value: 'style', label: t('avatar.tabStyle') }, ...(definition?.groups ?? []).map((group) => ({ value: group.id, label: avatarLabel(group.labelKey) }))]
   const changed = JSON.stringify(draft) !== JSON.stringify(initial)
   const rating = me?.progression && !me.progression.provisional ? me.progression.rating : undefined
 
-  const chooseStyle = (style: string) => {
-    if (style === draft.style) return
-    if (style === 'base') return setDraft({ style })
-    setDraft(style === 'micah' ? { ...MICAH_DEFAULTS, ...draft, style } : { style, backgroundColor: draft.backgroundColor })
-  }
+  const chooseStyle = (style: string) => setDraft(withStyle(draft, style))
   const rule = (entry: StyleEntry) => {
     if (entry.kind === 'free') return t('avatar.ruleFree')
     if (entry.kind === 'premium') return t('avatar.rulePremium')
@@ -91,27 +88,46 @@ export function AvatarEditorPage() {
       : badge
   }
 
-  const variants = (title: string, field: string, options: readonly string[]) => (
-    <Section title={title}>
-      <RadioGroup label={title} className="grid grid-cols-4 gap-2">
-        {options.map((value) => (
-          <OptionTile key={value} label={t(`avatar.${field}.${value}` as MessageKey)} image={preview({ ...draft, [field]: value }) ?? ''} selected={draft[field] === value} onSelect={() => setDraft({ ...draft, [field]: value })} />
-        ))}
-      </RadioGroup>
-    </Section>
-  )
-  const colors = (title: string, field: string, palette: readonly string[]) => (
-    <Section title={title}>
-      <RadioGroup label={title} className="flex flex-wrap gap-1">
-        {palette.map((color, index) => (
-          <ColorSwatch key={color} color={color} label={`${title} ${index + 1}`} selected={draft[field] === color} onSelect={() => setDraft({ ...draft, [field]: color })} />
-        ))}
-      </RadioGroup>
-    </Section>
-  )
+  const section = (item: AvatarStyleSection) => {
+    const title = avatarLabel(item.labelKey)
+    const colorTitle = item.colorLabelKey ? avatarLabel(item.colorLabelKey) : avatarLabel('avatar.color')
+    const value = (field: string) => draft[field] ?? (definition?.defaults as Record<string, string> | undefined)?.[field]
+    return (
+      <div key={item.id} className="grid gap-5">
+        {item.variantField && item.variants && (
+          <Section title={title}>
+            <RadioGroup label={title} className="grid grid-cols-4 gap-2">
+              {[...(item.allowsNone ? ['none'] : []), ...item.variants].map((variant) => {
+                const field = item.variantField as string
+                return (
+                  <OptionTile
+                    key={variant}
+                    label={variant === 'none' ? avatarLabel(NONE_LABEL_KEY) : variantLabel(item, variant)}
+                    image={preview({ ...draft, [field]: variant }) ?? ''}
+                    selected={value(field) === variant}
+                    onSelect={() => setDraft({ ...draft, [field]: variant })}
+                  />
+                )
+              })}
+            </RadioGroup>
+          </Section>
+        )}
+        {item.colorField && item.colors && (
+          <Section title={colorTitle}>
+            <RadioGroup label={colorTitle} className="flex flex-wrap gap-1">
+              {item.colors.map((color, index) => {
+                const field = item.colorField as string
+                return <ColorSwatch key={color} color={color} label={`${colorTitle} ${index + 1}`} selected={value(field) === color} onSelect={() => setDraft({ ...draft, [field]: color })} />
+              })}
+            </RadioGroup>
+          </Section>
+        )}
+      </div>
+    )
+  }
 
   const page = (content: ReactNode, gap = 'gap-6') => <div className={`grid min-w-0 content-start px-4 pb-4 ${gap}`}>{content}</div>
-  const allPages: readonly TabsScrollPage<Tab>[] = [
+  const pages: readonly TabsScrollPage<string>[] = [
     {
       value: 'style',
       content: page(
@@ -122,7 +138,7 @@ export function AvatarEditorPage() {
             rule={rule(entry)}
             state={entry.state}
             avatarName={me?.pseudonym}
-            image={preview(entry.id === draft.style ? draft : entry.id === 'micah' ? { ...MICAH_DEFAULTS, style: 'micah', backgroundColor: draft.backgroundColor } : { style: entry.id, backgroundColor: draft.backgroundColor })}
+            image={preview(withStyle(draft, entry.id))}
             progress={entry.kind === 'micah' && !entry.usable ? Math.round(((entry.done ?? 0) / Math.max(1, entry.target ?? 7)) * 100) : undefined}
             progressLabel={entry.kind === 'micah' && !entry.usable ? t('streak.progress', { done: entry.done ?? 0, target: entry.target ?? 7 }) : undefined}
             onSelect={entry.usable ? () => chooseStyle(entry.id) : undefined}
@@ -132,12 +148,8 @@ export function AvatarEditorPage() {
         'gap-3',
       ),
     },
-    { value: 'face', content: page(<>{variants(t('avatar.eyes'), 'eyes', EYES)}{variants(t('avatar.mouth'), 'mouth', MOUTHS)}</>) },
-    { value: 'hair', content: page(<>{variants(t('avatar.hairStyle'), 'hair', HAIR)}{colors(t('avatar.hairColor'), 'hairColor', HAIR_COLORS)}</>) },
-    { value: 'glasses', content: page(variants(t('avatar.tabGlasses'), 'glasses', GLASSES)) },
-    { value: 'background', content: page(colors(t('avatar.tabBackground'), 'backgroundColor', BACKGROUND_COLORS)) },
+    ...(definition?.groups ?? []).map((group) => ({ value: group.id, content: page(<>{group.sections.map(section)}</>) })),
   ]
-  const pages = allPages.filter(({ value }) => tabs.some((option) => option.value === value))
 
   return (
     <Screen
@@ -162,7 +174,7 @@ export function AvatarEditorPage() {
           <Avatar name={me?.pseudonym ?? ''} src={preview(draft)} tier={rating !== undefined ? tierOf(rating) : undefined} size="preview" />
         </div>
         <div className="flex-none px-4 pb-3">
-          <JoutioTabs label={t('avatar.tabs')} options={tabs.map((option) => ({ value: option.value, label: t(option.label) }))} value={tab} onChange={setTab} />
+          <JoutioTabs label={t('avatar.tabs')} options={tabs} value={tab} onChange={setTab} />
         </div>
         <div className="jo-no-scrollbar min-h-0 flex-1 overflow-y-auto">
           <TabsScrollView fill value={tabs.some((option) => option.value === tab) ? tab : 'style'} onChange={setTab} pages={pages} />

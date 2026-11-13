@@ -1,5 +1,7 @@
 import type { MeView, TopicOverviewView } from '@joutio/client-domain/api-types'
 import { applyGameNotification, emptyGame } from '@joutio/client-domain/game'
+import { activityDate, streakDayUnlocked } from '@joutio/client-domain/profile'
+import { profileService } from '@/features/profile'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -136,4 +138,19 @@ export function useSendRematch({ userId, opponentId, topic, gameId }: { userId?:
   }
 
   return { state, seconds, sending, send }
+}
+
+/**
+ * Nouveau jour de série ouvert par cette partie (2026-11-13, `resultat.md` § 1) : l'activité est relue **une fois** pour
+ * la partie (jamais le cache du profil, qui peut dater d'avant le duel), puis la règle partagée tranche. Jamais pour un
+ * entraînement contre le bot, qui ne compte pas dans la série.
+ */
+export function useStreakUnlock(gameId: string, userId: string | undefined, enabled: boolean) {
+  return useQuery({
+    queryKey: ['games', gameId, 'streak-unlock'],
+    queryFn: async () => streakDayUnlocked(await profileService.activity(userId ?? ''), activityDate(readServerNow())),
+    enabled: enabled && Boolean(userId),
+    staleTime: Infinity,
+    retry: 1,
+  })
 }

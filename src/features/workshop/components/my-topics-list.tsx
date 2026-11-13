@@ -80,7 +80,8 @@ export function MyTopicsList() {
           key={topic.topicId}
           title={topicName(topic.names, language)}
           category={toCategoryCode(topic.category)}
-          image={topic.pictogramUrl ?? topic.imageUrl ?? undefined}
+          pictogram={topic.pictogramUrl ?? undefined}
+          image={topic.imageUrl ?? undefined}
           sub={sub(topic)}
           badge={badge ? count(topic) : undefined}
           disabled={topic.topicId.startsWith('pending-')}

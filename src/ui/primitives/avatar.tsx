@@ -42,7 +42,7 @@ export function Avatar({ name, src, size = 'md', tier, provisional = false, lock
     <img
       src={src}
       alt={name}
-      className={cn('size-full rounded-jo-full object-cover', provisional && 'saturate-[.6]', locked && 'brightness-[.55] grayscale')}
+      className={cn('size-full rounded-jo-full object-cover', locked && 'brightness-[.55] grayscale')}
     />
   ) : (
     <span

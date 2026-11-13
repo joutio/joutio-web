@@ -53,20 +53,12 @@ function useOpenTopic() {
   return (topic: TopicCardView) => void navigate(ROUTES.topic(topic.topicId))
 }
 
-function TopicRail({ title, topics, onSeeAll }: { title: string; topics: TopicCardView[]; onSeeAll: () => void }) {
-  const t = useT()
+/** Rail de cartes paysage, sans « Tout voir » (2026-11-13 : la sélection est courte, le catalogue est dans Sujets). */
+function TopicRail({ title, topics }: { title: string; topics: TopicCardView[] }) {
   const open = useOpenTopic()
   return (
     <section className="grid gap-3">
-      <SectionHeader
-        className="px-4"
-        title={title}
-        action={
-          <Button variant="plain" size="S" className="-mr-3" onClick={onSeeAll}>
-            {t('home.seeAll')}
-          </Button>
-        }
-      />
+      <SectionHeader className="px-4" title={title} />
       <Rail itemWidth={LANDSCAPE_WIDTH} label={title}>
         {topics.map((topic) => (
           <TopicCard key={topic.topicId} title={topicName(topic.names)} category={toCategoryCode(topic.category)} image={imageOf(topic)} onClick={() => open(topic)} />
@@ -119,9 +111,9 @@ function ForYou({
           onSeeAll={seeAll}
         />
       )}
-      {fresh.length > 0 && <TopicRail title={t('home.newTopics')} topics={fresh} onSeeAll={seeAll} />}
+      {fresh.length > 0 && <TopicRail title={t('home.newTopics')} topics={fresh} />}
       {/* Sélection du BFF (`recommendedTopics` : intérêts enregistrés, sujets suivis exclus) ; rien si elle est vide. */}
-      {hasInterests ? recommended.length > 0 && <TopicRail title={t('home.recommended')} topics={recommended} onSeeAll={seeAll} /> : <InterestsInvite />}
+      {hasInterests ? recommended.length > 0 && <TopicRail title={t('home.recommended')} topics={recommended} /> : <InterestsInvite />}
     </>
   )
 }
@@ -165,6 +157,7 @@ function Followed() {
                 key={topic.topicId}
                 title={topicName(topic.names)}
                 category={toCategoryCode(topic.category)}
+                pictogram={topic.pictogramUrl ?? undefined}
                 image={imageOf(topic)}
                 last={index === topics.length - 1}
                 onClick={() => open(topic)}

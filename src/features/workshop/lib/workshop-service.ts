@@ -13,7 +13,7 @@ export const WORKSHOP_ENDPOINTS = {
   todo: '/api/topics/contributed/todo',
   topic: (topicId: string) => `/api/topics/${id(topicId)}`,
   workshop: (topicId: string) => `/api/topics/${id(topicId)}/workshop`,
-  field: (topicId: string, field: 'name' | 'category' | 'image-url' | 'pictogram-url' | 'titles' | 'publish' | 'draft' | 'questions' | 'team') => `/api/topics/${id(topicId)}/${field}`,
+  field: (topicId: string, field: 'name' | 'description' | 'category' | 'image-url' | 'pictogram-url' | 'titles' | 'publish' | 'draft' | 'questions' | 'team') => `/api/topics/${id(topicId)}/${field}`,
   member: (topicId: string, userId: string) => `/api/topics/${id(topicId)}/team/${id(userId)}`,
   question: (questionId: string, action?: string) => `/api/questions/${id(questionId)}${action ? `/${action}` : ''}`,
   reportQueue: (topicId: string) => `/api/question-reports/topics/${id(topicId)}`,
@@ -36,6 +36,9 @@ export const workshopService = {
   updateCategory: (topicId: string, category: string) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'category'), { category }),
   updateImageUrl: (topicId: string, imageUrl: string | null) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'image-url'), { imageUrl }),
   updatePictogramUrl: (topicId: string, pictogramUrl: string | null) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'pictogram-url'), { pictogramUrl }),
+  /** Description du sujet, affichée sous le titre de la fiche ; `null` l'efface. */
+  updateDescription: (topicId: string, description: string | null, language: 'fr' | 'en') =>
+    api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'description'), { description, language: language.toUpperCase() }),
   /** Titres par palier ; `null` efface tout (repli « Or · Sujet »). */
   updateTitles: (topicId: string, titles: TopicTitles | null) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'titles'), { titles }),
   publish: (topicId: string) => api.post<void>(WORKSHOP_ENDPOINTS.field(topicId, 'publish')),

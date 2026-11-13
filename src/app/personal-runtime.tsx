@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { useChallengesRuntime } from '@/features/challenges'
+import { RematchHost, useChallengesRuntime } from '@/features/challenges'
 import { useNotificationsRuntime } from '@/features/notifications'
 import { OngoingRuntime } from '@/features/ongoing'
 import { PremiumHost } from '@/features/premium'
@@ -17,6 +17,8 @@ export function PersonalRuntime() {
       <OngoingRuntime>
         <Outlet />
       </OngoingRuntime>
+      {/* Demandes de revanche reçues, au-dessus de toute page (sauf pendant un duel). */}
+      <RematchHost />
       <PremiumHost />
     </>
   )
