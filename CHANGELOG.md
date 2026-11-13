@@ -1,3 +1,9 @@
+## [2.10.0](https://github.com/joutio/joutio-web/compare/v2.9.0...v2.10.0) (2026-11-13)
+
+### Features
+
+* rematch prompt, streak unlock, topic description and avatar editor ([73620d3](https://github.com/joutio/joutio-web/commit/73620d336dcc7cff0074d66d9f6e3806c258e5cb))
+
 ## [2.9.0](https://github.com/joutio/joutio-web/compare/v2.8.0...v2.9.0) (2026-11-13)
 
 ### Features
