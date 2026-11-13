@@ -1,5 +1,5 @@
 import type { TopicCardView } from '@joutio/client-domain/api-types'
-import { BellIcon, CompassIcon, FireIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { BellIcon, CompassIcon, FireIcon, GearSixIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
@@ -204,11 +204,16 @@ export function HomePage() {
     <Screen
       banner={appBanner}
       header={
-        <header className="grid min-h-[52px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 pr-1.5 pl-4">
-          <Logo variant="lockup" size={28} />
-          <span aria-hidden={!stuck} className={`jo-transition max-w-[170px] ${stuck ? 'opacity-100' : 'opacity-0'}`}>
-            <PlayerName name={greeting} premium={me.data?.premium === true} className="jo-type-headline" />
-          </span>
+        <header className="grid min-h-[52px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 pr-1.5 pl-4">
+          {/* Au scroll, le salut monte dans la barre et prend la place du logo (`accueil.md` § 7). */}
+          <div className="grid min-w-0 items-center">
+            <span aria-hidden={stuck} className={`jo-transition col-start-1 row-start-1 ${stuck ? 'pointer-events-none -translate-y-2 opacity-0' : 'opacity-100'}`}>
+              <Logo variant="lockup" size={28} />
+            </span>
+            <span aria-hidden={!stuck} className={`jo-transition col-start-1 row-start-1 min-w-0 ${stuck ? 'opacity-100' : 'pointer-events-none translate-y-2 opacity-0'}`}>
+              <PlayerName name={greeting} premium={me.data?.premium === true} className="jo-type-headline" />
+            </span>
+          </div>
           <div className="flex items-center gap-2 justify-self-end">
             <IconButton icon={MagnifyingGlassIcon} label={t('home.search')} variant="plain" tone="neutral" onClick={() => void navigate(ROUTES.search)} />
             <IconButton
@@ -219,6 +224,7 @@ export function HomePage() {
               badge={unread || undefined}
               onClick={() => void navigate(ROUTES.notifications)}
             />
+            <IconButton icon={GearSixIcon} label={t('profile.settings')} variant="plain" tone="neutral" onClick={() => void navigate(ROUTES.settings, { state: { from: 'home' } })} />
           </div>
         </header>
       }

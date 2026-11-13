@@ -2,17 +2,17 @@ import type { PeopleSort, PlayerCardView } from '@joutio/client-domain/api-types
 import { MagnifyingGlassIcon, SlidersHorizontalIcon, SwordIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMe, usePlayerIdentity } from '@/features/me'
+import { useMe, usePlayerIdentity, useReferral } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
 import { useChallengePlayer, useContacts } from '@/features/play'
 import { ChallengeTopicSheet, relativeSeen } from '@/features/player'
+import { useShare } from '@/features/share'
 import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { feedFooterProps } from '@/shared/paging'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
-import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import { useDebounced } from '@/shared/use-debounced'
 import { Button, EmptyState, FeedFooter, IconButton, JoutioTabs, ListRow, MobileSheet, MobileTopBar, PlayerRow, RadioGroup, Screen, SearchField, Skeleton, TabsScrollView } from '@/ui'
@@ -133,19 +133,13 @@ export function SocialPage() {
     setChallengeKey((key) => key + 1)
     setChallengeOpen(true)
   }
-  /** Inviter un ami : partage système, sinon copie du lien (`web.md`). */
-  const invite = () => {
-    const url = window.location.origin
-    const text = t('social.inviteText', { name: me?.pseudonym ?? '' })
-    if (navigator.share) {
-      void navigator.share({ text, url }).catch(() => undefined)
-      return
-    }
-    void navigator.clipboard
-      .writeText(`${text} ${url}`)
-      .then(() => toast.success(t('common.linkCopied')))
-      .catch(() => toast.error(t('common.copyError')))
-  }
+  /** Inviter un ami : lien de parrainage (`partage.md` § 6), feuille du système ou feuille « Partager ». */
+  const share = useShare()
+  const referral = useReferral().data
+  const invite = () =>
+    referral
+      ? share({ kind: 'invite', id: referral.code, title: t('settings.invite'), text: t('social.inviteText', { name: me?.pseudonym ?? '' }) })
+      : undefined
 
   const pages = (['following', 'followers'] as const).map((value) => ({
     value,

@@ -4,13 +4,13 @@ import { FlagIcon, LightningIcon, WarningCircleIcon, XIcon } from '@phosphor-ico
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
+import { useShare } from '@/features/share'
 import { useBotDifficulty, usePlayerProfile, useStartMatchmaking, useStartTraining, type PlayTopic } from '@/features/play'
 import { formatNumber, MASTERY_TIERS, MASTERY_XP, useMyTitles, useWearTitle } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
-import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import {
   Button,
@@ -146,6 +146,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const navigate = useNavigate()
   const language = useLanguageStore((state) => state.language)
   const me = useMe().data
+  const shareLink = useShare()
   const identity = usePlayerIdentity()
   const userId = me?.userId ?? ''
   const myName = me?.pseudonym ?? ''
@@ -191,12 +192,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
     const last = index === unlocks.length - 1
     const share = () => {
       const text = current?.kind === 'rank' ? t('result.shareRank', { tier: tokens.tier[current.tier].label }) : t('result.shareTitle', { topic: topic.name })
-      if (navigator.share) void navigator.share({ text }).catch(() => undefined)
-      else
-        void navigator.clipboard
-          .writeText(text)
-          .then(() => toast.success(t('topic.linkCopied')))
-          .catch(() => undefined)
+      // Lien universel du sujet, avec le code de parrainage du joueur (`partage.md` § 4).
+      shareLink({ kind: 'topic', id: topic.topicId, title: t('profile.share'), text })
     }
     const slideOf = (unlock: Unlock): ReactNode => {
       if (unlock.kind === 'rank') {

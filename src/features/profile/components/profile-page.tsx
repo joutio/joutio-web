@@ -1,15 +1,15 @@
-import { GearSixIcon, LinkIcon, MapPinIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { countryFlag, countryName } from '@joutio/client-domain/geo'
+import { GearSixIcon, PencilSimpleIcon, ShareNetworkIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
+import { useShare } from '@/features/share'
 import { TabNav } from '@/features/shell'
 import { formatNumber, useMyTitles } from '@/features/topic'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
-import { countryLabel } from '@/shared/country'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
-import { toast } from '@/shared/toast'
 import {
   Avatar,
   Badge,
@@ -71,7 +71,7 @@ function Ranks({ name, src, tier }: { name: string; src?: string; tier?: TierCod
 /**
  * Profil (`design/specs/screens/profil.md`, lab `/screens/profil?view=compact`) : bannière en parallaxe, avatar et
  * pseudonyme centrés, titre porté, rang, pays et compteurs, puis onglets Statistiques, Badges, Titres et Historique.
- * Le partage devient « Copier le lien » (`web.md`).
+ * Éditer le profil et Partager (lien universel, `partage.md`) avant les compteurs.
  */
 export function ProfilePage() {
   const t = useT()
@@ -91,12 +91,10 @@ export function ProfilePage() {
   const worn = titles.data?.titles.find((title) => title.key === (titles.data?.equippedKey ?? data?.equippedTitle))
   const name = data?.pseudonym ?? t('nav.profile')
 
-  const copyLink = () => {
+  const share = useShare()
+  const shareProfile = () => {
     if (!data) return
-    void navigator.clipboard
-      ?.writeText(new URL(ROUTES.player(data.userId), window.location.origin).href)
-      .then(() => toast.success(t('topic.linkCopied')))
-      .catch(() => toast.error(t('topic.linkError')))
+    share({ kind: 'profile', id: data.userId, title: t('share.profileTitle'), text: t('share.profileText') })
   }
 
   if (me.isError && !data) {
@@ -134,7 +132,6 @@ export function ProfilePage() {
       eyebrow={data ? <Avatar name={name} src={src} tier={tier} provisional={progression?.provisional} size="xxl" /> : undefined}
       right={
         <>
-          <IconButton icon={LinkIcon} label={t('profile.copyLink')} media onClick={copyLink} />
           <IconButton icon={GearSixIcon} label={t('profile.settings')} media onClick={() => void navigate(ROUTES.settings)} />
         </>
       }
@@ -156,8 +153,17 @@ export function ProfilePage() {
               ) : (
                 <Pill>{t('profile.unranked')}</Pill>
               )}
-              {data?.country && <Pill icon={MapPinIcon}>{countryLabel(data.country, language)}</Pill>}
+              {data?.country && <Pill>{`${countryFlag(data.country)} ${countryName(data.country, language)}`}</Pill>}
             </div>
+          </div>
+          {/* Même gabarit que Défier / Suivre de la Fiche joueur : taille M, 65 / 35, avant les compteurs (`profil.md` § 1). */}
+          <div className="grid grid-cols-[65fr_35fr] gap-2">
+            <Button full variant="tinted" icon={PencilSimpleIcon} disabled={!data} onClick={() => void navigate(ROUTES.editProfile)}>
+              {t('profile.edit')}
+            </Button>
+            <Button full variant="gray" icon={ShareNetworkIcon} disabled={!data} onClick={shareProfile}>
+              {t('profile.share')}
+            </Button>
           </div>
           <div className="grid grid-cols-3 gap-2">
             {counters.map((counter) => (

@@ -6,8 +6,11 @@ import { createRoot } from 'react-dom/client'
 import { App } from './app/app'
 import { initSession } from './lib/session'
 import { installClientTelemetry } from './lib/telemetry'
+import { pendingReferral } from './shared/pending-referral'
 
 installClientTelemetry()
+// Lien d'invitation ou de partage (`?ref=`) : le code de parrainage est gardé jusqu'à la connexion.
+pendingReferral.capture()
 
 // La session est restaurée (et renouvelée si besoin) avant le premier rendu : les gardes de route lisent un état stable.
 void initSession().finally(() => {

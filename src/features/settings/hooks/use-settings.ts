@@ -124,3 +124,24 @@ export const useRequestDeletionCode = () => useMutation({ mutationFn: settingsSe
 
 /** Suppression définitive du compte (code à 6 chiffres). */
 export const useDeleteAccount = () => useMutation({ mutationFn: (code: string) => settingsService.deleteAccount(code) })
+
+type Translate = ReturnType<typeof useT>
+
+const ISSUE_KEYS = {
+  tooShort: 'settings.pseudonymTooShort',
+  tooLong: 'settings.pseudonymTooLong',
+  firstLetter: 'settings.pseudonymFirstLetter',
+  characters: 'settings.pseudonymCharacters',
+} as const
+
+export function pseudonymError(check: PseudonymCheck, t: Translate): string | undefined {
+  if (check.state === 'invalid') return t(ISSUE_KEYS[check.issue])
+  if (check.state === 'taken') return t('settings.pseudonymTaken')
+  return undefined
+}
+
+export function pseudonymHint(check: PseudonymCheck, t: Translate): string {
+  if (check.state === 'checking') return t('settings.pseudonymChecking')
+  if (check.state === 'available') return t('settings.pseudonymAvailable')
+  return t('settings.pseudonymRules')
+}

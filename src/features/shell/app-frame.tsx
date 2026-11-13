@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom'
+import { ShareHost } from '@/features/share'
 import { useT } from '@/lib/i18n'
 import { DialogHost } from '@/shared/dialog-host'
 import { STORES } from '@/shared/stores'
@@ -16,6 +17,7 @@ export function AppFrame() {
       <Outlet />
       <ToastHost />
       <DialogHost />
+      <ShareHost />
     </WebFrame>
   )
 }

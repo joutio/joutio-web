@@ -70,7 +70,7 @@ export function AvatarEditorPage() {
     }
   }, [])
 
-  const close = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.settings, { replace: true }))
+  const close = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.editProfile, { replace: true }))
   const preview = (next: AvatarDraft) => previewAvatar(userId, next)
   const micah = draft.style === 'micah'
   const tabs = TABS.filter(({ value }) => micah || value === 'style' || (value === 'background' && draft.style !== 'base'))

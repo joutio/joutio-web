@@ -11,7 +11,8 @@ import { PlayerPage } from '@/features/player'
 import { PremiumRoute } from '@/features/premium'
 import { PlayedTopicsPage, ProfilePage, StreakPage, TitlesPage } from '@/features/profile'
 import { ResultPage } from '@/features/result'
-import { AvatarEditorPage, DeleteAccountPage, SettingsPage } from '@/features/settings'
+import { EditProfilePage } from '@/features/profile-edit'
+import { AvatarEditorPage, DeleteAccountPage, SettingsCategoryPage, SettingsPage } from '@/features/settings'
 import { SearchPage } from '@/features/search'
 import { SocialPage } from '@/features/social'
 import { LeaderboardPage, TopicPage } from '@/features/topic'
@@ -49,6 +50,8 @@ export const router = createBrowserRouter([
               { path: '/me/settings', element: <SettingsPage /> },
               { path: '/me/settings/avatar', element: <AvatarEditorPage /> },
               { path: '/me/settings/delete', element: <DeleteAccountPage /> },
+              { path: '/me/settings/:page', element: <SettingsCategoryPage /> },
+              { path: '/me/edit', element: <EditProfilePage /> },
               { path: '/players/:userId', element: <PlayerPage /> },
               { path: '/games/:gameId/result', element: <ResultPage /> },
               { path: '/games/:gameId', element: <DuelPage /> },

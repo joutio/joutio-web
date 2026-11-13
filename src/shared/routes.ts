@@ -2,6 +2,9 @@
  * URLs de `design/specs/platforms/web.md` § 2. Le BFF n'expose pas encore de slug de sujet : la fiche sujet
  * s'adresse par son identifiant (`/topics/{topicId}`) jusqu'à ce qu'il en expose un.
  */
+/** Catégories des Réglages, une page chacune. */
+export type SettingsPage = 'account' | 'privacy' | 'notifications' | 'game' | 'display' | 'invite' | 'help'
+
 export const ROUTES = {
   home: '/',
   topics: '/topics',
@@ -13,6 +16,10 @@ export const ROUTES = {
   me: '/me',
   myTitles: '/me/titles',
   settings: '/me/settings',
+  /** Page d'une catégorie des Réglages (`reglages.md` § 1). */
+  settingsPage: (page: SettingsPage) => `/me/settings/${page}`,
+  /** Éditer le profil (`editer-profil.md`). */
+  editProfile: '/me/edit',
   /** Éditeur d'avatar et suppression du compte : poussés depuis les Réglages (`web.md` § 2 : « Réglages (avatar, suppression) »). */
   avatar: '/me/settings/avatar',
   deleteAccount: '/me/settings/delete',

@@ -29,7 +29,8 @@
 `@dicebear/styles` (avatars des joueurs, mêmes options et même rendu que le lab et le mobile ; décision du 2026-11-11,
 moteur dans `src/shared/avatar/`, styles chargés à la demande par `import()`), `vaul` (feuilles `MobileSheet` : geste
 tirer-pour-fermer, voile, focus, Échap ; rendue dans la colonne, sans portail) et `embla-carousel-react` (`Carousel` de
-`src/ui/web/` : séquence de déblocages) — décision du 2026-11-12. Détails du duel et Signalements d'une question
+`src/ui/web/` : séquence de déblocages) — décision du 2026-11-12. `uqr` (QR code SVG de la feuille « Partager », sans dépendance, rendu local : aucun service tiers ne voit le lien ;
+décision du 2026-11-13, `partage.md` § 4). Détails du duel et Signalements d'une question
 balaient comme le lab (`TabsScrollView` `contained`, défilement natif aimanté, 2026-11-12).
 Dev : Vite 8, `@vitejs/plugin-react`, Tailwind v4 (`@tailwindcss/vite`), TypeScript ~6 strict, ESLint, Vitest
 (jsdom, Testing Library).
@@ -57,7 +58,10 @@ src/
   features/<nom>/     écrans + `lib/` (service → hook React Query), import par le barrel `index.ts` uniquement
 ```
 
-`features/shell` : cadre (`AppFrame`), garde connectée (non onboardé → `/welcome`), onglets, bannière de connexion,
+`features/share` : partage par lien universel `go.joutio.com` avec le code de parrainage (`useShare`, feuille
+`ShareHost` : lien, QR code, stores ; feuille du système sur navigateur mobile). `features/profile-edit` : Éditer le
+profil (`/me/edit`). Réglages : racine `/me/settings` et une page par catégorie `/me/settings/{account,privacy,
+notifications,game,display,invite,help}`. `features/shell` : cadre (`AppFrame`), garde connectée (non onboardé → `/welcome`), onglets, bannière de connexion,
 `/login`, `/callback`. `features/onboarding` : `/welcome` (étapes en mémoire, reprise aux univers après le retour OIDC). `features/dev` : vitrine `/dev/ui` (dev uniquement) pour comparer le socle au lab.
 
 ## 4. Jetons et styles

@@ -1,4 +1,5 @@
-import { CheckIcon, DotsThreeIcon, FlagIcon, HeartIcon, LightningIcon, MapPinIcon, SwordIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
+import { countryFlag, countryName } from '@joutio/client-domain/geo'
+import { CheckIcon, DotsThreeIcon, FlagIcon, HeartIcon, LightningIcon, SwordIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
 import { forwardRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { finishedGames, GameGroups, useHistoryGames } from '@/features/history'
@@ -9,7 +10,6 @@ import { TabNav } from '@/features/shell'
 import { formatNumber, useTopicOverview } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
-import { countryLabel } from '@/shared/country'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
@@ -141,7 +141,7 @@ export function PlayerPage() {
                 ) : (
                   <Pill>{t('profile.unranked')}</Pill>
                 )}
-                {data.country && <Pill icon={MapPinIcon}>{countryLabel(data.country, language)}</Pill>}
+                {data.country && <Pill>{`${countryFlag(data.country)} ${countryName(data.country, language)}`}</Pill>}
                 {data.suspended && <Pill tone="suspended">{t('player.suspended')}</Pill>}
               </div>
               {!data.suspended && !data.bot && <span className="jo-type-caption text-jo-muted">{presenceLine(data.presence, t)}</span>}

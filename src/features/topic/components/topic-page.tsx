@@ -1,11 +1,11 @@
-import { CheckIcon, HeartIcon, LightningIcon, LinkIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
+import { CheckIcon, HeartIcon, LightningIcon, ShareNetworkIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
 import { forwardRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DuelSheet } from '@/features/play'
+import { useShare } from '@/features/share'
 import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
-import { toast } from '@/shared/toast'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { useDockedActions } from '@/shared/use-docked-actions'
 import { Button, Dialog, EmptyState, IconButton, JoutioTabs, ParallaxScreen, Pill, ProgressBar, Screen, Skeleton, Stat, TabsScrollView, tokens } from '@/ui'
@@ -83,11 +83,10 @@ export function TopicPage() {
     if (followed) setUnfollowOpen(true)
     else follow.mutate(true)
   }
-  const copyLink = () => {
-    void navigator.clipboard
-      ?.writeText(window.location.href)
-      .then(() => toast.success(t('topic.linkCopied')))
-      .catch(() => toast.error(t('topic.linkError')))
+  const share = useShare()
+  const shareTopic = () => {
+    if (!topic) return
+    share({ kind: 'topic', id: topic.topicId, title: t('share.topicTitle'), text: t('share.topicText', { topic: name }) })
   }
 
   if (overview.isError && !data) {
@@ -140,7 +139,7 @@ export function TopicPage() {
               />
             </>
           )}
-          <IconButton icon={LinkIcon} label={t('topic.copyLink')} media onClick={copyLink} />
+          <IconButton icon={ShareNetworkIcon} label={t('profile.share')} media onClick={shareTopic} />
         </>
       }
       intro={

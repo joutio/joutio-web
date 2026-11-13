@@ -1,15 +1,15 @@
 import { preparationComplete, preparationStep, roomFailureKind, wizzState, type RoomFailureKind, type RoomStatus } from '@joutio/client-domain/rooms'
-import { LightningIcon, LinkIcon, RobotIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { LightningIcon, LinkIcon, RobotIcon, ShareNetworkIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
+import { useShare } from '@/features/share'
 import { useT, useLanguageStore, type MessageKey } from '@/lib/i18n'
 import { useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { useOngoingStore } from '@/shared/ongoing-store'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
-import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import { Button, EmptyState, MobileTopBar, Pill, PreparationSteps, RoomPlayers, Screen, type RoomPlayer } from '@/ui'
 import { useCloseRoom, usePlayerProfile, useRoom, useRoomPresence, useWizzRoom, type PlayTopic } from '../hooks/use-play'
@@ -121,12 +121,8 @@ export function RoomPage() {
     closing.mutate(roomId, {
       onSuccess: () => back(),
     })
-  const copyLink = () => {
-    void navigator.clipboard
-      ?.writeText(`${window.location.origin}${ROUTES.join(roomId)}`)
-      .then(() => toast.success(t('topic.linkCopied')))
-      .catch(() => toast.error(t('topic.linkError')))
-  }
+  const share = useShare()
+  const shareRoom = () => share({ kind: 'room', id: roomId, title: t('share.roomTitle'), text: t('share.roomText') })
 
   if (terminal || status?.terminalError) {
     const copy = terminal ?? { title: 'room.notFoundTitle' as const, text: 'room.notFoundText' as const }
@@ -183,8 +179,8 @@ export function RoomPage() {
           complete={preparationComplete(roomStatus)}
         />
         {shared && waiting && (
-          <Button full variant="tinted" icon={LinkIcon} onClick={copyLink}>
-            {t('topic.copyLink')}
+          <Button full variant="tinted" icon={ShareNetworkIcon} onClick={shareRoom}>
+            {t('share.roomButton')}
           </Button>
         )}
         <div className="mt-auto grid gap-3">
