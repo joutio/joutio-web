@@ -1,3 +1,9 @@
+## [2.9.0](https://github.com/joutio/joutio-web/compare/v2.8.0...v2.9.0) (2026-11-13)
+
+### Features
+
+* **home:** creation tab, interests rail, topic scope filter and titles ([7f89d19](https://github.com/joutio/joutio-web/commit/7f89d193f905bd7553f0d735093ebc8877429352))
+
 ## [2.8.0](https://github.com/joutio/joutio-web/compare/v2.7.0...v2.8.0) (2026-11-13)
 
 ### Features
