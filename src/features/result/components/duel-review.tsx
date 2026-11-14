@@ -57,6 +57,8 @@ export type DuelReviewProps = {
   reported: readonly number[]
   /** Ouvre le signalement de la manche affichée : la feuille vit hors du pager, qui est translaté. */
   onReport: (round: GameRoundState, index: number, count: number) => void
+  /** Écran court : onglets de manche sans les points (`RoundReviewTabs`). */
+  compact?: boolean
 }
 
 /**
@@ -66,7 +68,7 @@ export type DuelReviewProps = {
  * flèches et points, « Signaler la question » (aussi à l'entraînement). Montée avec le résultat : la manche consultée
  * est gardée d'une page à l'autre et les images sont préchargées.
  */
-export function DuelReview({ game, me, myName, opponentName, reported, onReport }: DuelReviewProps) {
+export function DuelReview({ game, me, myName, opponentName, reported, onReport, compact = false }: DuelReviewProps) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const rounds = useMemo(() => reviewRoundsOf(game), [game])
@@ -96,10 +98,10 @@ export function DuelReview({ game, me, myName, opponentName, reported, onReport 
   const tabs = rounds.map((item) => ({ me: answerOf(item, me), opponent: answerOf(item, opponent), points: item.playerAnswers[me]?.points ?? 0 }))
 
   return (
-    <div className="flex h-full flex-col gap-3 pb-[calc(var(--jo-safe-bottom,0px)+8px)]">
+    <div className="flex h-full flex-col gap-3 pb-2">
       <div className="grid flex-none gap-3 px-4">
         <h2 className="jo-type-headline m-0">{t('result.details')}</h2>
-        <RoundReviewTabs rounds={tabs} value={index} onChange={setIndex} />
+        <RoundReviewTabs rounds={tabs} value={index} onChange={setIndex} compact={compact} />
       </div>
       <TabsScrollView contained className="min-h-0 flex-1" value={String(index)} onChange={(value) => setIndex(Number(value))} pages={pages} />
       <div className="grid flex-none gap-1 px-4">

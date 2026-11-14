@@ -20,11 +20,13 @@ export type RoundReviewTabsProps = {
   /** Index de la manche affichée. */
   value: number
   onChange?: (index: number) => void
+  /** Écran court (iPhone Duo plié, 2026-11-14) : sans les points de la manche, gardés pour les lecteurs d'écran. */
+  compact?: boolean
   className?: string
 }
 
 /** Sélecteur de manche de la revue : ton résultat à gauche, celui de l'adversaire à droite. */
-export function RoundReviewTabs({ rounds, value, onChange, className }: RoundReviewTabsProps) {
+export function RoundReviewTabs({ rounds, value, onChange, compact = false, className }: RoundReviewTabsProps) {
   return (
     <div role="group" aria-label="Manches" className={cn('grid gap-1', className)} style={{ gridTemplateColumns: `repeat(${rounds.length}, minmax(0, 1fr))` }}>
       {rounds.map((round, index) => (
@@ -44,7 +46,7 @@ export function RoundReviewTabs({ rounds, value, onChange, className }: RoundRev
             <span className={cn('size-2 rounded-[2px]', DOTS[round.me].className)} />
             <span className={cn('size-2 rounded-[2px]', DOTS[round.opponent].className)} />
           </span>
-          <span className="jo-type-caption font-mono font-semibold">{round.points}</span>
+          {!compact && <span className="jo-type-caption font-mono font-semibold">{round.points}</span>}
         </button>
       ))}
     </div>

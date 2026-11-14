@@ -40,6 +40,10 @@ import { celebrated } from '../lib/celebrated'
 import { reviewRoundsOf } from '../lib/review'
 import { DuelReview } from './duel-review'
 import { ReportPlayerSheet, ReportQuestionSheet } from './report-sheets'
+import { useCompactHeight } from '@/shared/use-compact-height'
+
+/** Hauteur des pages sous laquelle le résultat passe en compact (`resultat.md` § 4 bis) : l'iPhone Duo plié y passe. */
+const COMPACT_RESULT_HEIGHT = 640
 
 const ORDER = Object.keys(tokens.tier) as TierCode[]
 const masteryOf = (xp: number): MasteryTier => MASTERY_TIERS.reduce<MasteryTier>((best, tier) => (xp >= MASTERY_XP[tier] ? tier : best), MASTERY_TIERS[0] as MasteryTier)
@@ -171,6 +175,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const [sequenceDone, setSequenceDone] = useState(!celebrate)
   // Pages verticales du résultat : 0 le résultat, 1 Détails du duel (`resultat.md` § 6, comme le mobile).
   const [page, setPage] = useState<0 | 1>(0)
+  // Zone des pages trop courte (iPhone Duo plié) : résultat compact (`resultat.md` § 4 bis).
+  const [pagesRef, compact] = useCompactHeight(COMPACT_RESULT_HEIGHT)
   const [reportOpen, setReportOpen] = useState(false)
   const [questionReport, setQuestionReport] = useState<{ round: GameRoundState; index: number; count: number } | null>(null)
   const [reportedRounds, setReportedRounds] = useState<readonly number[]>([])
@@ -302,10 +308,10 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           </div>
           <IconButton icon={XIcon} label={t('result.quit')} variant="plain" tone="neutral" onClick={quit} />
         </div>
-        <div className="min-h-0 flex-1">
+        <div ref={pagesRef} className="min-h-0 flex-1">
         <ResultPages page={page} onPageChange={setPage} enabled={hasReview}>
-        <div className={cn('flex h-full flex-col', !hasReview && 'pb-[calc(var(--jo-safe-bottom,0px)+8px)]')}>
-        <div className="flex min-h-0 flex-1 flex-col justify-between gap-4 px-4 pb-2">
+        <div className={cn('flex h-full flex-col', !hasReview && 'pb-2')}>
+        <div className={cn('flex min-h-0 flex-1 flex-col justify-between px-4 pb-2', compact ? 'gap-5' : 'gap-4')}>
           <ResultHeader
             outcome={cancelled ? 'draw' : outcome}
             topic={topic.name}
@@ -334,17 +340,19 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           {bot || cancelled ? (
             <Notice tone="training" title={t(cancelled ? 'result.cancelled' : 'result.training')} message={t(cancelled ? 'result.cancelledText' : 'result.trainingText')} />
           ) : (
-            <>
-              <EloSummary elo={rating} delta={data.rated ? (data.eloDelta ?? 0) : 0} next={nextElo} />
+            // Écran court : l'Elo et la maîtrise côte à côte (`resultat.md` § 4 bis).
+            <div className={compact ? 'flex items-center justify-between gap-5' : 'contents'}>
+              <EloSummary compact={compact} elo={rating} delta={data.rated ? (data.eloDelta ?? 0) : 0} next={nextElo} />
               <MasteryRing
                 tier={tokens.tier[mastery.tier as TierCode]?.label ?? '—'}
                 next={mastery.nextTier ? tokens.tier[mastery.nextTier as TierCode]?.label : undefined}
                 gained={mastery.xpGained}
                 remaining={mastery.tierRemainingXp}
-                size={150}
+                size={compact ? 104 : 150}
+                compact={compact}
                 state={data.reward === null ? 'pending' : 'done'}
               />
-            </>
+            </div>
           )}
           <div className="grid grid-cols-2 gap-2">
             {bot ? (
@@ -373,12 +381,13 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
             hint={t('result.swipeUp')}
             label={t('result.openDetails')}
             onClick={() => setPage(1)}
-            className="flex-none pt-3 pb-[calc(var(--jo-safe-bottom,0px)+12px)]"
+            className="flex-none pt-3 pb-2"
           />
         )}
         </div>
         {hasReview ? (
           <DuelReview
+            compact={compact}
             game={game}
             me={userId}
             myName={myName}
