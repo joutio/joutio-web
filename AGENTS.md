@@ -151,10 +151,10 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         (aucun endpoint), titre porté d'un autre joueur résolu par l'aperçu de son sujet
   - [x] Social `/social` (abonnements / abonnés avec totaux de `MeView`, recherche, feuille « Trier par » dont
         Présence par défaut, 20 par page côté serveur, épée → choix du sujet → défi, Inviter un ami par partage ou
-        copie), Défis `/challenges` (quota des envoyés en sous-titre, puces avec compteurs, Reçus en aperçu de 3 puis
-        paginés par 10, Tout refuser confirmé, Accepter ouvre la salle, Refuser / Annuler optimistes et par lot, Salons
+        copie), Défis `/challenges` (onglets Reçus / Envoyés / Salons dans l'URL `?tab=`, compteur dans le libellé,
+        2026-11-14 ; Reçus paginés par 10, Tout refuser confirmé, Accepter ouvre la salle, Refuser / Annuler optimistes et par lot, Salons
         privés, état vide avec Créer un salon privé), Notifications `/notifications` (sections Aujourd'hui / Cette
-        semaine / Plus ancien, défis reçus ouverts en tête, 10 par page, toucher = lue + écran de l'action, balayer =
+        semaine / Plus ancien, défis reçus ouverts en tête, 10 par page, toucher = lue + écran de l'action, défi accepté / refusé informatifs, balayer =
         supprimer, Tout marquer comme lu, Tout supprimer confirmé). Flux personnel monté une fois (`PersonalRuntime`) :
         défis, salons, boîte et cloche relus sans polling ; pastille de l'onglet Défis = reçus en attente
         (`useTabBadges` du shell). Écarts : Relancer un défi visible mais inactif (aucun endpoint BFF), salle d'un défi
@@ -165,7 +165,7 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         Notifications avec la `Notice` tant que le navigateur ne les autorise pas ; Compte : Premium, Mes sujets, pages
         légales du site (`VITE_SITE_URL`), Se déconnecter confirmé), Supprimer mon compte `/me/settings/delete` (code
         envoyé à l'ouverture, Renvoyer le code, confirmation puis retour à la connexion), Éditeur d'avatar
-        `/me/settings/avatar` (onglets du lab Style, Visage, Cheveux, Lunettes, Fond ; droits des styles comme
+        `/me/settings/avatar` (Style puis un onglet par partie avec sa couleur, barre défilante, rendu paresseux, 2026-11-14 ; droits des styles comme
         `AvatarEntitlementPolicy` ; enregistrement optimiste), Premium : feuille unique (`PremiumHost`, `showPremium`)
         ouverte par les Réglages, l'éditeur, Sujets joués et la limite de défis, `/premium` l'ouvre sur l'Accueil.
         Écarts : Premium en état Bientôt seulement (offre non ouverte, liste d'attente mémorisée sur l'appareil,
