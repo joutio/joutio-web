@@ -1130,9 +1130,6 @@ export const fr = {
   'tooYoung.message': "Ton compte n'a pas été activé. Tu pourras revenir quand tu auras l'âge requis.",
   'tooYoung.text': "Une erreur de saisie ? Écris au support.",
   'tooYoung.support': "Contacter le support",
-  'badges.family.RECRUITER': "Recruteur",
-  'badges.family.RECRUITER.text': "Amis parrainés qui ont terminé leur premier duel.",
-  'badges.unit.REFERRALS_QUALIFIED': "amis parrainés",
 }
 
 export type Messages = Record<keyof typeof fr, string>

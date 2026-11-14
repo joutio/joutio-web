@@ -1,8 +1,10 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { LightningIcon, SwordIcon } from '@phosphor-icons/react'
-import { useStartTraining } from '@/features/play'
+import { useCreateBotRoom } from '@/features/play'
 import { useLanguageStore, useT } from '@/lib/i18n'
+import { returnTo } from '@/lib/session'
 import { trackEvent } from '@/lib/telemetry'
+import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { Button, EmptyState, Notice, RadioGroup, Skeleton, TopicCard, TopicRow } from '@/ui'
 import { useCompleteOnboarding, useRecommendations } from '../hooks/use-onboarding'
@@ -11,8 +13,9 @@ import { Steps } from './steps'
 
 /**
  * Premier thème : aperçu du thème choisi, puis la liste radio des recommandations. Titre et aperçu restent fixes, seule
- * la liste défile ; un dégradé signale la suite. « Explorer l'accueil » termine l'onboarding ; « Découvrir le duel » le
- * termine puis lance une partie contre un robot facile sur le thème choisi (salon bot, comme l'entraînement).
+ * la liste défile ; un dégradé signale la suite. « Explorer l'accueil » termine l'onboarding ; « Découvrir le duel » crée
+ * d'abord le salon bot (robot facile, thème choisi) et attend la réponse, puis termine l'onboarding : la sortie de
+ * l'onboarding ouvre directement ce salon, sans passer par l'accueil (2026-11-14).
  */
 export function FirstTopicStep() {
   const t = useT()
@@ -20,7 +23,7 @@ export function FirstTopicStep() {
   const universes = useOnboardingStore((state) => state.universes)
   const recommendations = useRecommendations(universes)
   const complete = useCompleteOnboarding()
-  const training = useStartTraining()
+  const botRoom = useCreateBotRoom()
   const topics = recommendations.data ?? []
   const [pickedId, setPickedId] = useState<string | null>(null)
   const picked = topics.find((topic) => topic.topicId === pickedId) ?? topics[0]
@@ -34,16 +37,23 @@ export function FirstTopicStep() {
   useLayoutEffect(updateMore, [topics.length])
 
   const finish = () => complete.mutate(undefined, { onSuccess: () => trackEvent('onboarding_completed') })
-  // Onboarding terminé d'abord (l'app connectée s'ouvre), puis le salon bot du thème choisi, difficulté facile.
+  // Salon d'abord (commande traitée, le salon existe), puis onboarding terminé : la sortie de l'onboarding
+  // (`onboarding-page.tsx`, `returnTo`) ouvre ce salon au lieu de l'accueil.
   const play = async () => {
     if (!picked) return
+    let roomId: string
+    try {
+      roomId = (await botRoom.mutateAsync({ topicId: picked.topicId, difficulty: 'EASY' })).id
+    } catch {
+      return
+    }
+    returnTo.remember(ROUTES.room(roomId))
     try {
       await complete.mutateAsync()
       trackEvent('onboarding_completed')
     } catch {
-      return
+      returnTo.remember(null)
     }
-    training.mutate({ topic: { topicId: picked.topicId, name: topicName(picked.names, language), category: picked.category }, difficulty: 'EASY' })
   }
 
   return (
@@ -51,14 +61,14 @@ export function FirstTopicStep() {
       index={2}
       fill
       action={
-        <Button variant="plain" tone="neutral" disabled={complete.isPending} onClick={finish}>
+        <Button variant="plain" tone="neutral" disabled={complete.isPending || botRoom.isPending} onClick={finish}>
           {t('onboarding.first.explore')}
         </Button>
       }
       footer={
         <div className="grid gap-2">
           {complete.isError && <Notice tone="error" title={t('onboarding.first.completeError')} message={t('common.checkConnection')} />}
-          <Button full icon={LightningIcon} disabled={!picked} loading={complete.isPending || training.isPending} onClick={() => void play()}>
+          <Button full icon={LightningIcon} disabled={!picked} loading={complete.isPending || botRoom.isPending} onClick={() => void play()}>
             {t('onboarding.first.play')}
           </Button>
         </div>

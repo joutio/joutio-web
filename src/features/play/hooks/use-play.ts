@@ -100,15 +100,33 @@ function useLaunchError() {
   return (title: Parameters<typeof t>[0], text: Parameters<typeof t>[0] = 'home.errorText') => toast.error(t(title), t(text))
 }
 
+/** Échec de création d'un salon bot : garde-fou anti-spam identique pour tous (P22), Premium n'y change rien. */
+function useBotRoomError() {
+  const fail = useLaunchError()
+  return (error: unknown) =>
+    fail(quotaProblemOf(error) === 'rooms' ? 'play.botQuotaError' : 'play.trainingError', quotaProblemOf(error) === 'rooms' ? 'play.botQuotaText' : undefined)
+}
+
 /** Entraînement contre le robot : la salle bot se prépare, puis le duel s'ouvre. */
 export function useStartTraining() {
   const navigate = useNavigate()
-  const fail = useLaunchError()
+  const onError = useBotRoomError()
   return useMutation({
     mutationFn: ({ topic, difficulty }: { topic: PlayTopic; difficulty: BotDifficulty }) => playService.createBotRoom(topic.topicId, difficulty),
     onSuccess: ({ id }, { topic }) => void navigate(ROUTES.room(id), { state: { topic } }),
-    // Salons bot : garde-fou anti-spam identique pour tous (P22), Premium n'y change rien.
-    onError: (error) => fail(quotaProblemOf(error) === 'rooms' ? 'play.botQuotaError' : 'play.trainingError', quotaProblemOf(error) === 'rooms' ? 'play.botQuotaText' : undefined),
+    onError,
+  })
+}
+
+/**
+ * Salon bot créé sans navigation : l'appelant attend la réponse (commande traitée) et choisit l'écran suivant — fin de
+ * l'onboarding, qui doit d'abord être enregistrée avant d'ouvrir le salon.
+ */
+export function useCreateBotRoom() {
+  const onError = useBotRoomError()
+  return useMutation({
+    mutationFn: ({ topicId, difficulty }: { topicId: string; difficulty: BotDifficulty }) => playService.createBotRoom(topicId, difficulty),
+    onError,
   })
 }
 

@@ -58,10 +58,10 @@ src/
   features/<nom>/     écrans + `lib/` (service → hook React Query), import par le barrel `index.ts` uniquement
 ```
 
-`features/share` : partage par lien universel `go.joutio.com` avec le code de parrainage (`useShare`, feuille
+`features/share` : partage par lien universel `go.joutio.com` (`useShare`, feuille
 `ShareHost` : lien, QR code, stores ; feuille du système sur navigateur mobile). `features/profile-edit` : Éditer le
 profil (`/me/edit`). Réglages : racine `/me/settings` et une page par catégorie `/me/settings/{account,privacy,
-notifications,game,display,invite,help}`. `features/shell` : cadre (`AppFrame`), garde connectée (non onboardé → `/welcome`), onglets, bannière de connexion,
+notifications,game,display,help}`. `features/shell` : cadre (`AppFrame`), garde connectée (non onboardé → `/welcome`), onglets, bannière de connexion,
 `/login`, `/callback`. `features/onboarding` : `/welcome` (étapes en mémoire, reprise aux univers après le retour OIDC). `features/dev` : vitrine `/dev/ui` (dev uniquement) pour comparer le socle au lab.
 
 ## 4. Jetons et styles

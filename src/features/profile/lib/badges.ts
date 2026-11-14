@@ -7,7 +7,6 @@ import {
   FireIcon,
   GaugeIcon,
   GraduationCapIcon,
-  HandshakeIcon,
   MegaphoneIcon,
   SparkleIcon,
   StackIcon,
@@ -39,7 +38,6 @@ const ICONS: Record<BadgeFamily, Icon> = {
   SPEED: GaugeIcon,
   EXPLORATION: CompassIcon,
   COLLECTION: StackIcon,
-  RECRUITER: HandshakeIcon,
 }
 
 /** Unité d'un compteur (`badges.unit.*`), par métrique du BFF. */
@@ -56,7 +54,6 @@ const UNITS = new Set([
   'TOPIC_MASTERY',
   'DISTINCT_TOPICS',
   'EARNED_BADGES',
-  'REFERRALS_QUALIFIED',
   'ONE_SHOT',
 ])
 

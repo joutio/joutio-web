@@ -36,7 +36,7 @@ export function BirthDateStep() {
     <Screen
       bottomNav={
         <div className="flex-none bg-jo-bg px-4 pt-2 pb-[calc(var(--jo-safe-bottom,0px)+16px)]">
-          <Button full disabled={birthDate === '' || tooYoung || (issue !== null && issue !== 'underage')} loading={save.isPending} onClick={submit}>
+          <Button full disabled={birthDate === '' || tooYoung || issue !== null} loading={save.isPending} onClick={submit}>
             {t('birth.continue')}
           </Button>
         </div>

@@ -1131,7 +1131,4 @@ export const en: Messages = {
   'tooYoung.message': "Your account was not activated. You can come back once you are old enough.",
   'tooYoung.text': "Made a typo? Write to support.",
   'tooYoung.support': "Contact support",
-  'badges.family.RECRUITER': "Recruiter",
-  'badges.family.RECRUITER.text': "Referred friends who finished their first duel.",
-  'badges.unit.REFERRALS_QUALIFIED': "referred friends",
 }

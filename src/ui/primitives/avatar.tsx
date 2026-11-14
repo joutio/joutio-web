@@ -19,6 +19,8 @@ export type AvatarProps = {
   /** Rang pas encore atteint. */
   locked?: boolean
   presence?: 'online' | 'ingame' | 'offline'
+  /** Purement illustratif (le libellé voisin nomme déjà le joueur) : masqué aux lecteurs d'écran. */
+  decorative?: boolean
   className?: string
 }
 
@@ -36,18 +38,19 @@ const initials = (name: string) =>
     .join('')
     .toUpperCase()
 
-export function Avatar({ name, src, size = 'md', tier, provisional = false, locked = false, presence, className }: AvatarProps) {
+export function Avatar({ name, src, size = 'md', tier, provisional = false, locked = false, presence, decorative = false, className }: AvatarProps) {
   const px = SIZES[size]
   const image = src ? (
     <img
       src={src}
-      alt={name}
+      alt={decorative ? '' : name}
       className={cn('size-full rounded-jo-full object-cover', locked && 'brightness-[.55] grayscale')}
     />
   ) : (
     <span
-      role="img"
-      aria-label={name}
+      role={decorative ? undefined : 'img'}
+      aria-label={decorative ? undefined : name}
+      aria-hidden={decorative || undefined}
       style={{ fontSize: Math.max(12, px * 0.36) }}
       className={cn(
         // Avatar de base lisible sur toute surface (2026-11-13) : `raised` seul se fondait dans les lignes des feuilles.

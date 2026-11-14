@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 export interface ShareRequest {
-  /** Lien universel `go.joutio.com/…?ref=…`. */
+  /** Lien universel `go.joutio.com/…`. */
   url: string
   /** Phrase d'accompagnement (feuille du système, copie). */
   text: string

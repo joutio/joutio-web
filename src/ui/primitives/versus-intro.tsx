@@ -37,7 +37,8 @@ export type VersusIntroProps = {
 
 function Panel({ player, side, animated }: { player: VersusPlayer; side: 'top' | 'bottom'; animated: boolean }) {
   const top = side === 'top'
-  const glow = player.tier ? tierColor(player.tier) : 'var(--jo-accent)'
+  // Halo du palier ; sans palier (non classé, robot, profil en chargement) : halo gris neutre, jamais l'accent doré.
+  const glow = player.tier ? tierColor(player.tier) : 'var(--jo-muted)'
   return (
     <div
       className={cn('absolute inset-x-0 overflow-hidden', top ? 'top-0 bottom-1/2 bg-jo-surface' : 'top-1/2 bottom-0 bg-jo-bg', animated && `jo-versus-${side}`)}

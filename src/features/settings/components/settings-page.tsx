@@ -21,7 +21,7 @@ import { Group, SettingsScreen } from './settings-screen'
 
 /**
  * Réglages (`design/specs/screens/reglages.md` § 1, refonte du 2026-11-13) : racine de catégories, ouverte par la roue
- * dentée du Profil ou de l'Accueil. Carte Premium, catégories (une page chacune), Création et Inviter, Aide, puis Se
+ * dentée du Profil ou de l'Accueil. Carte Premium, catégories (une page chacune), Création, Aide, puis Se
  * déconnecter. Les champs publics du profil sont dans Éditer le profil.
  */
 export function SettingsPage() {
