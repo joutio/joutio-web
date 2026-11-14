@@ -10,7 +10,8 @@ type LargeBar = Common & { variant?: 'large'; title: string; subtitle?: string; 
 
 /**
  * Écran poussé : titre centré, retour texte ou élément libre à gauche.
- * `subtitle` : contexte de la page (sujet, adversaire) sous le titre, jamais concaténé au titre.
+ * `subtitle` : contexte de la page (sujet, adversaire) sous le titre, jamais concaténé au titre. Plusieurs lignes
+ * séparées par `\n` (Défis : défis envoyés, puis salons ouverts), chacune tronquée seule.
  */
 type InlineBar = Common & { variant: 'inline'; title?: string; subtitle?: string; back?: string; onBack?: () => void; left?: ReactNode; right?: ReactNode }
 
@@ -86,7 +87,11 @@ export function MobileTopBar(props: MobileTopBarProps) {
       {left}
       <div className="grid min-w-0 flex-1">
         <h1 className="jo-type-large-title truncate">{title}</h1>
-        {subtitle && <p className="jo-type-callout truncate text-jo-muted">{subtitle}</p>}
+        {subtitle?.split('\n').map((line) => (
+          <p key={line} className="jo-type-callout truncate text-jo-muted">
+            {line}
+          </p>
+        ))}
       </div>
       {right && <div className="flex flex-none items-center">{right}</div>}
     </header>

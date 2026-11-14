@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
+import { SettingsButton } from '@/features/settings'
 import { useCreatePrivateRoom } from '@/features/play'
 import { ChallengeTopicSheet } from '@/features/player'
 import { TabNav } from '@/features/shell'
@@ -175,7 +176,17 @@ export function ChallengesPage() {
     <Screen
       header={
         <>
-          <MobileTopBar title={t('nav.challenges')} subtitle={t(sent.length > 1 ? 'challenges.quotaMany' : 'challenges.quotaOne', { count: sent.length, limit: planLimits(me.data).pendingChallenges })} right={<NotificationBell />} />
+          <MobileTopBar title={t('nav.challenges')} subtitle={[
+              t(sent.length > 1 ? 'challenges.quotaMany' : 'challenges.quotaOne', { count: sent.length, limit: planLimits(me.data).pendingChallenges }),
+              t(salons.length > 1 ? 'challenges.roomsQuotaMany' : 'challenges.roomsQuotaOne', { count: salons.length, limit: planLimits(me.data).openRooms }),
+            ].join('\n')}
+            right={
+              <>
+                <NotificationBell />
+                <SettingsButton from="challenges" />
+              </>
+            }
+          />
           {!empty && !failed && !loading && (
             <div className="jo-no-scrollbar flex gap-2 overflow-x-auto px-4 pt-1 pb-3">
               {FILTERS.map((option) => (

@@ -589,6 +589,8 @@ export const en: Messages = {
   'social.end': "You've seen every player",
   'challenges.quotaOne': "{count} challenge sent out of {limit}",
   'challenges.quotaMany': "{count} challenges sent out of {limit}",
+  'challenges.roomsQuotaOne': "{count} room open out of {limit}",
+  'challenges.roomsQuotaMany': "{count} rooms open out of {limit}",
   'challenges.all': "All",
   'challenges.received': "Received",
   'challenges.sent': "Sent",

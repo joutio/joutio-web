@@ -1,6 +1,6 @@
 import { topicDescription } from '@joutio/client-domain/authoring'
-import { CheckIcon, HeartIcon, LightningIcon, ShareNetworkIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
-import { forwardRef, useState } from 'react'
+import { CheckIcon, HeartIcon, LightningIcon, ShareNetworkIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DuelSheet } from '@/features/play'
 import { useShare } from '@/features/share'
@@ -8,14 +8,10 @@ import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
-import { useDockedActions } from '@/shared/use-docked-actions'
 import { Button, Dialog, EmptyState, IconButton, JoutioTabs, ParallaxScreen, Pill, ProgressBar, Screen, Skeleton, Stat, TabsScrollView, tokens } from '@/ui'
 import { useFollowTopic, useTopicLeaderboard, useTopicOverview } from '../hooks/use-topic'
 import { formatNumber } from '../lib/format'
 import { BOARD_TOP, BoardTab, GamesTab, MyBoardRow, ProgressTab } from './topic-tabs'
-
-/** IconButton dessine ses icônes en trait : le cœur plein marque un suivi (lab `filled-heart.tsx`). */
-const FilledHeart = forwardRef<SVGSVGElement, React.ComponentProps<Icon>>((props, ref) => <HeartIcon ref={ref} {...props} weight="fill" />) as Icon
 
 // MVP : le Mur reste désactivé (`fiche-sujet.md` § 2, 2026-11-07).
 const TABS: readonly { value: Tab; label: MessageKey }[] = [
@@ -66,7 +62,6 @@ export function TopicPage() {
   const [tab, setTab] = useState<Tab>('games')
   const [unfollowOpen, setUnfollowOpen] = useState(false)
   const [duelOpen, setDuelOpen] = useState(false)
-  const { actions, docked } = useDockedActions()
 
   const data = overview.data
   const topic = data?.topic
@@ -130,18 +125,6 @@ export function TopicPage() {
       onBack={back}
       right={
         <>
-          {docked && (
-            <>
-              <IconButton icon={LightningIcon} label={t('topic.duel')} media disabled={!playable} onClick={() => setDuelOpen(true)} />
-              <IconButton
-                icon={followed ? FilledHeart : HeartIcon}
-                label={t(followed ? 'topic.unfollow' : 'topic.follow')}
-                media
-                aria-pressed={followed}
-                onClick={toggleFollow}
-              />
-            </>
-          )}
           <IconButton icon={ShareNetworkIcon} label={t('profile.share')} media onClick={shareTopic} />
         </>
       }
@@ -149,7 +132,7 @@ export function TopicPage() {
         <div className="grid gap-3">
           {/* Description du sujet, sous le titre de l'image (2026-11-13), saisie dans l'atelier. */}
           {description && <p className="jo-type-body m-0 whitespace-pre-line text-jo-muted">{description}</p>}
-          <div ref={actions} className="grid grid-cols-[65fr_35fr] gap-2">
+          <div className="grid grid-cols-[65fr_35fr] gap-2">
             <Button full icon={LightningIcon} disabled={!playable} onClick={() => setDuelOpen(true)}>
               {t('topic.duel')}
             </Button>

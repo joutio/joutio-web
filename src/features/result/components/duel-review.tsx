@@ -2,7 +2,7 @@ import { localizedQuestion, type GameRoundState, type GameState } from '@joutio/
 import { CheckIcon, FlagIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { AnswerTimingRow, Button, PageDots, QuestionBlock, RoundReviewTabs, SwipeHint, TabsScrollView, type AnswerCardProps, type ReviewAnswer } from '@/ui'
+import { AnswerTimingRow, Button, QuestionBlock, RoundReviewTabs, SwipeHint, TabsScrollView, type AnswerCardProps, type ReviewAnswer } from '@/ui'
 import { reviewRoundsOf } from '../lib/review'
 
 const answerOf = (round: GameRoundState, playerId: string | null): ReviewAnswer => {
@@ -105,10 +105,7 @@ export function DuelReview({ game, me, myName, opponentName, onBack, reported, o
       </div>
       <TabsScrollView contained className="min-h-0 flex-1" value={String(index)} onChange={(value) => setIndex(Number(value))} pages={pages} />
       <div className="grid flex-none gap-1 px-4">
-        {/* Sans flèches (2026-11-13) : on balaie, ou on touche un onglet de manche. */}
-        <div className="flex items-center justify-center py-2">
-          <PageDots count={count} index={index} />
-        </div>
+        {/* Ni points ni flèches (2026-11-14) : les onglets de manche pilotent le carousel, on peut aussi balayer. */}
         <Button variant="plain" tone="neutral" size="M" full icon={done ? CheckIcon : FlagIcon} disabled={done} onClick={() => round && onReport(round, index, count)}>
           {done ? t('result.questionReported') : t('result.reportQuestion')}
         </Button>

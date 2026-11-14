@@ -5,10 +5,18 @@ import { ROUTES } from '@/shared/routes'
 import { IconButton } from '@/ui'
 import { useUnreadCount } from '../hooks/use-unread-count'
 
-/** Cloche des barres d'onglets : badge des non-lues, ouvre la boîte de réception. */
-export function NotificationBell() {
+/** Cloche des barres d'onglets : badge des non-lues, ouvre la boîte de réception. `media` : sur l'image du Profil. */
+export function NotificationBell({ media = false }: { media?: boolean }) {
   const t = useT()
   const navigate = useNavigate()
   const unread = useUnreadCount().data?.count ?? 0
-  return <IconButton icon={BellIcon} label={t('home.notifications')} variant="plain" tone="neutral" badge={unread || undefined} onClick={() => void navigate(ROUTES.notifications)} />
+  return (
+    <IconButton
+      icon={BellIcon}
+      label={t('home.notifications')}
+      {...(media ? { media: true } : { variant: 'plain' as const, tone: 'neutral' as const })}
+      badge={unread || undefined}
+      onClick={() => void navigate(ROUTES.notifications)}
+    />
+  )
 }

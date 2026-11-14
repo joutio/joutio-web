@@ -3,6 +3,7 @@ import { ArrowsDownUpIcon, BellIcon, HeartIcon, MagnifyingGlassIcon, PencilSimpl
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUnreadCount } from '@/features/notifications'
+import { SettingsButton } from '@/features/settings'
 import { TabNav } from '@/features/shell'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { feedFooterProps } from '@/shared/paging'
@@ -188,14 +189,17 @@ export function TopicsPage() {
           <MobileTopBar
             title={t('nav.topics')}
             right={
-              <IconButton
-                icon={BellIcon}
-                label={t('home.notifications')}
-                variant="plain"
-                tone="neutral"
-                badge={unread > 0 ? 'dot' : undefined}
-                onClick={() => void navigate(ROUTES.notifications)}
-              />
+              <>
+                <IconButton
+                  icon={BellIcon}
+                  label={t('home.notifications')}
+                  variant="plain"
+                  tone="neutral"
+                  badge={unread > 0 ? 'dot' : undefined}
+                  onClick={() => void navigate(ROUTES.notifications)}
+                />
+                <SettingsButton from="topics" />
+              </>
             }
           />
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-2">

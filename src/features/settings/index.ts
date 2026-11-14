@@ -1,5 +1,6 @@
 export { AvatarEditorPage } from './components/avatar-editor-page'
 export { DeleteAccountPage } from './components/delete-account-page'
+export { SettingsButton } from './components/settings-button'
 export { SettingsCategoryPage } from './components/settings-category-page'
 export { SettingsPage } from './components/settings-page'
 export { pseudonymError, pseudonymHint, usePseudonymCheck, useUpdateMe, type PseudonymCheck } from './hooks/use-settings'

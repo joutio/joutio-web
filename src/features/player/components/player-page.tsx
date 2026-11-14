@@ -1,6 +1,6 @@
 import { countryFlag, countryName } from '@joutio/client-domain/geo'
-import { CheckIcon, DotsThreeIcon, FlagIcon, HeartIcon, LightningIcon, SwordIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
-import { forwardRef, useState } from 'react'
+import { CheckIcon, DotsThreeIcon, FlagIcon, LightningIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { finishedGames, GameGroups, useHistoryGames } from '@/features/history'
 import { useMe, usePlayerIdentity } from '@/features/me'
@@ -13,7 +13,6 @@ import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
-import { useDockedActions } from '@/shared/use-docked-actions'
 import {
   Avatar,
   Badge,
@@ -34,8 +33,6 @@ import {
 import { useFollowPlayer, useHeadToHead, usePlayerProfile } from '../hooks/use-player'
 import { presenceLine } from '../lib/presence'
 import { ChallengeTopicSheet } from './challenge-topic-sheet'
-
-const FilledHeart = forwardRef<SVGSVGElement, React.ComponentProps<Icon>>((props, ref) => <HeartIcon ref={ref} {...props} weight="fill" />) as Icon
 
 /** Bannière de 336 px, comme le Profil (`fiche-joueur.md`). */
 const HERO_HEIGHT = 336
@@ -79,7 +76,6 @@ export function PlayerPage() {
   const progression = data?.progression
   const tier = progression && !progression.provisional ? tierOf(progression.rating) : undefined
   const canAct = Boolean(data && !data.isMe && !data.suspended && !data.bot)
-  const { actions, docked } = useDockedActions(canAct)
   const name = data?.pseudonym ?? t('player.title')
   const latest = finishedGames(games.data?.pages.flatMap((page) => page.content) ?? []).slice(0, 10)
   const played = (head.data?.played ?? 0) > 0
@@ -108,18 +104,6 @@ export function PlayerPage() {
       right={
         data && !data.isMe ? (
           <>
-            {canAct && docked && (
-              <>
-                <IconButton icon={LightningIcon} label={t('player.challengeTitle', { name })} media onClick={openChallenge} />
-                <IconButton
-                  icon={data.following ? FilledHeart : HeartIcon}
-                  label={t(data.following ? 'player.unfollow' : 'player.follow')}
-                  media
-                  aria-pressed={data.following}
-                  onClick={toggleFollow}
-                />
-              </>
-            )}
             {!data.bot && <IconButton icon={DotsThreeIcon} label={t('player.more')} media onClick={() => setMenuOpen(true)} />}
           </>
         ) : undefined
@@ -147,7 +131,7 @@ export function PlayerPage() {
               {!data.suspended && !data.bot && <span className="jo-type-caption text-jo-muted">{presenceLine(data.presence, t)}</span>}
             </div>
             {canAct && (
-              <div ref={actions} className="grid grid-cols-[65fr_35fr] gap-2">
+              <div className="grid grid-cols-[65fr_35fr] gap-2">
                 {/* 65 / 35 : le défi est l'action principale (décision du 2026-11-06). */}
                 <Button full icon={LightningIcon} variant="filled" tone="accent" onClick={openChallenge}>
                   {t('player.challenge')}

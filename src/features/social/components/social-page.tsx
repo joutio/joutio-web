@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe, usePlayerIdentity, useReferral } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
+import { SettingsButton } from '@/features/settings'
 import { useChallengePlayer, useContacts } from '@/features/play'
 import { ChallengeTopicSheet, relativeSeen } from '@/features/player'
 import { useShare } from '@/features/share'
@@ -150,7 +151,12 @@ export function SocialPage() {
     <Screen
       header={
         <>
-          <MobileTopBar title={t('nav.social')} right={<NotificationBell />} />
+          <MobileTopBar title={t('nav.social')} right={
+              <>
+                <NotificationBell />
+                <SettingsButton from="social" />
+              </>
+            } />
           <div className="grid gap-3 px-4 pt-1 pb-2">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
               <SearchField value={query} onChange={setQuery} placeholder={t('social.search')} label={t('social.search')} />

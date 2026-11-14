@@ -3,6 +3,7 @@ import { GearSixIcon, PencilSimpleIcon, ShareNetworkIcon, WarningCircleIcon } fr
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
+import { NotificationBell } from '@/features/notifications'
 import { useShare } from '@/features/share'
 import { TabNav } from '@/features/shell'
 import { formatNumber, useMyTitles } from '@/features/topic'
@@ -132,6 +133,7 @@ export function ProfilePage() {
       eyebrow={data ? <Avatar name={name} src={src} tier={tier} provisional={progression?.provisional} size="xxl" /> : undefined}
       right={
         <>
+          <NotificationBell media />
           <IconButton icon={GearSixIcon} label={t('profile.settings')} media onClick={() => void navigate(ROUTES.settings)} />
         </>
       }

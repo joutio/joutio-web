@@ -1,5 +1,6 @@
 import type { Language } from '@joutio/client-domain/api-types'
 import { useLocation } from 'react-router-dom'
+import { TABS, type TabKey } from '@/features/shell'
 import type { MessageKey } from '@/lib/i18n'
 import type { ThemePreference } from '@/lib/theme'
 
@@ -17,10 +18,10 @@ export const LANGUAGES: readonly { value: Language; label: string }[] = [
   { value: 'en', label: 'English' },
 ]
 
-/** Origine des Réglages : roue dentée du Profil (défaut) ou de l'Accueil, gardée d'une page à l'autre. */
-export type SettingsOrigin = 'home' | 'profile'
+/** Origine des Réglages : onglet dont la roue dentée les a ouverts (Profil par défaut), gardé d'une page à l'autre. */
+export type SettingsOrigin = TabKey
 
 export function useSettingsOrigin(): SettingsOrigin {
-  const state = useLocation().state as { from?: SettingsOrigin } | null
-  return state?.from === 'home' ? 'home' : 'profile'
+  const state = useLocation().state as { from?: string } | null
+  return TABS.find((tab) => tab.key === state?.from)?.key ?? 'profile'
 }

@@ -588,6 +588,8 @@ export const fr = {
   'social.end': "Tu as vu tous les joueurs",
   'challenges.quotaOne': "{count} défi envoyé sur {limit} possibles",
   'challenges.quotaMany': "{count} défis envoyés sur {limit} possibles",
+  'challenges.roomsQuotaOne': "{count} salon ouvert sur {limit} possibles",
+  'challenges.roomsQuotaMany': "{count} salons ouverts sur {limit} possibles",
   'challenges.all': "Tous",
   'challenges.received': "Reçus",
   'challenges.sent': "Envoyés",

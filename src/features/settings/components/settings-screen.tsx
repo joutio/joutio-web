@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TabNav } from '@/features/shell'
+import { TabNav, TABS } from '@/features/shell'
 import { useT } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
 import { MobileTopBar, Screen, SectionHeader } from '@/ui'
@@ -14,9 +14,10 @@ export function SettingsScreen({ title, root = false, overlay, children }: { tit
   const t = useT()
   const navigate = useNavigate()
   const from = useSettingsOrigin()
-  const parent = root ? (from === 'home' ? ROUTES.home : ROUTES.me) : ROUTES.settings
+  const origin = TABS.find((tab) => tab.key === from)
+  const parent = root ? (origin?.path ?? ROUTES.me) : ROUTES.settings
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(parent, { replace: true, state: { from } }))
-  const label = root ? t(from === 'home' ? 'nav.home' : 'nav.profile') : t('profile.settings')
+  const label = root ? t(origin?.label ?? 'nav.profile') : t('profile.settings')
   return (
     <Screen header={<MobileTopBar variant="inline" back={label} title={title} onBack={back} />} bottomNav={<TabNav active={from} />} overlay={overlay}>
       <div className="grid gap-6 px-4 pt-2 pb-8">{children}</div>
