@@ -19,7 +19,7 @@ export function OptionTile({ label, image, selected = false, onSelect, className
       className={cn('jo-transition jo-focus grid min-w-0 cursor-pointer justify-items-center gap-1 rounded-jo-md bg-jo-surface p-2 jo-pressed:scale-[.98]', selected && 'ring-2 ring-jo-accent ring-inset', className)}
     >
       <img src={image} alt="" className="aspect-square w-full rounded-jo-sm object-cover" />
-      <span className={cn('jo-type-caption w-full truncate text-center', selected ? 'font-semibold text-jo-text' : 'text-jo-muted')}>{label}</span>
+      <span className={cn('jo-type-caption line-clamp-2 w-full text-center break-words', selected ? 'font-semibold text-jo-text' : 'text-jo-muted')}>{label}</span>
     </button>
   )
 }
