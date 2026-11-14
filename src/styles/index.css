@@ -214,6 +214,100 @@
   opacity: calc(var(--jo-parallax-progress) * 1.3);
 }
 
+/*
+ * Défilement piloté par CSS (2026-11-14) : le compositeur anime l'image, le titre, la barre et ses boutons sans JS.
+ * Les variables écrites à chaque frame invalidaient le style de tout l'écran : sur Chrome mobile, les surfaces se
+ * repeignaient en retard et semblaient glisser. Les règles ci-dessus (variables) restent le repli sans scroll-timeline.
+ * `--jo-parallax-hero` et `--jo-parallax-distance` (hauteur de l'image, et course jusqu'à la barre compacte) sont posées
+ * une fois par `ParallaxScreen`. `timeline-scope` : la barre est sœur du conteneur qui défile, pas descendante.
+ */
+@supports (animation-timeline: scroll()) {
+  .jo-parallax {
+    timeline-scope: --jo-parallax;
+  }
+
+  .jo-parallax-scroller {
+    scroll-timeline: --jo-parallax block;
+  }
+
+  .jo-parallax-image {
+    transform: none;
+    animation: jo-parallax-image linear both;
+    animation-timeline: --jo-parallax;
+    animation-range: 0 var(--jo-parallax-hero);
+  }
+
+  .jo-parallax-title {
+    opacity: 1;
+    animation: jo-parallax-title linear both;
+    animation-timeline: --jo-parallax;
+    animation-range: 0 var(--jo-parallax-distance);
+  }
+
+  .jo-parallax-bar,
+  .jo-parallax-bar-title {
+    opacity: 0;
+    animation: jo-parallax-bar linear both;
+    animation-timeline: --jo-parallax;
+    animation-range: 0 var(--jo-parallax-distance);
+  }
+
+  .jo-parallax-buttons button {
+    animation: jo-parallax-button linear both;
+    animation-timeline: --jo-parallax;
+    animation-range: 0 var(--jo-parallax-distance);
+  }
+}
+
+/* Demi-vitesse du défilement, sur la hauteur de l'image. */
+@keyframes jo-parallax-image {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(var(--jo-parallax-hero) * 0.5));
+  }
+}
+
+/* `1 - progress × 1,6` : effacé à 62,5 % de la course. */
+@keyframes jo-parallax-title {
+  from {
+    opacity: 1;
+  }
+
+  62.5%,
+  to {
+    opacity: 0;
+  }
+}
+
+/* `progress × 1,3` : opaque à 77 % de la course, avant que le contenu passe dessous. */
+@keyframes jo-parallax-bar {
+  from {
+    opacity: 0;
+  }
+
+  77%,
+  to {
+    opacity: 1;
+  }
+}
+
+/* Pastille claire sur l'image, puis sans fond et à la couleur du thème sur la barre. */
+@keyframes jo-parallax-button {
+  from {
+    background-color: var(--jo-scrim);
+    color: var(--jo-text);
+  }
+
+  77%,
+  to {
+    background-color: transparent;
+    color: var(--jo-parallax-ink);
+  }
+}
+
 .jo-question {
   --jo-question-read: 2000ms;
   --jo-answer-stagger: 120ms;
@@ -657,6 +751,7 @@
 @media (prefers-reduced-motion: reduce) {
   .jo-parallax-image {
     transform: none;
+    animation: none;
   }
 
   .jo-transition,

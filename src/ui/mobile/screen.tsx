@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
+import { setStyleVar } from '../lib/style-var'
 import { useBannerPresence, useGlobalBanner } from '../primitives/banner'
 
 export type ScreenProps = {
@@ -25,16 +26,18 @@ export type ScreenProps = {
 export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, className, children }: ScreenProps) {
   const global = useGlobalBanner()
   const banner = useBannerPresence(global ?? own)
+  const head = useRef<HTMLDivElement>(null)
   return (
     <div data-jo-screen className={cn('relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', className)}>
-      <div className={cn('relative flex-none', !banner && 'pt-[var(--jo-safe-top,0px)]')}>
+      {/* Porte `--jo-header-edge` (écrit ici) et `--jo-tabs-dock` (écrit par `StickyBar`) : sœur de `main`, une écriture
+          n'invalide que l'en-tête, jamais le contenu qui défile. */}
+      <div ref={head} data-jo-screen-header className={cn('relative flex-none', !banner && 'pt-[var(--jo-safe-top,0px)]')}>
         {banner}
         {header}
         {header && <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-jo-border" style={{ opacity: 'calc(var(--jo-header-edge, 0) * (1 - var(--jo-tabs-dock, 0)))' }} />}
       </div>
       <main onScroll={(event) => {
-        const main = event.currentTarget
-        main.closest<HTMLElement>('[data-jo-screen]')?.style.setProperty('--jo-header-edge', String(Math.max(0, Math.min(1, main.scrollTop / 8))))
+        setStyleVar(head.current, '--jo-header-edge', String(Math.max(0, Math.min(1, event.currentTarget.scrollTop / 8))))
       }} className={cn('jo-no-scrollbar min-h-0 flex-1 overflow-y-auto', !bottomNav && !bottomBar && 'pb-[var(--jo-safe-bottom,0px)]')}>
         {children}
       </main>

@@ -1,6 +1,7 @@
 import { CaretLeftIcon } from '@phosphor-icons/react'
 import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
+import { setStyleVar, supportsScrollTimeline } from '../lib/style-var'
 import { PremiumBadge } from '../brand/premium-badge'
 import { useBannerPresence, useGlobalBanner } from '../primitives/banner'
 import { PlayerName } from '../primitives/player-name'
@@ -59,11 +60,13 @@ export type ParallaxScreenProps = {
 export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium = false, eyebrow, centered = false, barTitleStart = false, back = true, onBack, right, intro, sticky, floating, bottomBar, bottomNav, overlay, banner: own, className, children }: ParallaxScreenProps) {
   const global = useGlobalBanner()
   const banner = useBannerPresence(global ?? own)
-  const root = useRef<HTMLDivElement>(null)
   const main = useRef<HTMLElement>(null)
   const stickyBlock = useRef<HTMLDivElement>(null)
   const stickyStart = useRef<HTMLDivElement>(null)
   const content = useRef<HTMLDivElement>(null)
+  const heroImage = useRef<HTMLImageElement>(null)
+  const heroTitle = useRef<HTMLDivElement>(null)
+  const bar = useRef<HTMLDivElement>(null)
 
   // Le contenu remplit juste l'espace sous le bloc collé : assez pour replier, sans scroll à vide.
   useLayoutEffect(() => {
@@ -91,36 +94,48 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium
   }, [])
   const context = useMemo(() => resetScroll, [resetScroll])
 
+  // Jamais d'écriture sur la racine : elle porte tout le contenu qui défile, que Chrome mobile repeindrait à chaque frame
+  // (surfaces qui se décalent). La parallaxe passe par `animation-timeline` (index.css) ; restent les filets, presque
+  // binaires, écrits sur le bloc collé et la barre. Sans scroll-timeline, le repli écrit sur l'image, le titre et la barre.
   const onScroll = (event: React.UIEvent<HTMLElement>) => {
     const distance = heroHeight - BAR_HEIGHT
     const top = event.currentTarget.scrollTop
     const block = stickyBlock.current
-    const bar = block ? Number.parseFloat(getComputedStyle(block).top) || 0 : 0
-    const distanceToDock = Math.max(0, (stickyStart.current?.offsetTop ?? 0) - bar)
-    const dock = block ? Math.max(0, Math.min(1, 1 - (distanceToDock - top) / Math.min(8, distanceToDock || 8))) : 0
-    root.current?.style.setProperty('--jo-tabs-dock', String(dock))
-    root.current?.style.setProperty('--jo-header-edge', String(Math.min(1, Math.max(0, top / distance)) * 1.3 >= 1 ? 1 : 0))
-    root.current?.style.setProperty('--jo-parallax-scroll', `${top}px`)
-    root.current?.style.setProperty('--jo-parallax-progress', `${Math.min(1, Math.max(0, top / distance))}`)
+    const barTop = block ? Number.parseFloat(getComputedStyle(block).top) || 0 : 0
+    const distanceToDock = Math.max(0, (stickyStart.current?.offsetTop ?? 0) - barTop)
+    const dock = String(block ? Math.max(0, Math.min(1, 1 - (distanceToDock - top) / Math.min(8, distanceToDock || 8))) : 0)
+    const progress = Math.min(1, Math.max(0, top / distance))
+    const edge = progress * 1.3 >= 1 ? '1' : '0'
+    for (const element of [block, bar.current]) {
+      setStyleVar(element, '--jo-tabs-dock', dock)
+      setStyleVar(element, '--jo-header-edge', edge)
+    }
+    if (supportsScrollTimeline) return
+    setStyleVar(heroImage.current, '--jo-parallax-scroll', `${top}px`)
+    setStyleVar(heroTitle.current, '--jo-parallax-progress', String(progress))
+    setStyleVar(bar.current, '--jo-parallax-progress', String(progress))
   }
 
   const barHeight = `calc(var(--jo-safe-top, 0px) + ${BAR_HEIGHT}px)`
   return (
-    <div ref={root} className={cn('jo-parallax relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', className)}>
+    <div
+      className={cn('jo-parallax relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', className)}
+      style={{ '--jo-parallax-hero': `${heroHeight}px`, '--jo-parallax-distance': `${heroHeight - BAR_HEIGHT}px` } as React.CSSProperties}
+    >
       {banner}
       {/* Sous une bande, la safe area haute est déjà prise : l'image et la barre compacte repartent de 0. */}
       <div className="relative flex min-h-0 flex-1 flex-col" style={banner ? ({ '--jo-safe-top': '0px' } as React.CSSProperties) : undefined}>
       <div className="relative min-h-0 flex-1">
       {/* Sans `overscroll-contain` (écart web du 2026-11-12) : en haut du défilement, le geste rejoint la page et le
           navigateur mobile peut rafraîchir, comme sur les écrans `Screen` (Fiche sujet, Profil, Fiche joueur). */}
-      <main ref={main} onScroll={onScroll} className="jo-no-scrollbar h-full overflow-y-auto">
+      <main ref={main} onScroll={onScroll} className="jo-parallax-scroller jo-no-scrollbar h-full overflow-y-auto">
         <div className="relative overflow-hidden bg-jo-surface" style={{ height: heroHeight }}>
-          {image && <img src={image} alt="" className="jo-parallax-image absolute inset-0 size-full object-cover" />}
+          {image && <img ref={heroImage} src={image} alt="" className="jo-parallax-image absolute inset-0 size-full object-cover" />}
           <div className="absolute inset-0 bg-linear-to-t from-jo-bg via-jo-bg/40 to-transparent" />
           {/* La barre d'état doit rester lisible : la bannière peut être n'importe quelle image. */}
           <div className="absolute inset-x-0 top-0 h-28 bg-linear-to-b from-jo-bg/80 to-transparent" />
           {/* Identité centrée (Profil, Fiche joueur) : 24 px entre l'avatar, dont le cadre de rang déborde, et le pseudonyme. */}
-          <div className={cn('jo-parallax-title absolute inset-x-4 bottom-3 grid', centered ? 'gap-6 justify-items-center text-center' : 'gap-1')}>
+          <div ref={heroTitle} className={cn('jo-parallax-title absolute inset-x-4 bottom-3 grid', centered ? 'gap-6 justify-items-center text-center' : 'gap-1')}>
             {eyebrow && <div className="jo-type-caption font-semibold">{eyebrow}</div>}
             <h1 className={cn('jo-type-title-1 text-balance', premium && 'flex items-center gap-1', premium && centered && 'justify-center')}>
               {title}
@@ -144,7 +159,7 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium
       </main>
       {floating && <div className="absolute right-4 bottom-4 z-10">{floating}</div>}
       </div>
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20" style={{ height: barHeight }}>
+      <div ref={bar} className="pointer-events-none absolute inset-x-0 top-0 z-20" style={{ height: barHeight }}>
         <div className="jo-parallax-bar absolute inset-0 bg-jo-bg" />
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-jo-border" style={{ opacity: 'calc(var(--jo-header-edge, 0) * (1 - var(--jo-tabs-dock, 0)))' }} />
         <div className={cn('jo-parallax-buttons absolute inset-x-0 bottom-0 grid h-[52px] items-center gap-2 px-3', barTitleStart ? 'grid-cols-[auto_minmax(0,1fr)_auto]' : 'grid-cols-[minmax(44px,1fr)_minmax(0,auto)_minmax(max-content,1fr)]')}>
