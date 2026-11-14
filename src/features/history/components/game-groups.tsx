@@ -34,6 +34,8 @@ export function GameGroups({ games }: { games: readonly GameHistoryItemView[] })
                 key={game.gameId}
                 topic={topicName(game.topic.names, language)}
                 category={toCategoryCode(game.topic.category)}
+                pictogram={game.topic.pictogramUrl ?? undefined}
+                image={game.topic.imageUrl ?? undefined}
                 sub={game.opponentType === 'BOT' ? t('history.training') : (game.opponent?.pseudonym ?? t('topic.opponent'))}
                 outcome={OUTCOMES[game.outcome] ?? 'draw'}
                 score={`${game.myScore} · ${game.opponentScore}`}

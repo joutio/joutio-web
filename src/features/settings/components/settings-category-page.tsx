@@ -1,4 +1,3 @@
-import { nextRecruiterTier, RECRUITER_TIERS } from '@joutio/client-domain/share'
 import {
   ArrowCounterClockwiseIcon,
   BellSlashIcon,
@@ -8,7 +7,6 @@ import {
   DatabaseIcon,
   EnvelopeSimpleIcon,
   FileTextIcon,
-  GiftIcon,
   GlobeHemisphereWestIcon,
   InfoIcon,
   LifebuoyIcon,
@@ -17,7 +15,6 @@ import {
   PaletteIcon,
   ProhibitIcon,
   RobotIcon,
-  ShareNetworkIcon,
   ShieldCheckIcon,
   SparkleIcon,
   SpeakerHighIcon,
@@ -25,10 +22,9 @@ import {
 } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { useMe, useReferral } from '@/features/me'
+import { useMe } from '@/features/me'
 import { useAutoTrain } from '@/features/play'
 import { showPremium } from '@/features/premium'
-import { useShare } from '@/features/share'
 import { config } from '@/lib/config'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { enablePush, pushPermission, type PushAvailability } from '@/lib/push'
@@ -36,14 +32,14 @@ import { useThemeStore } from '@/lib/theme'
 import { useDeviceSettings } from '@/shared/device-settings'
 import { ROUTES, type SettingsPage } from '@/shared/routes'
 import { toast } from '@/shared/toast'
-import { Button, CategoryTile, ListRow, MobileSheet, Notice, ProgressBar, RadioGroup, SectionHeader, Stat, tokens, type CategoryCode } from '@/ui'
+import { Button, CategoryTile, ListRow, MobileSheet, Notice, RadioGroup, tokens, type CategoryCode } from '@/ui'
 import { useNotificationPreferences, useSetNotificationPreference, useUpdateMe } from '../hooks/use-settings'
 import { MAX_INTERESTS } from '../lib/settings-service'
 import { BirthDateSheet } from './birth-date-sheet'
 import { APPEARANCE, LANGUAGES, useSettingsOrigin } from '../lib/settings-options'
 import { Group, SettingsScreen } from './settings-screen'
 
-const PAGES: readonly SettingsPage[] = ['account', 'privacy', 'notifications', 'game', 'display', 'invite', 'help']
+const PAGES: readonly SettingsPage[] = ['account', 'privacy', 'notifications', 'game', 'display', 'help']
 const SUPPORT = 'mailto:contact@joutio.com'
 const UNIVERSES = Object.keys(tokens.category) as CategoryCode[]
 
@@ -64,8 +60,6 @@ export function SettingsCategoryPage() {
       return <GamePage />
     case 'display':
       return <DisplayPage />
-    case 'invite':
-      return <InvitePage />
     case 'help':
       return <HelpPage />
   }
@@ -276,57 +270,6 @@ function DisplayPage() {
           last
         />
       </Group>
-    </SettingsScreen>
-  )
-}
-
-/** Inviter des amis (`partage.md` § 6) : lien de parrainage, compteurs et progression du badge Recruteur. */
-function InvitePage() {
-  const t = useT()
-  const me = useMe().data
-  const referral = useReferral()
-  const share = useShare()
-  const data = referral.data
-  const next = data ? nextRecruiterTier(data.qualified) : null
-  const previous = data ? ([...RECRUITER_TIERS].reverse().find((tier) => tier <= data.qualified) ?? 0) : 0
-  const progress = next ? Math.round(((data!.qualified - previous) / (next - previous)) * 100) : 100
-
-  return (
-    <SettingsScreen title={t('settings.invite')}>
-      <div className="grid justify-items-center gap-2 pt-2 text-center">
-        <span className="grid size-16 -rotate-6 place-items-center rounded-jo-lg bg-jo-accent text-jo-on-accent">
-          <GiftIcon size={32} weight="fill" aria-hidden />
-        </span>
-        <h2 className="jo-type-title-2 m-0">{t('invite.title')}</h2>
-        <p className="jo-type-callout m-0 max-w-[320px] text-pretty text-jo-muted">{t('invite.text')}</p>
-      </div>
-      {data && (
-        <>
-          <div className="grid gap-1 rounded-jo-lg bg-jo-surface p-4 text-center">
-            <span className="jo-type-caption text-jo-muted">{t('invite.code')}</span>
-            <span className="jo-type-title-1 font-mono tracking-widest">{data.code}</span>
-          </div>
-          <Button
-            full
-            variant="tinted"
-            icon={ShareNetworkIcon}
-            onClick={() => share({ kind: 'invite', id: data.code, title: t('settings.invite'), text: t('social.inviteText', { name: me?.pseudonym ?? '' }) })}
-          >
-            {t('invite.share')}
-          </Button>
-          <section className="grid gap-3">
-            <SectionHeader title={t('invite.badge')} />
-            <div className="grid grid-cols-2 gap-2">
-              <Stat label={t('invite.invited')} value={String(data.invited)} compact />
-              <Stat label={t('invite.qualified')} value={String(data.qualified)} tone="accent" compact />
-            </div>
-            <div className="grid gap-2 rounded-jo-lg bg-jo-surface p-4">
-              <ProgressBar value={progress} label={next ? t('invite.next', { count: data.qualified, next }) : t('invite.done')} />
-              <span className="jo-type-caption text-jo-muted">{t('invite.tiers', { tiers: RECRUITER_TIERS.join(', ') })}</span>
-            </div>
-          </section>
-        </>
-      )}
     </SettingsScreen>
   )
 }

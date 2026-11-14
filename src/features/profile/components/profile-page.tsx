@@ -10,6 +10,7 @@ import { formatNumber, useMyTitles } from '@/features/topic'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
+import { useTabParam } from '@/shared/use-tab-param'
 import { tierOf } from '@/shared/tier'
 import {
   Avatar,
@@ -82,7 +83,7 @@ export function ProfilePage() {
   const titles = useMyTitles()
   const data = me.data
   const src = useUserAvatar(data)
-  const [tab, setTab] = useState<Tab>('stats')
+  const [tab, setTab] = useTabParam<Tab>(['stats', 'badges', 'titles', 'history'], 'stats')
   const [ranksOpen, setRanksOpen] = useState(false)
   const [family, setFamily] = useState<BadgeFamilySummary>()
   const [familyOpen, setFamilyOpen] = useState(false)

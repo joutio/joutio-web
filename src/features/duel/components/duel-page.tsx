@@ -8,6 +8,7 @@ import {
   TRANSITION_GRACE_MS,
   type GameState,
 } from '@joutio/client-domain/game'
+import { countryFlag, countryName } from '@joutio/client-domain/geo'
 import { FlagIcon } from '@phosphor-icons/react'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
@@ -16,7 +17,7 @@ import { useMe, usePlayerIdentity } from '@/features/me'
 import { usePlayerProfile, type PlayTopic } from '@/features/play'
 import { useTopicOverview } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { readServerNow, useConnectionStore, useServerClock, useServerNow } from '@/lib/realtime'
+import { readServerNow, useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { useDeviceSettings } from '@/shared/device-settings'
 import { ROUTES } from '@/shared/routes'
@@ -28,16 +29,16 @@ import {
   DuelHeader,
   Logo,
   QuestionBlock,
-  ReconnectCountdown,
   RoundIntro,
   ScoreGauge,
   TimerBar,
-  tokens,
+  useGlobalBanner,
   VersusIntro,
   type AnswerCardProps,
   type RoundResult,
 } from '@/ui'
 import { useDuelArena } from '../hooks/use-duel-arena'
+import { useEquippedTitle } from '../hooks/use-equipped-title'
 import { useGameStream, usePrefetchQuestionImages } from '../hooks/use-game'
 import { gameService } from '../lib/game-service'
 import { DuelCancelled } from './duel-cancelled'
@@ -89,7 +90,7 @@ export function DuelPage() {
   const userId = me?.userId ?? ''
   const passed = (location.state as { topic?: PlayTopic } | null)?.topic
   const stream = useGameStream(gameId)
-  const connection = useConnectionStore((state) => state.status)
+  const connectionBanner = useGlobalBanner()
   const now = useServerNow(100)
   const game = stream.state
 
@@ -103,6 +104,8 @@ export function DuelPage() {
   const vsBot = game?.player2Type === 'BOT'
   const opponentProfile = usePlayerProfile(opponentId ?? '', Boolean(opponentId) && !vsBot)
   const myAvatar = useUserAvatar(me)
+  const myTitle = useEquippedTitle(me?.equippedTitle, language)
+  const opponentTitle = useEquippedTitle(vsBot ? null : opponentProfile.data?.equippedTitle, language)
   const opponentAvatar = useUserAvatar(vsBot ? null : opponentProfile.data)
   usePrefetchQuestionImages(game?.questionImageUrls ?? [])
 
@@ -166,6 +169,9 @@ export function DuelPage() {
   const myName = me?.pseudonym ?? ''
   const opponentName = (isPlayer1 ? game?.player2Name : game?.player1Name) ?? (vsBot ? t('duel.bot') : t('topic.opponent'))
   const myTier = me?.progression && !me.progression.provisional ? tierOf(me.progression.rating) : undefined
+  const opponentProgression = opponentProfile.data?.progression
+  const opponentTier = opponentProgression && !opponentProgression.provisional ? tierOf(opponentProgression.rating) : undefined
+  const countryLabel = (code?: string | null) => (code ? `${countryFlag(code)} ${countryName(code)}` : undefined)
 
   if (expired && game) return <DuelCancelled started={game.firstRoundAt !== null} topic={passed ?? (game.topicId ? { topicId: game.topicId, name: topic, category } : undefined)} />
 
@@ -179,7 +185,6 @@ export function DuelPage() {
     )
   }
 
-  const reconnecting = connection === 'reconnecting' || connection === 'offline'
   const roundNumber = arena.roundIndex + 1
   const versus = scene.kind === 'vs' || scene.kind === 'swoosh'
   const versusElapsed = scene.kind === 'vs' || scene.kind === 'swoosh' ? scene.elapsedMs : 0
@@ -211,6 +216,8 @@ export function DuelPage() {
 
   return (
     <Dark>
+      {/* Coupure réseau : la bande globale se pose en haut de l'arène (plus de `ReconnectCountdown`). */}
+      {connectionBanner && <div className="absolute inset-x-0 top-0 z-10">{connectionBanner}</div>}
       {inRound && (
         <div className="flex h-full flex-col pt-[var(--jo-safe-top,0px)]">
           <TimerBar
@@ -266,8 +273,17 @@ export function DuelPage() {
         <div className="absolute inset-0">
           <VersusIntro
             key="versus"
-            me={{ name: myName, src: myAvatar, tier: myTier, premium: identity.myPremium, detail: myTier && me?.progression ? `${tokens.tier[myTier].label} · ${me.progression.rating}` : undefined }}
-            opponent={{ name: opponentName, src: opponentAvatar, premium: !vsBot && identity.premium(opponentProfile.data, opponentId), detail: vsBot ? t('duel.training') : undefined }}
+            me={{ name: myName, src: myAvatar, tier: myTier, title: myTitle, premium: identity.myPremium, rating: me?.progression?.rating, country: countryLabel(me?.country) }}
+            opponent={{
+              name: opponentName,
+              src: opponentAvatar,
+              tier: opponentTier,
+              title: opponentTitle,
+              premium: !vsBot && identity.premium(opponentProfile.data, opponentId),
+              rating: opponentProgression?.rating,
+              country: countryLabel(opponentProfile.data?.country),
+              detail: vsBot ? t('duel.training') : undefined,
+            }}
             topic={topic}
             category={category}
             rounds={ROUNDS}
@@ -278,11 +294,6 @@ export function DuelPage() {
       {scene.kind === 'waiting' && (
         <div className="grid flex-1 place-items-center">
           <Logo size={32} className="animate-pulse" />
-        </div>
-      )}
-      {reconnecting && (
-        <div className="absolute inset-0 z-10">
-          <ReconnectCountdown seconds={inRound && !revealed ? seconds : 0} opponent={opponentName} round={roundNumber} total={ROUNDS} onAbandon={() => setAsking(true)} />
         </div>
       )}
       <Dialog

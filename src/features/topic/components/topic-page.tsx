@@ -7,6 +7,7 @@ import { useShare } from '@/features/share'
 import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
+import { useTabParam } from '@/shared/use-tab-param'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { Button, Dialog, EmptyState, IconButton, JoutioTabs, ParallaxScreen, Pill, ProgressBar, Screen, Skeleton, Stat, TabsScrollView, tokens } from '@/ui'
 import { useFollowTopic, useTopicLeaderboard, useTopicOverview } from '../hooks/use-topic'
@@ -59,7 +60,7 @@ export function TopicPage() {
   const overview = useTopicOverview(topicId)
   const board = useTopicLeaderboard(topicId)
   const follow = useFollowTopic(topicId)
-  const [tab, setTab] = useState<Tab>('games')
+  const [tab, setTab] = useTabParam<Tab>(['games', 'board', 'progress'], 'games')
   const [unfollowOpen, setUnfollowOpen] = useState(false)
   const [duelOpen, setDuelOpen] = useState(false)
 

@@ -1,5 +1,5 @@
 import { ArrowClockwiseIcon, CheckCircleIcon, InfoIcon, RobotIcon, SwordIcon, WifiSlashIcon, type Icon } from '@phosphor-icons/react'
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { Button } from './button'
 
@@ -76,9 +76,9 @@ export function Banner(props: BannerProps) {
   const IconComponent = icon ?? toneIcon
 
   return (
-    <div role="status" className={cn('relative w-full flex-none border-b bg-jo-bg', tone === 'training' ? 'border-jo-accent' : 'border-jo-border', props.className)}>
+    <div role="status" className={cn('jo-banner relative w-full flex-none border-b bg-jo-bg', tone === 'training' ? 'border-jo-accent' : 'border-jo-border', props.className)}>
       <div aria-hidden className={cn('absolute inset-0', tint)} />
-      <div className="relative flex min-h-14 items-center gap-3 pt-[calc(var(--jo-safe-top,0px)+8px)] pr-3 pb-2 pl-4">
+      <div className="relative min-h-0 overflow-hidden"><div className="jo-banner-content flex min-h-14 items-center gap-3 pt-[calc(var(--jo-safe-top,0px)+8px)] pr-3 pb-2 pl-4">
         <IconComponent size={22} weight={fill ? 'fill' : 'regular'} className={cn('flex-none', iconClass)} aria-hidden />
         <div className="grid min-w-0 flex-1">
           <strong className={cn('jo-type-callout truncate font-semibold', tone === 'training' ? 'text-jo-accent-ink' : 'text-jo-text')}>
@@ -97,7 +97,7 @@ export function Banner(props: BannerProps) {
             {action.label}
           </Button>
         )}
-      </div>
+      </div></div>
     </div>
   )
 }
@@ -105,8 +105,35 @@ export function Banner(props: BannerProps) {
 /**
  * Bande globale posée par le layout de l'app connectée (bannière de connexion) : `Screen` et `ParallaxScreen` la
  * lisent et la placent tout en haut. Elle l'emporte sur la `banner` propre à l'écran. Les écrans immersifs (duel,
- * matchmaking) ne la lisent pas : `ReconnectCountdown` s'en charge.
+ * matchmaking) la posent eux-mêmes en haut de l'écran (`ReconnectCountdown` n'existe plus, 2026-11-14).
  */
+export const BANNER_EXIT_MS = 800
+
+/**
+ * Garde la bannière montée le temps de sa sortie : quand `banner` devient vide, la dernière bande reste affichée
+ * `BANNER_EXIT_MS` en jouant le mouvement inverse de l'apparition (elle remonte, la barre du haut et le contenu
+ * remontent avec elle), puis disparaît. Mouvement réduit : disparition immédiate. `Screen` et `ParallaxScreen` s'en servent.
+ */
+export function useBannerPresence(banner: ReactNode): ReactNode {
+  const [last, setLast] = useState<ReactNode>(banner)
+  const present = Boolean(banner)
+  useEffect(() => {
+    if (present) {
+      setLast(banner)
+      return
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setLast(null)
+      return
+    }
+    const timer = window.setTimeout(() => setLast(null), BANNER_EXIT_MS)
+    return () => window.clearTimeout(timer)
+  }, [banner, present])
+  const shown = present ? banner : last
+  if (!shown) return null
+  return <div className={present ? 'flex-none' : 'jo-banner-leaving pointer-events-none flex-none'}>{shown}</div>
+}
+
 export const GlobalBannerContext = createContext<ReactNode>(null)
 
 export const useGlobalBanner = () => useContext(GlobalBannerContext)

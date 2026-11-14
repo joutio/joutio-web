@@ -2,17 +2,17 @@ import type { PeopleSort, PlayerCardView } from '@joutio/client-domain/api-types
 import { MagnifyingGlassIcon, SlidersHorizontalIcon, SwordIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMe, usePlayerIdentity, useReferral } from '@/features/me'
+import { useMe, usePlayerIdentity } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
 import { SettingsButton } from '@/features/settings'
 import { useChallengePlayer, useContacts } from '@/features/play'
 import { ChallengeTopicSheet, relativeSeen } from '@/features/player'
-import { useShare } from '@/features/share'
 import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { feedFooterProps } from '@/shared/paging'
 import { ROUTES } from '@/shared/routes'
+import { useTabParam } from '@/shared/use-tab-param'
 import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
 import { useDebounced } from '@/shared/use-debounced'
@@ -65,7 +65,7 @@ function ContactRow({ player, last, onChallenge }: { player: PlayerCardView; las
   )
 }
 
-function Players({ tab, query, sort, onChallenge, onInvite }: { tab: Tab; query: string; sort: PeopleSort; onChallenge: (player: PlayerCardView) => void; onInvite: () => void }) {
+function Players({ tab, query, sort, onChallenge }: { tab: Tab; query: string; sort: PeopleSort; onChallenge: (player: PlayerCardView) => void }) {
   const t = useT()
   const list = useContacts(tab, query, true, sort)
   const players = list.data?.pages.flatMap((page) => page.content) ?? []
@@ -90,11 +90,6 @@ function Players({ tab, query, sort, onChallenge, onInvite }: { tab: Tab; query:
         icon={UsersThreeIcon}
         title={t(tab === 'following' ? 'social.followingEmptyTitle' : 'social.followersEmptyTitle')}
         description={t(tab === 'following' ? 'social.followingEmptyText' : 'social.followersEmptyText')}
-        action={
-          <Button full onClick={onInvite}>
-            {t('social.invite')}
-          </Button>
-        }
       />
     )
   }
@@ -119,7 +114,7 @@ export function SocialPage() {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const me = useMe().data
-  const [tab, setTab] = useState<Tab>('following')
+  const [tab, setTab] = useTabParam<Tab>(['following', 'followers'], 'following')
   const [query, setQuery] = useState('')
   const search = useDebounced(query.trim(), 250)
   const [sort, setSort] = useState<PeopleSort>(DEFAULT_SORT)
@@ -134,17 +129,9 @@ export function SocialPage() {
     setChallengeKey((key) => key + 1)
     setChallengeOpen(true)
   }
-  /** Inviter un ami : lien de parrainage (`partage.md` § 6), feuille du système ou feuille « Partager ». */
-  const share = useShare()
-  const referral = useReferral().data
-  const invite = () =>
-    referral
-      ? share({ kind: 'invite', id: referral.code, title: t('settings.invite'), text: t('social.inviteText', { name: me?.pseudonym ?? '' }) })
-      : undefined
-
   const pages = (['following', 'followers'] as const).map((value) => ({
     value,
-    content: <Players tab={value} query={search} sort={sort} onChallenge={openChallenge} onInvite={invite} />,
+    content: <Players tab={value} query={search} sort={sort} onChallenge={openChallenge} />,
   }))
 
   return (

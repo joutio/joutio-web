@@ -28,7 +28,8 @@ export type RematchPromptProps = {
 
 /** Proposition de revanche, posée par l'écran au-dessus d'un voile. */
 export function RematchPrompt({ name, premium = false, tier, src, topic, seconds, total = 10, low = false, lowAt = 3, onAccept, onDecline, className }: RematchPromptProps) {
-  const percent = Math.min(100, Math.max(0, (seconds / total) * 100))
+  // L'anneau vise la fin de la seconde en cours (transition linéaire de 1 s) : il se vide en continu, sans saut au tic.
+  const percent = Math.min(100, Math.max(0, ((seconds - 1) / total) * 100))
   // Même règle que `TimerBar` et `DuelHeader`.
   const urgent = isTimerUrgent(seconds, low ? 'low' : 'running', lowAt)
   const ring = urgent ? 'var(--jo-wrong)' : 'var(--jo-accent)'
@@ -48,8 +49,8 @@ export function RematchPrompt({ name, premium = false, tier, src, topic, seconds
       <div className="relative grid size-[120px] place-items-center">
         <span
           aria-hidden
-          className="absolute inset-0 rounded-jo-full"
-          style={{ background: `conic-gradient(${ring} 0 ${percent}%, var(--jo-raised) ${percent}% 100%)` }}
+          className="jo-rematch-ring absolute inset-0 rounded-jo-full"
+          style={{ ['--jo-rematch-color' as string]: ring, ['--jo-rematch-percent' as string]: percent }}
         />
         <span aria-hidden className="absolute inset-[5px] rounded-jo-full bg-jo-surface" />
         <Avatar name={name} src={src} tier={tier} size="xxl" className="relative" />

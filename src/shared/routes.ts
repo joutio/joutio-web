@@ -3,7 +3,7 @@
  * s'adresse par son identifiant (`/topics/{topicId}`) jusqu'à ce qu'il en expose un.
  */
 /** Catégories des Réglages, une page chacune. */
-export type SettingsPage = 'account' | 'privacy' | 'notifications' | 'game' | 'display' | 'invite' | 'help'
+export type SettingsPage = 'account' | 'privacy' | 'notifications' | 'game' | 'display' | 'help'
 
 export const ROUTES = {
   home: '/',

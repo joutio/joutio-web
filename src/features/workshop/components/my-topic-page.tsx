@@ -318,7 +318,7 @@ export function MyTopicPage() {
                 onClick={() => (premium ? void navigate(ROUTES.topicTeam(topicId)) : askPremium('team'))}
               />
             )}
-            {manager && <ListRow icon={ShieldCheckIcon} label={t('workshop.moderation')} control="chevron" value={String(todoCount)} onClick={() => void navigate(ROUTES.topicModeration(topicId))} last />}
+            {manager && <ListRow icon={ShieldCheckIcon} label={t('workshop.moderation')} control="chevron" badge={todoCount} onClick={() => void navigate(ROUTES.topicModeration(topicId))} last />}
           </div>
         </section>
       </div>

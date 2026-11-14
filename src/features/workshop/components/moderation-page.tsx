@@ -1,10 +1,11 @@
 import { contentFor, MAX_REJECT, QUESTION_CHOICES, questionText, type QuestionEditorView, type ReportedQuestion } from '@joutio/client-domain/authoring'
 import { CheckCircleIcon, ProhibitIcon, WarningIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
+import { useTabParam } from '@/shared/use-tab-param'
 import { useBack } from '@/shared/use-back'
 import { Button, EmptyState, FeedFooter, Field, JoutioTabs, ListRow, MobileSheet, MobileTopBar, ModerationCard, Screen, Skeleton, StickyBar, TabsScrollView } from '@/ui'
 import { useModerateQuestion, useReportQueue, useTeam, useTopicQuestions } from '../hooks/use-workshop'
@@ -24,14 +25,13 @@ export function ModerationPage() {
   const navigate = useNavigate()
   const language = useLanguageStore((state) => state.language)
   const { topicId = '' } = useParams()
-  const [params] = useSearchParams()
   const back = useBack(ROUTES.myTopic(topicId))
   const me = useMe().data
   const questions = useTopicQuestions(topicId)
   const queue = useReportQueue(topicId)
   const team = useTeam(topicId)
   const moderate = useModerateQuestion(topicId)
-  const [tab, setTab] = useState<Tab>(params.get('tab') === 'reports' ? 'reports' : 'pending')
+  const [tab, setTab] = useTabParam<Tab>(['pending', 'reports'], 'pending')
   const [pendingPages, setPendingPages] = useState(1)
   const [reportPages, setReportPages] = useState(1)
   const [rejecting, setRejecting] = useState<string>()

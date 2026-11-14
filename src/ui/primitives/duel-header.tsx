@@ -40,12 +40,12 @@ function Side({ player, end }: { player: DuelPlayer; end?: boolean }) {
   )
 }
 
-/** Haut de l'arène. L'avancement est dans `QuestionBlock` ; `TimerBar` et `ScoreGauge` restent posés par l'écran. */
+/** Haut de l'arène. Le décompte réserve toujours 2 chiffres (`2ch`, police mono) : rien ne bouge de 10 à 9. L'avancement est dans `QuestionBlock` ; `TimerBar` et `ScoreGauge` restent posés par l'écran. */
 export function DuelHeader({ me, opponent, seconds, timerState, lowAt, className }: DuelHeaderProps) {
   return (
     <div className={cn('grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 pt-3 pb-2', className)}>
       <Side player={me} />
-      <span role="timer" aria-label={`${seconds} secondes restantes`} className={cn('jo-type-numeric-timer jo-transition', isTimerUrgent(seconds, timerState, lowAt) ? 'text-jo-wrong' : 'text-jo-text')}>
+      <span role="timer" aria-label={`${seconds} secondes restantes`} className={cn('jo-type-numeric-timer jo-transition inline-block min-w-[2ch] text-center', isTimerUrgent(seconds, timerState, lowAt) ? 'text-jo-wrong' : 'text-jo-text')}>
         {seconds}
       </span>
       <Side player={opponent} end />

@@ -1,8 +1,10 @@
 import { CategoryIcon } from '../brand/category-icon'
 import { cn } from '../lib/cn'
 import { categoryColor, tierColor } from '../lib/tokens'
-import type { CategoryCode, TierCode } from '../tokens.generated'
+import { tokens, type CategoryCode, type TierCode } from '../tokens.generated'
 import { Avatar } from './avatar'
+import { Badge } from './badge'
+import { Pill } from './pill'
 import { PlayerName } from './player-name'
 
 export type VersusPlayer = {
@@ -11,7 +13,11 @@ export type VersusPlayer = {
   src?: string
   /** Titre porté. */
   title?: string
-  /** Ligne mono, par exemple « Or · 867 · FR ». */
+  /** Elo : avec `tier`, pastille de palier « Or · 867 » comme sur Profil ; sans palier (provisoire), « Non classé ». */
+  rating?: number
+  /** Pays déjà formaté (« 🇫🇷 France »), en pastille neutre comme sur Profil. */
+  country?: string
+  /** Texte libre en pastille neutre (« Entraînement » contre le bot). */
   detail?: string
   premium?: boolean
 }
@@ -48,7 +54,18 @@ function Panel({ player, side, animated }: { player: VersusPlayer; side: 'top' |
         <div className="grid min-w-0 gap-1">
           <PlayerName as="span" name={player.name} premium={player.premium} badgeSize={22} className={cn('jo-type-title-2 font-bold', !top && 'justify-end')} />
           {player.title && <span className="jo-type-caption truncate text-jo-muted">{player.title}</span>}
-          {player.detail && <span className="jo-type-callout truncate font-mono text-jo-muted">{player.detail}</span>}
+          {(player.rating !== undefined || player.country || player.detail) && (
+            <div className={cn('flex flex-wrap gap-2', !top && 'justify-end')}>
+              {player.rating !== undefined &&
+                (player.tier ? (
+                  <Badge variant="tier" tier={player.tier}>{`${tokens.tier[player.tier].label} · ${player.rating}`}</Badge>
+                ) : (
+                  <Pill>Non classé</Pill>
+                ))}
+              {player.country && <Pill>{player.country}</Pill>}
+              {player.detail && <Pill>{player.detail}</Pill>}
+            </div>
+          )}
         </div>
       </div>
     </div>

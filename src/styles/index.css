@@ -81,6 +81,53 @@
   }
 }
 
+/* Bannière, même mouvement que l'« Annuler » du champ de recherche : elle arrive du haut (translation -100 % → 0, fondu)
+   pendant que sa hauteur se déplie, ce qui pousse la barre du haut et le contenu en dessous. */
+@keyframes jo-banner-in {
+  from {
+    grid-template-rows: 0fr;
+  }
+}
+
+@keyframes jo-banner-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+.jo-banner {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: jo-banner-in 800ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.jo-banner-content {
+  animation: jo-banner-slide 800ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+/* Sortie (`useBannerPresence`) : le mouvement inverse, vers le haut ; la barre et le contenu remontent avec elle. */
+@keyframes jo-banner-out {
+  to {
+    grid-template-rows: 0fr;
+  }
+}
+
+@keyframes jo-banner-slide-out {
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+.jo-banner-leaving > .jo-banner {
+  animation: jo-banner-out 800ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.jo-banner-leaving > .jo-banner .jo-banner-content {
+  animation: jo-banner-slide-out 800ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
 /* Toujours la place de deux scores à 3 chiffres : (6 × 0,6 em) + éclair 24 px + gaps 16 px. */
 .jo-result-score {
   font-size: min(48px, calc((100cqw - 40px) / 3.6));
@@ -220,6 +267,18 @@
 
 .jo-progress-fill {
   transition: width var(--jo-motion-base-duration) var(--jo-motion-base-easing);
+}
+
+.jo-rematch-ring {
+  /* Anneau de `RematchPrompt` : la part restante glisse en continu d'une seconde à l'autre (comme `TimerBar`). */
+  background: conic-gradient(var(--jo-rematch-color) 0 calc(var(--jo-rematch-percent) * 1%), var(--jo-raised) calc(var(--jo-rematch-percent) * 1%) 100%);
+  transition: --jo-rematch-percent 1000ms linear;
+}
+
+@property --jo-rematch-percent {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 100;
 }
 
 .jo-timer-fill {
@@ -603,6 +662,7 @@
   .jo-transition,
   .jo-progress-fill,
   .jo-timer-fill,
+  .jo-rematch-ring,
   .jo-gauge-fill,
   .jo-sheet-scrim,
   .jo-sheet-panel {
@@ -627,6 +687,8 @@
   .jo-question-rise,
   .jo-answer-in,
   .jo-drop,
+  .jo-banner,
+  .jo-banner-content,
   .jo-cascade,
   .jo-spin,
   .jo-premium-shine,

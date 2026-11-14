@@ -2,7 +2,7 @@ import { localizedQuestion, type GameRoundState, type GameState } from '@joutio/
 import { CheckIcon, FlagIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { AnswerTimingRow, Button, QuestionBlock, RoundReviewTabs, SwipeHint, TabsScrollView, type AnswerCardProps, type ReviewAnswer } from '@/ui'
+import { AnswerTimingRow, Button, QuestionBlock, RoundReviewTabs, TabsScrollView, type AnswerCardProps, type ReviewAnswer } from '@/ui'
 import { reviewRoundsOf } from '../lib/review'
 
 const answerOf = (round: GameRoundState, playerId: string | null): ReviewAnswer => {
@@ -53,7 +53,6 @@ export type DuelReviewProps = {
   myName: string
   opponentName: string
   /** Remonte au résultat (miroir du bandeau « Détails du duel »). */
-  onBack: () => void
   /** Manches déjà signalées (indices). */
   reported: readonly number[]
   /** Ouvre le signalement de la manche affichée : la feuille vit hors du pager, qui est translaté. */
@@ -67,7 +66,7 @@ export type DuelReviewProps = {
  * flèches et points, « Signaler la question » (aussi à l'entraînement). Montée avec le résultat : la manche consultée
  * est gardée d'une page à l'autre et les images sont préchargées.
  */
-export function DuelReview({ game, me, myName, opponentName, onBack, reported, onReport }: DuelReviewProps) {
+export function DuelReview({ game, me, myName, opponentName, reported, onReport }: DuelReviewProps) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const rounds = useMemo(() => reviewRoundsOf(game), [game])
@@ -98,7 +97,6 @@ export function DuelReview({ game, me, myName, opponentName, onBack, reported, o
 
   return (
     <div className="flex h-full flex-col gap-3 pb-[calc(var(--jo-safe-bottom,0px)+8px)]">
-      <SwipeHint direction="down" label={t('result.backToResult')} onClick={onBack} className="flex-none pt-1 pb-1" />
       <div className="grid flex-none gap-3 px-4">
         <h2 className="jo-type-headline m-0">{t('result.details')}</h2>
         <RoundReviewTabs rounds={tabs} value={index} onChange={setIndex} />

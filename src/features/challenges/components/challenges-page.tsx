@@ -1,5 +1,4 @@
 import type { ChallengeView } from '@joutio/client-domain/api-types'
-import { planLimits } from '@joutio/client-domain/premium'
 import type { RoomView } from '@joutio/client-domain/rooms'
 import { useQueryClient } from '@tanstack/react-query'
 import { DoorOpenIcon, LightningIcon, WarningCircleIcon } from '@phosphor-icons/react'
@@ -176,11 +175,7 @@ export function ChallengesPage() {
     <Screen
       header={
         <>
-          <MobileTopBar title={t('nav.challenges')} subtitle={[
-              t(sent.length > 1 ? 'challenges.quotaMany' : 'challenges.quotaOne', { count: sent.length, limit: planLimits(me.data).pendingChallenges }),
-              t(salons.length > 1 ? 'challenges.roomsQuotaMany' : 'challenges.roomsQuotaOne', { count: salons.length, limit: planLimits(me.data).openRooms }),
-            ].join('\n')}
-            right={
+          <MobileTopBar title={t('nav.challenges')} right={
               <>
                 <NotificationBell />
                 <SettingsButton from="challenges" />

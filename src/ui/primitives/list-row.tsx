@@ -11,6 +11,8 @@ export type ListRowProps = {
   leading?: ReactNode
   control?: 'chevron' | 'toggle' | 'check' | 'radio' | 'value' | 'none'
   value?: string
+  /** Traitements en attente, avec `chevron` : pastille `accent` (`9+` au-delà de 9), comme `TopicRow`. Absente à 0. */
+  badge?: number
   on?: boolean
   destructive?: boolean
   strong?: boolean
@@ -40,6 +42,7 @@ export function ListRow({
   leading,
   control = 'chevron',
   value,
+  badge,
   on = false,
   destructive = false,
   strong = false,
@@ -69,6 +72,12 @@ export function ListRow({
       {control === 'chevron' && (
         <span className="jo-type-body flex items-center gap-1 whitespace-nowrap text-jo-muted">
           {value}
+          {badge !== undefined && badge > 0 && (
+            <span className="jo-type-caption grid h-5 min-w-5 flex-none place-items-center rounded-jo-full bg-jo-accent px-1.5 font-semibold text-jo-on-accent">
+              {badge > 9 ? '9+' : badge}
+              <span className="sr-only"> à traiter</span>
+            </span>
+          )}
           <CaretRightIcon size={14} aria-hidden />
         </span>
       )}

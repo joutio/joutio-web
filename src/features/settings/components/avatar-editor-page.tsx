@@ -5,6 +5,7 @@ import { showPremium } from '@/features/premium'
 import { useMyBadges, useMyRewards } from '@/features/profile'
 import { formatNumber } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
+import { useTabParam } from '@/shared/use-tab-param'
 import { loadAvatarStyle, parseAvatarOptions, previewAvatar, type AvatarDraft } from '@/shared/avatar'
 import { t as avatarLabel } from '@/shared/avatar/i18n'
 import { defaultOptionsFor, getAvatarStyle, humanizeVariant, isAvatarStyleLoaded, NONE_LABEL_KEY, type AvatarStyleSection } from '@/shared/avatar/styles'
@@ -57,7 +58,7 @@ export function AvatarEditorPage() {
   const save = useUpdateMe('avatarOptions')
   const [initial] = useState(() => parseAvatarOptions(me?.avatarOptions))
   const [draft, setDraft] = useState<AvatarDraft>(initial)
-  const [tab, setTab] = useState<string>('style')
+  const [tab, setTab] = useTabParam<string>(null, 'style')
   const [, setLoaded] = useState(0)
   const userId = me?.userId ?? ''
 

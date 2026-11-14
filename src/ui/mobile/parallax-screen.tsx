@@ -2,7 +2,7 @@ import { CaretLeftIcon } from '@phosphor-icons/react'
 import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { PremiumBadge } from '../brand/premium-badge'
-import { useGlobalBanner } from '../primitives/banner'
+import { useBannerPresence, useGlobalBanner } from '../primitives/banner'
 import { PlayerName } from '../primitives/player-name'
 import { IconButton } from '../primitives/icon-button'
 
@@ -57,7 +57,8 @@ export type ParallaxScreenProps = {
  * reste accroché dessous. `right` garde les mêmes boutons sur l'image et sur la barre. Reprend le « Details Header » de sticky-parallax-header.
  */
 export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium = false, eyebrow, centered = false, barTitleStart = false, back = true, onBack, right, intro, sticky, floating, bottomBar, bottomNav, overlay, banner: own, className, children }: ParallaxScreenProps) {
-  const banner = useGlobalBanner() ?? own
+  const global = useGlobalBanner()
+  const banner = useBannerPresence(global ?? own)
   const root = useRef<HTMLDivElement>(null)
   const main = useRef<HTMLElement>(null)
   const stickyBlock = useRef<HTMLDivElement>(null)

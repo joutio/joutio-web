@@ -1,7 +1,7 @@
 import type { TopicCardView } from '@joutio/client-domain/api-types'
 import { BellIcon, CompassIcon, FireIcon, GearSixIcon, HeartIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useUnreadCount } from '@/features/notifications'
 import { useMyActivity } from '@/features/profile'
@@ -11,6 +11,7 @@ import { PAGE_SIZE, useTopicFacets, useTopics, type TopicFilters } from '@/featu
 import { useT } from '@/lib/i18n'
 import { feedFooterProps } from '@/shared/paging'
 import { ROUTES } from '@/shared/routes'
+import { useTabParam } from '@/shared/use-tab-param'
 import { tierOf } from '@/shared/tier'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { useStickyAnchor } from '@/shared/use-sticky-anchor'
@@ -44,7 +45,6 @@ const LANDSCAPE_WIDTH = 240
 
 type Tab = 'for-you' | 'followed' | 'creation'
 const TABS: readonly Tab[] = ['for-you', 'followed', 'creation']
-const isTab = (value: string | null): value is Tab => TABS.includes(value as Tab)
 
 const imageOf = (topic: TopicCardView) => topic.imageUrl ?? undefined
 
@@ -206,17 +206,14 @@ export function HomePage() {
   const home = useHome()
   const unread = useUnreadCount().data?.count ?? 0
   const streak = useMyActivity().data?.currentStreak ?? 0
-  const [params, setParams] = useSearchParams()
-  const requested = params.get('tab')
-  const [tab, setTab] = useState<Tab>(isTab(requested) ? requested : 'for-you')
+  const [tab, setTab] = useTabParam(TABS, 'for-you')
   const followed = tab === 'followed'
   const creation = tab === 'creation'
   const [stuck, setStuck] = useState(false)
   const { anchor, toThreshold, toTop } = useStickyAnchor()
   const changeTab = (next: Tab) => {
-    setTab(next)
     // L'onglet est dans l'URL (`/?tab=creation`) : le retour de l'atelier rouvre Création.
-    setParams(next === 'for-you' ? {} : { tab: next }, { replace: true })
+    setTab(next)
     toThreshold()
   }
 

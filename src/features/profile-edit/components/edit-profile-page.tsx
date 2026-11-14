@@ -1,5 +1,5 @@
 import { countryFlag, countryName } from '@joutio/client-domain/geo'
-import { CameraIcon, GlobeHemisphereWestIcon, PencilSimpleIcon, TrashIcon, WarningIcon } from '@phosphor-icons/react'
+import { CameraIcon, GlobeHemisphereWestIcon, TrashIcon, WarningIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { useBlocker, useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
@@ -12,7 +12,7 @@ import { showDialog } from '@/shared/dialog'
 import { isAcceptedImage, uploadImage } from '@/shared/media'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
-import { Avatar, Button, Field, IconButton, ListRow, MobileTopBar, Screen } from '@/ui'
+import { Avatar, Field, IconButton, ListRow, MobileTopBar, Screen } from '@/ui'
 
 interface Draft {
   pseudonym: string
@@ -138,14 +138,9 @@ export function EditProfilePage() {
               }}
             />
           </div>
-          <div className="-mt-10 flex items-end justify-between gap-3 px-4">
-            <span className="rounded-full ring-4 ring-jo-bg">
-              <Avatar name={draft.pseudonym} src={src} size="xl" />
-            </span>
-            <Button variant="tinted" size="S" icon={PencilSimpleIcon} onClick={() => void navigate(ROUTES.avatar)}>
-              {t('editProfile.editAvatar')}
-            </Button>
-          </div>
+        </div>
+        <div className="mx-4 overflow-hidden rounded-jo-lg bg-jo-surface">
+          <ListRow leading={<Avatar name={draft.pseudonym} src={src} size="md" decorative />} label={t('editProfile.editAvatar')} control="chevron" onClick={() => void navigate(ROUTES.avatar)} last />
         </div>
         <div className="grid gap-4 px-4">
           <Field

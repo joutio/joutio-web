@@ -2,7 +2,6 @@ import {
   BellIcon,
   CrownSimpleIcon,
   GameControllerIcon,
-  GiftIcon,
   LifebuoyIcon,
   PaletteIcon,
   ShieldCheckIcon,
@@ -59,9 +58,6 @@ export function SettingsPage() {
         <ListRow icon={BellIcon} label={t('home.notifications')} control="chevron" onClick={open('notifications')} />
         <ListRow icon={GameControllerIcon} label={t('settings.game')} sub={t('settings.gameSub')} control="chevron" onClick={open('game')} />
         <ListRow icon={PaletteIcon} label={t('settings.display')} control="chevron" onClick={open('display')} last />
-      </Group>
-      <Group>
-        <ListRow icon={GiftIcon} label={t('settings.invite')} sub={t('settings.inviteSub')} control="chevron" onClick={open('invite')} last />
       </Group>
       <Group>
         <ListRow icon={LifebuoyIcon} label={t('settings.help')} control="chevron" onClick={open('help')} last />

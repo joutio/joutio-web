@@ -204,7 +204,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           : current?.kind === 'rank'
             ? t('result.shareRank', { tier: tokens.tier[current.tier].label })
             : t('result.shareTitle', { topic: topic.name })
-      // Lien universel du sujet, avec le code de parrainage du joueur (`partage.md` § 4).
+      // Lien universel du sujet (`partage.md` § 4).
       shareLink({ kind: 'topic', id: topic.topicId, title: t('profile.share'), text })
     }
     const slideOf = (unlock: Unlock): ReactNode => {
@@ -383,7 +383,6 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
             me={userId}
             myName={myName}
             opponentName={opponentName}
-            onBack={() => setPage(0)}
             reported={reportedRounds}
             onReport={(round, index, count) => setQuestionReport({ round, index, count })}
           />

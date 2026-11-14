@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn'
-import { useGlobalBanner } from '../primitives/banner'
+import { useBannerPresence, useGlobalBanner } from '../primitives/banner'
 
 export type ScreenProps = {
   /**
@@ -23,7 +23,8 @@ export type ScreenProps = {
  * Les safe areas viennent de `--jo-safe-top` et `--jo-safe-bottom`, à 0 par défaut.
  */
 export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, className, children }: ScreenProps) {
-  const banner = useGlobalBanner() ?? own
+  const global = useGlobalBanner()
+  const banner = useBannerPresence(global ?? own)
   return (
     <div data-jo-screen className={cn('relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', className)}>
       <div className={cn('relative flex-none', !banner && 'pt-[var(--jo-safe-top,0px)]')}>
