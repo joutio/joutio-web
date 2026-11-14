@@ -1,3 +1,9 @@
+## [2.11.0](https://github.com/joutio/joutio-web/compare/v2.10.0...v2.11.0) (2026-11-14)
+
+### Features
+
+* **web:** align header actions, duel details and Défis quotas with the design ([80488ee](https://github.com/joutio/joutio-web/commit/80488ee5ba746943eeb18fd16445308ab5a2a76e))
+
 ## [2.10.0](https://github.com/joutio/joutio-web/compare/v2.9.0...v2.10.0) (2026-11-13)
 
 ### Features
