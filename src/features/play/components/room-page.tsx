@@ -13,6 +13,7 @@ import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
 import { Button, EmptyState, MobileTopBar, Pill, PreparationSteps, RoomPlayers, Screen, type RoomPlayer } from '@/ui'
 import { useCloseRoom, usePlayerProfile, useRoom, useRoomPresence, useWizzRoom, type PlayTopic } from '../hooks/use-play'
+import { countdownOf } from '../lib/countdown'
 
 const TERMINAL: Partial<Record<RoomStatus, { title: MessageKey; text: MessageKey }>> = {
   CANCELLED: { title: 'room.cancelledTitle', text: 'room.cancelledText' },
@@ -33,14 +34,6 @@ const STEPS: readonly { id: string; label: MessageKey }[] = [
   { id: 'questions', label: 'room.stepQuestions' },
   { id: 'launch', label: 'room.stepLaunch' },
 ]
-
-function countdownOf(expiresAt: string | null, now: number) {
-  if (!expiresAt) return null
-  const left = Math.max(0, Math.round((Date.parse(expiresAt) - now) / 1000))
-  // Au-delà d'une heure (salon de 24 h) : heures et minutes ; dans la dernière heure : minutes et secondes.
-  if (left >= 3600) return `${Math.floor(left / 3600)} h ${String(Math.floor((left % 3600) / 60)).padStart(2, '0')}`
-  return `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`
-}
 
 function Page({ onBack, children }: { onBack: () => void; children: ReactNode }) {
   const t = useT()
