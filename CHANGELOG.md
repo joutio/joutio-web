@@ -1,3 +1,16 @@
+## [2.14.0](https://github.com/joutio/joutio-web/compare/v2.13.2...v2.14.0) (2026-11-14)
+
+### Features
+
+* **web:** avatar editor with one tab per part, fix crash before styles load ([5c71ce9](https://github.com/joutio/joutio-web/commit/5c71ce95e7dbac74c154736fed506b62455e0650))
+* **web:** challenges tabs instead of chips, notifications open the right tab ([88e9197](https://github.com/joutio/joutio-web/commit/88e9197b234fc5de767d348df9b1fb28b23fdc09))
+* **web:** compact result on short screens, ring labels never off-screen ([8e89f99](https://github.com/joutio/joutio-web/commit/8e89f99b0ac1f2d1163541eca2b9dd64f557daf7))
+* **web:** result without the next-rank line under the Elo ([62979b3](https://github.com/joutio/joutio-web/commit/62979b3b8c92055bf0513d7b56abdadc867027da))
+
+### Bug Fixes
+
+* **web:** next-rank line hidden only on the compact result ([f234601](https://github.com/joutio/joutio-web/commit/f234601df721402975d9b8ace403a8632c84ac79))
+
 ## [2.13.2](https://github.com/joutio/joutio-web/compare/v2.13.1...v2.13.2) (2026-11-14)
 
 ### Bug Fixes
