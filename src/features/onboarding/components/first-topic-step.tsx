@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { LightningIcon, SwordIcon } from '@phosphor-icons/react'
+import { useStartTraining } from '@/features/play'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { trackEvent } from '@/lib/telemetry'
 import { toCategoryCode, topicName } from '@/shared/topics'
@@ -10,8 +11,8 @@ import { Steps } from './steps'
 
 /**
  * Premier thème : aperçu du thème choisi, puis la liste radio des recommandations. Titre et aperçu restent fixes, seule
- * la liste défile ; un dégradé signale la suite. Le duel contre un bot arrive avec l'écran Duel : en attendant, les
- * deux actions terminent l'onboarding et ouvrent l'Accueil.
+ * la liste défile ; un dégradé signale la suite. « Explorer l'accueil » termine l'onboarding ; « Découvrir le duel » le
+ * termine puis lance une partie contre un robot facile sur le thème choisi (salon bot, comme l'entraînement).
  */
 export function FirstTopicStep() {
   const t = useT()
@@ -19,6 +20,7 @@ export function FirstTopicStep() {
   const universes = useOnboardingStore((state) => state.universes)
   const recommendations = useRecommendations(universes)
   const complete = useCompleteOnboarding()
+  const training = useStartTraining()
   const topics = recommendations.data ?? []
   const [pickedId, setPickedId] = useState<string | null>(null)
   const picked = topics.find((topic) => topic.topicId === pickedId) ?? topics[0]
@@ -32,6 +34,17 @@ export function FirstTopicStep() {
   useLayoutEffect(updateMore, [topics.length])
 
   const finish = () => complete.mutate(undefined, { onSuccess: () => trackEvent('onboarding_completed') })
+  // Onboarding terminé d'abord (l'app connectée s'ouvre), puis le salon bot du thème choisi, difficulté facile.
+  const play = async () => {
+    if (!picked) return
+    try {
+      await complete.mutateAsync()
+      trackEvent('onboarding_completed')
+    } catch {
+      return
+    }
+    training.mutate({ topic: { topicId: picked.topicId, name: topicName(picked.names, language), category: picked.category }, difficulty: 'EASY' })
+  }
 
   return (
     <Steps
@@ -45,7 +58,7 @@ export function FirstTopicStep() {
       footer={
         <div className="grid gap-2">
           {complete.isError && <Notice tone="error" title={t('onboarding.first.completeError')} message={t('common.checkConnection')} />}
-          <Button full icon={LightningIcon} disabled={!picked} loading={complete.isPending} onClick={finish}>
+          <Button full icon={LightningIcon} disabled={!picked} loading={complete.isPending || training.isPending} onClick={() => void play()}>
             {t('onboarding.first.play')}
           </Button>
         </div>

@@ -135,7 +135,7 @@ export function LeaderboardPage() {
               <Skeleton key={index} shape="row" />
             ))}
           </>
-        ) : board.isError && !board.data ? (
+        ) : board.isError && !board.isFetchNextPageError ? (
           <EmptyState
             icon={WarningCircleIcon}
             title={t('topic.boardError')}

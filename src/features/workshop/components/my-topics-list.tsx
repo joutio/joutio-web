@@ -109,7 +109,7 @@ export function MyTopicsList() {
             <Skeleton key={index} shape="row" className="h-16" />
           ))}
         </div>
-      ) : topics.isError && !topics.data ? (
+      ) : topics.isError ? (
         <EmptyState
           className="pt-8"
           icon={WarningCircleIcon}

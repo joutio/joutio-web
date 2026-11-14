@@ -67,7 +67,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   if (!response.ok) {
     const error = await toApiError(response)
     if (error.statusCode === 403 && error.type === PROBLEM.accountSuspended && !options.anonymous) {
-      await sessionGateway.end('suspended')
+      await sessionGateway.end('suspended', error.suspendedUntil, error.suspensionReason)
     }
     throw error
   }

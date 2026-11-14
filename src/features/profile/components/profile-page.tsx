@@ -99,7 +99,7 @@ export function ProfilePage() {
     share({ kind: 'profile', id: data.userId, title: t('share.profileTitle'), text: t('share.profileText') })
   }
 
-  if (me.isError && !data) {
+  if (me.isError) {
     return (
       <ParallaxScreen back={false} title={t('nav.profile')} bottomNav={<TabNav active="profile" />}>
         <EmptyState

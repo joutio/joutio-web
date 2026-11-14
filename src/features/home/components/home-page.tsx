@@ -222,7 +222,8 @@ export function HomePage() {
   const rating = me.data?.progression?.rating
   const tier = rating !== undefined ? tierOf(rating) : undefined
   const data = home.data
-  const empty = !creation && data && (followed ? data.followedTopics.length === 0 : data.trendingTopics.length === 0 && data.newTopics.length === 0)
+  const failed = home.isError
+  const empty = !creation && !failed && data && (followed ? data.followedTopics.length === 0 : data.trendingTopics.length === 0 && data.newTopics.length === 0)
   const hasInterests = (me.data?.interests ?? []).length > 0
   const explore = () => void navigate(ROUTES.topics)
 
@@ -297,7 +298,7 @@ export function HomePage() {
             <MyTopicsList />
           </div>
         )}
-        {!creation && home.isError && !data && (
+        {!creation && failed && (
           <EmptyState
             className="flex-1"
             icon={WarningCircleIcon}
@@ -310,7 +311,7 @@ export function HomePage() {
             }
           />
         )}
-        {!creation && (home.isPending || (data && !empty)) && (
+        {!creation && !failed && (home.isPending || (data && !empty)) && (
           <div className="grid gap-8 pt-4 pb-8">
             {home.isPending && <Loading />}
             {data &&

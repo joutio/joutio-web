@@ -21,10 +21,14 @@ type SessionState = {
   tokens: TokenSet | null
   claims: SessionClaims | null
   endReason: SessionEndReason | null
+  /** Suspension : fin annoncée par le serveur (ISO) ; `null`, définitive ou inconnue. */
+  suspendedUntil: string | null
+  /** Suspension : code du motif annoncé par le serveur. */
+  suspensionReason: string | null
 }
 
 /** Source unique et réactive de la session : lisible dans React (sélecteurs) comme hors React (`getState()`). */
-export const useSessionStore = create<SessionState>(() => ({ status: 'loading', tokens: null, claims: null, endReason: null }))
+export const useSessionStore = create<SessionState>(() => ({ status: 'loading', tokens: null, claims: null, endReason: null, suspendedUntil: null, suspensionReason: null }))
 
 /** Charge utile d'un JWT, sans vérification de signature (le BFF vérifie ; le client ne fait que lire). */
 export function decodeJwt(token: string): Record<string, unknown> | null {

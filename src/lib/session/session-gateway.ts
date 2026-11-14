@@ -8,7 +8,7 @@ export interface SessionGateway {
   getAccessToken: () => string | null
   /** Renouvelle (single-flight). `null` : pas de jeton utilisable (échec transitoire ou session close). */
   refresh: () => Promise<string | null>
-  end: (reason: SessionEndReason) => Promise<void>
+  end: (reason: SessionEndReason, suspendedUntil?: string, suspensionReason?: string) => Promise<void>
   subscribe: (listener: () => void) => () => void
 }
 
@@ -26,6 +26,6 @@ export const registerSessionGateway = (next: SessionGateway) => {
 export const sessionGateway: SessionGateway = {
   getAccessToken: () => gateway.getAccessToken(),
   refresh: () => gateway.refresh(),
-  end: (reason) => gateway.end(reason),
+  end: (reason, suspendedUntil, suspensionReason) => gateway.end(reason, suspendedUntil, suspensionReason),
   subscribe: (listener) => gateway.subscribe(listener),
 }

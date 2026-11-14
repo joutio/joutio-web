@@ -195,7 +195,7 @@ export function PlayerPage() {
           <Skeleton shape="row" />
           <Skeleton shape="card" />
         </div>
-      ) : profile.isError && !data ? (
+      ) : profile.isError ? (
         <EmptyState
           className="pt-16"
           icon={WarningCircleIcon}

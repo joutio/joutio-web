@@ -36,7 +36,7 @@ export function PlayedTopicsPage() {
             <Skeleton shape="row" />
             <Skeleton shape="row" />
           </>
-        ) : topics.isError && !topics.data ? (
+        ) : topics.isError ? (
           <EmptyState
             icon={WarningCircleIcon}
             title={t('profile.topicsError')}

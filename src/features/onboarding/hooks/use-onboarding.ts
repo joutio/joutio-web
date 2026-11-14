@@ -18,7 +18,7 @@ export function useLoginWithCode() {
     },
     // Compte suspendu : identity refuse le code (`403`), l'onboarding affiche l'écran dédié.
     onError: (error) => {
-      if (isApiError(error) && error.statusCode === 403) void endSession('suspended')
+      if (isApiError(error) && error.statusCode === 403) void endSession('suspended', error.suspendedUntil, error.suspensionReason)
     },
   })
 }

@@ -13,8 +13,12 @@ export class ApiRequestError extends Error implements ApiError {
   readonly detail?: string
   readonly type?: string
   readonly context?: Record<string, unknown>
+  /** `403 accountSuspended` : fin de la suspension (ISO) ; absent, la suspension est définitive. */
+  readonly suspendedUntil?: string
+  /** `403 accountSuspended` : code du motif (`HARASSMENT`, `CHEATING`…), jamais la note de modération. */
+  readonly suspensionReason?: string
 
-  constructor(error: ApiError) {
+  constructor(error: ApiError & { suspendedUntil?: string; suspensionReason?: string }) {
     super(error.message)
     this.name = 'ApiRequestError'
     this.statusCode = error.statusCode
@@ -22,6 +26,8 @@ export class ApiRequestError extends Error implements ApiError {
     this.detail = error.detail
     this.type = error.type
     this.context = error.context
+    this.suspendedUntil = error.suspendedUntil
+    this.suspensionReason = error.suspensionReason
   }
 
   /** Erreur réseau (pas de réponse) ou serveur : rejouable. Un 429 est une limite du plan, pas un incident. */
@@ -34,7 +40,7 @@ export const isApiError = (error: unknown): error is ApiRequestError => error in
 
 /** Lit un ProblemDetail (`application/problem+json`) ou retombe sur le statut HTTP. */
 export async function toApiError(response: Response): Promise<ApiRequestError> {
-  let body: Partial<{ title: string; detail: string; type: string; message: string; context: Record<string, unknown> }> = {}
+  let body: Partial<{ title: string; detail: string; type: string; message: string; context: Record<string, unknown>; suspendedUntil: string; suspensionReason: string }> = {}
   try {
     const text = await response.text()
     if (text) body = JSON.parse(text) as typeof body
@@ -48,5 +54,7 @@ export async function toApiError(response: Response): Promise<ApiRequestError> {
     detail: body.detail,
     type: body.type,
     context: body.context,
+    suspendedUntil: body.suspendedUntil,
+    suspensionReason: body.suspensionReason,
   })
 }

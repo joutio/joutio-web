@@ -84,7 +84,7 @@ export function TitlesPage() {
     setPages(1)
   }
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.me, { replace: true }))
-  const showHeader = all.length > 0 && !(titles.isError && !titles.data)
+  const showHeader = all.length > 0 && !titles.isError
 
   return (
     <Screen
@@ -175,7 +175,7 @@ export function TitlesPage() {
       <div className="grid gap-4 px-4 pt-1 pb-8">
         {titles.isPending ? (
           [0, 1, 2, 3].map((index) => <Skeleton key={index} shape="row" className="h-16" />)
-        ) : titles.isError && !titles.data ? (
+        ) : titles.isError ? (
           <EmptyState
             icon={WarningCircleIcon}
             title={t('profile.titlesError')}

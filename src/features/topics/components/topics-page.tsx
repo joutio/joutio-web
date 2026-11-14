@@ -166,7 +166,9 @@ export function TopicsPage() {
   const columns = useGridColumns(container)
   const list = useTopics({ query: search, categories: selected, sort, followed: scope === 'FOLLOWED', mine: scope === 'MINE', size: pageSizeFor(columns) })
   const facets = useTopicFacets(search, scope)
-  const topics = list.data?.pages.flatMap((page) => page.topics) ?? []
+  // Un échec de chargement ou de rafraîchissement remplace la grille ; seul l'échec de la page suivante la garde.
+  const failed = list.isError && !list.isFetchNextPageError
+  const topics = failed ? [] : (list.data?.pages.flatMap((page) => page.topics) ?? [])
   const count = facets.data
     ? selected.length === 0
       ? facets.data.total
@@ -249,13 +251,13 @@ export function TopicsPage() {
           ))}
         </div>
         <div className="flex items-center justify-between gap-2 px-4 pt-2 pb-3">
-          <span className="jo-type-callout text-jo-muted">{countLabel(list.isError || empty ? 0 : count)}</span>
+          <span className="jo-type-callout text-jo-muted">{countLabel(failed || empty ? 0 : count)}</span>
           <Chip icon={ArrowsDownUpIcon} className="flex-none" onClick={() => setSheetOpen(true)}>
             {sortLabel}
           </Chip>
         </div>
         {list.isPending && <Loading columns={columns} />}
-        {list.isError && !list.data && (
+        {failed && (
           <EmptyState
             className="flex-1"
             icon={WarningCircleIcon}

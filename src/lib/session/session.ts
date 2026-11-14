@@ -79,15 +79,15 @@ export function clearSession(): void {
 }
 
 /** Fin de session subie, avec sa raison. */
-export async function endSession(reason: SessionEndReason): Promise<void> {
-  useSessionStore.setState({ endReason: reason })
+export async function endSession(reason: SessionEndReason, suspendedUntil?: string, suspensionReason?: string): Promise<void> {
+  useSessionStore.setState({ endReason: reason, suspendedUntil: suspendedUntil ?? null, suspensionReason: suspensionReason ?? null })
   clearSession()
   return Promise.resolve()
 }
 
 /** Le joueur a pris connaissance de la fin de session : l'onboarding repasse à la connexion. */
 export function dismissEndReason(): void {
-  useSessionStore.setState({ endReason: null })
+  useSessionStore.setState({ endReason: null, suspendedUntil: null, suspensionReason: null })
 }
 
 /** Restaure la session au démarrage ; renouvelle si l'access token est expiré. */

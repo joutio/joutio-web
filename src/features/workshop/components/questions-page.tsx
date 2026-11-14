@@ -155,7 +155,7 @@ export function QuestionsPage() {
       <div className="grid gap-3 px-4 pt-1 pb-8">
         {questions.isPending ? (
           [0, 1, 2, 3].map((index) => <Skeleton key={index} shape="row" />)
-        ) : questions.isError && !questions.data ? (
+        ) : questions.isError ? (
           <EmptyState
             icon={WarningCircleIcon}
             title={t('workshop.questionsError')}

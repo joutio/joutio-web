@@ -157,7 +157,7 @@ export function BadgesTab({ onOpen }: { onOpen: (family: BadgeFamilySummary) => 
         <Rows />
       </div>
     )
-  if (badges.isError && !badges.data)
+  if (badges.isError)
     return <ErrorState title={t('profile.badgesError')} retrying={badges.isRefetching} onRetry={() => void badges.refetch()} />
   if ((badges.data as BadgeCollectionView).earnedCount === 0 && families.every((family) => family.progress === 0))
     return <EmptyState icon={MedalIcon} title={t('profile.noBadgesTitle')} description={t('profile.noBadgesText')} />
@@ -238,7 +238,7 @@ export function HistoryTab() {
       />
       {games.isPending ? (
         <Rows />
-      ) : games.isError && !games.data ? (
+      ) : games.isError ? (
         <ErrorState title={t('history.error')} retrying={games.isRefetching} onRetry={() => void games.refetch()} />
       ) : (games.data?.content.length ?? 0) === 0 ? (
         <EmptyState icon={ClockCounterClockwiseIcon} title={t('history.empty')} description={t('history.emptyText')} />

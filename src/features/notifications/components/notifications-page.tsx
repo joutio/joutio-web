@@ -60,7 +60,7 @@ export function NotificationsPage() {
   const removeAll = useDeleteAllNotifications()
   const challenges = useQuery<ChallengeView[]>({ queryKey: queryKeys.challenges, enabled: false }).data
   const items = inbox.data?.pages.flatMap((page) => page.content) ?? []
-  const failed = inbox.isError && !inbox.data
+  const failed = inbox.isError
   const anyUnread = items.some(isUnread)
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.home, { replace: true }))
 
@@ -110,7 +110,7 @@ export function NotificationsPage() {
         />
       )}
       {inbox.isSuccess && items.length === 0 && <EmptyState className="pt-16" icon={BellIcon} title={t('notifications.emptyTitle')} description={t('notifications.emptyText')} />}
-      {items.length > 0 && (
+      {!failed && items.length > 0 && (
         <div className="grid gap-6 px-4 pt-1 pb-8">
           {groupByDay(items, challenges).map(({ day, items: group }) => (
             <section key={day} className="grid gap-3">

@@ -70,7 +70,7 @@ function Players({ tab, query, sort, onChallenge }: { tab: Tab; query: string; s
   const list = useContacts(tab, query, true, sort)
   const players = list.data?.pages.flatMap((page) => page.content) ?? []
   if (list.isPending) return <Loading />
-  if (list.isError && !list.data)
+  if (list.isError && !list.isFetchNextPageError)
     return (
       <EmptyState
         icon={WarningCircleIcon}

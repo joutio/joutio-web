@@ -88,7 +88,7 @@ export function TopicPage() {
     share({ kind: 'topic', id: topic.topicId, title: t('share.topicTitle'), text: t('share.topicText', { topic: name }) })
   }
 
-  if (overview.isError && !data) {
+  if (overview.isError) {
     return (
       <Screen bottomNav={<TabNav active="topics" />}>
         <EmptyState

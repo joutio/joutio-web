@@ -73,7 +73,7 @@ export function GamesTab({ topicId }: { topicId: string }) {
       />
       {games.isPending ? (
         <Rows />
-      ) : games.isError && !games.data ? (
+      ) : games.isError ? (
         <ErrorState title={t('topic.gamesError')} retrying={games.isRefetching} onRetry={() => void games.refetch()} />
       ) : groups.length === 0 ? (
         <EmptyState icon={SwordIcon} title={t('topic.noGamesTitle')} description={t('topic.noGamesText')} />
@@ -179,7 +179,7 @@ export function BoardTab({ topicId }: { topicId: string }) {
           <Skeleton shape="card" />
           <Rows />
         </>
-      ) : board.isError && !board.data ? (
+      ) : board.isError ? (
         <ErrorState title={t('topic.boardError')} retrying={board.isRefetching} onRetry={() => void board.refetch()} />
       ) : entries.length === 0 ? (
         <EmptyState icon={TrophyIcon} title={t('topic.boardEmptyTitle')} description={t('topic.boardEmptyText')} />

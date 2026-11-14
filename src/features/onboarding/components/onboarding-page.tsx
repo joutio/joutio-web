@@ -27,6 +27,8 @@ export function OnboardingPage() {
   const [params] = useSearchParams()
   const status = useSessionStore(selectStatus)
   const endReason = useSessionStore(selectEndReason)
+  const suspendedUntil = useSessionStore((state) => state.suspendedUntil)
+  const suspensionReason = useSessionStore((state) => state.suspensionReason)
   const me = useMe()
   const step = useOnboardingStore((state) => state.step)
   const go = useOnboardingStore((state) => state.go)
@@ -70,6 +72,8 @@ export function OnboardingPage() {
       return (
         <SessionEnded
           reason={endReason}
+          suspendedUntil={suspendedUntil}
+          suspensionReason={suspensionReason}
           onLogin={() => {
             dismissEndReason()
             go('login')

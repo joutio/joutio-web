@@ -134,7 +134,7 @@ export function HistoryPage() {
     >
       {list.isPending ? (
         <Loading />
-      ) : list.isError && !list.data ? (
+      ) : list.isError && !list.isFetchNextPageError ? (
         <EmptyState
           className="pt-16"
           icon={WarningCircleIcon}

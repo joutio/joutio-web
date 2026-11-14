@@ -143,7 +143,7 @@ export function ChallengesPage() {
   const { received, sent } = splitChallenges(challenges.data, userId)
   const salons = openRooms(rooms.data)
   const loading = challenges.isPending || rooms.isPending
-  const failed = (challenges.isError && !challenges.data) || (rooms.isError && !rooms.data)
+  const failed = challenges.isError || rooms.isError
   const empty = !loading && !failed && received.length + sent.length + salons.length === 0
   const shows = (section: Filter) => filter === 'all' || filter === section
   const receivedRows = filter === 'all' ? received.slice(0, RECEIVED_PREVIEW) : received.slice(0, receivedPages * RECEIVED_PAGE)
