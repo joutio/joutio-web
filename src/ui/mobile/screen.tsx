@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { setStyleVar } from '../lib/style-var'
 import { useBannerPresence, useGlobalBanner } from '../primitives/banner'
@@ -27,6 +27,25 @@ export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, cla
   const global = useGlobalBanner()
   const banner = useBannerPresence(global ?? own)
   const head = useRef<HTMLDivElement>(null)
+  const main = useRef<HTMLElement>(null)
+  const foot = useRef<HTMLDivElement>(null)
+  // Filet du haut de la barre basse (2026-11-14) : visible tant que du contenu reste sous elle, effacé en bas de page
+  // ou quand tout tient. Écrit sur la barre seule, comme `--jo-header-edge` sur l'en-tête.
+  const updateFootEdge = () => {
+    const element = main.current
+    if (!element || !foot.current) return
+    const below = element.scrollHeight - element.clientHeight - element.scrollTop
+    setStyleVar(foot.current, '--jo-footer-edge', String(Math.max(0, Math.min(1, below / 8))))
+  }
+  useLayoutEffect(() => {
+    const element = main.current
+    if (!element || !bottomBar) return
+    updateFootEdge()
+    const observer = new ResizeObserver(updateFootEdge)
+    observer.observe(element)
+    if (element.firstElementChild) observer.observe(element.firstElementChild)
+    return () => observer.disconnect()
+  })
   return (
     <div data-jo-screen className={cn('relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', className)}>
       {/* Porte `--jo-header-edge` (écrit ici) et `--jo-tabs-dock` (écrit par `StickyBar`) : sœur de `main`, une écriture
@@ -36,13 +55,19 @@ export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, cla
         {header}
         {header && <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-jo-border" style={{ opacity: 'calc(var(--jo-header-edge, 0) * (1 - var(--jo-tabs-dock, 0)))' }} />}
       </div>
-      <main onScroll={(event) => {
+      <main ref={main} onScroll={(event) => {
         setStyleVar(head.current, '--jo-header-edge', String(Math.max(0, Math.min(1, event.currentTarget.scrollTop / 8))))
+        if (bottomBar) updateFootEdge()
       }} className={cn('jo-no-scrollbar min-h-0 flex-1 overflow-y-auto', !bottomNav && !bottomBar && 'pb-[var(--jo-safe-bottom,0px)]')}>
         {children}
       </main>
       {/* Sans bottom nav, la barre basse porte la safe area : ses boutons ne passent jamais sous l'indicateur d'accueil. */}
-      {bottomBar && (bottomNav ? bottomBar : <div className="flex-none bg-jo-bg pb-[var(--jo-safe-bottom,0px)]">{bottomBar}</div>)}
+      {bottomBar && (
+        <div ref={foot} className={cn('relative flex-none bg-jo-bg', !bottomNav && 'pb-[var(--jo-safe-bottom,0px)]')}>
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-jo-border" style={{ opacity: 'var(--jo-footer-edge, 0)' }} />
+          {bottomBar}
+        </div>
+      )}
       {bottomNav}
       {overlay}
     </div>
