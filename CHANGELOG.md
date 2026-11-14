@@ -1,3 +1,9 @@
+## [2.13.1](https://github.com/joutio/joutio-web/compare/v2.13.0...v2.13.1) (2026-11-14)
+
+### Bug Fixes
+
+* **web:** bot duel from onboarding opens the room directly, neutral VersusIntro halo, Recruiter badge removed ([82a0b36](https://github.com/joutio/joutio-web/commit/82a0b364f1f652a3d6ba01b2bd7b9ae8e5fe9dfb))
+
 ## [2.13.0](https://github.com/joutio/joutio-web/compare/v2.12.0...v2.13.0) (2026-11-14)
 
 ### Features
