@@ -327,8 +327,6 @@ export const en: Messages = {
   'result.rankNext': "at {elo}.",
   'result.titleText': "Wear it: it shows under your name, on your profile and in duels.",
   'result.titleNext': "at {xp} experience points.",
-  'result.nextElo': "{tier} at {elo}",
-  'result.nextEloLeft': "{tier} at {elo} · {left} to go",
   'result.unranked': "Elo {elo} · unranked",
   'result.botEasy': "Easy level",
   'result.botNormal': "Normal level",

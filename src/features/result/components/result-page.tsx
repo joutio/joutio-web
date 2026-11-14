@@ -260,12 +260,6 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   }
 
   // ─── Résultat ───
-  const next = myTier ? ORDER[ORDER.indexOf(myTier) + 1] : undefined
-  const nextElo = next
-    ? tokens.tier[next].minElo > rating
-      ? t('result.nextEloLeft', { tier: tokens.tier[next].label, elo: formatNumber(tokens.tier[next].minElo, language), left: formatNumber(tokens.tier[next].minElo - rating, language) })
-      : t('result.nextElo', { tier: tokens.tier[next].label, elo: formatNumber(tokens.tier[next].minElo, language) })
-    : undefined
   const mastery = data.topicMastery
   const hasReview = !cancelled && reviewRoundsOf(game).length > 0
   const canReport = !bot && !cancelled && Boolean(opponentId) && !data.opponentDeleted
@@ -342,7 +336,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           ) : (
             // Écran court : l'Elo et la maîtrise côte à côte (`resultat.md` § 4 bis).
             <div className={compact ? 'flex items-center justify-between gap-5' : 'contents'}>
-              <EloSummary compact={compact} elo={rating} delta={data.rated ? (data.eloDelta ?? 0) : 0} next={nextElo} />
+              {/* Sans le prochain rang (2026-11-14) : inutile ici, la place sert aux écrans courts. */}
+              <EloSummary compact={compact} elo={rating} delta={data.rated ? (data.eloDelta ?? 0) : 0} />
               <MasteryRing
                 tier={tokens.tier[mastery.tier as TierCode]?.label ?? '—'}
                 next={mastery.nextTier ? tokens.tier[mastery.nextTier as TierCode]?.label : undefined}

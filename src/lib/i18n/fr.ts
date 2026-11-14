@@ -326,8 +326,6 @@ export const fr = {
   'result.rankNext': "à {elo}.",
   'result.titleText': "Porte-le : il s'affiche sous ton nom, sur ton profil et en duel.",
   'result.titleNext': "à {xp} points d'expérience.",
-  'result.nextElo': "{tier} à {elo}",
-  'result.nextEloLeft': "{tier} à {elo} · encore {left}",
   'result.unranked': "Elo {elo} · non classé",
   'result.botEasy': "Niveau facile",
   'result.botNormal': "Niveau normal",
