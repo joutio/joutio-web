@@ -20,19 +20,19 @@ const notice = (patch: Partial<NotificationView>): NotificationView => ({
 describe('notificationTarget', () => {
   const now = Date.parse('2026-11-12T12:00:00Z')
 
-  it('opens the player page for a follower or a declined challenge', () => {
+  it('opens the player page for a follower, nothing for an accepted or declined challenge', () => {
     expect(notificationTarget(notice({ type: 'FOLLOW' }), now)).toEqual({ kind: 'player', id: 'u2' })
-    expect(notificationTarget(notice({ type: 'CHALLENGE_DECLINED' }), now)).toEqual({ kind: 'player', id: 'u2' })
+    expect(notificationTarget(notice({ type: 'CHALLENGE_DECLINED' }), now)).toEqual({ kind: 'none' })
+    expect(notificationTarget(notice({ type: 'ROOM_ACCEPTED', sourceId: 'r1' }), now)).toEqual({ kind: 'none' })
   })
 
-  it('opens Challenges for a received challenge and the room for an accepted one or a nudge', () => {
-    expect(notificationTarget(notice({ type: 'CHALLENGE_RECEIVED', sourceId: 'c1' }), now)).toEqual({ kind: 'challenges' })
-    expect(notificationTarget(notice({ type: 'ROOM_ACCEPTED', sourceId: 'r1' }), now)).toEqual({ kind: 'room', id: 'r1' })
+  it('opens Challenges for a received challenge and the room for a nudge', () => {
+    expect(notificationTarget(notice({ type: 'CHALLENGE_RECEIVED', sourceId: 'c1' }), now)).toEqual({ kind: 'challenges', tab: 'received' })
     expect(notificationTarget(notice({ type: 'WIZZ', sourceId: 'r1' }), now)).toEqual({ kind: 'room', id: 'r1' })
   })
 
   it('falls back when the invitation has expired', () => {
-    expect(notificationTarget(notice({ type: 'ROOM_ACCEPTED', sourceId: 'r1', expiresAt: '2026-11-12T11:00:00Z' }), now)).toEqual({ kind: 'fallback', challenges: true, expired: true })
+    expect(notificationTarget(notice({ type: 'WIZZ', sourceId: 'r1', expiresAt: '2026-11-12T11:00:00Z' }), now)).toEqual({ kind: 'fallback', challenges: 'received', expired: true })
   })
 
   it('opens the reports of the question for a report, and the topic for a draft', () => {

@@ -1,35 +1,54 @@
 import type { NotificationView } from '@/lib/realtime'
+import type { ChallengesTab } from '@/shared/routes'
 
 export type NotificationTarget =
   | { kind: 'player'; id: string }
-  | { kind: 'challenges' }
+  | { kind: 'challenges'; tab: ChallengesTab }
   | { kind: 'room'; id: string }
   | { kind: 'workshop'; id: string }
   | { kind: 'report'; topicId: string; reportId: string }
   | { kind: 'suspended' }
-  | { kind: 'fallback'; challenges: boolean; expired: boolean }
-
-const INVITATIONS = new Set<NotificationView['type']>(['CHALLENGE_RECEIVED', 'CHALLENGE_DECLINED', 'ROOM_ACCEPTED', 'WIZZ'])
+  /** Informative : marquée lue, rien ne s'ouvre. */
+  | { kind: 'none' }
+  /** `challenges` : onglet de Défis où retomber, `null` hors invitation. */
+  | { kind: 'fallback'; challenges: ChallengesTab | null; expired: boolean }
 
 /**
- * Écran qui propose l'action d'une notification (`notifications.md` § 2, repris du mobile) : abonné ou défi refusé →
- * fiche joueur, défi reçu → Défis, défi accepté ou relance → salon, brouillon → Mon sujet, signalement → Signalements de sa question. Aucune
+ * Onglet de Défis d'une invitation (`notifications.md` § 2, 2026-11-14) : défi reçu ou relance → Reçus. `null` : la
+ * notification ne concerne pas les défis.
+ */
+const INVITATIONS: Partial<Record<NotificationView['type'], ChallengesTab>> = {
+  CHALLENGE_RECEIVED: 'received',
+  WIZZ: 'received',
+}
+
+/**
+ * Notifications sans écran d'action (2026-11-14) : défi accepté et défi refusé ne font qu'informer. Le toucher les marque
+ * lues, sans redirection ni chevron.
+ */
+const INFORMATIVE = new Set<string>(['ROOM_ACCEPTED', 'CHALLENGE_DECLINED'])
+
+/** Vrai si toucher la notification ouvre un écran (chevron de la ligne). */
+export const opensScreen = (type: string) => !INFORMATIVE.has(type)
+
+/**
+ * Écran qui propose l'action d'une notification (`notifications.md` § 2, repris du mobile) : abonné → fiche joueur,
+ * défi reçu → Défis, relance → salon, défi accepté ou refusé → rien (informative), brouillon → Mon sujet, signalement → Signalements de sa question. Aucune
  * URL ne vient du payload.
  */
 export function notificationTarget(notice: NotificationView, now = Date.now()): NotificationTarget {
   const fallback: NotificationTarget = {
     kind: 'fallback',
-    challenges: INVITATIONS.has(notice.type),
+    challenges: INVITATIONS[notice.type] ?? null,
     expired: Boolean(notice.expiresAt && Date.parse(notice.expiresAt) <= now),
   }
+  if (INFORMATIVE.has(notice.type)) return { kind: 'none' }
   if (fallback.expired) return fallback
   switch (notice.type) {
     case 'FOLLOW':
-    case 'CHALLENGE_DECLINED':
       return notice.actorId ? { kind: 'player', id: notice.actorId } : fallback
     case 'CHALLENGE_RECEIVED':
-      return { kind: 'challenges' }
-    case 'ROOM_ACCEPTED':
+      return { kind: 'challenges', tab: 'received' }
     case 'WIZZ':
       return notice.sourceId ? { kind: 'room', id: notice.sourceId } : fallback
     case 'QUESTION_REPORTED':

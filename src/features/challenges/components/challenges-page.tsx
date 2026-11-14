@@ -15,20 +15,18 @@ import { readServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { showDialog } from '@/shared/dialog'
 import { useDuration } from '@/shared/duration'
-import { ROUTES } from '@/shared/routes'
+import { CHALLENGES_TABS, ROUTES, type ChallengesTab } from '@/shared/routes'
+import { useTabParam } from '@/shared/use-tab-param'
 import { topicName } from '@/shared/topics'
-import { Button, ChallengeListRow, Chip, EmptyState, FeedFooter, ListRow, MobileTopBar, Screen, SectionHeader, Skeleton } from '@/ui'
+import { Button, ChallengeListRow, EmptyState, FeedFooter, JoutioTabs, ListRow, MobileTopBar, Screen, SectionHeader, Skeleton } from '@/ui'
 import { refreshChallenges, useAcceptChallenge, useCancelChallenges, useDeclineChallenges, useMyChallenges, useMyRooms } from '../hooks/use-challenges'
-import { openRooms, RECEIVED_PAGE, RECEIVED_PREVIEW, splitChallenges } from '../lib/challenges-service'
+import { openRooms, RECEIVED_PAGE, splitChallenges } from '../lib/challenges-service'
 
-type Filter = 'all' | 'received' | 'sent' | 'rooms'
-
-const FILTERS: readonly { value: Filter; label: MessageKey }[] = [
-  { value: 'all', label: 'challenges.all' },
-  { value: 'received', label: 'challenges.received' },
-  { value: 'sent', label: 'challenges.sent' },
-  { value: 'rooms', label: 'challenges.rooms' },
-]
+const TAB_LABELS: Record<ChallengesTab, MessageKey> = {
+  received: 'challenges.received',
+  sent: 'challenges.sent',
+  rooms: 'challenges.rooms',
+}
 
 const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
 
@@ -118,9 +116,10 @@ function RoomRow({ room, last }: { room: RoomView; last: boolean }) {
 }
 
 /**
- * Défis (`design/specs/screens/defis.md`, lab `/screens/defis?view=compact`) : barre « Défis » (quota des envoyés en
- * sous-titre, cloche), puces Tous / Reçus / Envoyés / Salons, puis Reçus (aperçu de 3 et « Tout voir » ; sous la puce
- * Reçus, liste paginée et « Tout refuser » confirmé), Envoyés et Salons privés. Rafraîchi par le flux personnel.
+ * Défis (`design/specs/screens/defis.md`, lab `/screens/defis?view=compact`) : barre « Défis » (cloche, Réglages), puis
+ * onglets Reçus / Envoyés / Salons comme l'Accueil (2026-11-14), leur nombre dans le libellé. Reçus (par défaut) :
+ * liste paginée et « Tout refuser » confirmé. L'onglet est dans l'URL (`?tab=sent`) : les notifications y mènent.
+ * Rafraîchi par le flux personnel.
  */
 export function ChallengesPage() {
   const t = useT()
@@ -135,7 +134,7 @@ export function ChallengesPage() {
   const decline = useDeclineChallenges()
   const cancel = useCancelChallenges()
   const createRoom = useCreatePrivateRoom()
-  const [filter, setFilter] = useState<Filter>('all')
+  const [tab, setTab] = useTabParam(CHALLENGES_TABS, 'received')
   const [receivedPages, setReceivedPages] = useState(1)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [pickerKey, setPickerKey] = useState(0)
@@ -145,11 +144,12 @@ export function ChallengesPage() {
   const loading = challenges.isPending || rooms.isPending
   const failed = challenges.isError || rooms.isError
   const empty = !loading && !failed && received.length + sent.length + salons.length === 0
-  const shows = (section: Filter) => filter === 'all' || filter === section
-  const receivedRows = filter === 'all' ? received.slice(0, RECEIVED_PREVIEW) : received.slice(0, receivedPages * RECEIVED_PAGE)
-  const counts: Record<Filter, number | undefined> = { all: undefined, received: received.length, sent: sent.length, rooms: salons.length }
-  const changeFilter = (next: Filter) => {
-    setFilter(next)
+  const receivedRows = received.slice(0, receivedPages * RECEIVED_PAGE)
+  const counts: Record<ChallengesTab, number> = { received: received.length, sent: sent.length, rooms: salons.length }
+  // Le nombre suit le libellé (« Reçus · 5 ») ; sans élément, le libellé seul.
+  const tabs = CHALLENGES_TABS.map((value) => ({ value, label: counts[value] > 0 ? `${t(TAB_LABELS[value])} · ${counts[value]}` : t(TAB_LABELS[value]) }))
+  const changeTab = (next: ChallengesTab) => {
+    setTab(next)
     setReceivedPages(1)
   }
   const openPicker = () => {
@@ -183,12 +183,8 @@ export function ChallengesPage() {
             }
           />
           {!empty && !failed && !loading && (
-            <div className="jo-no-scrollbar flex gap-2 overflow-x-auto px-4 pt-1 pb-3">
-              {FILTERS.map((option) => (
-                <Chip key={option.value} selected={filter === option.value} count={counts[option.value]} className="flex-none" onClick={() => changeFilter(option.value)}>
-                  {t(option.label)}
-                </Chip>
-              ))}
+            <div className="px-4 pt-1 pb-3">
+              <JoutioTabs label={t('nav.challenges')} options={tabs} value={tab} onChange={changeTab} />
             </div>
           )}
         </>
@@ -239,23 +235,15 @@ export function ChallengesPage() {
       )}
       {!loading && !failed && !empty && (
         <div className="grid gap-6 px-4 pt-1 pb-8">
-          {filter === 'received' && received.length === 0 && <EmptyState icon={LightningIcon} title={t('challenges.noReceived')} description={t('challenges.noReceivedText')} />}
-          {shows('received') && received.length > 0 && (
+          {tab === 'received' && received.length === 0 && <EmptyState icon={LightningIcon} title={t('challenges.noReceived')} description={t('challenges.noReceivedText')} />}
+          {tab === 'received' && received.length > 0 && (
             <section className="grid gap-3">
               <SectionHeader
                 title={t('challenges.received')}
                 action={
-                  filter === 'all' ? (
-                    received.length > RECEIVED_PREVIEW && (
-                      <Button variant="plain" size="S" onClick={() => changeFilter('received')}>
-                        {t('challenges.seeAll')}
-                      </Button>
-                    )
-                  ) : (
-                    <Button variant="plain" tone="destructive" size="S" disabled={decline.isPending} onClick={refuseAll}>
-                      {t('challenges.refuseAll')}
-                    </Button>
-                  )
+                  <Button variant="plain" tone="destructive" size="S" disabled={decline.isPending} onClick={refuseAll}>
+                    {t('challenges.refuseAll')}
+                  </Button>
                 }
               />
               <div className={CARD}>
@@ -263,18 +251,16 @@ export function ChallengesPage() {
                   <ChallengeRow key={challenge.challengeId} challenge={challenge} kind="received" last={index === receivedRows.length - 1} {...rowProps} />
                 ))}
               </div>
-              {filter === 'received' && (
-                <FeedFooter
-                  state={receivedRows.length < received.length ? 'more' : 'end'}
-                  pages={receivedPages}
-                  onLoadMore={() => setReceivedPages((pages) => pages + 1)}
-                  onRetry={() => setReceivedPages((pages) => pages + 1)}
-                  endLabel={t('challenges.receivedEnd')}
-                />
-              )}
+              <FeedFooter
+                state={receivedRows.length < received.length ? 'more' : 'end'}
+                pages={receivedPages}
+                onLoadMore={() => setReceivedPages((pages) => pages + 1)}
+                onRetry={() => setReceivedPages((pages) => pages + 1)}
+                endLabel={t('challenges.receivedEnd')}
+              />
             </section>
           )}
-          {shows('sent') && sent.length > 0 && (
+          {tab === 'sent' && sent.length > 0 && (
             <section className="grid gap-3">
               <SectionHeader title={t('challenges.sent')} />
               <div className={CARD}>
@@ -284,8 +270,8 @@ export function ChallengesPage() {
               </div>
             </section>
           )}
-          {filter === 'sent' && sent.length === 0 && <EmptyState icon={LightningIcon} title={t('challenges.noSent')} description={t('challenges.noSentText')} />}
-          {shows('rooms') && salons.length > 0 && (
+          {tab === 'sent' && sent.length === 0 && <EmptyState icon={LightningIcon} title={t('challenges.noSent')} description={t('challenges.noSentText')} />}
+          {tab === 'rooms' && salons.length > 0 && (
             <section className="grid gap-3">
               <SectionHeader title={t('challenges.privateRooms')} />
               <div className={CARD}>
@@ -295,7 +281,7 @@ export function ChallengesPage() {
               </div>
             </section>
           )}
-          {filter === 'rooms' && salons.length === 0 && (
+          {tab === 'rooms' && salons.length === 0 && (
             <EmptyState
               icon={DoorOpenIcon}
               title={t('challenges.noRoom')}

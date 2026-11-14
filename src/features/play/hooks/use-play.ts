@@ -86,7 +86,7 @@ function useQuotaDialog() {
       icon: LightningIcon,
       tone: 'accent',
       actions: [
-        { label: t('play.seeChallenges'), variant: 'filled', tone: 'accent', onClick: () => void navigate(ROUTES.challenges) },
+        { label: t('play.seeChallenges'), variant: 'filled', tone: 'accent', onClick: () => void navigate(ROUTES.challengesTab('sent')) },
         ...(me?.premium ? [] : [{ label: t('play.goPremium'), variant: 'tinted' as const, tone: 'accent' as const, onClick: () => showPremium('quota') }]),
         { label: t('play.close'), variant: 'plain', tone: 'neutral' },
       ],

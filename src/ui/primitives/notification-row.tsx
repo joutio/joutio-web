@@ -16,13 +16,15 @@ export type NotificationRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
    */
   onDelete?: () => void
   last?: boolean
+  /** `false` : notification informative, le toucher ne fait que la marquer lue (pas de chevron). */
+  chevron?: boolean
 }
 
 /**
  * Ligne de la boîte de réception : toucher ouvre l'écran qui propose l'action (défis, salon, fiche joueur), balayer
  * révèle Supprimer. **Aucun bouton d'action dans la ligne** (2026-11-07) : la notification ne fait que rediriger.
  */
-export function NotificationRow({ title, sub, icon: IconComponent, player, unread = false, onDelete, last = false, className, type = 'button', ...props }: NotificationRowProps) {
+export function NotificationRow({ title, sub, icon: IconComponent, player, unread = false, onDelete, last = false, chevron = true, className, type = 'button', ...props }: NotificationRowProps) {
   const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null)
 
   // Le tactile défile seul : la souris, elle, ne balaie pas sans aide.
@@ -61,7 +63,7 @@ export function NotificationRow({ title, sub, icon: IconComponent, player, unrea
       {unread && (
         <span role="img" aria-label="Non lue" className="size-2 flex-none rounded-jo-full bg-jo-accent" />
       )}
-      <CaretRightIcon size={16} className="flex-none text-jo-muted" aria-hidden />
+      {chevron && <CaretRightIcon size={16} className="flex-none text-jo-muted" aria-hidden />}
     </button>
   )
 

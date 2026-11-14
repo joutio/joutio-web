@@ -167,7 +167,7 @@ export function useOpenNotification() {
       case 'player':
         return void navigate(ROUTES.player(target.id))
       case 'challenges':
-        return void navigate(ROUTES.challenges)
+        return void navigate(ROUTES.challengesTab(target.tab))
       case 'room':
         return void navigate(ROUTES.room(target.id))
       case 'workshop':
@@ -183,8 +183,10 @@ export function useOpenNotification() {
           })
       case 'suspended':
         return void endSession('suspended')
+      case 'none':
+        return
       case 'fallback':
-        if (target.challenges) void navigate(ROUTES.challenges)
+        if (target.challenges) void navigate(ROUTES.challengesTab(target.challenges))
         toast.info(t(target.expired ? 'notifications.expired' : 'notifications.unavailable'))
     }
   }

@@ -13,6 +13,7 @@ import { topicName } from '@/shared/topics'
 import { NotificationRow } from '@/ui'
 import { useDeleteNotification, useOpenNotification } from '../hooks/use-notifications'
 import { NOTIFICATION_ICONS, notificationActorId, notificationTitleKey } from '../lib/notification-presentation'
+import { opensScreen } from '../lib/notification-target'
 import { isExpired, isUnread } from '../lib/notifications-service'
 
 /** Délai écoulé : « à l'instant », « il y a 12 min », « il y a 3 h », « il y a 2 j », puis la date. */
@@ -65,6 +66,7 @@ export function NotificationItem({ notification, last }: { notification: Notific
       icon={actorId ? undefined : (NOTIFICATION_ICONS[notification.type] ?? BellIcon)}
       player={actorId ? { name, src, tier: actor?.progression && !actor.progression.provisional ? tierOf(actor.progression.rating) : undefined } : undefined}
       unread={isUnread(notification)}
+      chevron={opensScreen(notification.type)}
       onClick={() => open(notification)}
       onDelete={() => remove.mutate(notification.notificationId)}
       last={last}

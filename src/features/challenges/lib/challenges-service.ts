@@ -23,8 +23,6 @@ export const challengesService = {
   cancel: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.cancel(challengeId)),
 }
 
-/** Reçus affichés dans « Tous » ; la liste complète est sous la puce Reçus, 10 par page. */
-export const RECEIVED_PREVIEW = 3
 export const RECEIVED_PAGE = 10
 
 /** Défis en attente, répartis : reçus (échéance la plus proche d'abord) et envoyés (plus récents d'abord). */

@@ -1,3 +1,7 @@
+/** Onglets de Défis (`defis.md`, 2026-11-14) : plus de vue « Tous ». */
+export type ChallengesTab = 'received' | 'sent' | 'rooms'
+export const CHALLENGES_TABS: readonly ChallengesTab[] = ['received', 'sent', 'rooms']
+
 /**
  * URLs de `design/specs/platforms/web.md` § 2. Le BFF n'expose pas encore de slug de sujet : la fiche sujet
  * s'adresse par son identifiant (`/topics/{topicId}`) jusqu'à ce qu'il en expose un.
@@ -49,6 +53,8 @@ export const ROUTES = {
   join: (roomId: string) => `/join/${encodeURIComponent(roomId)}`,
   social: '/social',
   challenges: '/challenges',
+  /** Onglet de Défis (`defis.md`) : Reçus par défaut, absent de l'URL. */
+  challengesTab: (tab: ChallengesTab) => (tab === 'received' ? '/challenges' : `/challenges?tab=${tab}`),
   premium: '/premium',
   notifications: '/notifications',
   search: '/search',
