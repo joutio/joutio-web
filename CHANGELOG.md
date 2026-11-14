@@ -1,3 +1,9 @@
+## [2.12.0](https://github.com/joutio/joutio-web/compare/v2.11.0...v2.12.0) (2026-11-14)
+
+### Features
+
+* **web:** align with the design lab, remove referral, add URL-driven page tabs ([66a5ace](https://github.com/joutio/joutio-web/commit/66a5ace9f21a23d31199107d3fd444c8fbe3432a))
+
 ## [2.11.0](https://github.com/joutio/joutio-web/compare/v2.10.0...v2.11.0) (2026-11-14)
 
 ### Features
