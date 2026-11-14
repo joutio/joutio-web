@@ -1,3 +1,9 @@
+## [2.13.2](https://github.com/joutio/joutio-web/compare/v2.13.1...v2.13.2) (2026-11-14)
+
+### Bug Fixes
+
+* **web:** scroll-driven parallax, no per-frame style writes on screen roots ([cb6e68e](https://github.com/joutio/joutio-web/commit/cb6e68e6e3c95434f84ebd4346bee74c8cea8184))
+
 ## [2.13.1](https://github.com/joutio/joutio-web/compare/v2.13.0...v2.13.1) (2026-11-14)
 
 ### Bug Fixes
