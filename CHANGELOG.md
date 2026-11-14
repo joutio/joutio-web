@@ -1,3 +1,9 @@
+## [2.13.0](https://github.com/joutio/joutio-web/compare/v2.12.0...v2.13.0) (2026-11-14)
+
+### Features
+
+* **web:** onboarding age card, suspension end and reason, bot duel from the first topic; error states replace stale views ([45ecaa5](https://github.com/joutio/joutio-web/commit/45ecaa5654749ebd26ea8b516e743abd8ad422c9))
+
 ## [2.12.0](https://github.com/joutio/joutio-web/compare/v2.11.0...v2.12.0) (2026-11-14)
 
 ### Features
