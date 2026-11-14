@@ -1,3 +1,10 @@
+## [2.15.0](https://github.com/joutio/joutio-web/compare/v2.14.0...v2.15.0) (2026-11-14)
+
+### Features
+
+* **web:** bottom bar top hairline while content scrolls beneath it ([1607a21](https://github.com/joutio/joutio-web/commit/1607a21391d6e7a90b403ccd12698521400cd9bb))
+* **web:** join a room as a face-off, topic card and duel conditions ([5a78361](https://github.com/joutio/joutio-web/commit/5a783614a8db285d761f013e9b14ff5eb2eff0d8))
+
 ## [2.14.0](https://github.com/joutio/joutio-web/compare/v2.13.2...v2.14.0) (2026-11-14)
 
 ### Features
