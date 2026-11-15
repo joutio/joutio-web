@@ -3,7 +3,7 @@ import { ChartLineUpIcon, ClockCounterClockwiseIcon, CrownSimpleIcon, MedalIcon,
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GameGroups } from '@/features/history'
-import { formatNumber, MASTERY_TIERS, useWearTitle } from '@/features/topic'
+import { dayLabel, formatNumber, useWearTitle } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
@@ -188,7 +188,15 @@ export function TitlesTab({ titles, retrying, error, onRetry }: { titles?: Title
     )
   if (!titles) return <ErrorState title={t('profile.titlesError')} retrying={retrying} onRetry={onRetry} />
   if (titles.titles.length === 0) return <EmptyState icon={CrownSimpleIcon} title={t('profile.noTitlesTitle')} description={t('profile.noTitlesText')} />
-  const top = [...titles.titles].sort((a, b) => MASTERY_TIERS.indexOf(b.tier) - MASTERY_TIERS.indexOf(a.tier)).slice(0, 5)
+  // Les 5 derniers déblocages (le BFF trie déjà par `unlockedAt` décroissant), groupés par jour.
+  const recent = [...titles.titles].sort((a, b) => b.unlockedAt.localeCompare(a.unlockedAt)).slice(0, 5)
+  const groups: { day: string; titles: typeof recent }[] = []
+  for (const title of recent) {
+    const day = dayLabel(new Date(title.unlockedAt), language, { today: t('topic.today'), yesterday: t('topic.yesterday') })
+    const last = groups[groups.length - 1]
+    if (last?.day === day) last.titles.push(title)
+    else groups.push({ day, titles: [title] })
+  }
   return (
     <div className="grid gap-4 px-4 pt-1 pb-8">
       <SectionHeader
@@ -199,24 +207,29 @@ export function TitlesTab({ titles, retrying, error, onRetry }: { titles?: Title
           </Button>
         }
       />
-      <div className={CARD}>
-        {top.map((title, index) => {
-          const worn = titles.equippedKey === title.key
-          return (
-            <TitleRow
-              key={title.key}
-              tier={title.tier}
-              title={titleLabel(title, language)}
-              topic={topicName(title.topic.names, language)}
-              worn={worn}
-              onWear={() => {
-                if (!wear.isPending) wear.mutate(worn ? null : title.key)
-              }}
-              last={index === top.length - 1}
-            />
-          )
-        })}
-      </div>
+      {groups.map((group) => (
+        <section key={group.day} className="grid gap-2">
+          <span className="jo-type-caption font-semibold text-jo-muted">{group.day}</span>
+          <div className={CARD}>
+            {group.titles.map((title, index) => {
+              const worn = titles.equippedKey === title.key
+              return (
+                <TitleRow
+                  key={title.key}
+                  tier={title.tier}
+                  title={titleLabel(title, language)}
+                  topic={topicName(title.topic.names, language)}
+                  worn={worn}
+                  onWear={() => {
+                    if (!wear.isPending) wear.mutate(worn ? null : title.key)
+                  }}
+                  last={index === group.titles.length - 1}
+                />
+              )
+            })}
+          </div>
+        </section>
+      ))}
     </div>
   )
 }

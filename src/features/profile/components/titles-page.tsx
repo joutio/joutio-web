@@ -39,8 +39,8 @@ const SORTS: readonly { value: Sort; label: MessageKey }[] = [
 /**
  * Tous les titres (`design/specs/screens/titres.md`, lab `/screens/titres?view=compact`) : recherche, filtre par rang
  * et tri, titres groupés par sujet du palier le plus haut au plus bas, cinq sujets par page. Toucher une ligne porte
- * ou enlève le titre. Sans `unlockedAt` (BFF), « Plus récents » suit l'ordre du serveur et « Plus anciens » l'inverse,
- * comme le mobile.
+ * ou enlève le titre. Les sujets sont ordonnés par leur dernier déblocage (`unlockedAt`) : décroissant pour
+ * « Plus récents », croissant pour « Plus anciens », par nom pour « Alphabétique ».
  */
 export function TitlesPage() {
   const t = useT()
@@ -64,7 +64,8 @@ export function TitlesPage() {
         (!search || titleLabel(title, language).toLocaleLowerCase(language).includes(search) || topicName(title.topic.names, language).toLocaleLowerCase(language).includes(search)),
     )
     const byTopic = new Map<string, TitleView[]>()
-    for (const title of matching) byTopic.set(title.topicId, [...(byTopic.get(title.topicId) ?? []), title])
+    const recentFirst = [...matching].sort((a, b) => b.unlockedAt.localeCompare(a.unlockedAt))
+    for (const title of recentFirst) byTopic.set(title.topicId, [...(byTopic.get(title.topicId) ?? []), title])
     const list = [...byTopic.values()].map((items) => ({
       topicId: items[0]!.topicId,
       name: topicName(items[0]!.topic.names, language),
