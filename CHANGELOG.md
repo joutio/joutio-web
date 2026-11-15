@@ -1,3 +1,9 @@
+## [2.18.0](https://github.com/joutio/joutio-web/compare/v2.17.0...v2.18.0) (2026-11-15)
+
+### Features
+
+* **profile:** latest titles grouped by unlock date ([3bfce91](https://github.com/joutio/joutio-web/commit/3bfce917b274398f13a59ec5d37dbca0edcccf1b))
+
 ## [2.17.0](https://github.com/joutio/joutio-web/compare/v2.16.0...v2.17.0) (2026-11-15)
 
 ### Features
