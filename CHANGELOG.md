@@ -1,3 +1,9 @@
+## [2.17.0](https://github.com/joutio/joutio-web/compare/v2.16.0...v2.17.0) (2026-11-15)
+
+### Features
+
+* **web:** iPhone Duo open frame with ads, result that never overflows, uncropped question images ([9cc9bf0](https://github.com/joutio/joutio-web/commit/9cc9bf068063eea52bc2c0bec48f5f1f6a349be7))
+
 ## [2.16.0](https://github.com/joutio/joutio-web/compare/v2.15.0...v2.16.0) (2026-11-15)
 
 ### Features
