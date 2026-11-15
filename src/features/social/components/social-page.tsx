@@ -1,4 +1,4 @@
-import type { PeopleSort, PlayerCardView } from '@joutio/client-domain/api-types'
+import type { PeopleSort, PlayerCardView } from '@joutio/client/api-types'
 import { MagnifyingGlassIcon, SlidersHorizontalIcon, SwordIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'

@@ -1,4 +1,4 @@
-import type { TopicCardView } from '@joutio/client-domain/api-types'
+import type { TopicCardView } from '@joutio/client/api-types'
 import { BellIcon, CompassIcon, FireIcon, GearSixIcon, HeartIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -61,7 +61,7 @@ function TopicRail({ title, topics }: { title: string; topics: TopicCardView[] }
       <SectionHeader className="px-4" title={title} />
       <Rail itemWidth={LANDSCAPE_WIDTH} label={title}>
         {topics.map((topic) => (
-          <TopicCard key={topic.topicId} title={topicName(topic.names)} category={toCategoryCode(topic.category)} image={imageOf(topic)} onClick={() => open(topic)} />
+          <TopicCard key={topic.topicId} title={topicName(topic.names)} official={topic.official ?? false} category={toCategoryCode(topic.category)} image={imageOf(topic)} onClick={() => open(topic)} />
         ))}
       </Rail>
     </section>
@@ -103,7 +103,7 @@ function ForYou({
       {trending.length > 0 && (
         <TopTen
           title={t('home.topTen')}
-          topics={trending.map((topic) => ({ title: topicName(topic.names), category: toCategoryCode(topic.category), image: imageOf(topic) }))}
+          topics={trending.map((topic) => ({ title: topicName(topic.names), category: toCategoryCode(topic.category), image: imageOf(topic), official: topic.official ?? false }))}
           onSelect={(_, rank) => {
             const topic = trending[rank - 1]
             if (topic) open(topic)
@@ -155,7 +155,7 @@ function Followed() {
             {topics.map((topic, index) => (
               <TopicRow
                 key={topic.topicId}
-                title={topicName(topic.names)}
+                title={topicName(topic.names)} official={topic.official ?? false}
                 category={toCategoryCode(topic.category)}
                 pictogram={topic.pictogramUrl ?? undefined}
                 image={imageOf(topic)}
@@ -231,7 +231,7 @@ export function HomePage() {
     <Screen
       banner={appBanner}
       header={
-        <header className="grid min-h-[52px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 pr-1.5 pl-4">
+        <header className="grid min-h-[52px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 pr-3 pl-4">
           {/* Au scroll, le salut monte dans la barre et prend la place du logo (`accueil.md` § 7). */}
           <div className="grid min-w-0 items-center">
             <span aria-hidden={stuck} className={`jo-transition col-start-1 row-start-1 ${stuck ? 'pointer-events-none -translate-y-2 opacity-0' : 'opacity-100'}`}>

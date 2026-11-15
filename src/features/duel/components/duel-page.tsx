@@ -7,8 +7,8 @@ import {
   sortedRounds,
   TRANSITION_GRACE_MS,
   type GameState,
-} from '@joutio/client-domain/game'
-import { countryFlag, countryName } from '@joutio/client-domain/geo'
+} from '@joutio/client/game'
+import { countryFlag, countryName } from '@joutio/client/geo'
 import { FlagIcon } from '@phosphor-icons/react'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
@@ -72,7 +72,7 @@ function Dark({ children }: { children: ReactNode }) {
 
 /**
  * Duel (`duel.md`, lab `duel.tsx`) : toujours sombre, sans onglets ni toasts. Le fil est piloté par les seuls instants
- * serveur (`sceneAt` de `@joutio/client-domain`) : face-à-face → manche → question → révélation → … → résultat.
+ * serveur (`sceneAt` de `@joutio/client`) : face-à-face → manche → question → révélation → … → résultat.
  * Quitter l'écran (retour, lien) pendant la partie ouvre la confirmation d'abandon.
  */
 export function DuelPage() {

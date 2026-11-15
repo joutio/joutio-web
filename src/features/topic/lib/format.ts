@@ -1,7 +1,7 @@
-import type { MasteryTier } from '@joutio/client-domain/api-types'
+import type { MasteryTier } from '@joutio/client/api-types'
 
-/** `2 418` dans la langue de l'app. */
-export const formatNumber = (value: number, language = 'fr') => new Intl.NumberFormat(language).format(value)
+/** Formats localisés partagés avec le mobile (`@joutio/client/i18n`). */
+export { dayLabel, formatNumber } from '@joutio/client/i18n'
 
 /** Seuils d'XP de maîtrise d'un sujet (`MasteryTier` de `joutio-profile-domain`) : conditions des titres verrouillés. */
 export const MASTERY_XP: Record<MasteryTier, number> = {
@@ -14,15 +14,3 @@ export const MASTERY_XP: Record<MasteryTier, number> = {
   DIAMANT: 45_000,
 }
 export const MASTERY_TIERS = Object.keys(MASTERY_XP) as MasteryTier[]
-
-const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
-
-/** Jour d'un groupe de parties : `today`, `yesterday`, le nom du jour dans la semaine, puis « Dimanche 25 oct. ». */
-export function dayLabel(date: Date, language: string, labels: { today: string; yesterday: string }, now = new Date()) {
-  const start = (value: Date) => new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime()
-  const days = Math.round((start(now) - start(date)) / 86_400_000)
-  if (days <= 0) return labels.today
-  if (days === 1) return labels.yesterday
-  if (days < 7) return capitalize(new Intl.DateTimeFormat(language, { weekday: 'long' }).format(date))
-  return capitalize(new Intl.DateTimeFormat(language, { weekday: 'long', day: 'numeric', month: 'short' }).format(date))
-}

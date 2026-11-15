@@ -1,4 +1,4 @@
-import { localizedQuestion, type GameRoundState, type GameState } from '@joutio/client-domain/game'
+import { localizedQuestion, type GameRoundState, type GameState } from '@joutio/client/game'
 import { CheckIcon, FlagIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguageStore, useT } from '@/lib/i18n'

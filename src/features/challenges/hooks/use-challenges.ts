@@ -1,4 +1,4 @@
-import type { ChallengeView } from '@joutio/client-domain/api-types'
+import type { ChallengeView } from '@joutio/client/api-types'
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'

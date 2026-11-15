@@ -1,5 +1,5 @@
-import type { IdResponse, Language, PageResponse, SuggestionView, TopicCardView } from '@joutio/client-domain/api-types'
-import type { QuestionEditorView, QuestionOperation, ReportDetail, ReportedQuestion, TeamMember, TeamRole, TopicTitles, TopicTodo, TopicWorkshop } from '@joutio/client-domain/authoring'
+import type { IdResponse, Language, PageResponse, SuggestionView, TopicCardView } from '@joutio/client/api-types'
+import type { QuestionEditorView, QuestionOperation, ReportDetail, ReportedQuestion, TeamMember, TeamRole, TopicTitles, TopicTodo, TopicWorkshop } from '@joutio/client/authoring'
 import { api } from '@/lib/api'
 
 const id = encodeURIComponent

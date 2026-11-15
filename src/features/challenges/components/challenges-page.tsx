@@ -1,5 +1,5 @@
-import type { ChallengeView } from '@joutio/client-domain/api-types'
-import type { RoomView } from '@joutio/client-domain/rooms'
+import type { ChallengeView } from '@joutio/client/api-types'
+import type { RoomView } from '@joutio/client/rooms'
 import { useQueryClient } from '@tanstack/react-query'
 import { DoorOpenIcon, LightningIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'

@@ -4,6 +4,7 @@ import { cn } from '../lib/cn'
 import { Button } from '../primitives/button'
 import { IconButton } from '../primitives/icon-button'
 
+/** Actions à droite : 8 px entre deux boutons-icônes, 12 px du bord, sur toutes les barres (simples comme pastilles). */
 type Common = { glass?: boolean; className?: string }
 
 type LargeBar = Common & { variant?: 'large'; title: string; subtitle?: string; left?: ReactNode; right?: ReactNode }
@@ -62,7 +63,7 @@ export function MobileTopBar(props: MobileTopBarProps) {
   if (props.variant === 'inline') {
     const { title, subtitle, back, onBack, left, right } = props
     return (
-      <header className={cn(threeColumns, 'px-2', glass, props.className)}>
+      <header className={cn(threeColumns, 'pr-3 pl-2', glass, props.className)}>
         <div className="flex min-w-0 justify-self-start">
           {back ? (
             <Button variant="plain" size="M" icon={CaretLeftIcon} className="px-0 font-normal" onClick={onBack}>
@@ -76,14 +77,14 @@ export function MobileTopBar(props: MobileTopBarProps) {
           <h1 className="jo-type-headline truncate">{title}</h1>
           {subtitle && <p className="jo-type-caption truncate text-jo-muted">{subtitle}</p>}
         </div>
-        <div className="flex min-w-0 justify-self-end">{right}</div>
+        <div className="flex min-w-0 gap-2 justify-self-end">{right}</div>
       </header>
     )
   }
 
   const { title, subtitle, left, right } = props
   return (
-    <header className={cn('flex min-h-[52px] items-center gap-2 py-1 pr-2 pl-4', glass, props.className)}>
+    <header className={cn('flex min-h-[52px] items-center gap-2 py-1 pr-3 pl-4', glass, props.className)}>
       {left}
       <div className="grid min-w-0 flex-1">
         <h1 className="jo-type-large-title truncate">{title}</h1>
@@ -93,7 +94,7 @@ export function MobileTopBar(props: MobileTopBarProps) {
           </p>
         ))}
       </div>
-      {right && <div className="flex flex-none items-center">{right}</div>}
+      {right && <div className="flex flex-none items-center gap-2">{right}</div>}
     </header>
   )
 }

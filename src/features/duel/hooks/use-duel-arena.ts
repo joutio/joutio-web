@@ -1,4 +1,4 @@
-import type { ApiError } from '@joutio/client-domain/api-types'
+import type { ApiError } from '@joutio/client/api-types'
 import {
   answerDeadlineMs,
   firstAnswerPct,
@@ -11,7 +11,7 @@ import {
   type ArenaScene,
   type GameChoice,
   type GameState,
-} from '@joutio/client-domain/game'
+} from '@joutio/client/game'
 import { useMutation } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { gameService } from '../lib/game-service'

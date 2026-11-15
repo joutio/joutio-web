@@ -1,4 +1,4 @@
-import type { HeadToHeadView, PlayerProfileView } from '@joutio/client-domain/api-types'
+import type { HeadToHeadView, PlayerProfileView } from '@joutio/client/api-types'
 import { api } from '@/lib/api'
 
 const id = encodeURIComponent

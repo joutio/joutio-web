@@ -16,7 +16,7 @@ const DOUBLE_SPACING = '-0.08em'
 const NUMERAL_HEIGHT = 120
 const NUMERAL_BASELINE = 116
 
-export type TopTenTopic = Pick<TopicCardProps, 'title' | 'category' | 'image'>
+export type TopTenTopic = Pick<TopicCardProps, 'title' | 'category' | 'image' | 'official'>
 
 export type TopTenProps = {
   /** Sujets du classement, dans l'ordre. Seuls les 10 premiers sont affichés. */

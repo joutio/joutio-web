@@ -1,6 +1,6 @@
-import type { IdResponse, PageResponse, PeopleSort, PlayerCardView, PlayerProfileView } from '@joutio/client-domain/api-types'
-import type { BotDifficulty } from '@joutio/client-domain/game'
-import type { MatchmakingNotification, MatchmakingTicket, RoomNotification, RoomView } from '@joutio/client-domain/rooms'
+import type { IdResponse, PageResponse, PeopleSort, PlayerCardView, PlayerProfileView } from '@joutio/client/api-types'
+import type { BotDifficulty } from '@joutio/client/game'
+import type { MatchmakingNotification, MatchmakingTicket, RoomNotification, RoomView } from '@joutio/client/rooms'
 import { api } from '@/lib/api'
 import type { EventEnvelope } from '@/lib/realtime'
 

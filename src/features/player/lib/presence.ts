@@ -1,4 +1,4 @@
-import type { PresenceView } from '@joutio/client-domain/api-types'
+import type { PresenceView } from '@joutio/client/api-types'
 import type { MessageKey } from '@/lib/i18n'
 
 type T = (key: MessageKey, values?: Record<string, string | number>) => string

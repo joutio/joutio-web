@@ -1,4 +1,4 @@
-import type { MeView } from '@joutio/client-domain/api-types'
+import type { MeView } from '@joutio/client/api-types'
 import { api } from '@/lib/api'
 import { ENDPOINTS } from '@/lib/endpoints'
 

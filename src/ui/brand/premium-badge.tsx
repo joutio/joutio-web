@@ -21,16 +21,14 @@ export type PremiumBadgeProps = {
   className?: string
 }
 
-/**
- * Marque des joueurs **Premium**, à droite du pseudonyme partout où un joueur est nommé (`marque.md` § PremiumBadge) :
- * sceau certifié `accent`, coche `onAccent`, reflet blanc qui le balaie toutes les 2 s environ (immobile sous mouvement
- * réduit). Annoncé « Premium ».
- */
-export function PremiumBadge({ size = 18, className }: PremiumBadgeProps) {
+type SealProps = PremiumBadgeProps & { label: string; fill: string; ink: string }
+
+/** Sceau certifié, coche et reflet : base commune de `PremiumBadge` et `OfficialBadge`. */
+function SealBadge({ size = 18, className, label, fill, ink }: SealProps) {
   const id = useId()
   return (
-    <svg role="img" aria-label="Premium" viewBox="0 0 24 24" width={size} height={size} className={cn('inline-block flex-none', className)}>
-      <title>Premium</title>
+    <svg role="img" aria-label={label} viewBox="0 0 24 24" width={size} height={size} className={cn('inline-block flex-none', className)}>
+      <title>{label}</title>
       <defs>
         <clipPath id={`${id}-seal`}>
           <path d={SEAL} />
@@ -41,13 +39,31 @@ export function PremiumBadge({ size = 18, className }: PremiumBadgeProps) {
           <stop offset="1" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={SEAL} fill="var(--jo-accent)" strokeLinejoin="round" stroke="var(--jo-accent)" strokeWidth="1.2" />
+      <path d={SEAL} fill={fill} strokeLinejoin="round" stroke={fill} strokeWidth="1.2" />
       <g clipPath={`url(#${id}-seal)`}>
         <g transform="rotate(20 12 12)">
           <rect className="jo-premium-shine" x="-10" y="-6" width="8" height="36" fill={`url(#${id}-shine)`} />
         </g>
       </g>
-      <path d="m7.6 12.3 3 3 5.8-6.3" fill="none" stroke="var(--jo-on-accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="m7.6 12.3 3 3 5.8-6.3" fill="none" stroke={ink} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
+
+/**
+ * Marque des joueurs **Premium**, à droite du pseudonyme partout où un joueur est nommé (`marque.md` § PremiumBadge) :
+ * sceau certifié `accent`, coche `onAccent`, reflet blanc qui le balaie toutes les 2 s environ (immobile sous mouvement
+ * réduit). Annoncé « Premium ».
+ */
+export function PremiumBadge(props: PremiumBadgeProps) {
+  return <SealBadge {...props} label="Premium" fill="var(--jo-accent)" ink="var(--jo-on-accent)" />
+}
+
+/**
+ * Marque des sujets **officiels** (éditoriaux de Joutio), à droite du nom du sujet (`marque.md` § OfficialBadge) : même
+ * sceau que Premium, en `official` (bleu) avec coche `onOfficial`. Annoncé « Officiel » (`label` traduit par l'app).
+ */
+export function OfficialBadge({ label = 'Officiel', ...props }: PremiumBadgeProps & { label?: string }) {
+  return <SealBadge {...props} label={label} fill="var(--jo-official)" ink="var(--jo-on-official)" />
+}
+

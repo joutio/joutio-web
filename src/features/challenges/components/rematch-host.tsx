@@ -1,4 +1,4 @@
-import type { ChallengeView } from '@joutio/client-domain/api-types'
+import type { ChallengeView } from '@joutio/client/api-types'
 import { useEffect, useState } from 'react'
 import { useMe, usePlayerIdentity } from '@/features/me'
 import { useLanguageStore } from '@/lib/i18n'

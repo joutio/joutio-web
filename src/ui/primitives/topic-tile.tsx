@@ -3,8 +3,11 @@ import { CategoryIcon } from '../brand/category-icon'
 import { cn } from '../lib/cn'
 import { categoryColor } from '../lib/tokens'
 import type { CategoryCode } from '../tokens.generated'
+import { OfficialBadge } from '../brand/premium-badge'
 
 export type TopicTileProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Sujet éditorial de Joutio (`OfficialBadge` après le nom) ; obligatoire : chaque sujet affiché dit s'il l'est. */
+  official: boolean
   title: string
   category: CategoryCode
   /** Pictogramme carré du sujet : premier choix. */
@@ -24,7 +27,7 @@ export type TopicTileProps = ButtonHTMLAttributes<HTMLButtonElement> & {
  * aux coins, visible en thème sombre. Sans image, la couleur remplit le cadre. L'image cachée ne sert qu'à détecter
  * l'échec du chargement.
  */
-export function TopicTile({ title, category, pictogram, image, className, type = 'button', ...props }: TopicTileProps) {
+export function TopicTile({ title, official, category, pictogram, image, className, type = 'button', ...props }: TopicTileProps) {
   const [failed, setFailed] = useState<readonly string[]>([])
   const source = [pictogram, image].find((url): url is string => Boolean(url) && !failed.includes(url as string))
   return (
@@ -49,7 +52,10 @@ export function TopicTile({ title, category, pictogram, image, className, type =
           <CategoryIcon category={category} size={28} weight="fill" className="relative" />
         )}
       </span>
-      <span className="jo-type-callout line-clamp-2 min-h-[calc(var(--jo-type-callout-line-height)*2)] w-full break-words text-center">{title}</span>
+      <span className="jo-type-callout line-clamp-2 min-h-[calc(var(--jo-type-callout-line-height)*2)] w-full break-words text-center">
+        {title}
+        {official && <OfficialBadge size={14} className="ml-1 inline-block align-[-2px]" />}
+      </span>
     </button>
   )
 }

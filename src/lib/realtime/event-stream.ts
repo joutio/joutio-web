@@ -26,7 +26,7 @@ export type EventStreamSource<T> = {
 
 export type EventStreamOptions<T, S> = EventStreamSource<T> & {
   initial: () => S
-  /** Fold pur, en général celui de `@joutio/client-domain`. */
+  /** Fold pur, en général celui de `@joutio/client`. */
   apply: (state: S, payload: T) => S
   /** Trame live reçue (hors rejeu) : ré-ancrage de l'horloge serveur. */
   onLive?: (envelope: EventEnvelope<T>, receivedAt: number) => void

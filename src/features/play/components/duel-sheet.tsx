@@ -1,5 +1,5 @@
-import type { PlayerCardView } from '@joutio/client-domain/api-types'
-import type { BotDifficulty } from '@joutio/client-domain/game'
+import type { PlayerCardView } from '@joutio/client/api-types'
+import type { BotDifficulty } from '@joutio/client/game'
 import { GlobeHemisphereWestIcon, LinkIcon, MagnifyingGlassIcon, RobotIcon, UserPlusIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { usePlayerIdentity } from '@/features/me'

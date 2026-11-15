@@ -151,6 +151,7 @@ export function JoinPage() {
           // Même largeur que les cartes paysage des rails de l'Accueil (240 px), centrée.
           <TopicCard
             title={topicName(view.topic.names, language)}
+            official={view.topic.official ?? false}
             category={toCategoryCode(view.topic.category)}
             image={view.topic.imageUrl ?? undefined}
             className="mx-auto max-w-[240px]"

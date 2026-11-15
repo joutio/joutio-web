@@ -1,4 +1,4 @@
-import { displayShareUrl } from '@joutio/client-domain/share'
+import { displayShareUrl } from '@joutio/client/share'
 import { AppleLogoIcon, CheckIcon, CopyIcon, GooglePlayLogoIcon, ShareNetworkIcon } from '@phosphor-icons/react'
 import { useMemo, useState } from 'react'
 import { renderSVG } from 'uqr'

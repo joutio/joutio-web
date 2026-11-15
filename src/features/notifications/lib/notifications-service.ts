@@ -1,4 +1,4 @@
-import type { PageResponse, UnreadCountView } from '@joutio/client-domain/api-types'
+import type { PageResponse, UnreadCountView } from '@joutio/client/api-types'
 import { api } from '@/lib/api'
 import type { NotificationView } from '@/lib/realtime'
 

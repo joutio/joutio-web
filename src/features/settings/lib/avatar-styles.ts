@@ -1,4 +1,4 @@
-import type { BadgeCollectionView, MeView, RewardsView } from '@joutio/client-domain/api-types'
+import type { BadgeCollectionView, MeView, RewardsView } from '@joutio/client/api-types'
 import type { RewardState } from '@/ui'
 
 export type EditorStyleId = 'base' | 'micah' | 'lorelei' | 'notionists'

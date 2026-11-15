@@ -5,7 +5,7 @@ import type {
   PageResponse,
   RewardsView,
   TopicStatView,
-} from '@joutio/client-domain/api-types'
+} from '@joutio/client/api-types'
 import { api } from '@/lib/api'
 
 const id = encodeURIComponent

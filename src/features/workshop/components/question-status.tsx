@@ -1,4 +1,4 @@
-import { questionStatus, type QuestionEditorView, type QuestionStatus } from '@joutio/client-domain/authoring'
+import { questionStatus, type QuestionEditorView, type QuestionStatus } from '@joutio/client/authoring'
 import { ArchiveIcon, CheckCircleIcon, HourglassMediumIcon, ProhibitIcon, XCircleIcon, type Icon } from '@phosphor-icons/react'
 
 

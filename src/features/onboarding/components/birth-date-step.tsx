@@ -1,4 +1,4 @@
-import { BIRTH_DATE_PROBLEMS, birthDateIssue, isoDay, MIN_AGE } from '@joutio/client-domain/profile'
+import { BIRTH_DATE_PROBLEMS, birthDateIssue, isoDay, MIN_AGE } from '@joutio/client/profile'
 import { CakeIcon, ProhibitIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useSetBirthDate } from '@/features/me'

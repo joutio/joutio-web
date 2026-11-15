@@ -1,4 +1,4 @@
-import type { Language } from '@joutio/client-domain/api-types'
+import type { Language } from '@joutio/client/api-types'
 import { useLocation } from 'react-router-dom'
 import { TABS, type TabKey } from '@/features/shell'
 import type { MessageKey } from '@/lib/i18n'

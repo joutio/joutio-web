@@ -1,4 +1,4 @@
-import type { GameHistoryItemView } from '@joutio/client-domain/api-types'
+import type { GameHistoryItemView } from '@joutio/client/api-types'
 import { useNavigate } from 'react-router-dom'
 import { dayLabel } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'

@@ -1,4 +1,4 @@
-import type { Language } from '@joutio/client-domain/api-types'
+import type { Language } from '@joutio/client/api-types'
 import {
   contentFor,
   QUESTION_CHOICES,
@@ -8,7 +8,7 @@ import {
   type QuestionEditorView,
   type ReportedQuestion,
   type ReportSnapshot,
-} from '@joutio/client-domain/authoring'
+} from '@joutio/client/authoring'
 import { CheckCircleIcon, ClockCounterClockwiseIcon, PencilSimpleIcon, ProhibitIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'

@@ -1,4 +1,4 @@
-import { countryFlag, countryName, searchCountries, suggestedCountries, regionOfLocale } from '@joutio/client-domain/geo'
+import { countryFlag, countryName, searchCountries, suggestedCountries, regionOfLocale } from '@joutio/client/geo'
 import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useLanguageStore, useT } from '@/lib/i18n'

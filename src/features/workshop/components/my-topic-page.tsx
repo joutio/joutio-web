@@ -1,4 +1,4 @@
-import { customizedTierCount, descriptionsDraft, topicDescription, MASTERY_TIERS, MAX_NAME, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client-domain/authoring'
+import { customizedTierCount, descriptionsDraft, topicDescription, MASTERY_TIERS, MAX_NAME, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client/authoring'
 import { CrownSimpleIcon, FileDashedIcon, ImageIcon, ListChecksIcon, PencilSimpleIcon, ShieldCheckIcon, SquaresFourIcon, StickerIcon, TextAlignLeftIcon, TrashIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -7,7 +7,7 @@ import { showDialog } from '@/shared/dialog'
 import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { useBack } from '@/shared/use-back'
-import { Button, EmptyState, ListRow, ParallaxScreen, Pill, ProgressBar, SectionHeader, Skeleton, tokens } from '@/ui'
+import { Button, EmptyState, ListRow, ParallaxScreen, Pill, ProgressBar, SectionHeader, Skeleton, tokens, Notice } from '@/ui'
 import {
   useCreationLimits,
   useDeleteTopic,
@@ -47,7 +47,7 @@ export function MyTopicPage() {
   const { topicId = '' } = useParams()
   const back = useBack(ROUTES.myTopics)
   const workshop = useWorkshop(topicId)
-  const { topic, permissions, titles } = workshop
+  const { topic, permissions, titles, closedReason } = workshop
   const role = workshopRole(permissions)
   const manager = Boolean(permissions?.canManage)
   const { premium, limits, askPremium } = useCreationLimits()
@@ -251,6 +251,7 @@ export function MyTopicPage() {
     >
       <div className="grid gap-6 px-4 pt-2 pb-8">
         {locked && <FrozenNotice published={published} limit={limits.publishedTopics} />}
+        {closedReason !== null && <Notice tone="error" title={t('workshop.closedTitle')} message={t('workshop.closedText', { reason: closedReason || '—' })} />}
         {manager && (
           <section className="grid gap-3">
             <SectionHeader title={t('workshop.topic')} />

@@ -17,7 +17,7 @@
 - **`design/` fait foi** : textes, composants, comportements. Le code du lab se **porte** (même API, mêmes classes,
   mêmes jetons), il ne s'importe jamais (`eslint` interdit tout import de `design/`). En cas d'écart, on corrige
   l'app, pas le lab ; un manque du lab se règle d'abord dans le lab.
-- **Domaine client** : `@joutio/client-domain` (pin exact, GitHub Packages) — fold du duel, salles, atelier, DTOs du
+- **Domaine client** : `@joutio/client` (pin exact, GitHub Packages) — fold du duel, salles, atelier, DTOs du
   BFF. Aucune règle métier dupliquée dans l'app.
 - L'ancienne app (`main`) se lit pour le comportement (auth web, refresh, cas limites), elle ne se copie pas.
 
@@ -25,7 +25,7 @@
 
 `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `zustand`, `zod`, `react-hook-form`,
 `@stomp/stompjs`, `@phosphor-icons/react`, `class-variance-authority`, `clsx`, `tailwind-merge`,
-`@fontsource-variable/geist`, `@fontsource-variable/geist-mono`, `@joutio/client-domain`, `@dicebear/core` et
+`@fontsource-variable/geist`, `@fontsource-variable/geist-mono`, `@joutio/client`, `@dicebear/core` et
 `@dicebear/styles` (avatars des joueurs, mêmes options et même rendu que le lab et le mobile ; décision du 2026-11-11,
 moteur dans `src/shared/avatar/`, styles chargés à la demande par `import()`), `vaul` (feuilles `MobileSheet` : geste
 tirer-pour-fermer, voile, focus, Échap ; rendue dans la colonne, sans portail) et `embla-carousel-react` (`Carousel` de
@@ -99,8 +99,10 @@ toujours sombres posent `data-jo-theme="dark"` sur leur sous-arbre.
 - **Temps réel** : une connexion STOMP, JWT au `CONNECT`, backoff croissant, suspendue onglet caché ; état réseau
   (`useConnectionStore`) → `Banner` `connection`. `EventStream` dédoublonne par `sequenceNumber` et tamponne les trous.
 - **Web Push** : `public/sw.js` + `lib/push`, déclenché seulement par une action explicite.
-- **Langue** : FR/EN maison (`lib/i18n`), français par défaut tant que `MeView.language` n'est pas connu ; textes
-  français = textes du lab, mot pour mot.
+- **Langue** : FR/EN maison, dictionnaires et `translate` partagés avec le mobile dans `@joutio/client/i18n`
+  (ADR [`0002`](../../design/specs/decisions/0002-client-i18n.md)) ; `lib/i18n` garde la langue courante et `useT`.
+  Français par défaut tant que `MeView.language` n'est pas connu ; textes français = textes du lab, mot pour mot.
+  Ajouter une clé = l'ajouter à la lib (FR et EN), publier, puis l'utiliser.
 - **Télémétrie** : `/api/telemetry/events` (liste autorisée) et `/client-errors`.
 
 ## 6. Commandes
@@ -178,7 +180,7 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
         univers, vignette, pictogramme PNG, Questions / Équipe / Modération, Publier, Supprimer le brouillon, Repasser
         en brouillon), Questions `…/questions` (recherche, Trier et filtrer, statuts, repère du minimum ou du plafond,
         10 par page), éditeur `…/questions/{id|new}` (image, FR/EN, description d'image, Juste, Gérer selon le rôle,
-        enregistrement optimiste par opérations de `@joutio/client-domain`), Modération `…/moderation` (À valider /
+        enregistrement optimiste par opérations de `@joutio/client`), Modération `…/moderation` (À valider /
         Signalements, rejet motivé), Signalements `…/reports/{questionId}` (file balayable, `DetentSheet`, Actuelle /
         Signalée, Clore confirmé, Modifier clôt en `RESOLVED`), Équipe `…/team`. Les notifications de signalement
         ouvrent la file sur leur question (signalement cerclé, retour « Notifications »), celles de brouillon Mon sujet.
@@ -232,7 +234,7 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
 - Sujets : « Mes thèmes » (Tous / Suivis / Mes sujets : `followed` ou `mine`, facettes de la même portée) remplace
   « Masquer les sujets suivis ».
 - Atelier : ligne et feuille **Titres** (`TopicTitlesSheet`, `useUpdateTopicTitles`, `PUT /api/topics/{id}/titles`),
-  libellés via `customTitle` de `@joutio/client-domain/authoring`.
+  libellés via `customTitle` de `@joutio/client/authoring`.
 - Avatar de base : fond `raised` relevé vers le texte + filet `border`.
 
 ### Lot du 2026-11-13 (soir)

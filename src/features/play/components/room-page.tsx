@@ -1,4 +1,4 @@
-import { preparationComplete, preparationStep, roomFailureKind, wizzState, type RoomFailureKind, type RoomStatus } from '@joutio/client-domain/rooms'
+import { preparationComplete, preparationStep, roomFailureKind, wizzState, type RoomFailureKind, type RoomStatus } from '@joutio/client/rooms'
 import { LightningIcon, LinkIcon, RobotIcon, ShareNetworkIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'

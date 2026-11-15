@@ -1,4 +1,4 @@
-import type { ChallengeView } from '@joutio/client-domain/api-types'
+import type { ChallengeView } from '@joutio/client/api-types'
 import { BellIcon, ChecksIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'

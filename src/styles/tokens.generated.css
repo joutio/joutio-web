@@ -15,6 +15,8 @@
   --jo-accent-press: #C9963C;
   --jo-accent-ink: #E8B04A;
   --jo-on-accent: #000000;
+  --jo-official: #5B9BFF;
+  --jo-on-official: #FFFFFF;
   --jo-correct: #4FB286;
   --jo-on-correct: #000000;
   --jo-wrong: #E5645A;
@@ -59,6 +61,8 @@
   --jo-accent-press: #C9963C;
   --jo-accent-ink: #8A5E0F;
   --jo-on-accent: #000000;
+  --jo-official: #2F6FE4;
+  --jo-on-official: #FFFFFF;
   --jo-correct: #256E4C;
   --jo-on-correct: #FFFFFF;
   --jo-wrong: #A83A32;

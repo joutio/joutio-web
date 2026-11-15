@@ -1,4 +1,4 @@
-import type { Language } from '@joutio/client-domain/api-types'
+import type { Language } from '@joutio/client/api-types'
 import {
   buildQuestionPlan,
   draftFromQuestion,
@@ -13,7 +13,7 @@ import {
   translationStatus,
   workshopRole,
   type QuestionDraft,
-} from '@joutio/client-domain/authoring'
+} from '@joutio/client/authoring'
 import { ArchiveIcon, ArrowCounterClockwiseIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'

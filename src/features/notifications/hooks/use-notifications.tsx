@@ -1,4 +1,4 @@
-import type { PageResponse } from '@joutio/client-domain/api-types'
+import type { PageResponse } from '@joutio/client/api-types'
 import { useInfiniteQuery, useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'

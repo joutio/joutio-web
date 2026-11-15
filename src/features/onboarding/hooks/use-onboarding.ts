@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { MeView } from '@joutio/client-domain/api-types'
+import type { MeView } from '@joutio/client/api-types'
 import { queryKeys } from '@/lib/query-keys'
 import { isApiError } from '@/lib/api'
 import { endSession, loginWithCode, loginRedirect, requestLoginCode } from '@/lib/session'

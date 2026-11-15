@@ -1,4 +1,4 @@
-import type { TopicCardView } from '@joutio/client-domain/api-types'
+import type { TopicCardView } from '@joutio/client/api-types'
 import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { DEFAULT_TOPIC_SORT, useTopics } from '@/features/topics'
@@ -41,6 +41,7 @@ export function ChallengeTopicSheet({ player, title, open, onClose, onPick }: Ch
                 <TopicRow
                   key={topic.topicId}
                   title={topicName(topic.names, language)}
+                  official={topic.official ?? false}
                   category={toCategoryCode(topic.category)}
                   pictogram={topic.pictogramUrl ?? undefined}
                   image={topic.imageUrl ?? undefined}

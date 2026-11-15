@@ -1,5 +1,6 @@
 import { useState, type ButtonHTMLAttributes } from 'react'
 import { CategoryIcon } from '../brand/category-icon'
+import { OfficialBadge } from '../brand/premium-badge'
 import { cn } from '../lib/cn'
 import { categoryColor, categoryInk } from '../lib/tokens'
 import { tokens, type CategoryCode } from '../tokens.generated'
@@ -9,6 +10,8 @@ export type TopicCardProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   category: CategoryCode
   orientation?: 'portrait' | 'landscape'
   image?: string
+  /** Sujet éditorial de Joutio (`OfficialBadge` après le nom) ; obligatoire : chaque sujet affiché dit s'il l'est. */
+  official: boolean
 }
 
 /** Visuel : bannière, sinon couleur et icône de la catégorie (aussi quand la bannière échoue au chargement). */
@@ -17,6 +20,7 @@ export function TopicCard({
   category,
   orientation = 'landscape',
   image,
+  official,
   className,
   type = 'button',
   ...props
@@ -53,7 +57,10 @@ export function TopicCard({
         <span className="jo-type-caption truncate font-semibold" style={{ color: categoryInk(category) }}>
           {tokens.category[category].label}
         </span>
-        <span className="jo-type-callout truncate font-semibold">{title}</span>
+        <span className="flex min-w-0 items-center gap-1">
+          <span className="jo-type-callout truncate font-semibold">{title}</span>
+          {official && <OfficialBadge size={16} />}
+        </span>
       </span>
     </button>
   )

@@ -1,4 +1,4 @@
-import type { LeaderboardEntryView } from '@joutio/client-domain/api-types'
+import type { LeaderboardEntryView } from '@joutio/client/api-types'
 import { SlidersHorizontalIcon, TrophyIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'

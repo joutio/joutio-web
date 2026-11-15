@@ -1,4 +1,4 @@
-import type { ActiveGameView, GameChoice, GameNotification, GameResultView } from '@joutio/client-domain/game'
+import type { ActiveGameView, GameChoice, GameNotification, GameResultView } from '@joutio/client/game'
 import { api } from '@/lib/api'
 import type { EventEnvelope } from '@/lib/realtime'
 

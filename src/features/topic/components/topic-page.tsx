@@ -1,5 +1,5 @@
-import { topicDescription } from '@joutio/client-domain/authoring'
-import { CheckIcon, HeartIcon, LightningIcon, ShareNetworkIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { topicDescription } from '@joutio/client/authoring'
+import { CheckIcon, DotsThreeIcon, FlagIcon, HeartIcon, LightningIcon, ShareNetworkIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DuelSheet } from '@/features/play'
@@ -9,9 +9,10 @@ import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
 import { useTabParam } from '@/shared/use-tab-param'
 import { toCategoryCode, topicName } from '@/shared/topics'
-import { Button, Dialog, EmptyState, IconButton, JoutioTabs, ParallaxScreen, Pill, ProgressBar, Screen, Skeleton, Stat, TabsScrollView, tokens } from '@/ui'
+import { Button, Dialog, EmptyState, IconButton, JoutioTabs, Menu, ParallaxScreen, Pill, ProgressBar, Screen, Skeleton, Stat, TabsScrollView, tokens } from '@/ui'
 import { useFollowTopic, useTopicLeaderboard, useTopicOverview } from '../hooks/use-topic'
 import { formatNumber } from '../lib/format'
+import { ReportTopicSheet } from './report-topic-sheet'
 import { BOARD_TOP, BoardTab, GamesTab, MyBoardRow, ProgressTab } from './topic-tabs'
 
 // MVP : le Mur reste désactivé (`fiche-sujet.md` § 2, 2026-11-07).
@@ -82,6 +83,9 @@ export function TopicPage() {
     if (followed) setUnfollowOpen(true)
     else follow.mutate(true)
   }
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [reportOpen, setReportOpen] = useState(false)
+  const [reportKey, setReportKey] = useState(0)
   const share = useShare()
   const shareTopic = () => {
     if (!topic) return
@@ -122,11 +126,13 @@ export function TopicPage() {
       barTitleStart
       image={topic ? (topic.bannerUrl ?? topic.imageUrl ?? undefined) : undefined}
       title={name}
+      official={topic?.official ?? false}
       eyebrow={topic ? <Pill category={category}>{tokens.category[category].label}</Pill> : undefined}
       onBack={back}
       right={
         <>
           <IconButton icon={ShareNetworkIcon} label={t('profile.share')} media onClick={shareTopic} />
+          {topic && <IconButton icon={DotsThreeIcon} label={t('player.more')} media onClick={() => setMenuOpen(true)} />}
         </>
       }
       intro={
@@ -167,6 +173,25 @@ export function TopicPage() {
       bottomNav={<TabNav active="topics" />}
       overlay={
         <>
+        {menuOpen && (
+          <div className="absolute inset-0 z-20" onClick={() => setMenuOpen(false)}>
+            <Menu
+              width={200}
+              className="absolute top-[calc(var(--jo-safe-top,0px)+52px)] right-3"
+              items={[
+                {
+                  label: t('topicReport.action'),
+                  icon: FlagIcon,
+                  onClick: () => {
+                    setReportKey((value) => value + 1)
+                    setReportOpen(true)
+                  },
+                },
+              ]}
+            />
+          </div>
+        )}
+        {topic && <ReportTopicSheet key={reportKey} open={reportOpen} onClose={() => setReportOpen(false)} topicId={topic.topicId} name={name} />}
         {topic && <DuelSheet open={duelOpen} onClose={() => setDuelOpen(false)} topic={{ topicId: topic.topicId, name, category: topic.category }} />}
         <Dialog
           open={unfollowOpen}

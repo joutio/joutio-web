@@ -1,5 +1,5 @@
-import type { ChallengeView, MeView, NotificationCategory, NotificationPreferenceView, PageResponse, PlayerCardView, PlayerProfileView } from '@joutio/client-domain/api-types'
-import { PSEUDONYM_PROBLEMS, pseudonymIssue, pseudonymKey, type PseudonymIssue } from '@joutio/client-domain/profile'
+import type { ChallengeView, MeView, NotificationCategory, NotificationPreferenceView, PageResponse, PlayerCardView, PlayerProfileView } from '@joutio/client/api-types'
+import { PSEUDONYM_PROBLEMS, pseudonymIssue, pseudonymKey, type PseudonymIssue } from '@joutio/client/profile'
 import { useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useMe } from '@/features/me'

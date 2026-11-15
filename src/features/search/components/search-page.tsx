@@ -1,4 +1,4 @@
-import type { SuggestionView } from '@joutio/client-domain/api-types'
+import type { SuggestionView } from '@joutio/client/api-types'
 import { ClockCounterClockwiseIcon, MagnifyingGlassIcon, WarningCircleIcon, WifiSlashIcon } from '@phosphor-icons/react'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
@@ -140,6 +140,7 @@ export function SearchPage() {
                       <TopicRow
                         key={topic.id}
                         title={name}
+                        official={topic.official ?? false}
                         category={toCategoryCode(topic.category)}
                         pictogram={topic.pictogramUrl ?? undefined}
                         image={topic.imageUrl ?? undefined}

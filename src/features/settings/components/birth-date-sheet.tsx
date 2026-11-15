@@ -1,4 +1,4 @@
-import { birthDateIssue, BIRTH_DATE_PROBLEMS, isoDay, MIN_AGE } from '@joutio/client-domain/profile'
+import { birthDateIssue, BIRTH_DATE_PROBLEMS, isoDay, MIN_AGE } from '@joutio/client/profile'
 import { useState } from 'react'
 import { useSetBirthDate } from '@/features/me'
 import { isApiError } from '@/lib/api'

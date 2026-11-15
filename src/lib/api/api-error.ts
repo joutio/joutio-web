@@ -1,4 +1,4 @@
-import type { ApiError } from '@joutio/client-domain/api-types'
+import type { ApiError } from '@joutio/client/api-types'
 
 /** Types de problème RFC 7807 (`urn:joutio:*`) dont la plomberie dépend. */
 export const PROBLEM = {
@@ -6,7 +6,7 @@ export const PROBLEM = {
   unknownUser: 'urn:joutio:authentification:unknownUser',
 } as const
 
-/** Erreur HTTP typée : porte le ProblemDetail du BFF (`ApiError` de `@joutio/client-domain`). */
+/** Erreur HTTP typée : porte le ProblemDetail du BFF (`ApiError` de `@joutio/client`). */
 export class ApiRequestError extends Error implements ApiError {
   readonly statusCode?: number
   readonly title?: string

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { isApiError } from '@/lib/api'
 import { useT } from '@/lib/i18n'
-import { isAcceptedImage, uploadImage } from '@/shared/media'
+import { isAcceptedImage, uploadImage, withImageRights } from '@/shared/media'
 import { toast } from '@/shared/toast'
 
 /**
@@ -39,6 +39,6 @@ export function useImageUpload(onUploaded: (url: string) => void, png = false) {
       }}
     />
   )
-  return { uploading, pick: () => input.current?.click(), field }
+  return { uploading, pick: () => withImageRights(() => input.current?.click()), field }
 }
 

@@ -1,4 +1,4 @@
-import { countryFlag, countryName } from '@joutio/client-domain/geo'
+import { countryFlag, countryName } from '@joutio/client/geo'
 import { GearSixIcon, PencilSimpleIcon, ShareNetworkIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'

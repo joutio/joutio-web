@@ -97,6 +97,7 @@ export function FirstTopicStep() {
         <>
           <TopicCard
             title={topicName(picked.names, language)}
+            official={picked.official ?? false}
             category={toCategoryCode(picked.category)}
             image={picked.imageUrl ?? undefined}
             orientation="landscape"
@@ -109,6 +110,7 @@ export function FirstTopicStep() {
                 <TopicRow
                   key={topic.topicId}
                   title={topicName(topic.names, language)}
+                  official={topic.official ?? false}
                   category={toCategoryCode(topic.category)}
                   pictogram={topic.pictogramUrl ?? undefined}
                   image={topic.imageUrl ?? undefined}

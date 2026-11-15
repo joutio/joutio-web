@@ -1,4 +1,4 @@
-import { countryFlag, countryName } from '@joutio/client-domain/geo'
+import { countryFlag, countryName } from '@joutio/client/geo'
 import { CameraIcon, GlobeHemisphereWestIcon, TrashIcon, WarningIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { useBlocker, useNavigate } from 'react-router-dom'
@@ -9,7 +9,7 @@ import { useLanguageStore, useT } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { CountryPicker } from '@/shared/country-picker'
 import { showDialog } from '@/shared/dialog'
-import { isAcceptedImage, uploadImage } from '@/shared/media'
+import { isAcceptedImage, uploadImage, withImageRights } from '@/shared/media'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
 import { Avatar, Field, IconButton, ListRow, MobileTopBar, Screen } from '@/ui'
@@ -124,7 +124,7 @@ export function EditProfilePage() {
           <div className="relative h-36 overflow-hidden bg-jo-raised">
             {draft.bannerUrl && <img src={draft.bannerUrl} alt="" className="size-full object-cover" />}
             <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/30">
-              <IconButton icon={CameraIcon} label={t(draft.bannerUrl ? 'editProfile.changeBanner' : 'editProfile.addBanner')} media disabled={uploading} onClick={() => file.current?.click()} />
+              <IconButton icon={CameraIcon} label={t(draft.bannerUrl ? 'editProfile.changeBanner' : 'editProfile.addBanner')} media disabled={uploading} onClick={() => withImageRights(() => file.current?.click())} />
               {draft.bannerUrl && <IconButton icon={TrashIcon} label={t('editProfile.removeBanner')} media onClick={() => setDraft({ ...draft, bannerUrl: null })} />}
             </div>
             <input

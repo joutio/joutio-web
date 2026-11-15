@@ -1,4 +1,4 @@
-import { contentFor, MAX_REJECT, QUESTION_CHOICES, questionText, type QuestionEditorView, type ReportedQuestion } from '@joutio/client-domain/authoring'
+import { contentFor, MAX_REJECT, QUESTION_CHOICES, questionText, type QuestionEditorView, type ReportedQuestion } from '@joutio/client/authoring'
 import { CheckCircleIcon, ProhibitIcon, WarningIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'

@@ -1,4 +1,4 @@
-import type { IdResponse, QuestionReportReason, UserReportReason } from '@joutio/client-domain/api-types'
+import type { IdResponse, QuestionReportReason, UserReportReason } from '@joutio/client/api-types'
 import { api } from '@/lib/api'
 
 const id = encodeURIComponent

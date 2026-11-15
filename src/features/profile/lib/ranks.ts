@@ -1,5 +1,5 @@
-import { customTitle } from '@joutio/client-domain/authoring'
-import type { TitleView } from '@joutio/client-domain/api-types'
+import { customTitle } from '@joutio/client/authoring'
+import type { TitleView } from '@joutio/client/api-types'
 import { formatNumber } from '@/features/topic'
 import type { MessageKey } from '@/lib/i18n'
 import { topicName } from '@/shared/topics'

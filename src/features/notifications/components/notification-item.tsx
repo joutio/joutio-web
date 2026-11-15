@@ -1,4 +1,4 @@
-import type { ChallengeView } from '@joutio/client-domain/api-types'
+import type { ChallengeView } from '@joutio/client/api-types'
 import { BellIcon } from '@phosphor-icons/react'
 import { useQuery } from '@tanstack/react-query'
 import { usePlayerProfile } from '@/features/player'

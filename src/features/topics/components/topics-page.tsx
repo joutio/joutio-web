@@ -1,4 +1,4 @@
-import type { TopicSort } from '@joutio/client-domain/api-types'
+import type { TopicSort } from '@joutio/client/api-types'
 import { ArrowsDownUpIcon, BellIcon, HeartIcon, MagnifyingGlassIcon, PencilSimpleIcon, SlidersHorizontalIcon, SquaresFourIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -293,7 +293,7 @@ export function TopicsPage() {
             {topics.map((topic) => (
               <TopicTile
                 key={topic.topicId}
-                title={topicName(topic.names)}
+                title={topicName(topic.names)} official={topic.official ?? false}
                 category={toCategoryCode(topic.category)}
                 pictogram={topic.pictogramUrl ?? undefined}
                 image={topic.imageUrl ?? topic.bannerUrl ?? undefined}

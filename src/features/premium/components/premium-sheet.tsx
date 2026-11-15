@@ -1,5 +1,5 @@
 import { ChartLineUpIcon, CheckIcon, CrownSimpleIcon, LightningIcon, PencilSimpleIcon, ProhibitIcon, UserCircleIcon } from '@phosphor-icons/react'
-import { planLimits, PREMIUM_LIMITS } from '@joutio/client-domain/premium'
+import { planLimits, PREMIUM_LIMITS } from '@joutio/client/premium'
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useMe } from '@/features/me'

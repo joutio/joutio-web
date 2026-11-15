@@ -3,8 +3,11 @@ import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '../lib/cn'
 import { TopicVisual } from './topic-visual'
 import { tokens, type CategoryCode } from '../tokens.generated'
+import { OfficialBadge } from '../brand/premium-badge'
 
 export type TopicRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Sujet éditorial de Joutio (`OfficialBadge` après le nom) ; obligatoire : chaque sujet affiché dit s'il l'est. */
+  official: boolean
   title: string
   category: CategoryCode
   /** Pictogramme carré du sujet : premier choix, comme `TopicTile`. */
@@ -24,7 +27,7 @@ export type TopicRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 /** Sujet à choisir dans une liste : visuel, nom, univers, puis chevron ou radio. */
-export function TopicRow({ title, category, pictogram, image, sub = tokens.category[category].label, control = 'chevron', on = false, last = false, badge, className, type = 'button', ...props }: TopicRowProps) {
+export function TopicRow({ title, official, category, pictogram, image, sub = tokens.category[category].label, control = 'chevron', on = false, last = false, badge, className, type = 'button', ...props }: TopicRowProps) {
   const radio = control === 'radio'
   const SelectIcon = on ? RadioButtonIcon : CircleIcon
   return (
@@ -41,7 +44,10 @@ export function TopicRow({ title, category, pictogram, image, sub = tokens.categ
     >
       <TopicVisual category={category} pictogram={pictogram} image={image} />
       <span className="grid min-w-0 flex-1">
-        <strong className="jo-type-headline truncate">{title}</strong>
+        <span className="flex min-w-0 items-center gap-1">
+          <strong className="jo-type-headline truncate">{title}</strong>
+          {official && <OfficialBadge size={16} />}
+        </span>
         <span className="jo-type-caption truncate text-jo-muted">{sub}</span>
       </span>
       {badge !== undefined && badge > 0 && (

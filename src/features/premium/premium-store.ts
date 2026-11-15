@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { PremiumReason as LimitReason } from '@joutio/client-domain/premium'
+import type { PremiumReason as LimitReason } from '@joutio/client/premium'
 
 /**
  * Pourquoi la feuille s'ouvre : une limite atteinte remplace l'accroche par sa raison (`premium.md` § 2) — défis,

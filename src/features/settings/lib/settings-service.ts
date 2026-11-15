@@ -1,5 +1,5 @@
-import type { Language, NotificationCategory, NotificationPreferenceView, PseudonymAvailability } from '@joutio/client-domain/api-types'
-import { MAX_PSEUDONYM } from '@joutio/client-domain/profile'
+import type { Language, NotificationCategory, NotificationPreferenceView, PseudonymAvailability } from '@joutio/client/api-types'
+import { MAX_PSEUDONYM } from '@joutio/client/profile'
 import { api, request } from '@/lib/api'
 
 const id = encodeURIComponent

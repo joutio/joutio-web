@@ -1,5 +1,5 @@
-import { descriptionsDraft } from '@joutio/client-domain/authoring'
-import type { HomeView, Language, PageResponse, TopicCardView, TopicOverviewView } from '@joutio/client-domain/api-types'
+import { descriptionsDraft } from '@joutio/client/authoring'
+import type { HomeView, Language, PageResponse, TopicCardView, TopicOverviewView } from '@joutio/client/api-types'
 import {
   applyQuestionOperations,
   type QuestionEditorView,
@@ -9,8 +9,8 @@ import {
   type TopicTitles,
   type TopicTodo,
   type TopicWorkshop,
-} from '@joutio/client-domain/authoring'
-import { isFrozen, planLimits, premiumReasonOf, quotaProblemOf, type PremiumReason } from '@joutio/client-domain/premium'
+} from '@joutio/client/authoring'
+import { isFrozen, planLimits, premiumReasonOf, quotaProblemOf, type PremiumReason } from '@joutio/client/premium'
 import { useMutation, useQuery, useQueryClient, type InfiniteData, type QueryClient } from '@tanstack/react-query'
 import { useMe } from '@/features/me'
 import { showPremium } from '@/features/premium'
@@ -38,7 +38,7 @@ export const useTopicTodo = () => useQuery({ queryKey: queryKeys.workshop.todo, 
 /** Un sujet de l'atelier et mes droits dessus. */
 export function useWorkshop(topicId: string) {
   const query = useQuery({ queryKey: queryKeys.workshop.topic(topicId), queryFn: () => workshopService.workshop(topicId), enabled: Boolean(topicId) })
-  return { ...query, topic: query.data?.topic, permissions: query.data?.permissions, titles: query.data?.titles ?? null }
+  return { ...query, topic: query.data?.topic, permissions: query.data?.permissions, titles: query.data?.titles ?? null, closedReason: query.data?.closedReason ?? null }
 }
 
 /** Toutes les questions du sujet. */

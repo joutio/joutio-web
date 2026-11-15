@@ -1,4 +1,4 @@
-import { applyGameNotification, emptyGame, type GameNotification, type GameState } from '@joutio/client-domain/game'
+import { applyGameNotification, emptyGame, type GameNotification, type GameState } from '@joutio/client/game'
 import { useEffect } from 'react'
 import { useEventStream } from '@/lib/realtime'
 import { GAME_ENDPOINTS, gameService } from '../lib/game-service'

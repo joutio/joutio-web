@@ -1,4 +1,4 @@
-import type { GameHistoryItemView, PageResponse } from '@joutio/client-domain/api-types'
+import type { GameHistoryItemView, PageResponse } from '@joutio/client/api-types'
 import { api } from '@/lib/api'
 
 /** 20 parties par page (`historique.md` § 5). */

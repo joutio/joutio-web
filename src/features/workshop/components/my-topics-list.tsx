@@ -1,5 +1,5 @@
-import type { TopicCardView } from '@joutio/client-domain/api-types'
-import { MAX_NAME, MIN_QUESTIONS, todoTotal } from '@joutio/client-domain/authoring'
+import type { TopicCardView } from '@joutio/client/api-types'
+import { MAX_NAME, MIN_QUESTIONS, todoTotal } from '@joutio/client/authoring'
 import { PencilSimpleIcon, PlusIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -79,6 +79,7 @@ export function MyTopicsList() {
         <TopicRow
           key={topic.topicId}
           title={topicName(topic.names, language)}
+          official={topic.official ?? false}
           category={toCategoryCode(topic.category)}
           pictogram={topic.pictogramUrl ?? undefined}
           image={topic.imageUrl ?? undefined}

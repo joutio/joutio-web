@@ -1,4 +1,4 @@
-import type { QuestionReportReason, UserReportReason } from '@joutio/client-domain/api-types'
+import type { QuestionReportReason, UserReportReason } from '@joutio/client/api-types'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'

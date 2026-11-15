@@ -1,4 +1,4 @@
-import type { ChallengeView } from '@joutio/client-domain/api-types'
+import type { ChallengeView } from '@joutio/client/api-types'
 import { describe, expect, it } from 'vitest'
 import { splitChallenges } from './challenges-service'
 

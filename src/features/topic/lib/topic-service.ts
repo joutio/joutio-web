@@ -1,4 +1,4 @@
-import type { GameHistoryItemView, PageResponse, TitlesView, TopicLeaderboardView, TopicOverviewView } from '@joutio/client-domain/api-types'
+import type { GameHistoryItemView, PageResponse, TitlesView, TopicLeaderboardView, TopicOverviewView } from '@joutio/client/api-types'
 import { api } from '@/lib/api'
 
 const id = encodeURIComponent

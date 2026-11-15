@@ -7,6 +7,7 @@ import { LoadingScreen } from '@/shared/loading-screen'
 import { toCategoryCode } from '@/shared/topics'
 import { useOnboardingStore } from '../onboarding-store'
 import { BirthDateStep } from './birth-date-step'
+import { TermsStep } from './terms-step'
 import { CodeStep } from './code-step'
 import { FirstTopicStep } from './first-topic-step'
 import { LoginStep } from './login-step'
@@ -88,6 +89,7 @@ export function OnboardingPage() {
   if (!me.data || onboarded) return <LoadingScreen />
   // Étape de compte, avant la personnalisation : une fois, pour les comptes récents (`onboarding.md`).
   if (me.data.birthDateRequired) return <BirthDateStep />
+  if (me.data.termsUpToDate === false) return <TermsStep />
 
   switch (step) {
     case 'notifications':

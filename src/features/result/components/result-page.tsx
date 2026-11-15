@@ -1,5 +1,5 @@
-import type { MasteryTier } from '@joutio/client-domain/api-types'
-import { isBonusRound, ROUNDS, sortedRounds, type GameResultView, type GameRoundState, type GameState } from '@joutio/client-domain/game'
+import type { MasteryTier } from '@joutio/client/api-types'
+import { isBonusRound, ROUNDS, sortedRounds, type GameResultView, type GameRoundState, type GameState } from '@joutio/client/game'
 import { FlagIcon, LightningIcon, WarningCircleIcon, XIcon } from '@phosphor-icons/react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -35,7 +35,7 @@ import {
   type TierCode,
 } from '@/ui'
 import { useGameHistory, useGameResult, useSendRematch, useStreakUnlock } from '../hooks/use-result'
-import { nextStreakMilestone } from '@joutio/client-domain/profile'
+import { nextStreakMilestone } from '@joutio/client/profile'
 import { celebrated } from '../lib/celebrated'
 import { reviewRoundsOf } from '../lib/review'
 import { DuelReview } from './duel-review'

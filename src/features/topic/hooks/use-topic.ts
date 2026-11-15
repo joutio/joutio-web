@@ -1,4 +1,4 @@
-import type { HomeView, MeView, TitlesView, TopicCardView, TopicOverviewView } from '@joutio/client-domain/api-types'
+import type { HomeView, MeView, TitlesView, TopicCardView, TopicOverviewView } from '@joutio/client/api-types'
 import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { useMe } from '@/features/me'
 import type { TopicPage } from '@/features/topics'

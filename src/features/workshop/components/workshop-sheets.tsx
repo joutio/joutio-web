@@ -1,4 +1,4 @@
-import type { Language } from '@joutio/client-domain/api-types'
+import type { Language } from '@joutio/client/api-types'
 import { useState } from 'react'
 import { useT } from '@/lib/i18n'
 import { useImageUpload } from '../hooks/use-image-upload'
@@ -14,7 +14,7 @@ import {
   type TitleLanguage,
   type TopicTitles,
   MAX_DESCRIPTION,
-} from '@joutio/client-domain/authoring'
+} from '@joutio/client/authoring'
 import { formatNumber, MASTERY_XP } from '@/features/topic'
 import { Badge, Button, Field, ImagePicker, ListRow, MobileSheet, RadioGroup, Segmented, tokens, type CategoryCode } from '@/ui'
 

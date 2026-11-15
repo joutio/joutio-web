@@ -1,5 +1,5 @@
-import { customTitle } from '@joutio/client-domain/authoring'
-import type { GameHistoryItemView, GameOutcome, LeaderboardEntryView, TopicOverviewView } from '@joutio/client-domain/api-types'
+import { customTitle } from '@joutio/client/authoring'
+import type { GameHistoryItemView, GameOutcome, LeaderboardEntryView, TopicOverviewView } from '@joutio/client/api-types'
 import { SwordIcon, TrophyIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayerIdentity } from '@/features/me'

@@ -1,6 +1,6 @@
 import { useLocation, Navigate, Outlet } from 'react-router-dom'
 import { useMe } from '@/features/me'
-import { BirthDateStep } from '@/features/onboarding'
+import { BirthDateStep, TermsStep } from '@/features/onboarding'
 import { returnTo, selectStatus, useSessionStore } from '@/lib/session'
 import { BootError } from '@/shared/boot-error'
 import { LoadingScreen } from '@/shared/loading-screen'
@@ -26,6 +26,8 @@ export function AuthenticatedLayout() {
 
   // Compte récent sans date de naissance (lien de salon, reprise) : demandée avant de jouer.
   if (required) return <BirthDateStep />
+  // CGU en vigueur pas encore acceptées (première connexion ou nouvelle version) : présentées avant de jouer.
+  if (me.data.termsUpToDate === false) return <TermsStep />
 
   return (
     <ConnectionBanner>

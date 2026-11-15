@@ -1,4 +1,4 @@
-import type { MeView, PlayerProfileView } from '@joutio/client-domain/api-types'
+import type { MeView, PlayerProfileView } from '@joutio/client/api-types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMe } from '@/features/me'
 import { useT } from '@/lib/i18n'

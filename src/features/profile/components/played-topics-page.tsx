@@ -56,6 +56,7 @@ export function PlayedTopicsPage() {
                 <TopicRow
                   key={topic.topicId}
                   title={topicName(topic.names, language)}
+                  official={topic.official ?? false}
                   category={toCategoryCode(topic.category)}
                   pictogram={topic.pictogramUrl ?? undefined}
                   image={topic.imageUrl ?? undefined}

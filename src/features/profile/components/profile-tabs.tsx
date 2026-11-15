@@ -1,4 +1,4 @@
-import type { BadgeCollectionView, MeView, TitlesView, TopicStatView } from '@joutio/client-domain/api-types'
+import type { BadgeCollectionView, MeView, TitlesView, TopicStatView } from '@joutio/client/api-types'
 import { ChartLineUpIcon, ClockCounterClockwiseIcon, CrownSimpleIcon, MedalIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'

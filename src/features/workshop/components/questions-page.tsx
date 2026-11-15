@@ -1,4 +1,4 @@
-import { isTranslated, MIN_QUESTIONS, workshopRole, questionStatus, questionText, sortQuestions, type QuestionSort, type QuestionStatus } from '@joutio/client-domain/authoring'
+import { isTranslated, MIN_QUESTIONS, workshopRole, questionStatus, questionText, sortQuestions, type QuestionSort, type QuestionStatus } from '@joutio/client/authoring'
 import { ArrowsDownUpIcon, ListChecksIcon, MagnifyingGlassIcon, PlusIcon, SlidersHorizontalIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'

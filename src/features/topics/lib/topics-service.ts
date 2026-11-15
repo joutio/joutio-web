@@ -1,4 +1,4 @@
-import type { PageResponse, TopicCardView, TopicFacetsView, TopicSort } from '@joutio/client-domain/api-types'
+import type { PageResponse, TopicCardView, TopicFacetsView, TopicSort } from '@joutio/client/api-types'
 import { api } from '@/lib/api'
 import { topicName } from '@/shared/topics'
 import type { CategoryCode } from '@/ui'

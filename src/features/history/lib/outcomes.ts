@@ -1,4 +1,4 @@
-import type { GameHistoryItemView, GameOutcome } from '@joutio/client-domain/api-types'
+import type { GameHistoryItemView, GameOutcome } from '@joutio/client/api-types'
 import type { MatchOutcome } from '@/ui'
 
 export const OUTCOMES: Partial<Record<GameOutcome, MatchOutcome>> = { WIN: 'win', LOSS: 'loss', DRAW: 'draw' }
