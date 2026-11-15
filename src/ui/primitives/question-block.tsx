@@ -1,8 +1,10 @@
-import type { CSSProperties } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { cn } from '../lib/cn'
 import { AnswerCard, type AnswerCardProps } from './answer-card'
 
-const IMAGE = 'aspect-[5/4] rounded-jo-xl object-cover ring-1 ring-jo-border'
+const IMAGE = 'absolute inset-0 m-auto rounded-jo-xl object-contain ring-1 ring-jo-border'
+/** Ratio de réserve tant que l'image n'est pas chargée. */
+const IMAGE_RATIO = 5 / 4
 
 export type QuestionBlockProps = {
   text: string
@@ -27,9 +29,12 @@ export type QuestionBlockProps = {
  * Énoncé et réponses d'une manche. Prend la taille de son parent, qui doit avoir une hauteur.
  * Par défaut, le bloc décide de la disposition : 2 × 2 avec une image ou quand la hauteur manque, liste sinon.
  * Chaque composante a sa zone dédiée (2026-11-10) : méta, énoncé (deux lignes réservées avec une image), image (tout l'espace
- * restant, 5:4 contenue dans sa zone) puis réponses. L'image ne déborde jamais sur l'énoncé ni sous les réponses.
+ * restant, contenue dans sa zone à son ratio réel, 370 px de large au plus) puis réponses. L'image ne déborde jamais sur
+ * l'énoncé ni sous les réponses, et n'est jamais rognée (2026-11-15) : sa boîte épouse l'image, coins arrondis compris.
  */
 export function QuestionBlock({ text, meta, image, imageAlt = '', answers, layout = 'auto', details, animated = false, onRevealed, className }: QuestionBlockProps) {
+  const [loaded, setLoaded] = useState<{ image: string; ratio: number } | null>(null)
+  const ratio = loaded && loaded.image === image ? loaded.ratio : IMAGE_RATIO
   const reveal = animated && answers && answers.length > 0
   const grid = layout === '2x2' || (layout === 'auto' && Boolean(image))
   // Hauteurs relatives au bloc : 18 % en 2 × 2, 12 % en 4 × 1. Le minimum protège les petits blocs, un texte long peut agrandir.
@@ -41,9 +46,19 @@ export function QuestionBlock({ text, meta, image, imageAlt = '', answers, layou
         {meta && <span className={cn('jo-type-caption font-semibold text-jo-muted', animated && 'jo-question-fade')}>{meta}</span>}
         <p className={cn('jo-type-question m-0 min-w-0 text-balance wrap-anywhere hyphens-auto', image && 'grid min-h-[2.6em] content-center', animated && 'jo-question-rise')}>{text}</p>
         {image && (
-          // Hors du flux : la hauteur vient de la cellule, quel que soit le calcul de la ligne par le navigateur.
-          <div className="relative min-h-0 min-w-0">
-            <img src={image} alt={imageAlt} className={cn(IMAGE, 'absolute inset-0 m-auto h-full max-w-[370px]', animated && 'jo-question-fade')} />
+          // Hors du flux : la hauteur vient de la cellule, quel que soit le calcul de la ligne par le navigateur. La cellule
+          // est un conteneur de taille : la plus grande boîte au ratio de l'image qui y tient, 370 px de large au plus.
+          <div className="relative min-h-0 min-w-0 [container-type:size]">
+            <img
+              src={image}
+              alt={imageAlt}
+              onLoad={(event) => {
+                const { naturalWidth, naturalHeight } = event.currentTarget
+                if (naturalWidth > 0 && naturalHeight > 0) setLoaded({ image, ratio: naturalWidth / naturalHeight })
+              }}
+              className={cn(IMAGE, animated && 'jo-question-fade')}
+              style={{ width: `min(100cqw, 370px, calc(100cqh * ${ratio}))`, aspectRatio: ratio }}
+            />
           </div>
         )}
       </div>

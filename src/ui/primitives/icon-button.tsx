@@ -46,6 +46,7 @@ export function IconButton({
       type={type}
       aria-label={label}
       data-jo-theme={media ? 'dark' : undefined}
+      data-jo-media={media || undefined}
       className={cn(iconButtonStyles({ variant, tone, size }), media && 'bg-jo-scrim', className)}
       {...props}
     >
@@ -54,7 +55,14 @@ export function IconButton({
         <span className="absolute top-2.5 right-2.5 size-2 rounded-jo-full bg-jo-wrong ring-2 ring-jo-bg" />
       )}
       {typeof badge === 'number' && badge > 0 && (
-        <span className="jo-type-caption absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] rounded-jo-full bg-jo-accent px-1 text-center leading-[18px] font-semibold text-jo-on-accent ring-2 ring-jo-bg">
+        // Sur une image, le compteur garde les couleurs du thème de l'app, pas celles du thème sombre forcé du bouton
+        // (`CountBadge` de `ParallaxIconButton` sur mobile, 2026-11-15) : `--jo-app-*` sont figées à la racine.
+        <span
+          className={cn(
+            'jo-type-caption absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] rounded-jo-full px-1 text-center leading-[18px] font-semibold ring-2',
+            media ? 'bg-(--jo-app-accent) text-(--jo-app-on-accent) ring-(--jo-app-bg)' : 'bg-jo-accent text-jo-on-accent ring-jo-bg',
+          )}
+        >
           {badge > 9 ? '9+' : badge}
         </span>
       )}

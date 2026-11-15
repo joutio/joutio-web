@@ -198,7 +198,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
 
   // ─── Séquence de déblocages : un plein écran par déblocage, à balayer ───
   // Lecture de la série (une requête courte) : fond seul, sans montrer le résultat avant la séquence.
-  if (streakPending) return <div className="min-h-dvh bg-jo-bg" aria-busy="true" />
+  if (streakPending) return <div className="h-full bg-jo-bg" aria-busy="true" />
   if (unlocks.length > 0) {
     const index = Math.min(step, unlocks.length - 1)
     const current = unlocks[index]
@@ -310,7 +310,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
         </div>
         <div ref={pagesRef} className="min-h-0 flex-1">
         <ResultPages page={page} onPageChange={setPage} enabled={hasReview}>
-        <div className={cn('flex h-full flex-col', !hasReview && 'pb-2')}>
+        {/* Page 1 : jamais de défilement ni de débordement, le geste vertical ouvre les détails. */}
+        <div className={cn('flex h-full flex-col overflow-hidden', !hasReview && 'pb-2')}>
         <div className={cn('flex min-h-0 flex-1 flex-col justify-between px-4 pb-2', compact ? 'gap-5' : 'gap-4')}>
           <ResultHeader
             outcome={cancelled ? 'draw' : outcome}
@@ -340,8 +341,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           {bot || cancelled ? (
             <Notice tone="training" title={t(cancelled ? 'result.cancelled' : 'result.training')} message={t(cancelled ? 'result.cancelledText' : 'result.trainingText')} />
           ) : (
-            // Écran court : l'Elo et la maîtrise côte à côte (`resultat.md` § 4 bis).
-            <div className={compact ? 'flex items-center justify-between gap-5' : 'contents'}>
+            // Écran court : l'Elo et la maîtrise côte à côte (`resultat.md` § 4 bis), sans jamais passer à la ligne : la page ne défile pas (2026-11-15). Le delta de l'Elo est sous l'Elo pour tenir.
+            <div className={compact ? 'flex items-center justify-between gap-3' : 'contents'}>
               {/* Écran court : sans le prochain rang, la place manque (2026-11-14). */}
               <EloSummary compact={compact} elo={rating} delta={data.rated ? (data.eloDelta ?? 0) : 0} next={compact ? undefined : nextElo} />
               <MasteryRing

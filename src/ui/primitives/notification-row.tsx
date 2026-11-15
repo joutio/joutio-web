@@ -1,6 +1,7 @@
 import { CaretRightIcon, TrashIcon, type Icon } from '@phosphor-icons/react'
 import { useRef, type ButtonHTMLAttributes, type PointerEvent } from 'react'
 import { cn } from '../lib/cn'
+import { useFrameScale } from '../web/web-frame'
 import { Avatar, type AvatarProps } from './avatar'
 
 export type NotificationRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -26,15 +27,17 @@ export type NotificationRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
  */
 export function NotificationRow({ title, sub, icon: IconComponent, player, unread = false, onDelete, last = false, chevron = true, className, type = 'button', ...props }: NotificationRowProps) {
   const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null)
+  // Cadre web réduit : les coordonnées du pointeur ramenées à celles de la mise en page.
+  const scale = useFrameScale()
 
   // Le tactile défile seul : la souris, elle, ne balaie pas sans aide.
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse') drag.current = { x: event.clientX, left: event.currentTarget.scrollLeft, moved: false }
+    if (event.pointerType === 'mouse') drag.current = { x: event.clientX / scale, left: event.currentTarget.scrollLeft, moved: false }
   }
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const state = drag.current
     if (!state) return
-    const distance = state.x - event.clientX
+    const distance = state.x - event.clientX / scale
     if (Math.abs(distance) < 4) return
     state.moved = true
     event.currentTarget.style.scrollSnapType = 'none'

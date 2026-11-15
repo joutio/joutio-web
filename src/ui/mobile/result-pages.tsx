@@ -1,5 +1,6 @@
 import { useRef, useState, type PointerEvent, type ReactNode, type WheelEvent } from 'react'
 import { cn } from '../lib/cn'
+import { useFrameScale } from '../web/web-frame'
 
 /** Courbe et durée de la bascule, celles du mobile (`result-pages.tsx`, 450 ms amortis). */
 const SWITCH = 'transform 450ms cubic-bezier(0.25, 1, 0.5, 1)'
@@ -27,6 +28,8 @@ export type ResultPagesProps = {
  */
 export function ResultPages({ page, onPageChange, enabled, children }: ResultPagesProps) {
   const root = useRef<HTMLDivElement>(null)
+  // Cadre web réduit : les coordonnées du pointeur ramenées à celles de la mise en page.
+  const scale = useFrameScale()
   const drag = useRef<Drag | null>(null)
   const wheelAt = useRef(0)
   const [offset, setOffset] = useState<number | null>(null)
@@ -35,13 +38,13 @@ export function ResultPages({ page, onPageChange, enabled, children }: ResultPag
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (!enabled || (event.pointerType === 'mouse' && event.button !== 0)) return
-    drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, axis: null, dy: 0 }
+    drag.current = { id: event.pointerId, x: event.clientX / scale, y: event.clientY / scale, axis: null, dy: 0 }
   }
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const current = drag.current
     if (!current || current.id !== event.pointerId) return
-    const dx = event.clientX - current.x
-    const dy = event.clientY - current.y
+    const dx = event.clientX / scale - current.x
+    const dy = event.clientY / scale - current.y
     if (current.axis === null) {
       if (Math.max(Math.abs(dx), Math.abs(dy)) < AXIS_SLOP) return
       current.axis = Math.abs(dy) > Math.abs(dx) ? 'y' : 'x'

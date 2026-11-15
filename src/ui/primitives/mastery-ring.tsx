@@ -48,36 +48,63 @@ function useCountUp(key: string, pending: boolean) {
   return pending ? 0 : reduced ? 1 : progress
 }
 
-/**
- * Place prise par un libellé rayonnant au-delà de l'anneau, de chaque côté (trait, point, « Avant Platine » / « +130 »),
- * marge de page déduite : il peut déborder dans la gouttière de 16 px, jamais hors de l'écran.
- */
-const LABEL_REACH = 100
+/** Débord toléré des libellés rayonnants dans la gouttière de la page (16 px) : jamais jusqu'au bord de l'écran. */
+const GUTTER = 8
+/** Diamètre minimal de l'anneau rayonnant (celui de l'anneau compact) : en dessous, les libellés s'empilent à sa droite. */
+const RING_MIN = 104
+/** Point (7) et écart (8) entre le trait et le libellé. */
+const LABEL_CHROME = 15
 
-/** Largeur disponible, suivie au redimensionnement (0 avant la première mesure). */
-function useWidth(ref: RefObject<HTMLDivElement | null>) {
-  const [width, setWidth] = useState(0)
+/**
+ * Diamètre de l'anneau rayonnant qui garde ses libellés **mesurés** dans la largeur (2026-11-15). Il remplace une portée
+ * fixe de 100 px, qui empilait les libellés sur les écrans de 360 à 380 px. Calcul au pire cas : un libellé à
+ * l'horizontale (r + trait de 0,28 r + point, écart et texte). Ainsi l'anneau ne change pas de taille pendant
+ * l'animation ni à l'arrivée de la récompense. Il rétrécit jusqu'à `RING_MIN` ; en dessous, la fonction renvoie
+ * `undefined` et le composant passe à la rangée empilée.
+ */
+export function fitRing(requested: number, width: number, labels: { left: number; right: number }) {
+  const room = width / 2 + GUTTER - LABEL_CHROME - Math.max(labels.left, labels.right)
+  const size = Math.min(requested, Math.floor((2 * room) / 1.28))
+  return size >= Math.min(requested, RING_MIN) ? size : undefined
+}
+
+/**
+ * Largeur de mise en page des éléments (`offsetWidth`, insensible à la réduction du cadre web), suivie au
+ * redimensionnement et au chargement des polices ; 0 avant la première mesure.
+ */
+function useWidths(refs: readonly RefObject<HTMLElement | null>[]) {
+  const [widths, setWidths] = useState<number[]>(() => refs.map(() => 0))
   useLayoutEffect(() => {
-    const element = ref.current
-    if (!element) return
-    const update = () => setWidth(element.clientWidth)
+    const elements = refs.map((ref) => ref.current)
+    const update = () =>
+      setWidths((current) => {
+        const next = elements.map((element) => element?.offsetWidth ?? 0)
+        return next.every((value, index) => value === current[index]) ? current : next
+      })
     update()
     const observer = new ResizeObserver(update)
-    observer.observe(element)
+    elements.forEach((element) => element && observer.observe(element))
     return () => observer.disconnect()
-  }, [ref])
-  return width
+  }, [refs])
+  return widths
 }
 
 /**
  * Maîtrise du sujet après la partie : XP gagnée (arc ambre) et XP restante avant le palier suivant. Libellés de part et
- * d'autre de l'anneau ; trop étroit pour eux (Galaxy S24, 2026-11-14), ils s'empilent à sa droite, anneau inchangé.
+ * d'autre de l'anneau, qui rétrécit pour les garder (`fitRing`) ; trop étroit même ainsi, ils s'empilent à sa droite,
+ * anneau à sa taille demandée.
  */
-export function MasteryRing({ tier, next, gained, remaining, size = 180, state = 'done', compact = false, className }: MasteryRingProps) {
+export function MasteryRing({ tier, next, gained, remaining, size: requested = 180, state = 'done', compact = false, className }: MasteryRingProps) {
   const pending = state === 'pending'
   const root = useRef<HTMLDivElement>(null)
-  const width = useWidth(root)
-  const narrow = width > 0 && width < size + 2 * LABEL_REACH
+  const probeLeft = useRef<HTMLDivElement>(null)
+  const probeRight = useRef<HTMLDivElement>(null)
+  const [refs] = useState(() => [root, probeLeft, probeRight] as const)
+  const [width = 0, left = 0, right = 0] = useWidths(refs)
+  const measured = width > 0 && left > 0 && right > 0
+  const fitted = measured ? fitRing(requested, width, { left, right }) : requested
+  const narrow = fitted === undefined
+  const size = compact || narrow ? requested : fitted
   const progress = useCountUp(`${gained}/${remaining}`, pending)
 
   const total = gained + remaining
@@ -135,45 +162,54 @@ export function MasteryRing({ tier, next, gained, remaining, size = 180, state =
       </div>
     )
 
-  // Trop étroit pour les libellés rayonnants : même rangée, centrée ; la mesure reste sur toute la largeur.
-  if (narrow)
-    return (
-      <div ref={root} role="img" aria-label={label} className={cn('flex w-full items-center justify-center gap-4', className)} style={{ height: size }}>
-        {stacked}
-      </div>
-    )
+  // Anneau réduit pour ses libellés : centré dans la hauteur demandée, le reste de la page ne bouge pas.
+  const inset = (requested - size) / 2
 
+  // Racine unique (mesurée) pour les deux dispositions ; invisible jusqu'à la mesure, pour ne pas afficher l'anneau à
+  // une taille qu'il quitterait aussitôt.
   return (
-    <div
-      ref={root}
-      role="img"
-      aria-label={label}
-      className={cn('relative flex w-full justify-center', className)}
-      style={{ height: size }}
-    >
-      <div
-        className="absolute flex -translate-y-1/2 items-center"
-        style={{ right: `calc(50% + ${(size * -0.5 * Math.sin(remainingAngle)).toFixed(1)}px)`, top: `${((1 - Math.cos(remainingAngle)) * 50).toFixed(1)}%`, opacity }}
-      >
-        <div className="mr-2 text-right">
+    <div ref={root} role="img" aria-label={label} className={cn('relative w-full', className)} style={{ height: requested, opacity: measured ? 1 : 0 }}>
+      {/* Libellés rayonnants à leur valeur finale, invisibles : leur largeur règle l'anneau (`fitRing`). */}
+      <div aria-hidden className="pointer-events-none invisible absolute top-0 left-0">
+        <div ref={probeLeft} className="absolute w-max text-right">
           <div className="jo-type-caption font-semibold whitespace-nowrap">{next ? `Avant ${next}` : 'Palier max'}</div>
-          <div className="jo-type-large-title font-mono font-semibold">{total - shownGained}</div>
+          <div className="jo-type-large-title font-mono font-semibold">{total}</div>
         </div>
-        <span className="size-[7px] rounded-jo-full bg-jo-text" />
-        <span className="h-0.5 bg-jo-text" style={{ width: line }} />
-      </div>
-      {ring}
-      <div
-        className="absolute flex -translate-y-1/2 items-center"
-        style={{ left: `calc(50% + ${(size * 0.5 * Math.sin(gainedAngle)).toFixed(1)}px)`, top: `${((1 - Math.cos(gainedAngle)) * 50).toFixed(1)}%`, opacity }}
-      >
-        <span className="h-0.5 bg-jo-accent" style={{ width: line }} />
-        <span className="size-[7px] rounded-jo-full bg-jo-accent" />
-        <div className="ml-2 text-jo-accent-ink">
+        <div ref={probeRight} className="absolute w-max">
           <div className="jo-type-caption font-semibold whitespace-nowrap">XP gagnée</div>
-          <div className="jo-type-large-title font-mono font-semibold">+{shownGained}</div>
+          <div className="jo-type-large-title font-mono font-semibold">+{gained}</div>
         </div>
       </div>
+      {narrow ? (
+        // Trop étroit pour les libellés rayonnants, même anneau réduit : même rangée, centrée.
+        <div className="flex h-full items-center justify-center gap-4">{stacked}</div>
+      ) : (
+        <div className="relative flex h-full justify-center" style={{ paddingTop: inset }}>
+          <div
+            className="absolute flex -translate-y-1/2 items-center"
+            style={{ right: `calc(50% + ${(size * -0.5 * Math.sin(remainingAngle)).toFixed(1)}px)`, top: inset + (1 - Math.cos(remainingAngle)) * size * 0.5, opacity }}
+          >
+            <div className="mr-2 text-right">
+              <div className="jo-type-caption font-semibold whitespace-nowrap">{next ? `Avant ${next}` : 'Palier max'}</div>
+              <div className="jo-type-large-title font-mono font-semibold">{total - shownGained}</div>
+            </div>
+            <span className="size-[7px] rounded-jo-full bg-jo-text" />
+            <span className="h-0.5 bg-jo-text" style={{ width: line }} />
+          </div>
+          {ring}
+          <div
+            className="absolute flex -translate-y-1/2 items-center"
+            style={{ left: `calc(50% + ${(size * 0.5 * Math.sin(gainedAngle)).toFixed(1)}px)`, top: inset + (1 - Math.cos(gainedAngle)) * size * 0.5, opacity }}
+          >
+            <span className="h-0.5 bg-jo-accent" style={{ width: line }} />
+            <span className="size-[7px] rounded-jo-full bg-jo-accent" />
+            <div className="ml-2 text-jo-accent-ink">
+              <div className="jo-type-caption font-semibold whitespace-nowrap">XP gagnée</div>
+              <div className="jo-type-large-title font-mono font-semibold">+{shownGained}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

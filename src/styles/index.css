@@ -15,6 +15,17 @@
     --jo-safe-bottom: env(safe-area-inset-bottom, 0px);
   }
 
+  /*
+   * Couleurs du thème environnant, figées là où il est posé (une variable est résolue où elle est déclarée) : le compteur
+   * d'un bouton sur une image (`IconButton` `media`, thème sombre forcé) les garde, comme le `CountBadge` mobile.
+   */
+  :root,
+  [data-jo-theme]:not([data-jo-media]) {
+    --jo-app-bg: var(--jo-bg);
+    --jo-app-accent: var(--jo-accent);
+    --jo-app-on-accent: var(--jo-on-accent);
+  }
+
   html,
   body,
   #root {

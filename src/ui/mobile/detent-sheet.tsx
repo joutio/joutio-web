@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
+import { useFrameScale } from '../web/web-frame'
 
 export type Detent = 'peek' | 'half' | 'full'
 
@@ -32,6 +33,8 @@ const ORDER: readonly Detent[] = ['peek', 'half', 'full']
  * épinglé. Au relâcher, elle se cale sur le cran le plus proche, ou sur le suivant après un geste de 24 px.
  */
 export function DetentSheet({ detents = DEFAULT_DETENTS, onPeekHeight, locked = false, detent, onDetentChange, label, header, footer, children, className }: DetentSheetProps) {
+  // Cadre web réduit : les coordonnées du pointeur ramenées à celles de la mise en page.
+  const scale = useFrameScale()
   const ref = useRef<HTMLDivElement>(null)
   const [parent, setParent] = useState(0)
   const handle = useRef<HTMLDivElement>(null)
@@ -59,16 +62,16 @@ export function DetentSheet({ detents = DEFAULT_DETENTS, onPeekHeight, locked = 
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     event.currentTarget.setPointerCapture(event.pointerId)
-    setDrag({ startY: event.clientY, startHeight: heightOf(detent), height: heightOf(detent) })
+    setDrag({ startY: event.clientY / scale, startHeight: heightOf(detent), height: heightOf(detent) })
   }
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     if (!drag) return
-    const next = Math.min(heightOf('full'), Math.max(heightOf('peek') * 0.8, drag.startHeight + drag.startY - event.clientY))
+    const next = Math.min(heightOf('full'), Math.max(heightOf('peek') * 0.8, drag.startHeight + drag.startY - event.clientY / scale))
     setDrag({ ...drag, height: next })
   }
   const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
     if (!drag) return
-    const moved = drag.startY - event.clientY
+    const moved = drag.startY - event.clientY / scale
     setDrag(undefined)
     // Un toucher sans geste fait monter d'un cran, puis revient au peek depuis le haut.
     if (Math.abs(moved) < 4) return onDetentChange(ORDER[index === ORDER.length - 1 ? 0 : index + 1]!)

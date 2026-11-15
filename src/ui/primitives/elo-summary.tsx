@@ -6,7 +6,11 @@ export type EloSummaryProps = {
   delta: number
   /** Objectif suivant, par exemple `Platine à 1 000 · encore 144`. */
   next?: string
-  /** Écran court : Elo en `numeric-large` au lieu de `numeric-hero`, à côté de la maîtrise. */
+  /**
+   * Écran court : Elo en `numeric-large` au lieu de `numeric-hero`, à côté de la maîtrise. Le delta passe sous l'Elo
+   * (2026-11-15) : côte à côte, un Elo à 4 chiffres et la maîtrise ne tenaient pas sur un téléphone de 360 px, et la
+   * page du résultat ne défile jamais (le geste vertical ouvre les détails).
+   */
   compact?: boolean
   className?: string
 }
@@ -17,7 +21,7 @@ export function EloSummary({ elo, delta, next, compact = false, className }: Elo
   return (
     <div className={cn('grid justify-items-center gap-1 text-center', className)}>
       <span className="jo-type-callout font-semibold text-jo-muted">Elo</span>
-      <div className="flex items-baseline gap-3">
+      <div className={compact ? 'grid justify-items-center' : 'flex items-baseline gap-3'}>
         <strong className={compact ? 'jo-type-numeric-large' : 'jo-type-numeric-hero'}>{elo}</strong>
         <strong className={cn('jo-type-numeric-medium', tone)}>{`${sign}${delta}`}</strong>
       </div>

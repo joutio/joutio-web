@@ -30,6 +30,8 @@ const FOUND_MS = 1200
 
 /** Panneau bas d'un état, sur toute la largeur. */
 const PANEL = 'absolute inset-x-4 bottom-[calc(var(--jo-safe-bottom,0px)+16px)]'
+/** Panneau de la recherche et de l'entraînement automatique, plus haut : leur bouton Annuler reste loin du bord, au même endroit. */
+const PANEL_RAISED = 'absolute inset-x-4 bottom-[calc(var(--jo-safe-bottom,0px)+40px)]'
 
 function useSecondsLeft(deadlineAt: string | null) {
   const [now, setNow] = useState(readServerNow)
@@ -169,9 +171,10 @@ export function MatchmakingPage() {
   if (status === 'EXPIRED' && autoTrain.enabled) {
     return (
       <Dark>
-        <MatchmakingMap pins={[]} />
+        <MatchmakingMap pins={PINS} />
         <Chrome />
-        <div className={cn(PANEL, 'grid gap-3')}>
+        {/* Plus haut et plus espacé (2026-11-15) : « Annuler l'entraînement » à portée de pouce, loin du bord. */}
+        <div className={cn(PANEL_RAISED, 'grid gap-6')}>
           <Notice tone="training" title={t('mm.autoTitle')} message={t('mm.autoText')} />
           <Button variant="tinted" tone="destructive" size="L" full onClick={back}>
             {t('mm.cancelTraining')}
@@ -221,7 +224,8 @@ export function MatchmakingPage() {
     <Dark>
       <MatchmakingMap pins={PINS} />
       <Chrome />
-      <div className={cn(PANEL, 'grid justify-items-center gap-3 text-center')}>
+      {/* Même hauteur que l'entraînement automatique (2026-11-15) : « Annuler la recherche » au même endroit. */}
+      <div className={cn(PANEL_RAISED, 'grid justify-items-center gap-3 text-center')}>
         <strong className="jo-type-title-2">{topicLabel}</strong>
         <span className="jo-type-callout inline-flex h-10 items-center gap-3 rounded-jo-full bg-jo-accent px-4 font-semibold text-jo-on-accent">
           {t('mm.searching')}
