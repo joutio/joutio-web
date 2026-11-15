@@ -1,3 +1,9 @@
+## [2.16.0](https://github.com/joutio/joutio-web/compare/v2.15.0...v2.16.0) (2026-11-15)
+
+### Features
+
+* shared texts, official badge, image rights, topic reports and terms ([fc22cf4](https://github.com/joutio/joutio-web/commit/fc22cf4e6abf2a74474f960f25faf307a20b133b))
+
 ## [2.15.0](https://github.com/joutio/joutio-web/compare/v2.14.0...v2.15.0) (2026-11-14)
 
 ### Features
