@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { WarningCircleIcon } from '@phosphor-icons/react'
 import { useT } from '@/lib/i18n'
-import { completeLogin, continueUrl } from '@/lib/session'
+import { completeLogin } from '@/lib/session'
 import { Button, EmptyState, Screen, Skeleton } from '@/ui'
 
-/** Retour OIDC (`/callback`) : échange le code, puis rouvre la page demandée (ou l'autorisation d'un client tiers). */
+/** Retour OIDC (`/callback`) : échange le code, puis rouvre la page demandée. */
 export function CallbackPage() {
   const t = useT()
   const navigate = useNavigate()
@@ -16,9 +16,7 @@ export function CallbackPage() {
     if (ran.current) return
     ran.current = true
     completeLogin(window.location.search)
-      .then((target) => {
-        if (!continueUrl.resume()) void navigate(target, { replace: true })
-      })
+      .then((target) => void navigate(target, { replace: true }))
       .catch(() => setFailed(true))
   }, [navigate])
 

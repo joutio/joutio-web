@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMe } from '@/features/me'
-import { continueUrl, dismissEndReason, loginRedirect, returnTo, selectEndReason, selectStatus, useSessionStore } from '@/lib/session'
+import { dismissEndReason, loginRedirect, returnTo, selectEndReason, selectStatus, useSessionStore } from '@/lib/session'
 import { BootError } from '@/shared/boot-error'
 import { LoadingScreen } from '@/shared/loading-screen'
 import { toCategoryCode } from '@/shared/topics'
@@ -20,9 +20,8 @@ import { UniversesStep } from './universes-step'
  * subie, puis Connexion et Code. Avec session, tant que `MeView.onboardingCompleted` est faux : Univers, Notifications,
  * Premier thème. Un joueur déjà inscrit passe directement à la page demandée.
  *
- * Retours d'identity : `?continue=` (autorisation d'un client tiers : connexion demandée même avec une session de
- * l'app, reprise après elle) et `?social=success`
- * (connexion sociale réussie : on enchaîne le PKCE).
+ * Retour d'identity : `?social=success` (connexion sociale réussie : on enchaîne le PKCE). Les outils techniques
+ * (console, Grafana…) ont leur propre page de connexion sur identity.
  */
 export function OnboardingPage() {
   const navigate = useNavigate()
@@ -36,15 +35,10 @@ export function OnboardingPage() {
   const go = useOnboardingStore((state) => state.go)
   const setUniverses = useOnboardingStore((state) => state.setUniverses)
   const social = params.get('social') === 'success'
-  // `?continue=` : identity n'a plus de session (expirée ou jamais ouverte dans ce navigateur), même si l'app garde ses
-  // jetons. Relancer l'autorisation tout de suite bouclerait entre identity et `/welcome` : on se reconnecte d'abord,
-  // la connexion par code rouvre la session identity, puis `/callback` reprend l'autorisation du client tiers.
-  const reauthenticate = params.has('continue')
 
   useEffect(() => {
-    if (params.has('continue')) continueUrl.accept(params.get('continue'))
-    if (social && !continueUrl.resume()) void loginRedirect()
-  }, [params, social])
+    if (social) void loginRedirect()
+  }, [social])
 
   const authenticated = status === 'authenticated'
   const onboarded = me.data?.onboardingCompleted ?? false
@@ -66,15 +60,15 @@ export function OnboardingPage() {
   // Parcours terminé ou joueur déjà inscrit : la page demandée avant la connexion, sinon l'Accueil.
   const left = useRef(false)
   useEffect(() => {
-    if (!authenticated || !onboarded || social || reauthenticate || left.current) return
+    if (!authenticated || !onboarded || social || left.current) return
     left.current = true
-    if (!continueUrl.resume()) void navigate(returnTo.consume(), { replace: true })
-  }, [authenticated, onboarded, social, reauthenticate, navigate])
+    void navigate(returnTo.consume(), { replace: true })
+  }, [authenticated, onboarded, social, navigate])
 
   if (status === 'loading' || social) return <LoadingScreen />
 
-  if (!authenticated || reauthenticate) {
-    if (endReason && !reauthenticate) {
+  if (!authenticated) {
+    if (endReason) {
       return (
         <SessionEnded
           reason={endReason}

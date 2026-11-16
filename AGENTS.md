@@ -95,9 +95,8 @@ toujours sombres posent `data-jo-theme="dark"` sur leur sous-arbre.
 - **HTTP** : `401` → renouvellement puis rejeu unique ; `401 urn:joutio:authentification:unknownUser` → fin
   `unknownUser` ; `403 urn:joutio:authorization:accountSuspended` → fin `suspended`.
 - **Retour d'identity** : `/login` est un alias qui relance la connexion (identity redirige encore les connexions
-  sociales vers `/login?social=success`) ; `?continue=` reprend une autorisation tierce `/oauth2/authorize`
-  **après une nouvelle connexion**, même si l'app a encore ses jetons : identity n'a alors plus de session (30 min
-  d'inactivité), et reprendre aussitôt bouclait entre identity et `/welcome` (Grafana, console, 2026-11-16).
+  sociales vers `/login?social=success`). Les outils techniques (console, Grafana, ArgoCD, Swagger) se connectent sur
+  la page d'identity (`/sign-in`), jamais par l'app : plus de `?continue=` (2026-11-16).
 - **Temps réel** : une connexion STOMP, JWT au `CONNECT`, backoff croissant, suspendue onglet caché ; état réseau
   (`useConnectionStore`) → `Banner` `connection`. `EventStream` dédoublonne par `sequenceNumber` et tamponne les trous.
 - **Web Push** : `public/sw.js` + `lib/push`, déclenché seulement par une action explicite.
