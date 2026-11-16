@@ -224,6 +224,7 @@ export function DuelPage() {
             seconds={arena.timeLeftDisplay}
             state={timerState}
             first={arena.firstAnswerPctValue === null ? undefined : (arena.firstAnswerPctValue / 100) * 10}
+            deadline={timerState === 'running' && arena.answerDeadlineAt ? { at: arena.answerDeadlineAt, now: readServerNow } : undefined}
             className="flex-none"
           />
           <DuelHeader

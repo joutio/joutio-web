@@ -386,10 +386,10 @@
   initial-value: 100;
 }
 
+/* `TimerBar` : le remplissage descend par `scaleX` (une animation jusqu'à l'échéance), seule la couleur transite. */
 .jo-timer-fill {
-  transition:
-    width 1000ms linear,
-    background-color var(--jo-motion-micro-duration) var(--jo-motion-micro-easing);
+  transform-origin: left;
+  transition: background-color var(--jo-motion-micro-duration) var(--jo-motion-micro-easing);
 }
 
 .jo-gauge-fill {
