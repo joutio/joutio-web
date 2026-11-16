@@ -48,6 +48,10 @@
 
 /* Sous cette hauteur, 4 réponses en liste (292 px) ne laissent plus assez de place à l'énoncé. */
 @custom-variant jo-question-short (@container (max-height: 519px));
+/* Largeur « regular » (2026-11-16) : posée par `WebFrame` sur l'écran (`data-jo-regular`) quand il fait au moins 700 px
+   de large et qu'il est plus large que haut (cadre paysage, tablette en paysage). Une requête de conteneur ne voit pas
+   l'orientation. */
+@custom-variant jo-regular (&:where([data-jo-regular] *));
 
 .jo-unroll {
   animation: jo-unroll var(--jo-motion-base-duration) var(--jo-motion-base-easing) both;

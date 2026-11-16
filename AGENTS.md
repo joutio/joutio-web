@@ -12,8 +12,9 @@
 ## 1. Rôle et sources de vérité
 
 - Même produit que l'app mobile, sur le web : écrans du lab (`design/src/screens/`, specs
-  `design/specs/screens/`, règles web `design/specs/platforms/web.md`). Au-delà de 640 px l'app vit dans la
-  colonne de `WebFrame` (430 px, marque dans les marges, D16).
+  `design/specs/screens/`, règles web `design/specs/platforms/web.md`). Au-delà du téléphone, l'app vit dans
+  `WebFrame` (D16, `design/specs/platforms/desktop.md`) : iPhone Duo ouvert en portrait (626 × 890) sur tablette en
+  portrait, en paysage (890 × 626) dès 938 px avec la marque dans les marges dès 1 280 px.
 - **`design/` fait foi** : textes, composants, comportements. Le code du lab se **porte** (même API, mêmes classes,
   mêmes jetons), il ne s'importe jamais (`eslint` interdit tout import de `design/`). En cas d'écart, on corrige
   l'app, pas le lab ; un manque du lab se règle d'abord dans le lab.
@@ -270,6 +271,13 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
   cache par `applyRoomPresence`).
 - Barre du bas : l'onglet actif depuis une page poussée ramène à sa racine ; revanche, « Rejouer » et « Nouvel
   adversaire » remplacent le résultat dans l'historique (Quitter ne revient plus à l'ancienne partie).
+- **Cadre paysage et largeur « regular »** (porté du lab, `desktop.md`, `navigation.md`, `resultat.md` § 4 ter) :
+  `WebFrame` en iPhone Duo ouvert paysage (890 × 626, filet en `outline` qui ne rogne plus l'écran) dès 938 px, marque
+  dès 1 280 px (compacte jusqu'à 1 439) ; tablette en portrait dans le Duo ouvert portrait (626 × 890). Largeur
+  « regular » (cadre paysage, ou ≥ 700 px et paysage) décidée par `WebFrame` (`useRegular()`, `data-jo-regular`,
+  variante CSS `jo-regular:`) : `BottomNav` en rail de 88 px à gauche (`Screen`, `ParallaxScreen`), Résultat en deux
+  volets (résultat à gauche, Détails du duel ouverts à droite). `useBannerPresence` ne boucle plus quand la bande est
+  un nouvel élément à chaque rendu.
 - Toasts centrés (358 px), webframe à 20 px de rayon, notifications sur deux lignes, déblocages sans défilement (Embla
   seul), « Partager le lien » en action pleine au-dessus de « Fermer le salon », avertissement de nom de sujet déjà pris
   (`Notice` `warning`, nouveau ton).

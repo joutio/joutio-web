@@ -1,5 +1,5 @@
 import { ArrowClockwiseIcon, CheckCircleIcon, InfoIcon, RobotIcon, SwordIcon, WarningIcon, WifiSlashIcon, type Icon } from '@phosphor-icons/react'
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { Button } from './button'
 
@@ -116,21 +116,28 @@ export const BANNER_EXIT_MS = 800
  * remontent avec elle), puis disparaît. Mouvement réduit : disparition immédiate. `Screen` et `ParallaxScreen` s'en servent.
  */
 export function useBannerPresence(banner: ReactNode): ReactNode {
-  const [last, setLast] = useState<ReactNode>(banner)
   const present = Boolean(banner)
+  // Dernière bande présente, lue seulement dans les effets. On ne réagit qu'au passage de présente à absente : `banner`
+  // est souvent un nouvel élément à chaque rendu, et le recopier dans un état relançait le rendu sans fin (2026-11-16).
+  const last = useRef<ReactNode>(null)
+  const [leaving, setLeaving] = useState<ReactNode>(null)
   useEffect(() => {
+    if (banner) last.current = banner
+  })
+  // Avant l'affichage : la bande sortante reste à l'écran, sans image vide entre les deux.
+  useLayoutEffect(() => {
     if (present) {
-      setLast(banner)
+      setLeaving(null)
       return
     }
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setLast(null)
-      return
-    }
-    const timer = window.setTimeout(() => setLast(null), BANNER_EXIT_MS)
+    const node = last.current
+    last.current = null
+    if (!node || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    setLeaving(node)
+    const timer = window.setTimeout(() => setLeaving(null), BANNER_EXIT_MS)
     return () => window.clearTimeout(timer)
-  }, [banner, present])
-  const shown = present ? banner : last
+  }, [present])
+  const shown = present ? banner : leaving
   if (!shown) return null
   return <div className={present ? 'flex-none' : 'jo-banner-leaving pointer-events-none flex-none'}>{shown}</div>
 }

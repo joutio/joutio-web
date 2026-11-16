@@ -121,9 +121,11 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium
   const barHeight = `calc(var(--jo-safe-top, 0px) + ${BAR_HEIGHT}px)`
   return (
     <div
-      className={cn('jo-parallax relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', className)}
+      // Largeur « regular » (`jo-regular`) : bottom nav en rail à gauche, comme `Screen`.
+      className={cn('jo-parallax relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', bottomNav && 'jo-regular:flex-row-reverse', className)}
       style={{ '--jo-parallax-hero': `${heroHeight}px`, '--jo-parallax-distance': `${heroHeight - BAR_HEIGHT}px` } as React.CSSProperties}
     >
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
       {banner}
       {/* Sous une bande, la safe area haute est déjà prise : l'image et la barre compacte repartent de 0. */}
       <div className="relative flex min-h-0 flex-1 flex-col" style={banner ? ({ '--jo-safe-top': '0px' } as React.CSSProperties) : undefined}>
@@ -177,6 +179,7 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium
       </div>
       </div>
       {bottomBar && <div className={cn('flex-none border-t border-jo-border bg-jo-bg px-4 pt-2', bottomNav ? 'pb-2' : 'pb-[calc(var(--jo-safe-bottom,0px)+8px)]')}>{bottomBar}</div>}
+      </div>
       {bottomNav}
       {overlay}
     </div>

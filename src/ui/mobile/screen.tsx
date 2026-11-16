@@ -47,7 +47,10 @@ export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, cla
     return () => observer.disconnect()
   })
   return (
-    <div data-jo-screen className={cn('relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', className)}>
+    // Largeur « regular » (cadre web paysage, `jo-regular`, 2026-11-16) : la bottom nav passe en rail à gauche du contenu
+    // (`flex-row-reverse` : l'ordre du DOM reste contenu puis navigation). Les overlays couvrent les deux.
+    <div data-jo-screen className={cn('relative flex h-full flex-col overflow-hidden bg-jo-bg text-jo-text', bottomNav && 'jo-regular:flex-row-reverse', className)}>
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
       {/* Porte `--jo-header-edge` (écrit ici) et `--jo-tabs-dock` (écrit par `StickyBar`) : sœur de `main`, une écriture
           n'invalide que l'en-tête, jamais le contenu qui défile. */}
       <div ref={head} data-jo-screen-header className={cn('relative flex-none', !banner && 'pt-[var(--jo-safe-top,0px)]')}>
@@ -68,6 +71,7 @@ export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, cla
           {bottomBar}
         </div>
       )}
+      </div>
       {bottomNav}
       {overlay}
     </div>

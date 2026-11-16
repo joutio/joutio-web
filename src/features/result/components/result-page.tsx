@@ -30,6 +30,7 @@ import {
   TitleUnlock,
   tokens,
   UnlockSequence,
+  useRegular,
   type MatchOutcome,
   type RoundResult,
   type TierCode,
@@ -176,6 +177,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const [page, setPage] = useState<0 | 1>(0)
   // Zone des pages trop courte (iPhone Duo plié) : résultat compact (`resultat.md` § 4 bis).
   const [pagesRef, compact] = useCompactHeight(COMPACT_RESULT_HEIGHT)
+  const regular = useRegular()
   const [reportOpen, setReportOpen] = useState(false)
   const [questionReport, setQuestionReport] = useState<{ round: GameRoundState; index: number; count: number } | null>(null)
   const [reportedRounds, setReportedRounds] = useState<readonly number[]>([])
@@ -266,6 +268,84 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const canReport = !bot && !cancelled && Boolean(opponentId) && !data.opponentDeleted
   const botLevel = t(data.botDifficulty === 'EASY' ? 'result.botEasy' : data.botDifficulty === 'HARD' ? 'result.botHard' : 'result.botNormal')
 
+  // Résultat (en-tête, Elo, maîtrise, actions) : page 1 du pager, ou volet gauche en largeur « regular ».
+  const summary = (
+    <div className={cn('flex min-h-0 flex-1 flex-col justify-between px-4 pb-2', compact ? 'gap-5' : 'gap-4')}>
+      <ResultHeader
+        outcome={cancelled ? 'draw' : outcome}
+        topic={topic.name}
+        me={{
+          name: myName,
+          src: myAvatar,
+          tier: myTier,
+          score: data.myScore,
+          streak: streakOf(game, userId),
+          meta: bot ? t('result.trainingElo', { elo: formatNumber(rating, language) }) : undefined,
+          premium: me?.premium === true,
+          onOpen: identity.open(userId),
+        }}
+        opponent={{
+          name: opponentName,
+          src: opponentAvatar,
+          tier: opponentTier,
+          score: data.opponentScore,
+          streak: streakOf(game, opponentId),
+          meta: bot ? botLevel : undefined,
+          premium: !bot && identity.premium(data.opponent ?? opponentProfile.data, opponentId),
+          // Le robot et un compte supprimé n'ont pas de fiche.
+          onOpen: bot || data.opponentDeleted ? undefined : identity.open(opponentId),
+        }}
+      />
+      {bot || cancelled ? (
+        <Notice tone="training" title={t(cancelled ? 'result.cancelled' : 'result.training')} message={t(cancelled ? 'result.cancelledText' : 'result.trainingText')} />
+      ) : (
+        // Écran court : l'Elo et la maîtrise côte à côte (`resultat.md` § 4 bis), sans jamais passer à la ligne : la page ne défile pas (2026-11-15). Le delta de l'Elo est sous l'Elo pour tenir.
+        <div className={compact ? 'flex items-center justify-between gap-3' : 'contents'}>
+          {/* Écran court : sans le prochain rang, la place manque (2026-11-14). */}
+          <EloSummary compact={compact} elo={rating} delta={data.rated ? (data.eloDelta ?? 0) : 0} next={compact ? undefined : nextElo} />
+          <MasteryRing
+            tier={tokens.tier[mastery.tier as TierCode]?.label ?? '—'}
+            next={mastery.nextTier ? tokens.tier[mastery.nextTier as TierCode]?.label : undefined}
+            gained={mastery.xpGained}
+            remaining={mastery.tierRemainingXp}
+            size={compact ? 104 : 150}
+            compact={compact}
+            state={data.reward === null ? 'pending' : 'done'}
+          />
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-2">
+        {bot ? (
+          <Button full icon={LightningIcon} loading={training.isPending} onClick={() => training.mutate({ topic, difficulty })}>
+            {t('result.replay')}
+          </Button>
+        ) : (
+          <Button full icon={LightningIcon} loading={rematch.sending} disabled={rematch.state !== 'idle' || !opponentId || data.opponentDeleted} onClick={() => void rematch.send()}>
+            {rematch.state === 'pending' && rematch.seconds > 0
+              ? t('result.rematchWaiting', { seconds: rematch.seconds })
+              : rematch.state === 'refused'
+                ? t('result.rematchRefused')
+                : t('result.rematch')}
+          </Button>
+        )}
+        <Button variant="gray" tone="neutral" full loading={matchmaking.isPending} onClick={() => matchmaking.mutate(topic)}>
+          {t('result.newOpponent')}
+        </Button>
+      </div>
+    </div>
+  )
+  const review = (
+    <DuelReview
+      compact={compact}
+      game={game}
+      me={userId}
+      myName={myName}
+      opponentName={opponentName}
+      reported={reportedRounds}
+      onReport={(round, index, count) => setQuestionReport({ round, index, count })}
+    />
+  )
+
   return (
     <Screen
       overlay={
@@ -304,72 +384,18 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           <IconButton icon={XIcon} label={t('result.quit')} variant="plain" tone="neutral" onClick={quit} />
         </div>
         <div ref={pagesRef} className="min-h-0 flex-1">
+        {regular && hasReview ? (
+          // Largeur « regular » (cadre paysage, tablette en paysage, 2026-11-16, `resultat.md` § 4 ter) : deux volets,
+          // le résultat à gauche, les Détails du duel ouverts à droite ; ni pager ni bandeau à glisser.
+          <div className="grid h-full grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+            <div className="flex h-full min-h-0 flex-col overflow-hidden">{summary}</div>
+            <div className="min-h-0 border-l border-jo-border pt-1">{review}</div>
+          </div>
+        ) : (
         <ResultPages page={page} onPageChange={setPage} enabled={hasReview}>
         {/* Page 1 : jamais de défilement ni de débordement, le geste vertical ouvre les détails. */}
         <div className={cn('flex h-full flex-col overflow-hidden', !hasReview && 'pb-2')}>
-        <div className={cn('flex min-h-0 flex-1 flex-col justify-between px-4 pb-2', compact ? 'gap-5' : 'gap-4')}>
-          <ResultHeader
-            outcome={cancelled ? 'draw' : outcome}
-            topic={topic.name}
-            me={{
-              name: myName,
-              src: myAvatar,
-              tier: myTier,
-              score: data.myScore,
-              streak: streakOf(game, userId),
-              meta: bot ? t('result.trainingElo', { elo: formatNumber(rating, language) }) : undefined,
-              premium: me?.premium === true,
-              onOpen: identity.open(userId),
-            }}
-            opponent={{
-              name: opponentName,
-              src: opponentAvatar,
-              tier: opponentTier,
-              score: data.opponentScore,
-              streak: streakOf(game, opponentId),
-              meta: bot ? botLevel : undefined,
-              premium: !bot && identity.premium(data.opponent ?? opponentProfile.data, opponentId),
-              // Le robot et un compte supprimé n'ont pas de fiche.
-              onOpen: bot || data.opponentDeleted ? undefined : identity.open(opponentId),
-            }}
-          />
-          {bot || cancelled ? (
-            <Notice tone="training" title={t(cancelled ? 'result.cancelled' : 'result.training')} message={t(cancelled ? 'result.cancelledText' : 'result.trainingText')} />
-          ) : (
-            // Écran court : l'Elo et la maîtrise côte à côte (`resultat.md` § 4 bis), sans jamais passer à la ligne : la page ne défile pas (2026-11-15). Le delta de l'Elo est sous l'Elo pour tenir.
-            <div className={compact ? 'flex items-center justify-between gap-3' : 'contents'}>
-              {/* Écran court : sans le prochain rang, la place manque (2026-11-14). */}
-              <EloSummary compact={compact} elo={rating} delta={data.rated ? (data.eloDelta ?? 0) : 0} next={compact ? undefined : nextElo} />
-              <MasteryRing
-                tier={tokens.tier[mastery.tier as TierCode]?.label ?? '—'}
-                next={mastery.nextTier ? tokens.tier[mastery.nextTier as TierCode]?.label : undefined}
-                gained={mastery.xpGained}
-                remaining={mastery.tierRemainingXp}
-                size={compact ? 104 : 150}
-                compact={compact}
-                state={data.reward === null ? 'pending' : 'done'}
-              />
-            </div>
-          )}
-          <div className="grid grid-cols-2 gap-2">
-            {bot ? (
-              <Button full icon={LightningIcon} loading={training.isPending} onClick={() => training.mutate({ topic, difficulty })}>
-                {t('result.replay')}
-              </Button>
-            ) : (
-              <Button full icon={LightningIcon} loading={rematch.sending} disabled={rematch.state !== 'idle' || !opponentId || data.opponentDeleted} onClick={() => void rematch.send()}>
-                {rematch.state === 'pending' && rematch.seconds > 0
-                  ? t('result.rematchWaiting', { seconds: rematch.seconds })
-                  : rematch.state === 'refused'
-                    ? t('result.rematchRefused')
-                    : t('result.rematch')}
-              </Button>
-            )}
-            <Button variant="gray" tone="neutral" full loading={matchmaking.isPending} onClick={() => matchmaking.mutate(topic)}>
-              {t('result.newOpponent')}
-            </Button>
-          </div>
-        </div>
+        {summary}
         {/* Bandeau : annonce la page Détails du duel ; un tap y descend, comme le glissé vers le haut. */}
         {hasReview && (
           <SwipeHint
@@ -382,18 +408,9 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           />
         )}
         </div>
-        {hasReview ? (
-          <DuelReview
-            compact={compact}
-            game={game}
-            me={userId}
-            myName={myName}
-            opponentName={opponentName}
-            reported={reportedRounds}
-            onReport={(round, index, count) => setQuestionReport({ round, index, count })}
-          />
-        ) : null}
+        {hasReview ? review : null}
         </ResultPages>
+        )}
         </div>
       </div>
     </Screen>
