@@ -14,8 +14,6 @@ export type AvatarProps = {
   src?: string
   size?: keyof typeof SIZES
   tier?: TierCode
-  /** Classement non établi : filet pointillé, image désaturée. */
-  provisional?: boolean
   /** Rang pas encore atteint. */
   locked?: boolean
   presence?: 'online' | 'ingame' | 'offline'
@@ -38,7 +36,7 @@ const initials = (name: string) =>
     .join('')
     .toUpperCase()
 
-export function Avatar({ name, src, size = 'md', tier, provisional = false, locked = false, presence, decorative = false, className }: AvatarProps) {
+export function Avatar({ name, src, size = 'md', tier, locked = false, presence, decorative = false, className }: AvatarProps) {
   const px = SIZES[size]
   const image = src ? (
     <img
@@ -62,7 +60,7 @@ export function Avatar({ name, src, size = 'md', tier, provisional = false, lock
     </span>
   )
 
-  const framed = tier && !provisional && px >= FRAME_MIN_SIZE
+  const framed = tier && px >= FRAME_MIN_SIZE
 
   return (
     <span className={cn('relative inline-block flex-none', className)} style={{ width: px, height: px }}>
@@ -72,8 +70,8 @@ export function Avatar({ name, src, size = 'md', tier, provisional = false, lock
         </RankFrame>
       ) : (
         <span
-          className={cn('block size-full rounded-jo-full', provisional && 'outline-2 outline-offset-2 outline-dashed outline-jo-border')}
-          style={tier && !provisional ? { outline: `2px solid ${tierColor(tier)}` } : undefined}
+          className="block size-full rounded-jo-full"
+          style={tier ? { outline: `2px solid ${tierColor(tier)}` } : undefined}
         >
           {image}
         </span>

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
+import { queryKeys } from '@/lib/query-keys'
 import { api } from '@/lib/api'
 import { useConnectionStore } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
@@ -58,7 +59,7 @@ export function SearchPage() {
   const term = useDebounced(query.trim(), 250)
   const searching = term.length >= MIN_QUERY
   const results = useQuery({
-    queryKey: ['suggestions', term],
+    queryKey: queryKeys.suggestions.term(term),
     queryFn: () => api.get<SuggestionView[]>('/api/suggestions', { query: { q: term, limit: 10 } }),
     enabled: searching && !offline,
     staleTime: 30_000,

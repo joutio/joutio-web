@@ -107,13 +107,16 @@ function useBotRoomError() {
     fail(quotaProblemOf(error) === 'rooms' ? 'play.botQuotaError' : 'play.trainingError', quotaProblemOf(error) === 'rooms' ? 'play.botQuotaText' : undefined)
 }
 
+/** Remplacer l'écran courant (« Rejouer » depuis un résultat) au lieu d'empiler : Quitter ne ramène pas à l'ancien résultat. */
+type LaunchOptions = { replace?: boolean }
+
 /** Entraînement contre le robot : la salle bot se prépare, puis le duel s'ouvre. */
-export function useStartTraining() {
+export function useStartTraining({ replace = false }: LaunchOptions = {}) {
   const navigate = useNavigate()
   const onError = useBotRoomError()
   return useMutation({
     mutationFn: ({ topic, difficulty }: { topic: PlayTopic; difficulty: BotDifficulty }) => playService.createBotRoom(topic.topicId, difficulty),
-    onSuccess: ({ id }, { topic }) => void navigate(ROUTES.room(id), { state: { topic } }),
+    onSuccess: ({ id }, { topic }) => void navigate(ROUTES.room(id), { state: { topic }, replace }),
     onError,
   })
 }
@@ -131,12 +134,12 @@ export function useCreateBotRoom() {
 }
 
 /** « Défier le monde » : ticket d'appariement, puis l'écran de recherche. */
-export function useStartMatchmaking() {
+export function useStartMatchmaking({ replace = false }: LaunchOptions = {}) {
   const navigate = useNavigate()
   const fail = useLaunchError()
   return useMutation({
     mutationFn: (topic: PlayTopic) => playService.enqueue(topic.topicId),
-    onSuccess: (ticket, topic) => void navigate(ROUTES.play(ticket.ticketId), { state: { topic } }),
+    onSuccess: (ticket, topic) => void navigate(ROUTES.play(ticket.ticketId), { state: { topic }, replace }),
     onError: () => fail('play.matchmakingError'),
   })
 }
@@ -187,7 +190,7 @@ export function useContacts(direction: 'following' | 'followers', query: string,
 
 /** Salle : vue REST (sujet, adversaire) et état replié de ses notifications (REST à l'ouverture, puis STOMP). */
 export function useRoom(roomId: string) {
-  const view = useQuery({ queryKey: ['rooms', roomId], queryFn: () => playService.room(roomId), staleTime: Infinity, retry: 2, enabled: Boolean(roomId) })
+  const view = useQuery({ queryKey: queryKeys.room(roomId), queryFn: () => playService.room(roomId), staleTime: Infinity, retry: 2, enabled: Boolean(roomId) })
   const stream = useEventStream<RoomNotification, ReturnType<typeof emptyRoom>>(
     roomId
       ? {
@@ -285,7 +288,7 @@ export function useCloseRoom() {
 /** Profil d'un joueur (second joueur d'un salon partagé, que la vue REST de la salle ne connaît pas). */
 export function usePlayerProfile(userId: string, enabled: boolean) {
   return useQuery({
-    queryKey: ['profiles', userId, 'profile'],
+    queryKey: queryKeys.profiles.profile(userId),
     queryFn: () => playService.profile(userId),
     enabled: enabled && Boolean(userId),
     staleTime: 60_000,

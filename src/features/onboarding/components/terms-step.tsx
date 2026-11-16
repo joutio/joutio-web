@@ -1,5 +1,6 @@
 import { ScrollIcon } from '@phosphor-icons/react'
 import { useAcceptTerms, useMe } from '@/features/me'
+import { config } from '@/lib/config'
 import { useT } from '@/lib/i18n'
 import { toast } from '@/shared/toast'
 import { Button, Screen } from '@/ui'
@@ -39,10 +40,10 @@ export function TermsStep() {
           {version && <p className="jo-type-caption m-0 text-jo-muted">{t('terms.version', { version })}</p>}
         </div>
         <div className="grid gap-3">
-          <a href="/terms.html" target="_blank" rel="noreferrer" className="jo-type-callout jo-focus w-fit rounded-jo-xs underline">
+          <a href={`${config.siteUrl}/terms`} target="_blank" rel="noreferrer" className="jo-type-callout jo-focus w-fit rounded-jo-xs underline">
             {t('terms.read')}
           </a>
-          <a href="/privacy.html" target="_blank" rel="noreferrer" className="jo-type-callout jo-focus w-fit rounded-jo-xs underline">
+          <a href={`${config.siteUrl}/privacy`} target="_blank" rel="noreferrer" className="jo-type-callout jo-focus w-fit rounded-jo-xs underline">
             {t('terms.privacy')}
           </a>
         </div>

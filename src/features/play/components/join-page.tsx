@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
+import { queryKeys } from '@/lib/query-keys'
 import { useServerNow } from '@/lib/realtime'
 import { returnTo, selectStatus, useSessionStore } from '@/lib/session'
 import { useUserAvatar } from '@/shared/avatar'
@@ -24,12 +25,12 @@ const RULES: readonly { icon: Icon; label: MessageKey }[] = [
 /** Colonne de 370 px au plus (face-à-face, conditions, bouton) : sur grand écran, la page garde une taille de téléphone. */
 const COLUMN = 'mx-auto w-full max-w-[370px]'
 
-type SeatProps = { name: string; src?: string; rating?: number | null; provisional?: boolean | null; premium?: boolean; guest?: string }
+type SeatProps = { name: string; src?: string; rating?: number | null; premium?: boolean; guest?: string }
 
 /** Une place du face-à-face : avatar, nom, rang et Elo ; sans compte, une place à prendre (`guest` : son indication). */
-function Seat({ name, src, rating, provisional, premium, guest }: SeatProps) {
+function Seat({ name, src, rating, premium, guest }: SeatProps) {
   const language = useLanguageStore((state) => state.language)
-  const tier: TierCode | undefined = rating != null && !provisional ? tierOf(rating) : undefined
+  const tier: TierCode | undefined = rating != null ? tierOf(rating) : undefined
   return (
     <div className="grid min-w-0 justify-items-center gap-2 text-center">
       {guest ? (
@@ -64,7 +65,7 @@ export function JoinPage() {
   const me = useMe()
   const identity = usePlayerIdentity()
   const now = useServerNow()
-  const room = useQuery({ queryKey: ['rooms', roomId], queryFn: () => playService.room(roomId), enabled: authenticated && Boolean(roomId), retry: 1 })
+  const room = useQuery({ queryKey: queryKeys.room(roomId), queryFn: () => playService.room(roomId), enabled: authenticated && Boolean(roomId), retry: 1 })
   const view = room.data
   const host = view?.opponent
   const hostAvatar = useUserAvatar(host)
@@ -136,13 +137,13 @@ export function JoinPage() {
               <Skeleton shape="circle" width={88} />
             </div>
           ) : (
-            <Seat name={host.pseudonym} src={hostAvatar} rating={host.rating} provisional={host.provisional} premium={identity.premium(host)} />
+            <Seat name={host.pseudonym} src={hostAvatar} rating={host.rating} premium={identity.premium(host)} />
           )}
           <span className="mt-[30px] grid size-7 place-items-center rounded-jo-full bg-jo-accent text-jo-on-accent" aria-hidden>
             <LightningIcon size={14} weight="fill" />
           </span>
           {authenticated && me.data ? (
-            <Seat name={me.data.pseudonym} src={myAvatar} rating={myProgression?.rating} provisional={myProgression?.provisional} premium={me.data.premium === true} />
+            <Seat name={me.data.pseudonym} src={myAvatar} rating={myProgression?.rating} premium={me.data.premium === true} />
           ) : (
             <Seat name={t('join.guest')} guest={t('join.guestHint')} />
           )}

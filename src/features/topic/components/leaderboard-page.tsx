@@ -64,7 +64,7 @@ export function LeaderboardPage() {
   const listed = mine ? entries.some((entry) => entry.userId === mine.userId) : true
   const monthly = filters.period === 'MONTHLY'
   const value = (entry: LeaderboardEntryView) => formatNumber(monthly ? entry.monthlyXp : entry.totalXp, language)
-  const sub = (entry: LeaderboardEntryView) => (entry.provisional ? t('topic.provisional') : tokens.tier[tierOf(entry.rating)].label)
+  const sub = (entry: LeaderboardEntryView) => tokens.tier[tierOf(entry.rating)].label
   const now = new Date()
   const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
   const legend = [
@@ -154,7 +154,7 @@ export function LeaderboardPage() {
               players={podium.map((entry, index) => ({
                 name: entry.pseudonym,
                 src: avatars[index],
-                tier: entry.provisional ? undefined : tierOf(entry.rating),
+                tier: tierOf(entry.rating),
                 value: value(entry),
                 premium: identity.premium(entry),
                 onOpen: identity.open(entry.userId),

@@ -46,7 +46,7 @@ export function Toast({ tone = 'neutral', title, description, icon, actor, loadi
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       className={cn(
-        'jo-focus flex min-h-16 w-full max-w-[358px] items-center gap-3 rounded-jo-md bg-jo-surface px-3.5 py-3 text-left shadow-jo',
+        'jo-focus mx-auto flex min-h-16 w-full max-w-[358px] items-center gap-3 rounded-jo-md bg-jo-surface px-3.5 py-3 text-left shadow-jo',
         onClick && 'cursor-pointer',
         className,
       )}

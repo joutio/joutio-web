@@ -17,7 +17,7 @@ export function NotificationToast({ notification, onOpen }: { notification: Noti
     <Toast
       title={t(notificationTitleKey(notification), { name })}
       icon={NOTIFICATION_ICONS[notification.type]}
-      actor={actorId ? { name, src, tier: actor?.progression && !actor.progression.provisional ? tierOf(actor.progression.rating) : undefined } : undefined}
+      actor={actorId ? { name, src, tier: actor?.progression ? tierOf(actor.progression.rating) : undefined } : undefined}
       onClick={onOpen}
     />
   )

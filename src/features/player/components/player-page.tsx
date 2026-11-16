@@ -74,7 +74,7 @@ export function PlayerPage() {
     : undefined
 
   const progression = data?.progression
-  const tier = progression && !progression.provisional ? tierOf(progression.rating) : undefined
+  const tier = progression ? tierOf(progression.rating) : undefined
   const canAct = Boolean(data && !data.isMe && !data.suspended && !data.bot)
   const name = data?.pseudonym ?? t('player.title')
   const latest = finishedGames(games.data?.pages.flatMap((page) => page.content) ?? []).slice(0, 10)
@@ -100,7 +100,7 @@ export function PlayerPage() {
       image={data?.bannerUrl ?? undefined}
       title={name}
       premium={identity.premium(data)}
-      eyebrow={data ? <Avatar name={name} src={src} tier={tier} provisional={progression?.provisional} size="xxl" /> : undefined}
+      eyebrow={data ? <Avatar name={name} src={src} tier={tier} size="xxl" /> : undefined}
       right={
         data && !data.isMe ? (
           <>
@@ -120,10 +120,8 @@ export function PlayerPage() {
                 </div>
               )}
               <div className="flex flex-wrap justify-center gap-2">
-                {tier && progression ? (
+                {tier && progression && (
                   <Badge variant="tier" tier={tier}>{`${tokens.tier[tier].label} · ${formatNumber(progression.rating, language)}`}</Badge>
-                ) : (
-                  <Pill>{t('profile.unranked')}</Pill>
                 )}
                 {data.country && <Pill>{`${countryFlag(data.country)} ${countryName(data.country, language)}`}</Pill>}
                 {data.suspended && <Pill tone="suspended">{t('player.suspended')}</Pill>}

@@ -12,7 +12,7 @@ import { showDialog } from '@/shared/dialog'
 import { isAcceptedImage, uploadImage, withImageRights } from '@/shared/media'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
-import { Avatar, Field, IconButton, ListRow, MobileTopBar, Screen } from '@/ui'
+import { Avatar, Field, IconButton, ListRow, MobileTopBar, ProgressBar, Screen } from '@/ui'
 
 interface Draft {
   pseudonym: string
@@ -36,7 +36,9 @@ export function EditProfilePage() {
   const initial: Draft = { pseudonym: me?.pseudonym ?? '', bio: me?.bio ?? '', country: me?.country ?? null, bannerUrl: me?.bannerUrl ?? null }
   const [draft, setDraft] = useState<Draft>(initial)
   const [countryOpen, setCountryOpen] = useState(false)
-  const [uploading, setUploading] = useState(false)
+  // Avancement de l'envoi de la bannière (0 à 100) ; `undefined` hors envoi.
+  const [progress, setProgress] = useState<number | undefined>(undefined)
+  const uploading = progress !== undefined
   const [saving, setSaving] = useState(false)
   const file = useRef<HTMLInputElement>(null)
   const savePseudonym = useUpdateMe('pseudonym')
@@ -77,14 +79,14 @@ export function EditProfilePage() {
       toast.error(t('settings.imageError'), t('settings.imageRule'))
       return
     }
-    setUploading(true)
+    setProgress(0)
     try {
-      const url = (await uploadImage(picked)).url
+      const url = (await uploadImage(picked, setProgress)).url
       setDraft((current) => ({ ...current, bannerUrl: url }))
     } catch (error) {
       toast.error(t('settings.imageError'), (isApiError(error) && error.detail) || t('settings.imageRule'))
     } finally {
-      setUploading(false)
+      setProgress(undefined)
     }
   }
 
@@ -125,8 +127,14 @@ export function EditProfilePage() {
             {draft.bannerUrl && <img src={draft.bannerUrl} alt="" className="size-full object-cover" />}
             <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/30">
               <IconButton icon={CameraIcon} label={t(draft.bannerUrl ? 'editProfile.changeBanner' : 'editProfile.addBanner')} media disabled={uploading} onClick={() => withImageRights(() => file.current?.click())} />
-              {draft.bannerUrl && <IconButton icon={TrashIcon} label={t('editProfile.removeBanner')} media onClick={() => setDraft({ ...draft, bannerUrl: null })} />}
+              {draft.bannerUrl && <IconButton icon={TrashIcon} label={t('editProfile.removeBanner')} media disabled={uploading} onClick={() => setDraft({ ...draft, bannerUrl: null })} />}
             </div>
+            {uploading && (
+              <div className="absolute inset-x-2 bottom-2 grid gap-1 rounded-jo-sm bg-jo-surface/90 px-3 py-2 text-jo-text">
+                <span className="jo-type-caption">{t('media.uploadingPercent', { percent: progress })}</span>
+                <ProgressBar value={progress} ariaLabel={t('media.uploadingPercent', { percent: progress })} />
+              </div>
+            )}
             <input
               ref={file}
               type="file"

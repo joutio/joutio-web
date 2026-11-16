@@ -22,7 +22,7 @@ export function useGameResult(gameId: string, waitForReward: boolean) {
   const client = useQueryClient()
   const applied = useRef<string | null>(null)
   const result = useQuery({
-    queryKey: ['games', gameId, 'result'],
+    queryKey: queryKeys.games.result(gameId),
     queryFn: () => gameService.result(gameId),
     enabled: Boolean(gameId),
     retry: 3,
@@ -49,7 +49,7 @@ export function useGameResult(gameId: string, waitForReward: boolean) {
     // Une partie terminée est un résultat calculé par le serveur, pas une mutation du joueur : les vues qu'elle touche
     // se relisent (règle des mutations : l'invalidation reste permise pour les données calculées par le serveur).
     const userId = client.getQueryData<MeView>(queryKeys.me)?.userId
-    if (userId) void client.invalidateQueries({ queryKey: ['profiles', userId] })
+    if (userId) void client.invalidateQueries({ queryKey: queryKeys.profiles.all(userId) })
     void client.invalidateQueries({ queryKey: queryKeys.topic.all(data.topic.topicId) })
     void client.invalidateQueries({ queryKey: queryKeys.home })
   }, [client, gameId, result.data, waitForReward])
@@ -59,7 +59,7 @@ export function useGameResult(gameId: string, waitForReward: boolean) {
 /** Partie terminée, repliée depuis l'historique REST (aucun STOMP : plus rien ne bouge). */
 export function useGameHistory(gameId: string) {
   return useQuery({
-    queryKey: ['games', gameId, 'notifications'],
+    queryKey: queryKeys.games.notifications(gameId),
     queryFn: () => gameService.notifications(gameId),
     enabled: Boolean(gameId),
     staleTime: Infinity,
@@ -147,7 +147,7 @@ export function useSendRematch({ userId, opponentId, topic, gameId }: { userId?:
  */
 export function useStreakUnlock(gameId: string, userId: string | undefined, enabled: boolean) {
   return useQuery({
-    queryKey: ['games', gameId, 'streak-unlock'],
+    queryKey: queryKeys.games.streakUnlock(gameId),
     queryFn: async () => streakDayUnlocked(await profileService.activity(userId ?? ''), activityDate(readServerNow())),
     enabled: enabled && Boolean(userId),
     staleTime: Infinity,

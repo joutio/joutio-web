@@ -60,7 +60,7 @@ export function NotificationRow({ title, sub, icon: IconComponent, player, unrea
         <span className="grid size-11 flex-none place-items-center rounded-jo-full bg-jo-raised text-jo-muted">{IconComponent && <IconComponent size={22} aria-hidden />}</span>
       )}
       <span className="grid min-w-0 flex-1">
-        <span className={cn('jo-type-headline truncate', !unread && 'font-normal')}>{title}</span>
+        <span className={cn('jo-type-headline line-clamp-2 text-pretty', !unread && 'font-normal')}>{title}</span>
         {sub && <span className="jo-type-caption truncate text-jo-muted">{sub}</span>}
       </span>
       {unread && (

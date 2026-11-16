@@ -5,7 +5,8 @@ import { gameService, useGameStream } from '@/features/duel'
 import { useMe } from '@/features/me'
 import { playService, useRoom } from '@/features/play'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { useConnectionStore, usePersonalNotifications } from '@/lib/realtime'
+import { queryKeys } from '@/lib/query-keys'
+import { useConnectionStore } from '@/lib/realtime'
 import { useOngoingStore } from '@/shared/ongoing-store'
 import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
@@ -54,8 +55,8 @@ export function OngoingRuntime({ children }: { children: ReactNode }) {
   const userId = useMe().data?.userId
   const connection = useConnectionStore((state) => state.status)
   const { games, rooms, rememberGame, trackRoom, reset } = useOngoingStore()
-  const active = useQuery({ queryKey: ['games', 'active', userId], queryFn: gameService.active, enabled: Boolean(userId) })
-  const myRooms = useQuery({ queryKey: ['rooms', 'tracked', userId], queryFn: playService.myRooms, enabled: Boolean(userId) })
+  const active = useQuery({ queryKey: queryKeys.games.active(userId ?? ''), queryFn: gameService.active, enabled: Boolean(userId) })
+  const myRooms = useQuery({ queryKey: queryKeys.myRooms, queryFn: playService.myRooms, enabled: Boolean(userId) })
   const { refetch: refetchActive } = active
   const { refetch: refetchRooms } = myRooms
 
@@ -75,12 +76,6 @@ export function OngoingRuntime({ children }: { children: ReactNode }) {
     document.addEventListener('visibilitychange', onVisible)
     return () => document.removeEventListener('visibilitychange', onVisible)
   }, [refetchActive, refetchRooms])
-  usePersonalNotifications(userId, (notification, deleted) => {
-    if (!deleted && notification.type === 'ROOM_ACCEPTED') {
-      void refetchActive()
-      void refetchRooms()
-    }
-  })
   useEffect(() => {
     for (const game of active.data ?? [])
       rememberGame({ gameId: game.gameId, topicId: game.topic.topicId, topicName: topicName(game.topic.names, language), category: game.topic.category, createdAt: game.createdAt })

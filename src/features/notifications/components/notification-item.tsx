@@ -64,7 +64,7 @@ export function NotificationItem({ notification, last }: { notification: Notific
       title={title}
       sub={sub}
       icon={actorId ? undefined : (NOTIFICATION_ICONS[notification.type] ?? BellIcon)}
-      player={actorId ? { name, src, tier: actor?.progression && !actor.progression.provisional ? tierOf(actor.progression.rating) : undefined } : undefined}
+      player={actorId ? { name, src, tier: actor?.progression ? tierOf(actor.progression.rating) : undefined } : undefined}
       unread={isUnread(notification)}
       chevron={opensScreen(notification.type)}
       onClick={() => open(notification)}

@@ -4,9 +4,19 @@
  */
 export const queryKeys = {
   me: ['me'] as const,
+  /** Horloge du serveur (`/api/clock`). */
+  serverTime: ['server-time'] as const,
+  /** Palette ⌘K et recherche globale. */
+  suggestions: {
+    term: (term: string) => ['suggestions', term] as const,
+    players: (query: string) => ['suggestions', 'players', query] as const,
+  },
   pseudonymAvailability: (value: string) => ['me', 'pseudonym-availability', value.toLowerCase()] as const,
   home: ['home'] as const,
   topics: {
+    all: ['topics'] as const,
+    /** Toutes les pages du catalogue, quel que soit le filtre. */
+    lists: ['topics', 'list'] as const,
     list: (filters: object) => ['topics', 'list', filters] as const,
     facets: (query: string, scope: string) => ['topics', 'facets', query, { scope }] as const,
   },
@@ -18,6 +28,8 @@ export const queryKeys = {
     games: (topicId: string, userId: string) => ['topic', topicId, 'games', userId] as const,
   },
   profiles: {
+    /** Tout ce qui concerne un joueur (profil, titres, badges, parties…). */
+    all: (userId: string) => ['profiles', userId] as const,
     activity: (userId: string) => ['profiles', userId, 'activity'] as const,
     titles: (userId: string) => ['profiles', userId, 'titles'] as const,
     badges: (userId: string) => ['profiles', userId, 'badges'] as const,
@@ -35,8 +47,19 @@ export const queryKeys = {
   },
   /** Défis nominatifs du joueur (reçus et envoyés). */
   challenges: ['challenges', 'mine'] as const,
-  /** Salons du joueur (`/api/rooms/mine`). */
+  /** Salons du joueur (`/api/rooms/mine`) : une seule requête pour Défis, la pastille et « Reprendre une partie ». */
   myRooms: ['rooms', 'mine'] as const,
+  /** Un salon (`/api/rooms/{id}`). */
+  room: (roomId: string) => ['rooms', 'room', roomId] as const,
+  games: {
+    /** Toutes les listes de parties en cours (préfixe). */
+    activeAll: ['games', 'active'] as const,
+    /** Parties en cours du joueur (`/api/games?active=true`). */
+    active: (userId: string) => ['games', 'active', userId] as const,
+    result: (gameId: string) => ['games', gameId, 'result'] as const,
+    notifications: (gameId: string) => ['games', gameId, 'notifications'] as const,
+    streakUnlock: (gameId: string) => ['games', gameId, 'streak-unlock'] as const,
+  },
   /** Abonnements / abonnés d'un joueur, par recherche et tri. */
   contacts: {
     all: ['contacts'] as const,
@@ -52,6 +75,8 @@ export const queryKeys = {
     questions: (topicId: string) => ['workshop', topicId, 'questions'] as const,
     reports: (topicId: string) => ['workshop', topicId, 'reports'] as const,
     team: (topicId: string) => ['workshop', topicId, 'team'] as const,
+    /** Sujets publiés au nom proche, pour l'avertissement de doublon de « Nouveau sujet ». */
+    named: (query: string) => ['workshop', 'named', query] as const,
   },
   onboarding: {
     recommendations: (interests: readonly string[]) => ['onboarding', 'recommendations', [...interests]] as const,

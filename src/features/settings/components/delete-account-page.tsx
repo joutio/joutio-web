@@ -41,7 +41,7 @@ export function DeleteAccountPage() {
 
   const progression = me?.progression
   const rank =
-    progression && !progression.provisional ? t('deletion.rank', { tier: tokens.tier[tierOf(progression.rating)].label, rating: formatNumber(progression.rating, language) }) : ''
+    progression ? t('deletion.rank', { tier: tokens.tier[tierOf(progression.rating)].label, rating: formatNumber(progression.rating, language) }) : ''
   const summary = t('deletion.summary', { rank, badges: badges.data?.earnedCount ?? 0, titles: titles.data?.titles.length ?? 0 })
 
   if (remove.isSuccess)

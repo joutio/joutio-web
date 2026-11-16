@@ -1,4 +1,4 @@
-import { descriptionsDraft } from '@joutio/client/authoring'
+import { descriptionsDraft, sameNameTopic } from '@joutio/client/authoring'
 import type { HomeView, Language, PageResponse, TopicCardView, TopicOverviewView } from '@joutio/client/api-types'
 import {
   applyQuestionOperations,
@@ -18,6 +18,7 @@ import { useT, type MessageKey } from '@/lib/i18n'
 import { optimisticId, optimisticUpdate } from '@/lib/optimistic-cache'
 import { queryKeys } from '@/lib/query-keys'
 import { toast } from '@/shared/toast'
+import { useDebounced } from '@/shared/use-debounced'
 import { workshopService } from '../lib/workshop-service'
 
 type TopicPage = { topics: TopicCardView[]; last: boolean }
@@ -53,7 +54,7 @@ export const useTeam = (topicId: string) => useQuery({ queryKey: queryKeys.works
 
 /** Joueurs à inviter dans l'équipe (2 caractères au moins). */
 export const usePlayerSearch = (query: string) =>
-  useQuery({ queryKey: ['suggestions', 'players', query], queryFn: () => workshopService.players(query), enabled: query.length >= 2, staleTime: 30_000 })
+  useQuery({ queryKey: queryKeys.suggestions.players(query), queryFn: () => workshopService.players(query), enabled: query.length >= 2, staleTime: 30_000 })
 
 /** Limites du plan lues dans `MeView.limits` (appliquées par le BFF) et feuille Premium avec l'accroche de la limite. */
 export function useCreationLimits() {
@@ -89,7 +90,7 @@ function patchTopic(client: QueryClient, topicId: string, patch: (topic: TopicCa
     client.setQueryData<PageResponse<TopicCardView>>(key, (page) => (page ? { ...page, content: page.content.map(apply) } : page))
   client.setQueryData<TopicWorkshop>(queryKeys.workshop.topic(topicId), (view) => (view ? { ...view, topic: patch(view.topic) } : view))
   client.setQueryData<TopicOverviewView>(queryKeys.topic.overview(topicId), (view) => (view ? { ...view, topic: patch(view.topic) } : view))
-  client.setQueriesData<InfiniteData<TopicPage>>({ queryKey: ['topics', 'list'] }, (data) =>
+  client.setQueriesData<InfiniteData<TopicPage>>({ queryKey: queryKeys.topics.lists }, (data) =>
     data ? { ...data, pages: data.pages.map((page) => ({ ...page, topics: page.topics.map(apply) })) } : data,
   )
   client.setQueryData<HomeView>(queryKeys.home, (home) =>
@@ -478,4 +479,19 @@ export function useTeamChange(topicId: string) {
       fail('workshop.teamError', 'workshop.teamErrorText', error)
     },
   })
+}
+
+/**
+ * Sujet publié qui porte déjà ce nom (2026-11-16) : avertissement non bloquant de la feuille « Nouveau sujet », pour
+ * inciter à un titre plus original et plus facile à retrouver. Recherche après 300 ms sans frappe, dès 3 caractères.
+ */
+export function useSameNameTopic(name: string) {
+  const search = useDebounced(name.trim(), 300)
+  const candidates = useQuery({
+    queryKey: queryKeys.workshop.named(search),
+    queryFn: () => workshopService.topicsNamed(search),
+    enabled: search.length >= 3,
+    staleTime: 60_000,
+  })
+  return search.length >= 3 && search === name.trim() ? sameNameTopic(search, candidates.data?.content) : undefined
 }

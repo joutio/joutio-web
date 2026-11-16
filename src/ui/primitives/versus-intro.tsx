@@ -13,7 +13,7 @@ export type VersusPlayer = {
   src?: string
   /** Titre porté. */
   title?: string
-  /** Elo : avec `tier`, pastille de palier « Or · 867 » comme sur Profil ; sans palier (provisoire), « Non classé ». */
+  /** Elo : avec `tier`, pastille de palier « Or · 867 » comme sur Profil ; sans palier (robot, profil en chargement), rien. */
   rating?: number
   /** Pays déjà formaté (« 🇫🇷 France »), en pastille neutre comme sur Profil. */
   country?: string
@@ -37,7 +37,7 @@ export type VersusIntroProps = {
 
 function Panel({ player, side, animated }: { player: VersusPlayer; side: 'top' | 'bottom'; animated: boolean }) {
   const top = side === 'top'
-  // Halo du palier ; sans palier (non classé, robot, profil en chargement) : halo gris neutre, jamais l'accent doré.
+  // Halo du palier ; sans palier (robot, profil en chargement) : halo gris neutre, jamais l'accent doré.
   const glow = player.tier ? tierColor(player.tier) : 'var(--jo-muted)'
   return (
     <div
@@ -57,12 +57,9 @@ function Panel({ player, side, animated }: { player: VersusPlayer; side: 'top' |
           {player.title && <span className="jo-type-caption truncate text-jo-muted">{player.title}</span>}
           {(player.rating !== undefined || player.country || player.detail) && (
             <div className={cn('flex flex-wrap gap-2', !top && 'justify-end')}>
-              {player.rating !== undefined &&
-                (player.tier ? (
+              {player.rating !== undefined && player.tier && (
                   <Badge variant="tier" tier={player.tier}>{`${tokens.tier[player.tier].label} · ${player.rating}`}</Badge>
-                ) : (
-                  <Pill>Non classé</Pill>
-                ))}
+              )}
               {player.country && <Pill>{player.country}</Pill>}
               {player.detail && <Pill>{player.detail}</Pill>}
             </div>

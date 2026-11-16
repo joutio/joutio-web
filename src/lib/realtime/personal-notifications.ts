@@ -1,3 +1,4 @@
+import type { RoomPresence } from '@joutio/client/rooms'
 import { useEffect, useRef } from 'react'
 import { subscribeStomp } from './stomp'
 
@@ -35,6 +36,29 @@ export function usePersonalNotifications(userId: string | undefined, handler: (n
       }
       if (!envelope.payload?.notificationId) return
       ref.current(envelope.payload, envelope.eventType === 'NOTIFICATION_DELETED')
+    })
+  }, [userId])
+}
+
+/**
+ * Présence de l'adversaire dans un de mes salons (`ROOM_PRESENCE`, éphémère, hors inbox, 2026-11-16) : poussée sur le
+ * même flux personnel, sans `notificationId`. `handler` reçoit la présence.
+ */
+export function useRoomPresenceEvents(userId: string | undefined, handler: (presence: RoomPresence) => void) {
+  const ref = useRef(handler)
+  useEffect(() => {
+    ref.current = handler
+  })
+  useEffect(() => {
+    if (!userId) return
+    return subscribeStomp(`/topic/notifications/${userId}`, (message) => {
+      let envelope: { eventType?: string; payload?: RoomPresence }
+      try {
+        envelope = JSON.parse(message.body) as typeof envelope
+      } catch {
+        return
+      }
+      if (envelope.eventType === 'ROOM_PRESENCE' && envelope.payload?.roomId) ref.current(envelope.payload)
     })
   }, [userId])
 }

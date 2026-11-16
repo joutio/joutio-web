@@ -121,7 +121,7 @@ export function MyBoardRow({ entry }: { entry: LeaderboardEntryView }) {
         premium={identity.premium(entry)}
         onClick={identity.open(entry.userId)}
         src={src}
-        tier={entry.provisional ? undefined : tierOf(entry.rating)}
+        tier={tierOf(entry.rating)}
         sub={t('topic.totalXp', { xp: formatNumber(entry.totalXp, language) })}
         trail={formatNumber(entry.totalXp, language)}
       />
@@ -140,7 +140,7 @@ export function BoardRow({ entry, sub, trail, highlight, last }: { entry: Leader
       name={entry.pseudonym}
       premium={identity.premium(entry)}
       src={src}
-      tier={entry.provisional ? undefined : tierOf(entry.rating)}
+      tier={tierOf(entry.rating)}
       sub={sub}
       trail={trail}
       highlight={highlight}
@@ -161,7 +161,7 @@ export function BoardTab({ topicId }: { topicId: string }) {
   const podium = [first, second, third].filter((entry): entry is LeaderboardEntryView => entry !== undefined)
   const avatars = [useUserAvatar(first), useUserAvatar(second), useUserAvatar(third)]
   const identity = usePlayerIdentity()
-  const sub = (entry: LeaderboardEntryView) => (entry.provisional ? t('topic.provisional') : tokens.tier[tierOf(entry.rating)].label)
+  const sub = (entry: LeaderboardEntryView) => tokens.tier[tierOf(entry.rating)].label
 
   return (
     <div className="grid gap-3 px-4">
@@ -189,7 +189,7 @@ export function BoardTab({ topicId }: { topicId: string }) {
             players={podium.map((entry, index) => ({
               name: entry.pseudonym,
               src: avatars[index],
-              tier: entry.provisional ? undefined : tierOf(entry.rating),
+              tier: tierOf(entry.rating),
               value: formatNumber(entry.totalXp, language),
               premium: identity.premium(entry),
               onOpen: identity.open(entry.userId),

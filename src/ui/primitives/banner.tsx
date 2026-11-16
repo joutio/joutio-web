@@ -1,9 +1,9 @@
-import { ArrowClockwiseIcon, CheckCircleIcon, InfoIcon, RobotIcon, SwordIcon, WifiSlashIcon, type Icon } from '@phosphor-icons/react'
+import { ArrowClockwiseIcon, CheckCircleIcon, InfoIcon, RobotIcon, SwordIcon, WarningIcon, WifiSlashIcon, type Icon } from '@phosphor-icons/react'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { Button } from './button'
 
-export type BannerTone = 'error' | 'success' | 'info' | 'live' | 'training'
+export type BannerTone = 'error' | 'warning' | 'success' | 'info' | 'live' | 'training'
 
 /** États de la bannière de connexion globale (`etats-systeme.md`) : réseau et temps réel. */
 export type BannerConnection = 'offline' | 'reconnecting' | 'retrying' | 'failed' | 'restored'
@@ -11,6 +11,7 @@ export type BannerConnection = 'offline' | 'reconnecting' | 'retrying' | 'failed
 /** Teinte posée sur `bg` : la bande reste opaque sous la barre d'état. */
 const TONES: Record<BannerTone, { icon: Icon; iconClass: string; tint: string; filledAction?: boolean; fill?: boolean }> = {
   error: { icon: WifiSlashIcon, iconClass: 'text-jo-wrong', tint: 'bg-jo-wrong/12' },
+  warning: { icon: WarningIcon, iconClass: 'text-jo-accent-ink', tint: 'bg-jo-accent/12', fill: true },
   success: { icon: CheckCircleIcon, iconClass: 'text-jo-correct', tint: 'bg-jo-correct/12', fill: true },
   info: { icon: InfoIcon, iconClass: 'text-jo-muted', tint: 'bg-jo-raised' },
   live: { icon: SwordIcon, iconClass: 'text-jo-accent-ink', tint: 'bg-jo-warm', filledAction: true, fill: true },

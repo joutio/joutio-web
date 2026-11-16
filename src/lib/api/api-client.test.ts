@@ -34,18 +34,20 @@ describe('api client', () => {
     await expect(api.get('/api/me')).rejects.toMatchObject({ statusCode: 401 })
   })
 
-  it('ferme la session sur un compte suspendu', async () => {
+  it('ferme la session sur un compte suspendu, avec son échéance et son motif', async () => {
     const { end } = gateway()
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json(403, { type: PROBLEM.accountSuspended, title: 'Suspendu' }, 'application/problem+json')))
+    const problem = { type: PROBLEM.accountSuspended, title: 'Suspendu', suspendedUntil: '2026-12-01T00:00:00Z', suspensionReason: 'SPAM' }
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json(403, problem, 'application/problem+json')))
     await expect(api.get('/api/me')).rejects.toBeInstanceOf(ApiRequestError)
-    expect(end).toHaveBeenCalledWith('suspended')
+    expect(end).toHaveBeenCalledWith('suspended', '2026-12-01T00:00:00Z', 'SPAM')
   })
 
   it('ferme la session sur un utilisateur inconnu, sans renouveler', async () => {
     const { end, refresh } = gateway()
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json(401, { type: PROBLEM.unknownUser })))
     await expect(api.get('/api/me')).rejects.toMatchObject({ type: PROBLEM.unknownUser })
-    expect(end).toHaveBeenCalledWith('unknownUser')
+    expect(end).toHaveBeenCalledTimes(1)
+    expect((end.mock.calls[0] as unknown[] | undefined)?.[0]).toBe('unknownUser')
     expect(refresh).not.toHaveBeenCalled()
   })
 
@@ -55,5 +57,46 @@ describe('api client', () => {
     const error = await api.get('/api/me').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(ApiRequestError)
     expect((error as ApiRequestError).transient).toBe(true)
+  })
+
+  it('rapporte la progression d’un envoi FormData, avec le même traitement de réponse', async () => {
+    gateway()
+    const progress: number[] = []
+    class FakeXhr {
+      static last: FakeXhr
+      upload: { onprogress?: (event: { lengthComputable: boolean; loaded: number; total: number }) => void } = {}
+      status = 0
+      statusText = ''
+      responseText = ''
+      responseType = ''
+      withCredentials = false
+      headers: Record<string, string> = {}
+      onload?: () => void
+      onerror?: () => void
+      onabort?: () => void
+      constructor() {
+        FakeXhr.last = this
+      }
+      open() {}
+      setRequestHeader(name: string, value: string) {
+        this.headers[name] = value
+      }
+      getAllResponseHeaders() {
+        return 'content-type: application/json\r\n'
+      }
+      abort() {}
+      send() {
+        this.upload.onprogress?.({ lengthComputable: true, loaded: 50, total: 100 })
+        this.status = 201
+        this.responseText = JSON.stringify({ id: 'm1', url: 'https://media/x.png' })
+        this.onload?.()
+      }
+    }
+    vi.stubGlobal('XMLHttpRequest', FakeXhr)
+
+    const media = await api.post('/api/media', new FormData(), { onUploadProgress: (fraction) => progress.push(fraction) })
+    expect(media).toEqual({ id: 'm1', url: 'https://media/x.png' })
+    expect(progress).toEqual([0.5, 1])
+    expect(FakeXhr.last.headers.Authorization).toBe('Bearer stale')
   })
 })

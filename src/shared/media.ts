@@ -54,12 +54,15 @@ export const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 /** JPG ou PNG de 5 Mo au plus ; `png` : PNG seul (pictogramme, transparence gardée). */
 export const isAcceptedImage = (file: File, png = false) => (png ? file.type === 'image/png' : ['image/jpeg', 'image/png'].includes(file.type)) && file.size <= MAX_IMAGE_BYTES
 
-/** Envoie une image au BFF, unique voie d'écriture des médias (normalisation, quota par joueur). */
-export function uploadImage(file: File): Promise<MediaView> {
+/**
+ * Envoie une image au BFF, unique voie d'écriture des médias (normalisation, quota par joueur). `onProgress` reçoit
+ * l'avancement de l'envoi, de 0 à 100.
+ */
+export function uploadImage(file: File, onProgress?: (percent: number) => void): Promise<MediaView> {
   const form = new FormData()
   form.append('file', file)
   // L'auteur a déclaré détenir les droits (`withImageRights`) : le BFF conserve la déclaration avec l'image.
   form.append('rightsDeclared', 'true')
   form.append('termsVersion', TERMS_VERSION)
-  return api.post<MediaView>('/api/media', form)
+  return api.post<MediaView>('/api/media', form, onProgress ? { onUploadProgress: (fraction) => onProgress(Math.round(fraction * 100)) } : undefined)
 }

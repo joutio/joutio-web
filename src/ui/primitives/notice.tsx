@@ -1,11 +1,14 @@
-import { CheckCircleIcon, InfoIcon, RobotIcon, SwordIcon, WifiSlashIcon, type Icon } from '@phosphor-icons/react'
+import { CheckCircleIcon, InfoIcon, RobotIcon, SwordIcon, WarningIcon, WifiSlashIcon, type Icon } from '@phosphor-icons/react'
 import { cn } from '../lib/cn'
 import { Button } from './button'
 
-export type NoticeTone = 'error' | 'success' | 'info' | 'live' | 'training'
+export type NoticeTone = 'error' | 'warning' | 'success' | 'info' | 'live' | 'training'
 
 const TONES: Record<NoticeTone, { icon: Icon; iconClass: string; root: string; filledAction?: boolean; fill?: boolean }> = {
   error: { icon: WifiSlashIcon, iconClass: 'text-jo-wrong', root: 'bg-jo-surface ring-jo-border' },
+  // Avertissement non bloquant (2026-11-16) : triangle ambre plein, filet ambre sur la surface — le fond chaud reste
+  // réservé au jeu (`live`, `training`).
+  warning: { icon: WarningIcon, iconClass: 'text-jo-accent-ink', root: 'bg-jo-surface ring-jo-accent', fill: true },
   success: { icon: CheckCircleIcon, iconClass: 'text-jo-correct', root: 'bg-jo-surface ring-jo-border', fill: true },
   info: { icon: InfoIcon, iconClass: 'text-jo-muted', root: 'bg-jo-surface ring-jo-border' },
   live: { icon: SwordIcon, iconClass: 'text-jo-accent-ink', root: 'bg-jo-warm ring-jo-border', filledAction: true, fill: true },

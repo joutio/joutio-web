@@ -61,8 +61,8 @@ export function useNotificationsRuntime() {
 
   usePersonalNotifications(userId, (notification, deleted) => {
     if (!deleted) {
+      // La boîte et la cloche sont relues par `useRealtimeInvalidation` (app) ; ici, seulement le toast.
       announce(notification)
-      void client.invalidateQueries({ queryKey: queryKeys.notifications.all })
       return
     }
     // Supprimée ailleurs : son toast se ferme.

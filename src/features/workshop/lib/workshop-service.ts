@@ -27,6 +27,8 @@ export const workshopService = {
   myTopics: () => api.get<PageResponse<TopicCardView>>(WORKSHOP_ENDPOINTS.contributed, { query: { page: 0, size: 100 } }),
   /** Sujets dont je suis le créateur (`mine=true`, exclusif des autres filtres). */
   createdTopics: () => api.get<PageResponse<TopicCardView>>(WORKSHOP_ENDPOINTS.topics, { query: { mine: true, page: 0, size: 100 } }),
+  /** Sujets publiés dont le nom contient `query` (catalogue) : l'atelier y cherche un nom identique. */
+  topicsNamed: (query: string) => api.get<PageResponse<TopicCardView>>(WORKSHOP_ENDPOINTS.topics, { query: { q: query, page: 0, size: 20 } }),
   /** Mes sujets › À traiter. */
   todo: () => api.get<TopicTodo[]>(WORKSHOP_ENDPOINTS.todo),
   workshop: (topicId: string) => api.get<TopicWorkshop>(WORKSHOP_ENDPOINTS.workshop(topicId)),

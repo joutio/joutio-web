@@ -11,20 +11,21 @@ import { toast } from '@/shared/toast'
 export function useImageUpload(onUploaded: (url: string) => void, png = false) {
   const t = useT()
   const input = useRef<HTMLInputElement>(null)
-  const [uploading, setUploading] = useState(false)
+  // Avancement de l'envoi (0 à 100) ; `undefined` hors envoi.
+  const [progress, setProgress] = useState<number | undefined>(undefined)
   const upload = async (file: File | undefined) => {
     if (!file) return
     if (!isAcceptedImage(file, png)) {
       toast.error(t('settings.imageError'), t(png ? 'workshop.pngRule' : 'settings.imageRule'))
       return
     }
-    setUploading(true)
+    setProgress(0)
     try {
-      onUploaded((await uploadImage(file)).url)
+      onUploaded((await uploadImage(file, setProgress)).url)
     } catch (error) {
       toast.error(t('settings.imageError'), (isApiError(error) && error.detail) || t('settings.imageRule'))
     } finally {
-      setUploading(false)
+      setProgress(undefined)
     }
   }
   const field = (
@@ -39,6 +40,16 @@ export function useImageUpload(onUploaded: (url: string) => void, png = false) {
       }}
     />
   )
-  return { uploading, pick: () => withImageRights(() => input.current?.click()), field }
+  const uploading = progress !== undefined
+  return {
+    uploading,
+    progress,
+    /** Consigne de l'`ImagePicker` pendant l'envoi : « Envoi de l'image · 42 % ». */
+    progressHint: uploading ? t('media.uploadingPercent', { percent: progress }) : undefined,
+    pick: () => {
+      if (!uploading) withImageRights(() => input.current?.click())
+    },
+    field,
+  }
 }
 

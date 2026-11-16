@@ -1,4 +1,5 @@
 import type { ChallengeView } from '@joutio/client/api-types'
+import { applyRoomPresence, roomsWaitingForViewer, type RoomView } from '@joutio/client/rooms'
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,7 +8,7 @@ import { useTabBadges } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { optimisticUpdate } from '@/lib/optimistic-cache'
 import { queryKeys } from '@/lib/query-keys'
-import { usePersonalNotifications } from '@/lib/realtime'
+import { useRoomPresenceEvents } from '@/lib/realtime'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
@@ -29,21 +30,26 @@ export function refreshChallenges(client: QueryClient) {
   void client.invalidateQueries({ queryKey: queryKeys.myRooms })
 }
 
-const CHALLENGE_EVENTS = new Set(['CHALLENGE_RECEIVED', 'CHALLENGE_DECLINED', 'ROOM_ACCEPTED'])
-
 /**
- * Flux personnel STOMP : un défi reçu, refusé ou accepté relit défis et salons (aucun polling). Pose aussi la pastille
- * de l'onglet Défis (reçus en attente). Monté une fois pour toute l'app connectée.
+ * Pastille de l'onglet Défis (défis et salons relus par `useRealtimeInvalidation` sur le flux personnel). Pose la pastille
+ * de l'onglet Défis : reçus en attente + salons où l'adversaire attend le joueur (2026-11-16, relus à chaque entrée ou
+ * sortie de l'adversaire, `ROOM_PRESENCE`). Monté une fois pour toute l'app connectée.
  */
 export function useChallengesRuntime() {
   const client = useQueryClient()
   const userId = useMe().data?.userId
   const challenges = useMyChallenges(Boolean(userId))
+  const rooms = useMyRooms(Boolean(userId))
   const setBadge = useTabBadges((state) => state.set)
   const received = splitChallenges(challenges.data, userId ?? '').received.length
-  useEffect(() => setBadge('challenges', received), [received, setBadge])
-  usePersonalNotifications(userId, (notification) => {
-    if (CHALLENGE_EVENTS.has(notification.type)) refreshChallenges(client)
+  const waiting = roomsWaitingForViewer(rooms.data)
+  useEffect(() => setBadge('challenges', received + waiting), [received, waiting, setBadge])
+  // Présence portée par le message : appliquée sur place (la projection serveur peut être en retard), salon inconnu = relu.
+  useRoomPresenceEvents(userId, (presence) => {
+    const rooms = client.getQueryData<RoomView[]>(queryKeys.myRooms)
+    const next = rooms && userId ? applyRoomPresence(rooms, presence, userId) : undefined
+    if (next) client.setQueryData(queryKeys.myRooms, next)
+    else void client.invalidateQueries({ queryKey: queryKeys.myRooms })
   })
 }
 
@@ -104,8 +110,11 @@ async function roomOfAccepted(challengeId: string): Promise<string | null> {
   return null
 }
 
-/** Accepter : le défi est accepté, puis sa salle s'ouvre. */
-export function useAcceptChallenge() {
+/**
+ * Accepter : le défi est accepté, puis sa salle s'ouvre. `replace` : le salon remplace l'écran courant dans l'historique
+ * (revanche acceptée depuis un résultat).
+ */
+export function useAcceptChallenge({ replace = false }: { replace?: boolean } = {}) {
   const client = useQueryClient()
   const navigate = useNavigate()
   const t = useT()
@@ -123,7 +132,7 @@ export function useAcceptChallenge() {
         return
       }
       const topic = { topicId: challenge.topic.topicId, name: topicName(challenge.topic.names, language), category: challenge.topic.category }
-      void navigate(ROUTES.room(roomId), { state: { topic } })
+      void navigate(ROUTES.room(roomId), { state: { topic }, replace })
     },
     onError: (_error, _challenge, context) => {
       context?.rollback()

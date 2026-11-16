@@ -168,9 +168,9 @@ export function DuelPage() {
   if (scene.kind === 'roundIntro' && introSeen !== scene.round) setIntroSeen(scene.round)
   const myName = me?.pseudonym ?? ''
   const opponentName = (isPlayer1 ? game?.player2Name : game?.player1Name) ?? (vsBot ? t('duel.bot') : t('topic.opponent'))
-  const myTier = me?.progression && !me.progression.provisional ? tierOf(me.progression.rating) : undefined
+  const myTier = me?.progression ? tierOf(me.progression.rating) : undefined
   const opponentProgression = opponentProfile.data?.progression
-  const opponentTier = opponentProgression && !opponentProgression.provisional ? tierOf(opponentProgression.rating) : undefined
+  const opponentTier = opponentProgression ? tierOf(opponentProgression.rating) : undefined
   const countryLabel = (code?: string | null) => (code ? `${countryFlag(code)} ${countryName(code)}` : undefined)
 
   if (expired && game) return <DuelCancelled started={game.firstRoundAt !== null} topic={passed ?? (game.topicId ? { topicId: game.topicId, name: topic, category } : undefined)} />

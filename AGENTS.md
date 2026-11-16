@@ -223,8 +223,8 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
       Écarts : pas de balayage vers le haut ni d'haptique sur le web ; revanche reçue sans toast (popup, spec) alors que
       le `RematchPrompt` global reste à faire
 - [x] Résultat (2026-11-12) : pages à balayer identiques au lab (Embla retiré de la revue et des Signalements), miroir
-      de la page 2 réduit au caret, joueur non classé sans cadre de rang (adversaire : `progression.provisional` de son
-      profil, `opponentRated` ne suffit pas), pas de promotion célébrée en rang provisoire
+      de la page 2 réduit au caret ; depuis le 2026-11-16, plus de rang provisoire : tout joueur a un cadre de rang dès son
+      premier duel classé et toute promotion est célébrée
 - [ ] Bascule (merge de `rewrite/web-kit`)
 
 ### Retours d'usage — 2026-11-13
@@ -248,3 +248,27 @@ CI : `ci.yml` (frontend-ci réutilisable) sur les PR. `release.yml` ne part que 
   `shared/avatar/i18n` ; avatar provisionnel sans désaturation (le « voile »).
 - `TopicRow` au visuel de `TopicTile` ; description **localisée** du sujet (atelier, fiche) ; `StreakUnlock` en tête de la
   séquence de déblocages.
+
+### Lot du 2026-11-16
+
+- **Pages légales** : plus de copie dans `public/` (`terms.html`, `privacy.html`, `data-deletion.html`, `legal.css`
+  supprimés) ; connexion et CGU ouvrent `${config.siteUrl}/terms|/privacy` (joutio.com), comme les Réglages.
+- **Elo sans période « non classé »** : `provisional` retiré partout (vues BFF, `@joutio/client`, avatar pointillé,
+  pastille « Non classé ») ; K fixe côté profile. Duel bot : « Elo N · entraînement, sans effet sur l'Elo ».
+- **Feuille + dialogue** : une feuille Vaul est une modale Radix (`pointer-events: none` sur le `body`) ; `DialogHost`
+  se rend dans le calque de la feuille du dessus (`ui/mobile/sheet-layer.tsx`, `useTopSheetLayer`), Échap et toucher
+  dans le dialogue ne ferment plus la feuille. Corrige la déclaration de droits non touchable depuis Vignette/Pictogramme.
+- **Envoi d'image avec progression** : `RequestOptions.onUploadProgress` (envoi `FormData` par `XMLHttpRequest`, mêmes
+  en-têtes, erreurs et renouvellement), `uploadImage(file, onProgress)`, `ImagePicker.progress` et bannière du profil.
+- **Temps réel → cache** : la règle des mutations reste (optimiste, pas de relecture après une commande locale) ; les
+  événements **d'un autre acteur** relisent les vues qu'ils touchent, dans une table unique
+  (`app/realtime-invalidation.ts` : flux personnel par type, déblocages `/topic/achievements/{userId}`, relecture à la
+  reconnexion). Toutes les clés passent par `lib/query-keys.ts` ; une seule requête `myRooms` (Défis, pastille,
+  « Reprendre une partie »).
+- **Pastille Défis** : défis reçus + salons où l'adversaire attend (`roomsWaitingForViewer`, `ROOM_PRESENCE` appliqué au
+  cache par `applyRoomPresence`).
+- Barre du bas : l'onglet actif depuis une page poussée ramène à sa racine ; revanche, « Rejouer » et « Nouvel
+  adversaire » remplacent le résultat dans l'historique (Quitter ne revient plus à l'ancienne partie).
+- Toasts centrés (358 px), webframe à 20 px de rayon, notifications sur deux lignes, déblocages sans défilement (Embla
+  seul), « Partager le lien » en action pleine au-dessus de « Fermer le salon », avertissement de nom de sujet déjà pris
+  (`Notice` `warning`, nouveau ton).

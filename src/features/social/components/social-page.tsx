@@ -55,7 +55,7 @@ function ContactRow({ player, last, onChallenge }: { player: PlayerCardView; las
       name={player.pseudonym}
       premium={identity.premium(player)}
       src={src}
-      tier={player.provisional ? undefined : tierOf(player.rating)}
+      tier={tierOf(player.rating)}
       presence={online ? 'online' : 'offline'}
       sub={sub}
       ctaIcon={{ icon: SwordIcon, label: t('social.challengeName', { name: player.pseudonym }), onClick: () => onChallenge(player) }}

@@ -66,7 +66,7 @@ export function useFollowTopic(topicId: string) {
             ? { ...topic, followed: follow, followersCount: Math.max(0, topic.followersCount + (topic.followed === follow ? 0 : follow ? 1 : -1)) }
             : topic
         if (previous) client.setQueryData<TopicOverviewView>(key, { ...previous, topic: flip(previous.topic) })
-        for (const [listKey, data] of client.getQueriesData<InfiniteData<TopicPage>>({ queryKey: ['topics', 'list'] })) {
+        for (const [listKey, data] of client.getQueriesData<InfiniteData<TopicPage>>({ queryKey: queryKeys.topics.lists })) {
           if (!data) continue
           const filters = listKey[2] as { followed?: boolean; hideFollowed?: boolean }
           client.setQueryData(listKey, {

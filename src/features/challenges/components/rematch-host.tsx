@@ -1,5 +1,6 @@
 import type { ChallengeView } from '@joutio/client/api-types'
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
 import { useLanguageStore } from '@/lib/i18n'
 import { readServerNow, usePersonalNotifications, type NotificationView } from '@/lib/realtime'
@@ -36,7 +37,10 @@ export function RematchHost() {
   const request = requests[0] ?? null
   const view = request?.sourceId ? views[request.sourceId] : undefined
   const seconds = useSecondsUntil(request?.expiresAt ?? view?.expiresAt ?? null)
-  const accept = useAcceptChallenge()
+  // Revanche acceptée depuis le résultat : le nouveau salon remplace la partie précédente dans l'historique, Quitter ne
+  // ramène pas à l'ancien résultat (2026-11-16).
+  const { pathname } = useLocation()
+  const accept = useAcceptChallenge({ replace: pathname.startsWith('/games/') })
   const decline = useDeclineChallenges()
   const avatar = useUserAvatar(view?.challenger)
   const identity = usePlayerIdentity()

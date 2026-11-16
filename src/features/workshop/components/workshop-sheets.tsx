@@ -166,11 +166,10 @@ export function TopicImageSheet({ open, title, subtitle, hint, image, png = fals
   onClose: () => void
   onChange: (url: string | null) => void
 }) {
-  const t = useT()
-  const { uploading, pick, field } = useImageUpload(onChange, png)
+  const { progress, progressHint, pick, field } = useImageUpload(onChange, png)
   return (
     <MobileSheet open={open} onClose={onClose} title={title} subtitle={subtitle}>
-      <ImagePicker image={image ?? undefined} hint={uploading ? t('settings.uploading') : hint} onPick={pick} onRemove={() => onChange(null)} />
+      <ImagePicker image={image ?? undefined} hint={progressHint ?? hint} progress={progress} onPick={pick} onRemove={() => onChange(null)} />
       {field}
     </MobileSheet>
   )

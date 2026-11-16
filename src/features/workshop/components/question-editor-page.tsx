@@ -165,7 +165,8 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
       <div className="grid gap-4 px-4 pt-2 pb-8">
         <ImagePicker
           image={draft.imageUrl}
-          hint={image.uploading ? t('settings.uploading') : t('workshop.imageHint')}
+          hint={image.progressHint ?? t('workshop.imageHint')}
+          progress={image.progress}
           onPick={image.pick}
           onRemove={() => {
             setDraft({ ...draft, imageUrl: undefined, alt: { fr: '', en: '' } })

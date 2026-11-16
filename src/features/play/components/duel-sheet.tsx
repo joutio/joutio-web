@@ -36,7 +36,7 @@ function ContactRow({ player, last, onClick }: { player: PlayerCardView; last: b
       name={player.pseudonym}
       premium={identity.premium(player)}
       src={src}
-      tier={player.rating != null && !player.provisional ? tierOf(player.rating) : undefined}
+      tier={player.rating != null ? tierOf(player.rating) : undefined}
       chevron
       onClick={onClick}
       last={last}

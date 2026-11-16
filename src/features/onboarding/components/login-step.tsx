@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { config } from '@/lib/config'
 import { useT } from '@/lib/i18n'
 import { startSocialLogin } from '@/lib/session'
 import { Button, Field, Logo, Notice, Screen, SocialButton } from '@/ui'
@@ -65,11 +66,11 @@ export function LoginStep() {
         </form>
         <p className="jo-type-caption m-0 text-center text-pretty text-jo-muted">
           {t('onboarding.login.legalBefore')}
-          <a href="/terms.html" target="_blank" rel="noreferrer" className="jo-focus rounded-jo-xs underline">
+          <a href={`${config.siteUrl}/terms`} target="_blank" rel="noreferrer" className="jo-focus rounded-jo-xs underline">
             {t('onboarding.login.terms')}
           </a>
           {t('onboarding.login.legalBetween')}
-          <a href="/privacy.html" target="_blank" rel="noreferrer" className="jo-focus rounded-jo-xs underline">
+          <a href={`${config.siteUrl}/privacy`} target="_blank" rel="noreferrer" className="jo-focus rounded-jo-xs underline">
             {t('onboarding.login.privacy')}
           </a>
           .

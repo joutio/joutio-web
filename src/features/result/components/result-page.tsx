@@ -59,8 +59,7 @@ function unlocksOf(result: GameResultView, streakDays: number | null): Unlock[] 
   if (result.botGame) return []
   const unlocks: Unlock[] = streakDays ? [{ kind: 'streak', days: streakDays }] : []
   const delta = result.eloDelta ?? 0
-  // Rang provisoire : pas encore de palier acquis, donc pas de promotion à célébrer.
-  if (result.rated && delta > 0 && !result.progression.provisional) {
+  if (result.rated && delta > 0) {
     const from = tierOf(result.progression.rating - delta)
     const tier = tierOf(result.progression.rating)
     if (from !== tier) unlocks.push({ kind: 'rank', from, tier })
@@ -167,8 +166,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const opponentAvatar = useUserAvatar(bot ? null : (data.opponent ?? opponentProfile.data))
   const titles = useMyTitles()
   const wear = useWearTitle()
-  const training = useStartTraining()
-  const matchmaking = useStartMatchmaking()
+  const training = useStartTraining({ replace: true })
+  const matchmaking = useStartMatchmaking({ replace: true })
   const difficulty = useBotDifficulty((state) => state.difficulty)
   const rematch = useSendRematch({ userId, opponentId, topic, gameId })
   const [step, setStep] = useState(0)
@@ -183,12 +182,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
 
   // Elo à l'instant de la partie (le bilan), jamais celui du profil courant.
   const rating = data.progression.rating
-  const myTier = data.progression.provisional ? undefined : tierOf(rating)
-  // `opponentRated` dit seulement que la partie a compté pour son Elo, y compris en période provisoire : le cadre
-  // attend un rang acquis (profil non provisoire), comme le mien. Sinon, avatar sans cadre (lab), jamais le Fer.
-  const opponentProgression = opponentProfile.data?.progression
-  const opponentRanked = Boolean(opponentProgression && !opponentProgression.provisional)
-  const opponentTier = data.opponentRated && data.opponentRating != null && opponentRanked ? tierOf(data.opponentRating) : undefined
+  const myTier = tierOf(rating)
+  const opponentTier = data.opponentRated && data.opponentRating != null ? tierOf(data.opponentRating) : undefined
   // La série est lue avant d'ouvrir la séquence : son écran vient en premier et ne doit pas s'insérer en cours de route.
   const streak = useStreakUnlock(gameId, userId, celebrate && !bot)
   const streakPending = celebrate && !sequenceDone && !bot && !streak.isFetched
@@ -322,7 +317,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
               tier: myTier,
               score: data.myScore,
               streak: streakOf(game, userId),
-              meta: bot ? t('result.unranked', { elo: formatNumber(rating, language) }) : undefined,
+              meta: bot ? t('result.trainingElo', { elo: formatNumber(rating, language) }) : undefined,
               premium: me?.premium === true,
               onOpen: identity.open(userId),
             }}

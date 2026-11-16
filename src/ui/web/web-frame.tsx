@@ -7,7 +7,7 @@ import { buttonStyles } from '../primitives/button'
 import { StoreButtons, type StoreLinks } from '../site/store-buttons'
 
 /** Écran de l'iPhone Duo ouvert, en points (`DEVICES['iphone-duo-open']` du lab) : la taille exacte du cadre web. */
-export const WEB_FRAME = { width: 626, height: 890, radius: 36 } as const
+export const WEB_FRAME = { width: 626, height: 890, radius: 20 } as const
 /** Sous cette largeur (web compact), l'app prend tout l'écran, sans cadre. */
 const FRAMED_FROM = 640
 /** Marge au-dessus et au-dessous du cadre. */

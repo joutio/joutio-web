@@ -89,7 +89,7 @@ export function ProfilePage() {
   const [familyOpen, setFamilyOpen] = useState(false)
 
   const progression = data?.progression
-  const tier = progression && !progression.provisional ? tierOf(progression.rating) : undefined
+  const tier = progression ? tierOf(progression.rating) : undefined
   const worn = titles.data?.titles.find((title) => title.key === (titles.data?.equippedKey ?? data?.equippedTitle))
   const name = data?.pseudonym ?? t('nav.profile')
 
@@ -131,7 +131,7 @@ export function ProfilePage() {
       image={data?.bannerUrl ?? undefined}
       title={name}
       premium={data?.premium === true}
-      eyebrow={data ? <Avatar name={name} src={src} tier={tier} provisional={progression?.provisional} size="xxl" /> : undefined}
+      eyebrow={data ? <Avatar name={name} src={src} tier={tier} size="xxl" /> : undefined}
       right={
         <>
           <NotificationBell media />
@@ -153,9 +153,7 @@ export function ProfilePage() {
                 <Skeleton className="h-7 w-40" />
               ) : tier && progression ? (
                 <Badge variant="tier" tier={tier}>{`${tokens.tier[tier].label} · ${formatNumber(progression.rating, language)}`}</Badge>
-              ) : (
-                <Pill>{t('profile.unranked')}</Pill>
-              )}
+              ) : null}
               {data?.country && <Pill>{`${countryFlag(data.country)} ${countryName(data.country, language)}`}</Pill>}
             </div>
           </div>

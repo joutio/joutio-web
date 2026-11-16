@@ -63,7 +63,7 @@ export function StatsTab({ me, onRanks }: { me: MeView; onRanks: () => void }) {
   const topics = useMyTopics()
   const stats = me.stats
   const progression = me.progression
-  const tier = progression && !progression.provisional ? tierOf(progression.rating) : undefined
+  const tier = progression ? tierOf(progression.rating) : undefined
   const rank = tier && progression ? rankProgress(tier, progression.rating, t, language) : undefined
   const donut = useMemo(
     () =>
@@ -103,13 +103,11 @@ export function StatsTab({ me, onRanks }: { me: MeView; onRanks: () => void }) {
               }
             />
             <div className="grid gap-2 rounded-jo-lg bg-jo-surface p-4">
-              {rank && tier ? (
+              {rank && tier && (
                 <>
                   <ProgressBar value={rank.progress} label={rank.label} tone={tier} />
                   <span className="jo-type-caption text-jo-muted">{rank.next}</span>
                 </>
-              ) : (
-                <span className="jo-type-callout text-jo-muted">{t('profile.provisional', { count: progression?.ratedGames ?? 0 })}</span>
               )}
             </div>
           </section>

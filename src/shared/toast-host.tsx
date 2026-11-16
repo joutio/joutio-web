@@ -12,7 +12,7 @@ const COLLAPSE_MS = 4000
 const FALLBACK_HEIGHT = 64
 
 /**
- * Toasts globaux (`toast.md`), placés comme dans le lab : en haut de l'écran, en haut à droite au-delà de 640 px. Pile
+ * Toasts globaux (`toast.md`), placés comme dans le lab : en haut de l'écran, centrés (358 px au plus, `Toast`). Pile
  * de 3 au plus ; toucher la pile repliée la déplie, chaque toast devient alors touchable.
  */
 export function ToastHost() {
@@ -57,7 +57,7 @@ export function ToastHost() {
       aria-live="polite"
       onPointerMove={expanded ? () => setActivity((count) => count + 1) : undefined}
       style={{ height: Math.max(height, 0) }}
-      className="pointer-events-none absolute inset-x-4 top-[calc(var(--jo-safe-top,0px)+8px)] z-50 @min-[640px]/app:inset-x-auto @min-[640px]/app:top-20 @min-[640px]/app:right-6 @min-[640px]/app:w-[360px]"
+      className="pointer-events-none absolute inset-x-4 top-[calc(var(--jo-safe-top,0px)+8px)] z-50"
     >
       {visible.map(({ entry, index, top }) => (
         <ToastSlot

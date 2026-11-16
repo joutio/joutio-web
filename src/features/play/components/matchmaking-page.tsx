@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
+import { queryKeys } from '@/lib/query-keys'
 import { readServerNow, useServerClock } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
@@ -89,7 +90,7 @@ export function MatchmakingPage() {
   )
 
   const roomId = ticket.state?.roomId ?? null
-  const room = useQuery({ queryKey: ['rooms', roomId], queryFn: () => playService.room(roomId ?? ''), enabled: Boolean(roomId) })
+  const room = useQuery({ queryKey: queryKeys.room(roomId ?? ''), queryFn: () => playService.room(roomId ?? ''), enabled: Boolean(roomId) })
   // `MATCHED` porte l'adversaire enrichi ; la salle reste le repli.
   const opponent = ticket.state?.opponent ?? room.data?.opponent ?? null
   const opponentAvatar = useUserAvatar(opponent)
@@ -99,7 +100,7 @@ export function MatchmakingPage() {
   const overview = useTopicOverview(topic?.name ? '' : topicId)
   const topicLabel = topic?.name ?? (overview.data ? topicName(overview.data.topic.names, language) : '')
   const rating = opponent?.rating ?? null
-  const tier = rating !== null && opponent?.provisional !== true ? tierOf(rating) : undefined
+  const tier = rating !== null ? tierOf(rating) : undefined
   const country = opponent?.country ? new Intl.DisplayNames([language], { type: 'region' }).of(opponent.country) : undefined
   const meta = [tier ? tokens.tier[tier].label : undefined, rating !== null ? String(rating) : undefined, country, t('mm.starting')].filter(Boolean).join(' · ')
 

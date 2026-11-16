@@ -126,10 +126,9 @@ export function RoomPage() {
     )
   }
 
-  const myTier = me.data?.progression && !me.data.progression.provisional ? tierOf(me.data.progression.rating) : undefined
+  const myTier = me.data?.progression ? tierOf(me.data.progression.rating) : undefined
   const meSeat: RoomPlayer = { name: me.data?.pseudonym ?? '', src: myAvatar, tier: myTier, premium: identity.myPremium, away: !myPresent, status: t(myPresent ? 'room.inRoom' : 'room.connecting') }
   const opponentRating = opponentView?.rating ?? fetched.data?.progression?.rating ?? null
-  const opponentProvisional = opponentView?.provisional ?? fetched.data?.progression?.provisional ?? true
   const opponentSeat: RoomPlayer | undefined = vsBot
     ? { name: t('topic.bot'), status: t('room.ready') }
     : opponentId
@@ -137,7 +136,7 @@ export function RoomPage() {
           name: opponentName ?? t('topic.opponent'),
           premium: identity.premium(opponentProfile, opponentId),
           src: opponentAvatar,
-          tier: opponentRating != null && !opponentProvisional ? tierOf(opponentRating) : undefined,
+          tier: opponentRating != null ? tierOf(opponentRating) : undefined,
           away: !opponentPresent,
         }
       : undefined
@@ -171,11 +170,6 @@ export function RoomPage() {
           engaged={engaged}
           complete={preparationComplete(roomStatus)}
         />
-        {shared && waiting && (
-          <Button full variant="tinted" icon={ShareNetworkIcon} onClick={shareRoom}>
-            {t('share.roomButton')}
-          </Button>
-        )}
         <div className="mt-auto grid gap-3">
           {presence.failed && (
             <div className="grid gap-2">
@@ -188,6 +182,11 @@ export function RoomPage() {
           {wizzVisible && (
             <Button full icon={LightningIcon} loading={wizz.isPending} disabled={!wizzAvailable} onClick={() => wizz.mutate()}>
               {wizzSeconds > 0 ? t('room.wizzIn', { seconds: wizzSeconds }) : t('room.wizz', { name: opponentName ?? t('topic.opponent') })}
+            </Button>
+          )}
+          {shared && waiting && (
+            <Button full icon={ShareNetworkIcon} onClick={shareRoom}>
+              {t('share.roomButton')}
             </Button>
           )}
           {isInitiator && (

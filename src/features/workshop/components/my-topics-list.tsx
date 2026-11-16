@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
-import { Button, EmptyState, Field, ListRow, MobileSheet, SectionHeader, Skeleton, TopicRow, tokens, type CategoryCode } from '@/ui'
-import { useCreateTopic, useCreationLimits, useFrozen, useMyTopics, useTopicTodo } from '../hooks/use-workshop'
+import { Button, EmptyState, Field, ListRow, MobileSheet, Notice, SectionHeader, Skeleton, TopicRow, tokens, type CategoryCode } from '@/ui'
+import { useCreateTopic, useCreationLimits, useFrozen, useMyTopics, useSameNameTopic, useTopicTodo } from '../hooks/use-workshop'
 import { FrozenNotice } from './frozen-notice'
 import { UniverseSheet } from './workshop-sheets'
 
@@ -19,6 +19,9 @@ function CreateTopicSheet({ open, onClose, onCreate }: { open: boolean; onClose:
   const [name, setName] = useState('')
   const [category, setCategory] = useState<CategoryCode>('GENERAL')
   const [universeOpen, setUniverseOpen] = useState(false)
+  const sameName = useSameNameTopic(name)
+  const language = useLanguageStore((state) => state.language)
+  const navigate = useNavigate()
   return (
     <>
       <MobileSheet
@@ -33,6 +36,14 @@ function CreateTopicSheet({ open, onClose, onCreate }: { open: boolean; onClose:
       >
         <div className="grid gap-4">
           <Field label={t('workshop.name')} placeholder={t('workshop.namePlaceholder')} value={name} maxLength={MAX_NAME} counter={`${name.length} / ${MAX_NAME}`} onChange={(event) => setName(event.target.value)} />
+          {sameName && (
+            <Notice
+              tone="warning"
+              title={t('workshop.duplicateName')}
+              action={{ label: t('workshop.duplicateNameOpen'), onClick: () => void navigate(ROUTES.topic(sameName.topicId)) }}
+              message={topicName(sameName.names, language)}
+            />
+          )}
           <div className="overflow-hidden rounded-jo-lg bg-jo-raised">
             <ListRow label={t('workshop.universe')} control="chevron" value={tokens.category[category].label} onClick={() => setUniverseOpen(true)} last />
           </div>
