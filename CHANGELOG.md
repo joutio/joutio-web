@@ -1,3 +1,9 @@
+## [2.19.1](https://github.com/joutio/joutio-web/compare/v2.19.0...v2.19.1) (2026-11-16)
+
+### Bug Fixes
+
+* **duel:** timer bar reaches zero with the countdown, zero is urgent ([a44bf71](https://github.com/joutio/joutio-web/commit/a44bf710a1ec1fc7ff2f1c06f9e9f2ff46fc960a))
+
 ## [2.19.0](https://github.com/joutio/joutio-web/compare/v2.18.0...v2.19.0) (2026-11-16)
 
 ### Features
