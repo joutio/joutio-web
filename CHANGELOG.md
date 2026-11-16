@@ -1,3 +1,9 @@
+## [2.19.0](https://github.com/joutio/joutio-web/compare/v2.18.0...v2.19.0) (2026-11-16)
+
+### Features
+
+* realtime cache refresh, upload progress, waiting rooms badge, ranked from first duel ([9bfa034](https://github.com/joutio/joutio-web/commit/9bfa034b22610ceb5eab22df0965b8fc4049efc0))
+
 ## [2.18.0](https://github.com/joutio/joutio-web/compare/v2.17.0...v2.18.0) (2026-11-15)
 
 ### Features
