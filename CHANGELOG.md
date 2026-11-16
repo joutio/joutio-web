@@ -1,3 +1,9 @@
+## [2.19.2](https://github.com/joutio/joutio-web/compare/v2.19.1...v2.19.2) (2026-11-16)
+
+### Bug Fixes
+
+* **avatar:** Micah eye whites are white ([8a67245](https://github.com/joutio/joutio-web/commit/8a672459de5190aeacafdce17f4d417c999020f1))
+
 ## [2.19.1](https://github.com/joutio/joutio-web/compare/v2.19.0...v2.19.1) (2026-11-16)
 
 ### Bug Fixes
