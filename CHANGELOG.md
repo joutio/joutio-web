@@ -1,3 +1,9 @@
+## [2.20.0](https://github.com/joutio/joutio-web/compare/v2.19.3...v2.20.0) (2026-11-16)
+
+### Features
+
+* **web:** landscape Duo web frame, side rail and two-pane result at regular width ([fb8397a](https://github.com/joutio/joutio-web/commit/fb8397ab09d8551effba461c178b36eefa7eb3c9))
+
 ## [2.19.3](https://github.com/joutio/joutio-web/compare/v2.19.2...v2.19.3) (2026-11-16)
 
 ### Bug Fixes
