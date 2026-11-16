@@ -1,3 +1,9 @@
+## [2.19.3](https://github.com/joutio/joutio-web/compare/v2.19.2...v2.19.3) (2026-11-16)
+
+### Bug Fixes
+
+* **auth:** sign in again before resuming a third-party authorization ([48e11a1](https://github.com/joutio/joutio-web/commit/48e11a13240ba3d876a33714e841931890a9960a))
+
 ## [2.19.2](https://github.com/joutio/joutio-web/compare/v2.19.1...v2.19.2) (2026-11-16)
 
 ### Bug Fixes
