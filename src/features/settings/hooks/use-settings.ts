@@ -5,8 +5,7 @@ import { useEffect, useState } from 'react'
 import { useMe } from '@/features/me'
 import { isApiError } from '@/lib/api'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { optimisticUpdate } from '@/lib/optimistic-cache'
-import { queryKeys } from '@/lib/query-keys'
+import { optimisticUpdate, queryKeys } from '@joutio/client/query'
 import { toast } from '@/shared/toast'
 import { settingsService } from '../lib/settings-service'
 
@@ -65,22 +64,22 @@ export function useUpdateMe<K extends MeField>(field: K) {
   return useMutation({
     mutationFn: (value: MeView[K]) => SAVERS[field](userId, value),
     onMutate: (value: MeView[K]) =>
-      optimisticUpdate(client, [queryKeys.me, queryKeys.profiles.profile(userId), queryKeys.contacts.all, queryKeys.challenges], () => {
+      optimisticUpdate(client, [queryKeys.me(), queryKeys.profiles.profile(userId), queryKeys.contacts.all(), queryKeys.challenges()], () => {
         const mine = <T extends { userId: string }>(user: T): T => (user.userId === userId ? { ...user, [field]: value } : user)
-        const previousLanguage = client.getQueryData<MeView>(queryKeys.me)?.language
-        client.setQueryData<MeView>(queryKeys.me, (me) => (me ? { ...me, [field]: value } : me))
+        const previousLanguage = client.getQueryData<MeView>(queryKeys.me())?.language
+        client.setQueryData<MeView>(queryKeys.me(), (me) => (me ? { ...me, [field]: value } : me))
         if (field === 'language' && previousLanguage !== value) setLanguage(value as MeView['language'])
         if (field !== 'interests') client.setQueryData<PlayerProfileView>(queryKeys.profiles.profile(userId), (profile) => (profile ? { ...profile, [field]: value } : profile))
         if (field !== 'pseudonym' && field !== 'avatarOptions') return
-        client.setQueriesData<InfiniteData<PageResponse<PlayerCardView>>>({ queryKey: queryKeys.contacts.all }, (data) =>
+        client.setQueriesData<InfiniteData<PageResponse<PlayerCardView>>>({ queryKey: queryKeys.contacts.all() }, (data) =>
           data ? { ...data, pages: data.pages.map((page) => ({ ...page, content: page.content.map(mine) })) } : data,
         )
-        client.setQueryData<ChallengeView[]>(queryKeys.challenges, (items) => items?.map((challenge) => ({ ...challenge, challenger: mine(challenge.challenger), opponent: mine(challenge.opponent) })))
+        client.setQueryData<ChallengeView[]>(queryKeys.challenges(), (items) => items?.map((challenge) => ({ ...challenge, challenger: mine(challenge.challenger), opponent: mine(challenge.opponent) })))
       }),
     onError: (error, _value, context) => {
       context?.rollback()
       if (field === 'language') {
-        const language = client.getQueryData<MeView>(queryKeys.me)?.language
+        const language = client.getQueryData<MeView>(queryKeys.me())?.language
         if (language) setLanguage(language)
       }
       if (field === 'pseudonym' && isApiError(error) && error.type === PSEUDONYM_PROBLEMS.taken) {

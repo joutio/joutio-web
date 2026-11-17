@@ -1,7 +1,7 @@
 import { useQueryClient, type QueryKey } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useMe } from '@/features/me'
-import { queryKeys } from '@/lib/query-keys'
+import { queryKeys } from '@joutio/client/query'
 import { subscribeStomp, type NotificationView } from '@/lib/realtime'
 
 /**
@@ -12,35 +12,35 @@ import { subscribeStomp, type NotificationView } from '@/lib/realtime'
  */
 const PERSONAL: Record<NotificationView['type'], (notification: NotificationView) => QueryKey[]> = {
   // Compteur d'abonnés, listes Abonnés, fiche de l'abonné.
-  FOLLOW: (notification) => [queryKeys.me, queryKeys.contacts.all, ...(notification.actorId ? [queryKeys.profiles.all(notification.actorId)] : [])],
-  CHALLENGE_RECEIVED: () => [queryKeys.challenges],
-  CHALLENGE_DECLINED: () => [queryKeys.challenges, queryKeys.myRooms],
+  FOLLOW: (notification) => [queryKeys.me(), queryKeys.contacts.all(), ...(notification.actorId ? [queryKeys.profiles.all(notification.actorId)] : [])],
+  CHALLENGE_RECEIVED: () => [queryKeys.challenges()],
+  CHALLENGE_DECLINED: () => [queryKeys.challenges(), queryKeys.myRooms()],
   // Défi accepté : sa salle apparaît, la partie suivra.
-  ROOM_ACCEPTED: (notification) => [queryKeys.challenges, queryKeys.myRooms, queryKeys.games.activeAll, ...(notification.sourceId ? [queryKeys.room(notification.sourceId)] : [])],
-  WIZZ: () => [queryKeys.myRooms],
+  ROOM_ACCEPTED: (notification) => [queryKeys.challenges(), queryKeys.myRooms(), queryKeys.games.activeAll(), ...(notification.sourceId ? [queryKeys.room(notification.sourceId)] : [])],
+  WIZZ: () => [queryKeys.myRooms()],
   // Signalement d'une question d'un de mes sujets : À traiter, file des signalements, compteurs des questions.
   QUESTION_REPORTED: (notification) => [
-    queryKeys.workshop.todo,
-    queryKeys.workshop.topics,
-    ...(notification.topicId ? [queryKeys.workshop.reports(notification.topicId), queryKeys.workshop.questions(notification.topicId)] : []),
+    queryKeys.authoring.todo(),
+    queryKeys.authoring.topics(),
+    ...(notification.topicId ? [queryKeys.authoring.reports(notification.topicId), queryKeys.authoring.questions(notification.topicId)] : []),
   ],
   // Sujet repassé en brouillon (moins de 7 questions jouables) : atelier, fiche, catalogue, accueil.
   TOPIC_DRAFTED: (notification) => [
-    queryKeys.workshop.topics,
-    queryKeys.workshop.created,
-    queryKeys.workshop.todo,
-    queryKeys.topics.all,
-    queryKeys.home,
-    ...(notification.topicId ? [queryKeys.workshop.topic(notification.topicId), queryKeys.topic.all(notification.topicId)] : []),
+    queryKeys.authoring.topics(),
+    queryKeys.authoring.created(),
+    queryKeys.authoring.todo(),
+    queryKeys.topics.all(),
+    queryKeys.home(),
+    ...(notification.topicId ? [queryKeys.authoring.workshop(notification.topicId), queryKeys.topic.all(notification.topicId)] : []),
   ],
-  ACCOUNT_SUSPENDED: () => [queryKeys.me],
+  ACCOUNT_SUSPENDED: () => [queryKeys.me()],
 }
 
 /** Déblocage poussé sur `/topic/achievements/{userId}` (`AchievementView` du BFF). */
 type Achievement = { kind?: 'BADGE' | 'TITLE'; topicId?: string | null }
 
 /** Vues relues après une **re**connexion : le flux personnel n'a pas d'historique, ce qui est arrivé pendant la coupure est perdu. */
-const RESYNC: QueryKey[] = [queryKeys.me, queryKeys.notifications.all, queryKeys.challenges, queryKeys.myRooms, queryKeys.workshop.todo]
+const RESYNC: QueryKey[] = [queryKeys.me(), queryKeys.notifications.all(), queryKeys.challenges(), queryKeys.myRooms(), queryKeys.authoring.todo()]
 
 type Envelope = { eventType?: string; payload?: NotificationView }
 
@@ -66,7 +66,7 @@ export function useRealtimeInvalidation() {
         const notification = envelope.payload
         if (!notification?.notificationId) return
         // Créée ou supprimée ailleurs : la boîte et la cloche suivent.
-        invalidate([queryKeys.notifications.all])
+        invalidate([queryKeys.notifications.all()])
         if (envelope.eventType === 'NOTIFICATION_DELETED') return
         invalidate(PERSONAL[notification.type]?.(notification) ?? [])
       },
@@ -85,8 +85,8 @@ export function useRealtimeInvalidation() {
       }
       // Badge ou titre débloqué : profil, collection, titres, récompenses ; maîtrise du sujet pour un titre.
       invalidate([
-        queryKeys.me,
-        queryKeys.rewards,
+        queryKeys.me(),
+        queryKeys.rewards(),
         queryKeys.profiles.all(userId),
         ...(achievement.kind === 'TITLE' && achievement.topicId ? [queryKeys.topic.all(achievement.topicId)] : []),
       ])

@@ -2,10 +2,8 @@ import type { MeView, PlayerProfileView } from '@joutio/client/api-types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMe } from '@/features/me'
 import { useT } from '@/lib/i18n'
-import { optimisticUpdate } from '@/lib/optimistic-cache'
-import { queryKeys } from '@/lib/query-keys'
+import { applyFollow, optimisticUpdate, queryKeys } from '@joutio/client/query'
 import { toast } from '@/shared/toast'
-import { applyFollow } from '../lib/contacts-cache'
 import { playerService } from '../lib/player-service'
 
 /** Fiche publique d'un joueur (aussi préchargée avant un toast de notification). */
@@ -39,14 +37,14 @@ export function useFollowPlayer(userId: string) {
   return useMutation({
     mutationFn: (follow: boolean) => playerService.follow(userId, follow),
     onMutate: (follow: boolean) =>
-      optimisticUpdate(client, [key, queryKeys.me, queryKeys.contacts.all], () => {
+      optimisticUpdate(client, [key, queryKeys.me(), queryKeys.contacts.all()], () => {
         const previous = client.getQueryData<PlayerProfileView>(key)
         const delta = previous?.following === follow ? 0 : follow ? 1 : -1
         client.setQueryData<PlayerProfileView>(key, (profile) =>
           profile ? { ...profile, following: follow, followersCount: Math.max(0, profile.followersCount + delta) } : profile,
         )
-        client.setQueryData<MeView>(queryKeys.me, (me) => (me ? { ...me, followingCount: Math.max(0, me.followingCount + delta) } : me))
-        const meId = client.getQueryData<MeView>(queryKeys.me)?.userId
+        client.setQueryData<MeView>(queryKeys.me(), (me) => (me ? { ...me, followingCount: Math.max(0, me.followingCount + delta) } : me))
+        const meId = client.getQueryData<MeView>(queryKeys.me())?.userId
         const profile = client.getQueryData<PlayerProfileView>(key)
         if (meId && profile) applyFollow(client, meId, profile, follow)
       }),

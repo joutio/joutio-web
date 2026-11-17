@@ -9,8 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { create } from 'zustand'
 import { useMe } from '@/features/me'
 import { useT } from '@/lib/i18n'
-import { optimisticUpdate } from '@/lib/optimistic-cache'
-import { queryKeys } from '@/lib/query-keys'
+import { optimisticUpdate, queryKeys } from '@joutio/client/query'
 import { readServerNow, subscribeStomp, useEventStream } from '@/lib/realtime'
 import { showPremium } from '@/features/premium'
 import { showDialog } from '@/shared/dialog'
@@ -55,7 +54,7 @@ export function useAutoTrain() {
   const t = useT()
   const mutation = useMutation({
     mutationFn: (next: boolean) => playService.setAutoTrain(me.data?.userId ?? '', next),
-    onMutate: (next: boolean) => optimisticUpdate(client, [queryKeys.me], () => client.setQueryData<MeView>(queryKeys.me, (data) => (data ? { ...data, autoTrainOnTimeout: next } : data))),
+    onMutate: (next: boolean) => optimisticUpdate(client, [queryKeys.me()], () => client.setQueryData<MeView>(queryKeys.me(), (data) => (data ? { ...data, autoTrainOnTimeout: next } : data))),
     onError: (_error, _next, context) => {
       context?.rollback()
       toast.error(t('play.settingError'))

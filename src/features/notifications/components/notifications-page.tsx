@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { TabNav } from '@/features/shell'
 import { useT, type MessageKey } from '@/lib/i18n'
-import { queryKeys } from '@/lib/query-keys'
+import { queryKeys } from '@joutio/client/query'
 import { readServerNow, type NotificationView } from '@/lib/realtime'
 import { showDialog } from '@/shared/dialog'
 import { feedFooterProps } from '@/shared/paging'
@@ -58,7 +58,7 @@ export function NotificationsPage() {
   const inbox = useNotifications()
   const readAll = useMarkAllRead()
   const removeAll = useDeleteAllNotifications()
-  const challenges = useQuery<ChallengeView[]>({ queryKey: queryKeys.challenges, enabled: false }).data
+  const challenges = useQuery<ChallengeView[]>({ queryKey: queryKeys.challenges(), enabled: false }).data
   const items = inbox.data?.pages.flatMap((page) => page.content) ?? []
   const failed = inbox.isError
   const anyUnread = items.some(isUnread)

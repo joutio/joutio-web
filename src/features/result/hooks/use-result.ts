@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { gameService } from '@/features/duel'
 import type { PlayTopic } from '@/features/play'
 import { useT } from '@/lib/i18n'
-import { queryKeys } from '@/lib/query-keys'
+import { queryKeys } from '@joutio/client/query'
 import { readServerNow, usePersonalNotifications } from '@/lib/realtime'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
@@ -32,7 +32,7 @@ export function useGameResult(gameId: string, waitForReward: boolean) {
     const data = result.data
     if (!waitForReward || !data || (!data.botGame && !data.reward) || applied.current === gameId) return
     applied.current = gameId
-    client.setQueryData<MeView>(queryKeys.me, (me) => (me ? { ...me, progression: data.progression } : me))
+    client.setQueryData<MeView>(queryKeys.me(), (me) => (me ? { ...me, progression: data.progression } : me))
     client.setQueryData<TopicOverviewView>(queryKeys.topic.overview(data.topic.topicId), (view) =>
       view?.myProgress
         ? {
@@ -48,10 +48,10 @@ export function useGameResult(gameId: string, waitForReward: boolean) {
     )
     // Profil, sujet et accueil calculés par le serveur après la partie : marqués périmés sans relecture (`refetchType:
     // 'none'`), relus à leur prochaine ouverture ; progression et maîtrise sont déjà posées depuis le résultat.
-    const userId = client.getQueryData<MeView>(queryKeys.me)?.userId
+    const userId = client.getQueryData<MeView>(queryKeys.me())?.userId
     if (userId) void client.invalidateQueries({ queryKey: queryKeys.profiles.all(userId), refetchType: 'none' })
     void client.invalidateQueries({ queryKey: queryKeys.topic.all(data.topic.topicId), refetchType: 'none' })
-    void client.invalidateQueries({ queryKey: queryKeys.home, refetchType: 'none' })
+    void client.invalidateQueries({ queryKey: queryKeys.home(), refetchType: 'none' })
   }, [client, gameId, result.data, waitForReward])
   return result
 }

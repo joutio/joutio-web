@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMe } from '@/features/me'
-import { queryKeys } from '@/lib/query-keys'
+import { queryKeys } from '@joutio/client/query'
 import { profileService } from '../lib/profile-service'
 
 const useUserId = () => useMe().data?.userId ?? ''
@@ -25,7 +25,7 @@ export function useMyTopics() {
 
 /** Récompenses (styles d'avatar) : Micah dans la page Série. */
 export function useMyRewards() {
-  return useQuery({ queryKey: queryKeys.rewards, queryFn: profileService.rewards, staleTime: 60_000 })
+  return useQuery({ queryKey: queryKeys.rewards(), queryFn: profileService.rewards, staleTime: 60_000 })
 }
 
 /** Les 10 dernières parties, tous sujets confondus. */

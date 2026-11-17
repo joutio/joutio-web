@@ -6,8 +6,7 @@ import { useMe } from '@/features/me'
 import { playerProfileQuery } from '@/features/player'
 import { workshopService } from '@/features/workshop'
 import { useT, type MessageKey } from '@/lib/i18n'
-import { optimisticUpdate } from '@/lib/optimistic-cache'
-import { queryKeys } from '@/lib/query-keys'
+import { optimisticUpdate, queryKeys } from '@joutio/client/query'
 import { usePersonalNotifications, type NotificationView } from '@/lib/realtime'
 import { endSession } from '@/lib/session'
 import { ROUTES } from '@/shared/routes'
@@ -22,7 +21,7 @@ type Pages = InfiniteData<PageResponse<NotificationView>, number>
 /** Boîte de réception, 10 par page. */
 export function useNotifications() {
   return useInfiniteQuery({
-    queryKey: queryKeys.notifications.list,
+    queryKey: queryKeys.notifications.list(),
     queryFn: ({ pageParam }) => notificationsService.page(pageParam),
     initialPageParam: 0,
     getNextPageParam: (last) => (last.last ? undefined : last.page + 1),
@@ -67,10 +66,10 @@ export function useNotificationsRuntime() {
     }
     // Supprimée ailleurs : son toast se ferme.
     toast.dismiss(`notification:${notification.notificationId}`)
-    const data = client.getQueryData<Pages>(queryKeys.notifications.list)
+    const data = client.getQueryData<Pages>(queryKeys.notifications.list())
     const existing = data?.pages.flatMap((page) => page.content).find((item) => item.notificationId === notification.notificationId)
     if (!existing) return
-    client.setQueryData<Pages>(queryKeys.notifications.list, (current) =>
+    client.setQueryData<Pages>(queryKeys.notifications.list(), (current) =>
       current
         ? {
             ...current,
@@ -83,7 +82,7 @@ export function useNotificationsRuntime() {
         : current,
     )
     if (existing.readAt === null)
-      client.setQueryData<{ count: number }>(queryKeys.notifications.unreadCount, (count) => (count ? { count: Math.max(0, count.count - 1) } : count))
+      client.setQueryData<{ count: number }>(queryKeys.notifications.unreadCount(), (count) => (count ? { count: Math.max(0, count.count - 1) } : count))
   })
 }
 
@@ -91,12 +90,12 @@ export function useNotificationsRuntime() {
 function useInboxMutation<V>(run: (value: V) => Promise<unknown>, change: (list: NotificationView[], value: V) => NotificationView[], error: MessageKey, all: false | 'read' | 'delete' = false) {
   const client = useQueryClient()
   const t = useT()
-  const listKey = queryKeys.notifications.list
-  const countKey = queryKeys.notifications.unreadCount
+  const listKey = queryKeys.notifications.list()
+  const countKey = queryKeys.notifications.unreadCount()
   return useMutation({
     mutationFn: run,
     onMutate: (value: V) =>
-      optimisticUpdate(client, [queryKeys.notifications.all], () => {
+      optimisticUpdate(client, [queryKeys.notifications.all()], () => {
         const previous = client.getQueryData<Pages>(listKey)
         const previousCount = client.getQueryData<{ count: number }>(countKey)
         if (!previous) {

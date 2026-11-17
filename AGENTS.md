@@ -47,7 +47,7 @@ src/
   styles/       index.css + fichiers synchronisés du lab (ne pas éditer)
   ui/           design system porté du lab (barrel `@/ui`) : lib/ brand/ primitives/ mobile/ web/ site/
   lib/          config (Zod), endpoints, api (HTTP + RFC 7807), session (OIDC PKCE maison), realtime (STOMP,
-                EventStream), query-client, query-keys, optimistic-cache, i18n, push, telemetry
+                EventStream), query-client, i18n, push, telemetry (clés et cache optimiste : `@joutio/client/query`)
   shared/       routes, stores, toasts, dialogues, avatars, utilitaires
   features/<f>/ components/ hooks/ lib/ index.ts (import par le barrel uniquement)
 ```

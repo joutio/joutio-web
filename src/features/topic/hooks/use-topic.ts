@@ -3,8 +3,7 @@ import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClie
 import { useMe } from '@/features/me'
 import type { TopicPage } from '@/features/topics'
 import { useT } from '@/lib/i18n'
-import { optimisticUpdate } from '@/lib/optimistic-cache'
-import { queryKeys } from '@/lib/query-keys'
+import { optimisticUpdate, queryKeys } from '@joutio/client/query'
 import { toast } from '@/shared/toast'
 import { topicService, type BoardFilters } from '../lib/topic-service'
 
@@ -59,14 +58,14 @@ export function useFollowTopic(topicId: string) {
   return useMutation({
     mutationFn: (follow: boolean) => topicService.follow(topicId, follow),
     onMutate: (follow: boolean) =>
-      optimisticUpdate(client, [key, ['topics', 'list'], queryKeys.home], () => {
+      optimisticUpdate(client, [key, ['topics', 'list'], queryKeys.home()], () => {
         const previous = client.getQueryData<TopicOverviewView>(key)
         const flip = (topic: TopicCardView) =>
           topic.topicId === topicId
             ? { ...topic, followed: follow, followersCount: Math.max(0, topic.followersCount + (topic.followed === follow ? 0 : follow ? 1 : -1)) }
             : topic
         if (previous) client.setQueryData<TopicOverviewView>(key, { ...previous, topic: flip(previous.topic) })
-        for (const [listKey, data] of client.getQueriesData<InfiniteData<TopicPage>>({ queryKey: queryKeys.topics.lists })) {
+        for (const [listKey, data] of client.getQueriesData<InfiniteData<TopicPage>>({ queryKey: queryKeys.topics.lists() })) {
           if (!data) continue
           const filters = listKey[2] as { followed?: boolean; hideFollowed?: boolean }
           client.setQueryData(listKey, {
@@ -78,7 +77,7 @@ export function useFollowTopic(topicId: string) {
           })
         }
         const card = previous?.topic
-        client.setQueryData<HomeView>(queryKeys.home, (data) =>
+        client.setQueryData<HomeView>(queryKeys.home(), (data) =>
           data
             ? {
                 ...data,
@@ -112,9 +111,9 @@ export function useWearTitle() {
   return useMutation({
     mutationFn: (titleKey: string | null) => topicService.wearTitle(userId, titleKey),
     onMutate: (titleKey: string | null) =>
-      optimisticUpdate(client, [key, queryKeys.me], () => {
+      optimisticUpdate(client, [key, queryKeys.me()], () => {
         client.setQueryData<TitlesView>(key, (titles) => (titles ? { ...titles, equippedKey: titleKey } : titles))
-        client.setQueryData<MeView>(queryKeys.me, (me) => (me ? { ...me, equippedTitle: titleKey } : me))
+        client.setQueryData<MeView>(queryKeys.me(), (me) => (me ? { ...me, equippedTitle: titleKey } : me))
       }),
     onError: (_error, titleKey, context) => {
       context?.rollback()

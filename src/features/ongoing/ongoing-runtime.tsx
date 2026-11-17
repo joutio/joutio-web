@@ -5,7 +5,7 @@ import { gameService, useGameStream } from '@/features/duel'
 import { useMe } from '@/features/me'
 import { playService, useRoom } from '@/features/play'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { queryKeys } from '@/lib/query-keys'
+import { queryKeys } from '@joutio/client/query'
 import { useConnectionStore } from '@/lib/realtime'
 import { useOngoingStore } from '@/shared/ongoing-store'
 import { ROUTES } from '@/shared/routes'
@@ -56,7 +56,7 @@ export function OngoingRuntime({ children }: { children: ReactNode }) {
   const connection = useConnectionStore((state) => state.status)
   const { games, rooms, rememberGame, trackRoom, reset } = useOngoingStore()
   const active = useQuery({ queryKey: queryKeys.games.active(userId ?? ''), queryFn: gameService.active, enabled: Boolean(userId) })
-  const myRooms = useQuery({ queryKey: queryKeys.myRooms, queryFn: playService.myRooms, enabled: Boolean(userId) })
+  const myRooms = useQuery({ queryKey: queryKeys.myRooms(), queryFn: playService.myRooms, enabled: Boolean(userId) })
   const { refetch: refetchActive } = active
   const { refetch: refetchRooms } = myRooms
 

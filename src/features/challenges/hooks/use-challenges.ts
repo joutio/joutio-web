@@ -6,8 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useTabBadges } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
-import { optimisticUpdate } from '@/lib/optimistic-cache'
-import { queryKeys } from '@/lib/query-keys'
+import { optimisticUpdate, queryKeys } from '@joutio/client/query'
 import { useRoomPresenceEvents } from '@/lib/realtime'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
@@ -16,18 +15,18 @@ import { challengesService, splitChallenges } from '../lib/challenges-service'
 
 /** Défis du joueur (reçus et envoyés). */
 export function useMyChallenges(enabled = true) {
-  return useQuery({ queryKey: queryKeys.challenges, queryFn: challengesService.mine, enabled, staleTime: 15_000 })
+  return useQuery({ queryKey: queryKeys.challenges(), queryFn: challengesService.mine, enabled, staleTime: 15_000 })
 }
 
 /** Salons du joueur. */
 export function useMyRooms(enabled = true) {
-  return useQuery({ queryKey: queryKeys.myRooms, queryFn: challengesService.rooms, enabled, staleTime: 15_000 })
+  return useQuery({ queryKey: queryKeys.myRooms(), queryFn: challengesService.rooms, enabled, staleTime: 15_000 })
 }
 
 /** Relit défis et salons : événements d'un autre joueur, jamais la confirmation d'une commande locale. */
 export function refreshChallenges(client: QueryClient) {
-  void client.invalidateQueries({ queryKey: queryKeys.challenges })
-  void client.invalidateQueries({ queryKey: queryKeys.myRooms })
+  void client.invalidateQueries({ queryKey: queryKeys.challenges() })
+  void client.invalidateQueries({ queryKey: queryKeys.myRooms() })
 }
 
 /**
@@ -46,16 +45,16 @@ export function useChallengesRuntime() {
   useEffect(() => setBadge('challenges', received + waiting), [received, waiting, setBadge])
   // Présence portée par le message : appliquée sur place (la projection serveur peut être en retard), salon inconnu = relu.
   useRoomPresenceEvents(userId, (presence) => {
-    const rooms = client.getQueryData<RoomView[]>(queryKeys.myRooms)
+    const rooms = client.getQueryData<RoomView[]>(queryKeys.myRooms())
     const next = rooms && userId ? applyRoomPresence(rooms, presence, userId) : undefined
-    if (next) client.setQueryData(queryKeys.myRooms, next)
-    else void client.invalidateQueries({ queryKey: queryKeys.myRooms })
+    if (next) client.setQueryData(queryKeys.myRooms(), next)
+    else void client.invalidateQueries({ queryKey: queryKeys.myRooms() })
   })
 }
 
 /** Change le statut des défis en cache (refus, annulation, acceptation). */
 function settle(client: QueryClient, ids: readonly string[], status: ChallengeView['status']) {
-  client.setQueryData<ChallengeView[]>(queryKeys.challenges, (items) => items?.map((item) => (ids.includes(item.challengeId) ? { ...item, status } : item)))
+  client.setQueryData<ChallengeView[]>(queryKeys.challenges(), (items) => items?.map((item) => (ids.includes(item.challengeId) ? { ...item, status } : item)))
 }
 
 /**
@@ -67,8 +66,8 @@ function useSettleChallenges(run: (id: string) => Promise<unknown>, status: 'DEC
   const t = useT()
   return useMutation({
     onMutate: async (ids: readonly string[]) => {
-      const previous = client.getQueryData<ChallengeView[]>(queryKeys.challenges)
-      await optimisticUpdate(client, [queryKeys.challenges], () => settle(client, ids, status))
+      const previous = client.getQueryData<ChallengeView[]>(queryKeys.challenges())
+      await optimisticUpdate(client, [queryKeys.challenges()], () => settle(client, ids, status))
       return { previous }
     },
     mutationFn: async (ids: readonly string[]) => {
@@ -78,7 +77,7 @@ function useSettleChallenges(run: (id: string) => Promise<unknown>, status: 'DEC
     },
     onError: (cause, ids, context) => {
       const failed = 'failed' in cause && Array.isArray(cause.failed) ? (cause.failed as string[]) : [...ids]
-      client.setQueryData<ChallengeView[]>(queryKeys.challenges, (items) =>
+      client.setQueryData<ChallengeView[]>(queryKeys.challenges(), (items) =>
         items?.map((item) =>
           failed.includes(item.challengeId) ? { ...item, status: context?.previous?.find((before) => before.challengeId === item.challengeId)?.status ?? 'PENDING' } : item,
         ),
@@ -120,7 +119,7 @@ export function useAcceptChallenge({ replace = false }: { replace?: boolean } = 
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   return useMutation({
-    onMutate: (challenge: ChallengeView) => optimisticUpdate(client, [queryKeys.challenges], () => settle(client, [challenge.challengeId], 'ACCEPTED')),
+    onMutate: (challenge: ChallengeView) => optimisticUpdate(client, [queryKeys.challenges()], () => settle(client, [challenge.challengeId], 'ACCEPTED')),
     mutationFn: async (challenge: ChallengeView) => {
       await challengesService.accept(challenge.challengeId)
       return challenge.roomId ?? (await roomOfAccepted(challenge.challengeId))

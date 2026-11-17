@@ -3,7 +3,7 @@ import { BellIcon } from '@phosphor-icons/react'
 import { useQuery } from '@tanstack/react-query'
 import { usePlayerProfile } from '@/features/player'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { queryKeys } from '@/lib/query-keys'
+import { queryKeys } from '@joutio/client/query'
 import type { NotificationView } from '@/lib/realtime'
 import { readServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
@@ -47,7 +47,7 @@ export function NotificationItem({ notification, last }: { notification: Notific
   const actor = usePlayerProfile(actorId ?? '').data
   const src = useUserAvatar(actor)
   // Défis tenus à jour par le runtime (badge de l'onglet) : lus en cache, sans requête de plus.
-  const challenges = useQuery<ChallengeView[]>({ queryKey: queryKeys.challenges, enabled: false }).data
+  const challenges = useQuery<ChallengeView[]>({ queryKey: queryKeys.challenges(), enabled: false }).data
   const challenge = notification.type === 'CHALLENGE_RECEIVED' ? challenges?.find((item) => item.challengeId === notification.sourceId) : undefined
 
   const name = actor?.pseudonym ?? t('notifications.somePlayer')

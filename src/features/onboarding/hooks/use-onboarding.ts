@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { MeView } from '@joutio/client/api-types'
-import { queryKeys } from '@/lib/query-keys'
+import { queryKeys } from '@joutio/client/query'
 import { isApiError } from '@/lib/api'
 import { endSession, loginWithCode, loginRedirect, requestLoginCode } from '@/lib/session'
 import { onboardingService } from '../lib/onboarding-service'
@@ -27,7 +27,7 @@ export function useSaveInterests() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: (interests: readonly string[]) => onboardingService.saveInterests(interests),
-    onSuccess: (_result, interests) => client.setQueryData<MeView>(queryKeys.me, (me) => (me ? { ...me, interests: [...interests] } : me)),
+    onSuccess: (_result, interests) => client.setQueryData<MeView>(queryKeys.me(), (me) => (me ? { ...me, interests: [...interests] } : me)),
   })
 }
 
@@ -44,6 +44,6 @@ export function useCompleteOnboarding() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: onboardingService.complete,
-    onSuccess: (me) => client.setQueryData(queryKeys.me, me),
+    onSuccess: (me) => client.setQueryData(queryKeys.me(), me),
   })
 }
