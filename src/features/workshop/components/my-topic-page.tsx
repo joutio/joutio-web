@@ -1,4 +1,4 @@
-import { customizedTierCount, descriptionsDraft, topicDescription, MASTERY_TIERS, MAX_NAME, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client/authoring'
+import { customizedTierCount, descriptionsDraft, topicDescription, MASTERY_TIERS, MIN_QUESTIONS, playableCount, todoTotal, workshopRole } from '@joutio/client/authoring'
 import { CrownSimpleIcon, FileDashedIcon, ImageIcon, ListChecksIcon, PencilSimpleIcon, ShieldCheckIcon, SquaresFourIcon, StickerIcon, TextAlignLeftIcon, TrashIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -194,7 +194,6 @@ export function MyTopicPage() {
               title={t('workshop.name')}
               label={t('workshop.name')}
               initial={{ fr: topic.names.fr ?? '', en: english }}
-              max={MAX_NAME}
               placeholder={{ fr: t('workshop.namePlaceholder'), en: 'For example, Loire Valley castles' }}
               onClose={close}
               onSave={({ fr, en }) => {

@@ -1,20 +1,14 @@
-import {
-  CONTENT_NOTICE_CATEGORIES,
-  CONTENT_NOTICE_MIN_DESCRIPTION,
-  CONTENT_NOTICES_ENDPOINT,
-  type ContentNoticeCategory,
-  type ContentNoticeRequest,
-} from '@joutio/client/api-types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CONTENT_NOTICE_CATEGORIES, CONTENT_NOTICES_ENDPOINT, type ContentNoticeCategory, type ContentNoticeRequest } from '@joutio/client/api-types'
+import { contentNoticeSchema, MAX_NOTICE_DESCRIPTION } from '@joutio/client/forms'
 import { buildShareUrl } from '@joutio/client/share'
 import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useMe } from '@/features/me'
 import { api } from '@/lib/api'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { toast } from '@/shared/toast'
 import { Button, Field, ListRow, MobileSheet } from '@/ui'
-
-const MAX_DESCRIPTION = 4000
 
 /**
  * Signaler un sujet depuis sa fiche (2026-11-15) : notification de contenu illicite (LCEN/DSA), traitée par la
@@ -24,24 +18,26 @@ const MAX_DESCRIPTION = 4000
 export function ReportTopicSheet({ open, onClose, topicId, name }: { open: boolean; onClose: () => void; topicId: string; name: string }) {
   const t = useT()
   const me = useMe()
-  const [category, setCategory] = useState<ContentNoticeCategory>()
-  const [description, setDescription] = useState('')
-  const [goodFaith, setGoodFaith] = useState(false)
+  const form = useForm({
+    resolver: zodResolver(contentNoticeSchema),
+    mode: 'onChange',
+    defaultValues: { description: '', goodFaith: false },
+  })
   const report = useMutation({
-    mutationFn: () =>
+    mutationFn: ({ category, description, goodFaith }: { category: ContentNoticeCategory; description: string; goodFaith: boolean }) =>
       api.post<unknown>(CONTENT_NOTICES_ENDPOINT, {
         name: me.data?.pseudonym ?? '',
         email: me.data?.email ?? '',
         quality: category === 'COPYRIGHT' || category === 'IMAGE_RIGHTS' ? 'RIGHTS_HOLDER' : 'THIRD_PARTY',
         contentUrl: buildShareUrl({ kind: 'topic', id: topicId }),
-        category: category ?? 'OTHER_ILLEGAL',
-        description: description.trim(),
+        category,
+        description,
         goodFaith,
       } satisfies ContentNoticeRequest),
     onError: () => toast.error(t('report.error'), t('home.errorText')),
   })
   const sent = report.isSuccess
-  const ready = category !== undefined && description.trim().length >= CONTENT_NOTICE_MIN_DESCRIPTION && goodFaith && Boolean(me.data?.email)
+  const ready = form.formState.isValid && Boolean(me.data?.email)
   return (
     <MobileSheet
       open={open}
@@ -54,7 +50,7 @@ export function ReportTopicSheet({ open, onClose, topicId, name }: { open: boole
             {t('report.close')}
           </Button>
         ) : (
-          <Button full disabled={!ready} loading={report.isPending} onClick={() => report.mutate()}>
+          <Button full disabled={!ready} loading={report.isPending} onClick={() => void form.handleSubmit((values) => report.mutate(values))()}>
             {t('report.send')}
           </Button>
         )
@@ -64,30 +60,48 @@ export function ReportTopicSheet({ open, onClose, topicId, name }: { open: boole
         <p className="jo-type-callout m-0 text-center text-pretty text-jo-muted">{t('topicReport.thanks')}</p>
       ) : (
         <div className="grid gap-3">
-          <div role="radiogroup" aria-label={t('topicReport.what')} className="overflow-hidden rounded-jo-lg bg-jo-raised">
-            {CONTENT_NOTICE_CATEGORIES.map((item, index) => (
-              <ListRow
-                key={item}
-                label={t(`topicReport.reason.${item}` as MessageKey)}
-                sub={t(`topicReport.reason.${item}.sub` as MessageKey)}
-                control="radio"
-                on={category === item}
-                onToggle={() => setCategory(item)}
-                last={index === CONTENT_NOTICE_CATEGORIES.length - 1}
-              />
-            ))}
-          </div>
-          <Field
-            label={t('topicReport.description')}
-            placeholder={t('topicReport.placeholder')}
-            multiline
-            value={description}
-            maxLength={MAX_DESCRIPTION}
-            onChange={(event) => setDescription(event.target.value)}
+          <Controller
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <div role="radiogroup" aria-label={t('topicReport.what')} className="overflow-hidden rounded-jo-lg bg-jo-raised">
+                {CONTENT_NOTICE_CATEGORIES.map((item, index) => (
+                  <ListRow
+                    key={item}
+                    label={t(`topicReport.reason.${item}` as MessageKey)}
+                    sub={t(`topicReport.reason.${item}.sub` as MessageKey)}
+                    control="radio"
+                    on={field.value === item}
+                    onToggle={() => field.onChange(item)}
+                    last={index === CONTENT_NOTICE_CATEGORIES.length - 1}
+                  />
+                ))}
+              </div>
+            )}
           />
-          <div className="overflow-hidden rounded-jo-lg bg-jo-raised">
-            <ListRow label={t('topicReport.goodFaith')} control="check" on={goodFaith} onToggle={setGoodFaith} last />
-          </div>
+          <Controller
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <Field
+                label={t('topicReport.description')}
+                placeholder={t('topicReport.placeholder')}
+                multiline
+                value={field.value}
+                maxLength={MAX_NOTICE_DESCRIPTION}
+                onChange={(event) => field.onChange(event.target.value)}
+              />
+            )}
+          />
+          <Controller
+            control={form.control}
+            name="goodFaith"
+            render={({ field }) => (
+              <div className="overflow-hidden rounded-jo-lg bg-jo-raised">
+                <ListRow label={t('topicReport.goodFaith')} control="check" on={field.value} onToggle={field.onChange} last />
+              </div>
+            )}
+          />
         </div>
       )}
     </MobileSheet>

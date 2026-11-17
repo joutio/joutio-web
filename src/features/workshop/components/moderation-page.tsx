@@ -1,6 +1,9 @@
 import { contentFor, MAX_REJECT, QUESTION_CHOICES, questionText, type QuestionEditorView, type ReportedQuestion } from '@joutio/client/authoring'
 import { CheckCircleIcon, ProhibitIcon, WarningIcon } from '@phosphor-icons/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { rejectQuestionSchema } from '@joutio/client/forms'
 import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
@@ -35,7 +38,12 @@ export function ModerationPage() {
   const [pendingPages, setPendingPages] = useState(1)
   const [reportPages, setReportPages] = useState(1)
   const [rejecting, setRejecting] = useState<string>()
-  const [reason, setReason] = useState('')
+  const rejectForm = useForm({ resolver: zodResolver(rejectQuestionSchema), mode: 'onChange', defaultValues: { reason: '' } })
+  const reject = rejectForm.handleSubmit(({ reason: text }) => {
+    if (rejecting) moderate.mutate({ questionId: rejecting, decision: 'reject', reason: text })
+    setRejecting(undefined)
+    rejectForm.reset()
+  })
 
   const all = questions.data ?? []
   const pending = all.filter((question) => question.status === 'PENDING' || question.status === 'SUSPENDED')
@@ -74,24 +82,27 @@ export function ModerationPage() {
               full
               variant="tinted"
               tone="destructive"
-              disabled={reason.trim() === ''}
-              onClick={() => {
-                if (rejecting) moderate.mutate({ questionId: rejecting, decision: 'reject', reason: reason.trim() })
-                setRejecting(undefined)
-              }}
+              disabled={!rejectForm.formState.isValid}
+              onClick={() => void reject()}
             >
               {t('workshop.reject')}
             </Button>
           }
         >
-          <Field
-            label={t('workshop.rejectReason')}
-            placeholder={t('workshop.rejectPlaceholder')}
-            multiline
-            value={reason}
-            maxLength={MAX_REJECT}
-            counter={`${reason.length} / ${MAX_REJECT}`}
-            onChange={(event) => setReason(event.target.value)}
+          <Controller
+            control={rejectForm.control}
+            name="reason"
+            render={({ field }) => (
+              <Field
+                label={t('workshop.rejectReason')}
+                placeholder={t('workshop.rejectPlaceholder')}
+                multiline
+                value={field.value}
+                maxLength={MAX_REJECT}
+                counter={`${field.value.length} / ${MAX_REJECT}`}
+                onChange={(event) => field.onChange(event.target.value)}
+              />
+            )}
           />
         </MobileSheet>
       }
@@ -131,7 +142,7 @@ export function ModerationPage() {
                         correct={QUESTION_CHOICES.indexOf(question.correctAnswer)}
                         onApprove={() => moderate.mutate({ questionId: question.questionId, decision: 'approve' })}
                         onReject={() => {
-                          setReason('')
+                          rejectForm.reset()
                           setRejecting(question.questionId)
                         }}
                         onEdit={() => edit(question)}

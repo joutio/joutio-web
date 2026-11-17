@@ -4,7 +4,6 @@ import {
   draftFromQuestion,
   emptyDraft,
   frenchFilled,
-  isReady,
   MAX_ALT,
   MAX_ANSWER,
   MAX_QUESTION,
@@ -15,7 +14,10 @@ import {
   type QuestionDraft,
 } from '@joutio/client/authoring'
 import { ArchiveIcon, ArrowCounterClockwiseIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { questionDraftSchema } from '@joutio/client/forms'
 import { useState } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useT } from '@/lib/i18n'
@@ -80,13 +82,15 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
   const save = useSaveQuestion(topicId)
   const lifecycle = useArchiveQuestion(topicId)
   const remove = useDeleteQuestion(topicId)
-  const [draft, setDraft] = useState<QuestionDraft>(() => (original ? draftFromQuestion(original) : emptyDraft()))
+  const [initial] = useState<QuestionDraft>(() => (original ? draftFromQuestion(original) : emptyDraft()))
+  const form = useForm<QuestionDraft>({ resolver: zodResolver(questionDraftSchema(initial.imageUrl)), mode: 'onChange', defaultValues: initial })
+  const [texts, answersByLanguage, correct, imageUrl, alt] = useWatch({ control: form.control, name: ['texts', 'answers', 'correct', 'imageUrl', 'alt'] })
+  const draft: QuestionDraft = { texts, answers: answersByLanguage, correct, imageUrl, alt }
+  const validate = { shouldValidate: true }
   const [language, setLanguage] = useState<Language>('fr')
-  const [imageChanged, setImageChanged] = useState(false)
-  const image = useImageUpload((url) => {
-    setDraft((current) => ({ ...current, imageUrl: url }))
-    setImageChanged(true)
-  })
+  // Image choisie dans cet éditeur : son URL diffère de l'image enregistrée (la description devient obligatoire).
+  const imageChanged = imageUrl !== initial.imageUrl
+  const image = useImageUpload((url) => form.setValue('imageUrl', url, validate))
 
   const passed = (location.state as { number?: number } | null)?.number
   const number = passed ?? (questionId ? questionNumber(all, questionId) : all.length + 1)
@@ -97,17 +101,17 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
   const altMissing = missingAlt(draft, imageChanged)
   const mayEdit =
     !original || Boolean((permissions?.canManage && original.status !== 'ARCHIVED') || (original.creatorId === userId && (original.status === 'PENDING' || original.status === 'REJECTED')))
-  const ready = isReady(draft, imageChanged) && !image.uploading && mayEdit && !locked
+  const ready = form.formState.isValid && !image.uploading && mayEdit && !locked
   const missingCorrect = filled && draft.correct === undefined
   const actions = original ? questionActions(role, original, userId) : []
   const text = draft.texts[language]
   const answers = draft.answers[language]
 
-  const onSave = () => {
-    const operations = buildQuestionPlan(original, draft)
+  const onSave = form.handleSubmit((values) => {
+    const operations = buildQuestionPlan(original, values)
     if (operations.length > 0) save.mutate({ questionId, operations, resolveReports: params.get('resolve') === '1' })
     close()
-  }
+  })
   const confirmArchive = () =>
     showDialog({
       sheet: true,
@@ -146,7 +150,7 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
         { label: t('common.cancel'), variant: 'plain', tone: 'neutral' },
       ],
     })
-  const setAnswer = (index: number, value: string) => setDraft({ ...draft, answers: { ...draft.answers, [language]: answers.map((item, position) => (position === index ? value : item)) } })
+  const setAnswer = (index: number, value: string) => form.setValue(`answers.${language}.${index}`, value, validate)
 
   return (
     <Screen
@@ -158,7 +162,7 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
           confirm={t('settings.save')}
           confirmDisabled={!ready}
           onCancel={close}
-          onConfirm={onSave}
+          onConfirm={() => void onSave()}
         />
       }
     >
@@ -169,8 +173,8 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
           progress={image.progress}
           onPick={image.pick}
           onRemove={() => {
-            setDraft({ ...draft, imageUrl: undefined, alt: { fr: '', en: '' } })
-            setImageChanged(true)
+            form.setValue('imageUrl', undefined, validate)
+            form.setValue('alt', { fr: '', en: '' }, validate)
           }}
         />
         {image.field}
@@ -197,7 +201,7 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
           value={text}
           maxLength={MAX_QUESTION}
           counter={`${text.length} / ${MAX_QUESTION}`}
-          onChange={(event) => setDraft({ ...draft, texts: { ...draft.texts, [language]: event.target.value } })}
+          onChange={(event) => form.setValue(`texts.${language}`, event.target.value, validate)}
         />
         {draft.imageUrl && (
           <Field
@@ -209,7 +213,7 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
             value={draft.alt[language]}
             maxLength={MAX_ALT}
             counter={`${draft.alt[language].length} / ${MAX_ALT}`}
-            onChange={(event) => setDraft({ ...draft, alt: { ...draft.alt, [language]: event.target.value } })}
+            onChange={(event) => form.setValue(`alt.${language}`, event.target.value, validate)}
           />
         )}
         <section className="grid gap-3">
@@ -224,7 +228,7 @@ function Editor({ topicId, questionId }: { topicId: string; questionId?: string 
                 placeholder={language === 'en' ? draft.answers.fr[index]?.trim() || undefined : undefined}
                 correct={draft.correct === index}
                 onChange={(value) => setAnswer(index, value)}
-                onMarkCorrect={() => setDraft({ ...draft, correct: index })}
+                onMarkCorrect={() => form.setValue('correct', index, validate)}
                 last={index === answers.length - 1}
               />
             ))}

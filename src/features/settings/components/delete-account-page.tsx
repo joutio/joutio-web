@@ -1,5 +1,8 @@
 import { CheckCircleIcon, WarningIcon } from '@phosphor-icons/react'
-import { useEffect, useRef, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { OTP_LENGTH, otpSchema } from '@joutio/client/forms'
+import { useEffect, useRef } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useMyBadges } from '@/features/profile'
@@ -10,8 +13,6 @@ import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { Button, CodeInput, EmptyState, MobileTopBar, Notice, Screen, tokens } from '@/ui'
 import { useDeleteAccount, useRequestDeletionCode } from '../hooks/use-settings'
-
-const CODE_LENGTH = 6
 
 /**
  * Supprimer mon compte (`reglages.md` § 3, lab `supprimer-compte.tsx`) : ce que le joueur perd, puis le code reçu par
@@ -27,7 +28,7 @@ export function DeleteAccountPage() {
   const titles = useMyTitles()
   const request = useRequestDeletionCode()
   const remove = useDeleteAccount()
-  const [code, setCode] = useState('')
+  const form = useForm({ resolver: zodResolver(otpSchema), mode: 'onChange', defaultValues: { code: '' } })
   const requested = useRef(false)
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.settings, { replace: true }))
 
@@ -67,14 +68,18 @@ export function DeleteAccountPage() {
         </div>
         <div className="grid gap-2">
           <span className="jo-type-callout font-semibold">{request.isError ? t('deletion.codeError') : t('deletion.codeSent', { email: me?.email ?? '' })}</span>
-          <CodeInput autoFocus value={code} length={CODE_LENGTH} error={remove.isError} label={t('deletion.codeLabel')} onChange={setCode} />
+          <Controller
+            control={form.control}
+            name="code"
+            render={({ field }) => <CodeInput autoFocus value={field.value} length={OTP_LENGTH} error={remove.isError} label={t('deletion.codeLabel')} onChange={field.onChange} />}
+          />
           {remove.isError && <span className="jo-type-caption text-jo-wrong">{t('deletion.wrongCode')}</span>}
           <Button variant="plain" size="S" className="justify-self-start" loading={request.isPending} onClick={() => request.mutate()}>
             {t('deletion.resend')}
           </Button>
         </div>
         <div className="mt-auto grid gap-2">
-          <Button full variant="filled" tone="destructive" disabled={code.length < CODE_LENGTH} loading={remove.isPending} onClick={() => remove.mutate(code)}>
+          <Button full variant="filled" tone="destructive" disabled={!form.formState.isValid} loading={remove.isPending} onClick={() => void form.handleSubmit(({ code }) => remove.mutate(code))()}>
             {t('deletion.confirm')}
           </Button>
           <Button full variant="plain" tone="neutral" onClick={back}>

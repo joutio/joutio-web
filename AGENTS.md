@@ -24,7 +24,7 @@ web (`design/specs/platforms/web.md`, `desktop.md`).
 
 - **Exécution** :
   - `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `zustand` ;
-  - `zod`, `react-hook-form` ;
+  - `zod`, `react-hook-form`, `@hookform/resolvers` (`zodResolver`) : formulaires sur les schémas de `@joutio/client/forms` ;
   - `@stomp/stompjs`, `@phosphor-icons/react` ;
   - `class-variance-authority`, `clsx`, `tailwind-merge` ;
   - `@fontsource-variable/geist(-mono)`, `@joutio/client` ;

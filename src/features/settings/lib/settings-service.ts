@@ -1,5 +1,4 @@
 import type { Language, NotificationCategory, NotificationPreferenceView, PseudonymAvailability } from '@joutio/client/api-types'
-import { MAX_PSEUDONYM } from '@joutio/client/profile'
 import { api, request } from '@/lib/api'
 
 const id = encodeURIComponent
@@ -14,8 +13,6 @@ export const SETTINGS_ENDPOINTS = {
   me: '/api/me',
 } as const
 
-export { MAX_PSEUDONYM }
-export const MAX_BIO = 160
 export const MAX_INTERESTS = 3
 
 /** Réglages du joueur connecté : profil, préférences de notification, suppression du compte. */

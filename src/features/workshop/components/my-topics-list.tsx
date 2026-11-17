@@ -1,7 +1,10 @@
 import type { TopicCardView } from '@joutio/client/api-types'
 import { MAX_NAME, MIN_QUESTIONS, todoTotal } from '@joutio/client/authoring'
 import { PencilSimpleIcon, PlusIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createTopicSchema } from '@joutio/client/forms'
 import { useState } from 'react'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
@@ -16,8 +19,9 @@ const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
 /** Nouveau sujet : le nom et l'univers suffisent, le reste se règle sur la page du sujet. */
 function CreateTopicSheet({ open, onClose, onCreate }: { open: boolean; onClose: () => void; onCreate: (topic: { name: string; category: CategoryCode }) => void }) {
   const t = useT()
-  const [name, setName] = useState('')
-  const [category, setCategory] = useState<CategoryCode>('GENERAL')
+  const form = useForm({ resolver: zodResolver(createTopicSchema), mode: 'onChange', defaultValues: { name: '', category: 'GENERAL' } })
+  const [name, categoryValue] = useWatch({ control: form.control, name: ['name', 'category'] })
+  const category = toCategoryCode(categoryValue)
   const [universeOpen, setUniverseOpen] = useState(false)
   const sameName = useSameNameTopic(name)
   const language = useLanguageStore((state) => state.language)
@@ -29,13 +33,19 @@ function CreateTopicSheet({ open, onClose, onCreate }: { open: boolean; onClose:
         onClose={onClose}
         title={t('workshop.newTopic')}
         footer={
-          <Button full size="L" disabled={name.trim() === ''} onClick={() => onCreate({ name: name.trim(), category })}>
+          <Button full size="L" disabled={!form.formState.isValid} onClick={() => void form.handleSubmit((values) => onCreate({ name: values.name, category: toCategoryCode(values.category) }))()}>
             {t('workshop.createDraft')}
           </Button>
         }
       >
         <div className="grid gap-4">
-          <Field label={t('workshop.name')} placeholder={t('workshop.namePlaceholder')} value={name} maxLength={MAX_NAME} counter={`${name.length} / ${MAX_NAME}`} onChange={(event) => setName(event.target.value)} />
+          <Controller
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <Field label={t('workshop.name')} placeholder={t('workshop.namePlaceholder')} value={field.value} maxLength={MAX_NAME} counter={`${field.value.length} / ${MAX_NAME}`} onChange={(event) => field.onChange(event.target.value)} />
+            )}
+          />
           {sameName && (
             <Notice
               tone="warning"
@@ -50,7 +60,7 @@ function CreateTopicSheet({ open, onClose, onCreate }: { open: boolean; onClose:
           <p className="jo-type-caption m-0 text-pretty text-jo-muted">{t('workshop.newTopicText')}</p>
         </div>
       </MobileSheet>
-      <UniverseSheet open={open && universeOpen} value={category} onClose={() => setUniverseOpen(false)} onChange={setCategory} />
+      <UniverseSheet open={open && universeOpen} value={category} onClose={() => setUniverseOpen(false)} onChange={(code) => form.setValue('category', code, { shouldValidate: true })} />
     </>
   )
 }

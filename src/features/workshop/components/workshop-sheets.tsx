@@ -1,5 +1,8 @@
 import type { Language } from '@joutio/client/api-types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { topicDescriptionsSchema, topicNamesSchema, topicTitlesSchema } from '@joutio/client/forms'
 import { useState } from 'react'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useT } from '@/lib/i18n'
 import { useImageUpload } from '../hooks/use-image-upload'
 import {
@@ -10,10 +13,10 @@ import {
   titleLabel,
   titlesChanged,
   titlesDraft,
-  tooLongTitle,
   type TitleLanguage,
   type TopicTitles,
   MAX_DESCRIPTION,
+  MAX_NAME,
 } from '@joutio/client/authoring'
 import { formatNumber, MASTERY_XP } from '@/features/topic'
 import { Badge, Button, Field, ImagePicker, ListRow, MobileSheet, RadioGroup, Segmented, tokens, type CategoryCode } from '@/ui'
@@ -47,16 +50,15 @@ export function UniverseSheet({ open, value, onClose, onChange }: { open: boolea
 export type Localized = Record<Language, string>
 
 /**
- * Champ traduisible dans sa feuille (`creation.md` § 2) : onglets Français / English, et dessous le champ de la langue
+ * Nom du sujet dans sa feuille (`creation.md` § 2) : onglets Français / English, et dessous le champ de la langue
  * choisie. Le français est obligatoire ; en anglais, l'aide rappelle le texte français. L'appelant change la clé à
  * chaque ouverture pour repartir des valeurs enregistrées.
  */
-export function LocalizedFieldSheet({ open, title, label, initial, max, placeholder, saving, onClose, onSave }: {
+export function LocalizedFieldSheet({ open, title, label, initial, placeholder, saving, onClose, onSave }: {
   open: boolean
   title: string
   label: string
   initial: Localized
-  max: number
   placeholder: Localized
   saving?: boolean
   onClose: () => void
@@ -64,15 +66,15 @@ export function LocalizedFieldSheet({ open, title, label, initial, max, placehol
 }) {
   const t = useT()
   const [language, setLanguage] = useState<Language>('fr')
-  const [draft, setDraft] = useState<Localized>(initial)
-  const value = draft[language]
+  const form = useForm({ resolver: zodResolver(topicNamesSchema), mode: 'onChange', defaultValues: initial })
+  const french = useWatch({ control: form.control, name: 'fr' })
   return (
     <MobileSheet
       open={open}
       onClose={onClose}
       title={title}
       footer={
-        <Button full loading={saving} disabled={draft.fr.trim() === ''} onClick={() => onSave({ fr: draft.fr.trim(), en: draft.en.trim() })}>
+        <Button full loading={saving} disabled={!form.formState.isValid} onClick={() => void form.handleSubmit(onSave)()}>
           {t('settings.save')}
         </Button>
       }
@@ -87,15 +89,21 @@ export function LocalizedFieldSheet({ open, title, label, initial, max, placehol
           value={language}
           onChange={setLanguage}
         />
-        <Field
+        <Controller
           key={language}
-          label={language === 'fr' ? label : t('workshop.inEnglish', { label })}
-          placeholder={placeholder[language]}
-          hint={language === 'en' ? t('workshop.englishHint', { text: draft.fr.trim() || '—' }) : undefined}
-          value={value}
-          maxLength={max}
-          counter={`${value.length} / ${max}`}
-          onChange={(event) => setDraft({ ...draft, [language]: event.target.value })}
+          control={form.control}
+          name={language}
+          render={({ field }) => (
+            <Field
+              label={language === 'fr' ? label : t('workshop.inEnglish', { label })}
+              placeholder={placeholder[language]}
+              hint={language === 'en' ? t('workshop.englishHint', { text: french.trim() || '—' }) : undefined}
+              value={field.value}
+              maxLength={MAX_NAME}
+              counter={`${field.value.length} / ${MAX_NAME}`}
+              onChange={(event) => field.onChange(event.target.value)}
+            />
+          )}
         />
       </div>
     </MobileSheet>
@@ -112,11 +120,13 @@ export function DescriptionSheet({ open, initial, saving, onClose, onSave }: {
 }) {
   const t = useT()
   const [language, setLanguage] = useState<Language>('fr')
-  const [draft, setDraft] = useState<Localized>(initial)
-  const value = draft[language]
-  const changes = (['fr', 'en'] as const)
-    .filter((code) => draft[code].trim() !== initial[code].trim())
-    .map((code) => ({ language: code, description: draft[code].trim() === '' ? null : draft[code].trim() }))
+  const form = useForm({ resolver: zodResolver(topicDescriptionsSchema), mode: 'onChange', defaultValues: initial })
+  const draft = useWatch({ control: form.control })
+  const changesOf = (values: Localized) =>
+    (['fr', 'en'] as const)
+      .filter((code) => values[code].trim() !== initial[code].trim())
+      .map((code) => ({ language: code, description: values[code].trim() === '' ? null : values[code].trim() }))
+  const changed = (['fr', 'en'] as const).some((code) => (draft[code] ?? '').trim() !== initial[code].trim())
   return (
     <MobileSheet
       open={open}
@@ -124,7 +134,7 @@ export function DescriptionSheet({ open, initial, saving, onClose, onSave }: {
       title={t('workshop.description')}
       subtitle={t('workshop.descriptionSub')}
       footer={
-        <Button full loading={saving} disabled={changes.length === 0} onClick={() => onSave(changes)}>
+        <Button full loading={saving} disabled={!changed || !form.formState.isValid} onClick={() => void form.handleSubmit((values) => onSave(changesOf(values)))()}>
           {t('settings.save')}
         </Button>
       }
@@ -139,16 +149,22 @@ export function DescriptionSheet({ open, initial, saving, onClose, onSave }: {
           value={language}
           onChange={setLanguage}
         />
-        <Field
+        <Controller
           key={language}
-          label={language === 'fr' ? t('workshop.description') : t('workshop.inEnglish', { label: t('workshop.description') })}
-          placeholder={language === 'fr' ? t('workshop.descriptionPlaceholder') : 'What players will find in this topic'}
-          hint={language === 'en' ? t('workshop.englishHint', { text: draft.fr.trim() || '—' }) : undefined}
-          multiline
-          value={value}
-          maxLength={MAX_DESCRIPTION}
-          counter={`${value.length} / ${MAX_DESCRIPTION}`}
-          onChange={(event) => setDraft({ ...draft, [language]: event.target.value })}
+          control={form.control}
+          name={language}
+          render={({ field }) => (
+            <Field
+              label={language === 'fr' ? t('workshop.description') : t('workshop.inEnglish', { label: t('workshop.description') })}
+              placeholder={language === 'fr' ? t('workshop.descriptionPlaceholder') : 'What players will find in this topic'}
+              hint={language === 'en' ? t('workshop.englishHint', { text: (draft.fr ?? '').trim() || '—' }) : undefined}
+              multiline
+              value={field.value}
+              maxLength={MAX_DESCRIPTION}
+              counter={`${field.value.length} / ${MAX_DESCRIPTION}`}
+              onChange={(event) => field.onChange(event.target.value)}
+            />
+          )}
         />
       </div>
     </MobileSheet>
@@ -190,8 +206,10 @@ export function TopicTitlesSheet({ open, topicName, titles, saving, onClose, onS
 }) {
   const t = useT()
   const [language, setLanguage] = useState<TitleLanguage>('fr')
-  const [draft, setDraft] = useState(() => titlesDraft(titles))
-  const invalid = tooLongTitle(draft) !== null
+  const [initial] = useState(() => titlesDraft(titles))
+  const form = useForm({ resolver: zodResolver(topicTitlesSchema), mode: 'onChange', defaultValues: initial })
+  const [french, englishTitles] = useWatch({ control: form.control, name: ['fr', 'en'] })
+  const draft = { fr: french, en: englishTitles }
   return (
     <MobileSheet
       open={open}
@@ -200,7 +218,7 @@ export function TopicTitlesSheet({ open, topicName, titles, saving, onClose, onS
       subtitle={topicName}
       tall
       footer={
-        <Button full loading={saving} disabled={invalid || !titlesChanged(titles, draft)} onClick={() => onSave(normalizeTitles(draft))}>
+        <Button full loading={saving} disabled={!form.formState.isValid || !titlesChanged(titles, draft)} onClick={() => void form.handleSubmit((values) => onSave(normalizeTitles(values)))()}>
           {t('settings.save')}
         </Button>
       }
@@ -217,7 +235,6 @@ export function TopicTitlesSheet({ open, topicName, titles, saving, onClose, onS
           onChange={setLanguage}
         />
         {MASTERY_TIERS.map((tier) => {
-          const value = draft[language][tier]
           return (
             <div key={`${language}-${tier}`} className="grid gap-2">
               <div className="flex items-center gap-2">
@@ -226,13 +243,19 @@ export function TopicTitlesSheet({ open, topicName, titles, saving, onClose, onS
                 </Badge>
                 <span className="jo-type-caption text-jo-muted">{`${formatNumber(MASTERY_XP[tier])} XP`}</span>
               </div>
-              <Field
-                label={language === 'fr' ? t('workshop.titleLabel', { tier: MASTERY_TIER_LABELS[tier] }) : t('workshop.inEnglish', { label: t('workshop.titleLabel', { tier: MASTERY_TIER_LABELS[tier] }) })}
-                placeholder={language === 'en' ? titleLabel(normalizeTitles(draft), tier, topicName, 'fr') : `${MASTERY_TIER_LABELS[tier]} · ${topicName}`}
-                value={value}
-                maxLength={TITLE_MAX_LENGTH}
-                counter={`${value.length} / ${TITLE_MAX_LENGTH}`}
-                onChange={(event) => setDraft({ ...draft, [language]: { ...draft[language], [tier]: event.target.value } })}
+              <Controller
+                control={form.control}
+                name={`${language}.${tier}`}
+                render={({ field }) => (
+                  <Field
+                    label={language === 'fr' ? t('workshop.titleLabel', { tier: MASTERY_TIER_LABELS[tier] }) : t('workshop.inEnglish', { label: t('workshop.titleLabel', { tier: MASTERY_TIER_LABELS[tier] }) })}
+                    placeholder={language === 'en' ? titleLabel(normalizeTitles(draft), tier, topicName, 'fr') : `${MASTERY_TIER_LABELS[tier]} · ${topicName}`}
+                    value={field.value}
+                    maxLength={TITLE_MAX_LENGTH}
+                    counter={`${field.value.length} / ${TITLE_MAX_LENGTH}`}
+                    onChange={(event) => field.onChange(event.target.value)}
+                  />
+                )}
               />
             </div>
           )

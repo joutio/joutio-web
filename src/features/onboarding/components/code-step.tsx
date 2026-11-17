@@ -1,12 +1,12 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { OTP_LENGTH, OTP_RESEND_SECONDS, otpSchema } from '@joutio/client/forms'
 import { useEffect, useState } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { isApiError } from '@/lib/api'
 import { useT } from '@/lib/i18n'
 import { CodeInput, MobileTopBar, Screen, Button } from '@/ui'
 import { useLoginWithCode, useRequestLoginCode } from '../hooks/use-onboarding'
 import { useOnboardingStore } from '../onboarding-store'
-
-const CODE_LENGTH = 6
-const RESEND_SECONDS = 60
 
 const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 
@@ -15,8 +15,9 @@ export function CodeStep() {
   const t = useT()
   const email = useOnboardingStore((state) => state.email)
   const go = useOnboardingStore((state) => state.go)
-  const [code, setCode] = useState('')
-  const [wait, setWait] = useState(RESEND_SECONDS)
+  const form = useForm({ resolver: zodResolver(otpSchema), defaultValues: { code: '' } })
+  const code = useWatch({ control: form.control, name: 'code' })
+  const [wait, setWait] = useState(OTP_RESEND_SECONDS)
   const login = useLoginWithCode()
   const resend = useRequestLoginCode()
 
@@ -26,10 +27,11 @@ export function CodeStep() {
     return () => clearTimeout(timer)
   }, [wait])
 
+  const submit = form.handleSubmit(({ code: value }) => login.mutate({ email, code: value }))
   const onChange = (value: string) => {
-    setCode(value)
+    form.setValue('code', value)
     if (login.isError) login.reset()
-    if (value.length === CODE_LENGTH) login.mutate({ email, code: value })
+    if (value.length === OTP_LENGTH) void submit()
   }
 
   const rejected = isApiError(login.error) && !login.error.transient
@@ -45,7 +47,7 @@ export function CodeStep() {
           </p>
         </div>
         <div className="grid gap-2">
-          <CodeInput autoFocus value={code} length={CODE_LENGTH} error={rejected} onChange={login.isPending ? () => undefined : onChange} />
+          <CodeInput autoFocus value={code} length={OTP_LENGTH} error={rejected} onChange={login.isPending ? () => undefined : onChange} />
           {message && (
             <span role="alert" className="jo-type-caption text-jo-wrong">
               {message}
@@ -63,9 +65,9 @@ export function CodeStep() {
             onClick={() =>
               resend.mutate(email, {
                 onSuccess: () => {
-                  setCode('')
+                  form.reset()
                   login.reset()
-                  setWait(RESEND_SECONDS)
+                  setWait(OTP_RESEND_SECONDS)
                 },
               })
             }
