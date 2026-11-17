@@ -125,8 +125,8 @@ export function useAcceptChallenge({ replace = false }: { replace?: boolean } = 
       await challengesService.accept(challenge.challengeId)
       return challenge.roomId ?? (await roomOfAccepted(challenge.challengeId))
     },
+    // Le salon créé par la saga rejoint « Mes salons » par le flux de présence (salon inconnu = relu), pas par une relecture.
     onSuccess: (roomId, challenge) => {
-      void client.invalidateQueries({ queryKey: queryKeys.myRooms })
       if (!roomId) {
         toast.error(t('challenges.roomPending'), t('challenges.roomPendingText'))
         return

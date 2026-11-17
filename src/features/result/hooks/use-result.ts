@@ -46,12 +46,12 @@ export function useGameResult(gameId: string, waitForReward: boolean) {
           }
         : view,
     )
-    // Une partie terminée est un résultat calculé par le serveur, pas une mutation du joueur : les vues qu'elle touche
-    // se relisent (règle des mutations : l'invalidation reste permise pour les données calculées par le serveur).
+    // Profil, sujet et accueil calculés par le serveur après la partie : marqués périmés sans relecture (`refetchType:
+    // 'none'`), relus à leur prochaine ouverture ; progression et maîtrise sont déjà posées depuis le résultat.
     const userId = client.getQueryData<MeView>(queryKeys.me)?.userId
-    if (userId) void client.invalidateQueries({ queryKey: queryKeys.profiles.all(userId) })
-    void client.invalidateQueries({ queryKey: queryKeys.topic.all(data.topic.topicId) })
-    void client.invalidateQueries({ queryKey: queryKeys.home })
+    if (userId) void client.invalidateQueries({ queryKey: queryKeys.profiles.all(userId), refetchType: 'none' })
+    void client.invalidateQueries({ queryKey: queryKeys.topic.all(data.topic.topicId), refetchType: 'none' })
+    void client.invalidateQueries({ queryKey: queryKeys.home, refetchType: 'none' })
   }, [client, gameId, result.data, waitForReward])
   return result
 }

@@ -5,6 +5,7 @@ import { useT } from '@/lib/i18n'
 import { optimisticUpdate } from '@/lib/optimistic-cache'
 import { queryKeys } from '@/lib/query-keys'
 import { toast } from '@/shared/toast'
+import { applyFollow } from '../lib/contacts-cache'
 import { playerService } from '../lib/player-service'
 
 /** Fiche publique d'un joueur (aussi préchargée avant un toast de notification). */
@@ -30,7 +31,7 @@ export function useHeadToHead(against: string) {
   })
 }
 
-/** Suivre / ne plus suivre un joueur, **optimiste** : fiche et compteurs changent tout de suite, restaurés si refus. */
+/** Suivre / ne plus suivre un joueur, **optimiste** : fiche, compteurs et listes Social changent tout de suite, restaurés si refus, sans relecture. */
 export function useFollowPlayer(userId: string) {
   const client = useQueryClient()
   const t = useT()
@@ -38,19 +39,20 @@ export function useFollowPlayer(userId: string) {
   return useMutation({
     mutationFn: (follow: boolean) => playerService.follow(userId, follow),
     onMutate: (follow: boolean) =>
-      optimisticUpdate(client, [key, queryKeys.me], () => {
+      optimisticUpdate(client, [key, queryKeys.me, queryKeys.contacts.all], () => {
         const previous = client.getQueryData<PlayerProfileView>(key)
         const delta = previous?.following === follow ? 0 : follow ? 1 : -1
         client.setQueryData<PlayerProfileView>(key, (profile) =>
           profile ? { ...profile, following: follow, followersCount: Math.max(0, profile.followersCount + delta) } : profile,
         )
         client.setQueryData<MeView>(queryKeys.me, (me) => (me ? { ...me, followingCount: Math.max(0, me.followingCount + delta) } : me))
+        const meId = client.getQueryData<MeView>(queryKeys.me)?.userId
+        const profile = client.getQueryData<PlayerProfileView>(key)
+        if (meId && profile) applyFollow(client, meId, profile, follow)
       }),
     onError: (_error, follow, context) => {
       context?.rollback()
       toast.error(t(follow ? 'player.followError' : 'player.unfollowError'), t('home.errorText'))
     },
-    // Les listes Social (abonnements, abonnés) se relisent : leur contenu et leurs totaux changent.
-    onSettled: () => void client.invalidateQueries({ queryKey: queryKeys.contacts.all }),
   })
 }

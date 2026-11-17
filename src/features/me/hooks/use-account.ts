@@ -10,7 +10,6 @@ export function useSetBirthDate() {
     mutationFn: (birthDate: string) => accountService.setBirthDate(birthDate),
     onSuccess: (_result, birthDate) => {
       client.setQueryData<MeView>(queryKeys.me, (me) => (me ? { ...me, birthDate, birthDateRequired: false } : me))
-      void client.invalidateQueries({ queryKey: queryKeys.me })
     },
   })
 }
