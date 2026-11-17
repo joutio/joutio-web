@@ -1,3 +1,9 @@
+## [2.21.0](https://github.com/joutio/joutio-web/compare/v2.20.1...v2.21.0) (2026-11-17)
+
+### Features
+
+* **i18n:** design system primitives served by @joutio/client ([3a667f6](https://github.com/joutio/joutio-web/commit/3a667f67fd74a8f64b7db5cfc18cbdab8c400067))
+
 ## [2.20.1](https://github.com/joutio/joutio-web/compare/v2.20.0...v2.20.1) (2026-11-17)
 
 ### Bug Fixes
