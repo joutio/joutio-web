@@ -1,3 +1,9 @@
+## [2.22.1](https://github.com/joutio/joutio-web/compare/v2.22.0...v2.22.1) (2026-11-17)
+
+### Bug Fixes
+
+* **notifications:** counted bell badge on topics and home via NotificationBell, close decision-cloche ([d0d9130](https://github.com/joutio/joutio-web/commit/d0d9130f845e0593e40ec0d82f11852016e05c01))
+
 ## [2.22.0](https://github.com/joutio/joutio-web/compare/v2.21.1...v2.22.0) (2026-11-17)
 
 ### Features
