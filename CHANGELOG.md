@@ -1,3 +1,9 @@
+## [2.20.1](https://github.com/joutio/joutio-web/compare/v2.20.0...v2.20.1) (2026-11-17)
+
+### Bug Fixes
+
+* **ui:** bottom action bars on the tab bar background, as on mobile ([f042a15](https://github.com/joutio/joutio-web/commit/f042a152d2cbe02e9723de2d827fecf0a01e0106))
+
 ## [2.20.0](https://github.com/joutio/joutio-web/compare/v2.19.3...v2.20.0) (2026-11-16)
 
 ### Features
