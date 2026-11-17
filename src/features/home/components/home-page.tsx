@@ -1,9 +1,9 @@
 import type { TopicCardView } from '@joutio/client/api-types'
-import { BellIcon, CompassIcon, FireIcon, GearSixIcon, HeartIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { CompassIcon, FireIcon, GearSixIcon, HeartIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
-import { useUnreadCount } from '@/features/notifications'
+import { NotificationBell } from '@/features/notifications'
 import { useMyActivity } from '@/features/profile'
 import { TabNav } from '@/features/shell'
 import { MyTopicsList } from '@/features/workshop'
@@ -204,7 +204,6 @@ export function HomePage() {
   const navigate = useNavigate()
   const me = useMe()
   const home = useHome()
-  const unread = useUnreadCount().data?.count ?? 0
   const streak = useMyActivity().data?.currentStreak ?? 0
   const [tab, setTab] = useTabParam(TABS, 'for-you')
   const followed = tab === 'followed'
@@ -243,14 +242,7 @@ export function HomePage() {
           </div>
           <div className="flex items-center gap-2 justify-self-end">
             <IconButton icon={MagnifyingGlassIcon} label={t('home.search')} variant="plain" tone="neutral" onClick={() => void navigate(ROUTES.search)} />
-            <IconButton
-              icon={BellIcon}
-              label={t('home.notifications')}
-              variant="plain"
-              tone="neutral"
-              badge={unread || undefined}
-              onClick={() => void navigate(ROUTES.notifications)}
-            />
+            <NotificationBell />
             <IconButton icon={GearSixIcon} label={t('profile.settings')} variant="plain" tone="neutral" onClick={() => void navigate(ROUTES.settings, { state: { from: 'home' } })} />
           </div>
         </header>

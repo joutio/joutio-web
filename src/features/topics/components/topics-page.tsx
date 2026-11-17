@@ -1,8 +1,8 @@
 import type { TopicSort } from '@joutio/client/api-types'
-import { ArrowsDownUpIcon, BellIcon, HeartIcon, MagnifyingGlassIcon, PencilSimpleIcon, SlidersHorizontalIcon, SquaresFourIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
+import { ArrowsDownUpIcon, HeartIcon, MagnifyingGlassIcon, PencilSimpleIcon, SlidersHorizontalIcon, SquaresFourIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useUnreadCount } from '@/features/notifications'
+import { NotificationBell } from '@/features/notifications'
 import { SettingsButton } from '@/features/settings'
 import { TabNav } from '@/features/shell'
 import { useT, type MessageKey } from '@/lib/i18n'
@@ -151,7 +151,6 @@ function Loading({ columns }: { columns: number }) {
 export function TopicsPage() {
   const t = useT()
   const navigate = useNavigate()
-  const unread = useUnreadCount().data?.count ?? 0
   const [query, setQuery] = useState('')
   const search = useDebounced(query.trim())
   const [selected, setSelected] = useState<CategoryCode[]>([])
@@ -192,14 +191,7 @@ export function TopicsPage() {
             title={t('nav.topics')}
             right={
               <>
-                <IconButton
-                  icon={BellIcon}
-                  label={t('home.notifications')}
-                  variant="plain"
-                  tone="neutral"
-                  badge={unread > 0 ? 'dot' : undefined}
-                  onClick={() => void navigate(ROUTES.notifications)}
-                />
+                <NotificationBell />
                 <SettingsButton from="topics" />
               </>
             }
