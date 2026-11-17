@@ -6,21 +6,22 @@ import { useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
 import { useTabBadges } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
-import { optimisticUpdate, queryKeys } from '@joutio/client/query'
+import { challengesQuery, myRoomsQuery, optimisticUpdate, queryKeys } from '@joutio/client/query'
 import { useRoomPresenceEvents } from '@/lib/realtime'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import { challengesService, splitChallenges } from '../lib/challenges-service'
+import { api } from '@/lib/api'
 
 /** Défis du joueur (reçus et envoyés). */
 export function useMyChallenges(enabled = true) {
-  return useQuery({ queryKey: queryKeys.challenges(), queryFn: challengesService.mine, enabled, staleTime: 15_000 })
+  return useQuery({ ...challengesQuery(api), enabled, staleTime: 15_000 })
 }
 
 /** Salons du joueur. */
 export function useMyRooms(enabled = true) {
-  return useQuery({ queryKey: queryKeys.myRooms(), queryFn: challengesService.rooms, enabled, staleTime: 15_000 })
+  return useQuery({ ...myRoomsQuery(api), enabled, staleTime: 15_000 })
 }
 
 /** Relit défis et salons : événements d'un autre joueur, jamais la confirmation d'une commande locale. */

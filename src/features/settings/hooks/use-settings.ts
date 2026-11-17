@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react'
 import { useMe } from '@/features/me'
 import { isApiError } from '@/lib/api'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { optimisticUpdate, queryKeys } from '@joutio/client/query'
+import { optimisticUpdate, pseudonymAvailabilityQuery, queryKeys } from '@joutio/client/query'
 import { toast } from '@/shared/toast'
 import { settingsService } from '../lib/settings-service'
+import { api } from '@/lib/api'
 
 /** État de saisie du pseudonyme : règles locales immédiates, unicité vérifiée par le BFF après une courte pause. */
 export type PseudonymCheck =
@@ -27,8 +28,7 @@ export function usePseudonymCheck(value: string, current: string | undefined): P
   }, [trimmed])
   const settled = debounced === trimmed
   const query = useQuery({
-    queryKey: queryKeys.pseudonymAvailability(pseudonymKey(debounced)),
-    queryFn: () => settingsService.pseudonymAvailability(debounced),
+    ...pseudonymAvailabilityQuery(api, debounced, pseudonymKey(debounced)),
     enabled: !unchanged && issue === null && settled,
     staleTime: 10_000,
   })

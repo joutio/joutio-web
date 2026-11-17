@@ -1,6 +1,6 @@
-import type { IdResponse, PageResponse, PeopleSort, PlayerCardView, PlayerProfileView } from '@joutio/client/api-types'
+import type { IdResponse, PageResponse, PeopleSort, PlayerCardView } from '@joutio/client/api-types'
 import type { BotDifficulty } from '@joutio/client/game'
-import type { MatchmakingNotification, MatchmakingTicket, RoomNotification, RoomView } from '@joutio/client/rooms'
+import type { MatchmakingNotification, MatchmakingTicket, RoomNotification } from '@joutio/client/rooms'
 import { api } from '@/lib/api'
 import type { EventEnvelope } from '@/lib/realtime'
 
@@ -9,7 +9,6 @@ const id = encodeURIComponent
 export const PLAY_ENDPOINTS = {
   rooms: '/api/rooms',
   botRoom: '/api/rooms/bot',
-  room: (roomId: string) => `/api/rooms/${id(roomId)}`,
   cancel: (roomId: string) => `/api/rooms/${id(roomId)}/cancel`,
   wizz: (roomId: string) => `/api/rooms/${id(roomId)}/wizz`,
   roomNotifications: (roomId: string) => `/api/rooms/${id(roomId)}/notifications`,
@@ -25,10 +24,8 @@ export const PLAY_ENDPOINTS = {
   /** Canal de présence du ticket : quitter l'écran ou perdre la connexion annule la recherche côté serveur. */
   ticketPresence: (ticketId: string) => `/topic/matchmaking/tickets/${ticketId}/presence`,
   challenges: '/api/challenges',
-  myRooms: '/api/rooms/mine',
   contacts: (userId: string, direction: 'following' | 'followers') => `/api/profiles/${id(userId)}/${direction}`,
   autoTrain: (userId: string) => `/api/profiles/${id(userId)}/auto-train`,
-  profile: (userId: string) => `/api/profiles/${id(userId)}`,
 } as const
 
 export const CONTACTS_PAGE_SIZE = 20
@@ -40,9 +37,7 @@ export const CONTACTS_PAGE_SIZE = 20
 export const playService = {
   createRoom: (topicId: string) => api.post<IdResponse>(PLAY_ENDPOINTS.rooms, { topicId }),
   createBotRoom: (topicId: string, difficulty: BotDifficulty) => api.post<IdResponse>(PLAY_ENDPOINTS.botRoom, { topicId, difficulty }),
-  room: (roomId: string) => api.get<RoomView>(PLAY_ENDPOINTS.room(roomId)),
   /** Mes salons : ceux à suivre pour le bandeau « Partie en cours ». */
-  myRooms: () => api.get<RoomView[]>(PLAY_ENDPOINTS.myRooms),
   cancelRoom: (roomId: string) => api.post<void>(PLAY_ENDPOINTS.cancel(roomId)),
   /** Relance (« wizz ») de l'adversaire nommé absent : cadence de 10 s par joueur côté serveur. */
   wizzRoom: (roomId: string) => api.post<void>(PLAY_ENDPOINTS.wizz(roomId)),
@@ -58,7 +53,6 @@ export const playService = {
   contacts: (userId: string, direction: 'following' | 'followers', query: string, sort: PeopleSort, page: number) =>
     api.get<PageResponse<PlayerCardView>>(PLAY_ENDPOINTS.contacts(userId, direction), { query: { q: query || undefined, sort, page, size: CONTACTS_PAGE_SIZE } }),
 
-  profile: (userId: string) => api.get<PlayerProfileView>(PLAY_ENDPOINTS.profile(userId)),
 
   setAutoTrain: (userId: string, enabled: boolean) => api.put<void>(PLAY_ENDPOINTS.autoTrain(userId), { enabled }),
 }

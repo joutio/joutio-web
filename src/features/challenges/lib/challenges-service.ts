@@ -5,19 +5,15 @@ import { api } from '@/lib/api'
 const id = encodeURIComponent
 
 export const CHALLENGES_ENDPOINTS = {
-  mine: '/api/challenges/mine',
   challenge: (challengeId: string) => `/api/challenges/${id(challengeId)}`,
   accept: (challengeId: string) => `/api/challenges/${id(challengeId)}/accept`,
   decline: (challengeId: string) => `/api/challenges/${id(challengeId)}/decline`,
   cancel: (challengeId: string) => `/api/challenges/${id(challengeId)}/cancel`,
-  rooms: '/api/rooms/mine',
 } as const
 
 /** Défis nominatifs et salons du joueur (`defis.md` § 6). */
 export const challengesService = {
-  mine: () => api.get<ChallengeView[]>(CHALLENGES_ENDPOINTS.mine),
   get: (challengeId: string) => api.get<ChallengeView>(CHALLENGES_ENDPOINTS.challenge(challengeId)),
-  rooms: () => api.get<RoomView[]>(CHALLENGES_ENDPOINTS.rooms),
   accept: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.accept(challengeId)),
   decline: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.decline(challengeId)),
   cancel: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.cancel(challengeId)),

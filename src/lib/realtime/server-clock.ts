@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { api } from '../api'
-import { queryKeys } from '@joutio/client/query'
+import { serverTimeQuery } from '@joutio/client/query'
 
 /**
  * Horloge serveur : décalage local → serveur mesuré par `GET /api/clock` à l'ouverture d'un écran de jeu et au retour
@@ -21,8 +21,7 @@ export const readServerNow = () => Date.now() + offsetMs
 /** Mesure le décalage tant que l'écran est monté (et à chaque retour sur l'onglet). */
 export function useServerClock() {
   const { data, dataUpdatedAt, refetch } = useQuery({
-    queryKey: queryKeys.serverTime(),
-    queryFn: () => api.get<{ epochMillis: number }>('/api/clock'),
+    ...serverTimeQuery(api),
     refetchOnMount: 'always',
     staleTime: Infinity,
     retry: 3,

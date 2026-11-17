@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { MeView } from '@joutio/client/api-types'
-import { queryKeys } from '@joutio/client/query'
+import { queryKeys, recommendationsQuery } from '@joutio/client/query'
 import { isApiError } from '@/lib/api'
 import { endSession, loginWithCode, loginRedirect, requestLoginCode } from '@/lib/session'
 import { onboardingService } from '../lib/onboarding-service'
+import { api } from '@/lib/api'
 
 export function useRequestLoginCode() {
   return useMutation({ mutationFn: (email: string) => requestLoginCode(email) })
@@ -33,8 +34,7 @@ export function useSaveInterests() {
 
 export function useRecommendations(interests: readonly string[]) {
   return useQuery({
-    queryKey: queryKeys.onboarding.recommendations(interests),
-    queryFn: () => onboardingService.recommendations(interests),
+    ...recommendationsQuery(api, interests),
     enabled: interests.length > 0,
   })
 }

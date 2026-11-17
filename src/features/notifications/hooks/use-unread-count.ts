@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { queryKeys } from '@joutio/client/query'
-import { notificationsService } from '../lib/notifications-service'
+import { unreadCountQuery } from '@joutio/client/query'
+import { api } from '@/lib/api'
 
 /** Notifications non lues : badge de la cloche. */
 export function useUnreadCount() {
-  return useQuery({ queryKey: queryKeys.notifications.unreadCount(), queryFn: notificationsService.unreadCount, staleTime: 30_000 })
+  return useQuery({ ...unreadCountQuery(api), staleTime: 30_000 })
 }

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
-import { queryKeys } from '@joutio/client/query'
+import { roomQuery } from '@joutio/client/query'
 import { useServerNow } from '@/lib/realtime'
 import { returnTo, selectStatus, useSessionStore } from '@/lib/session'
 import { useUserAvatar } from '@/shared/avatar'
@@ -13,7 +13,7 @@ import { tierOf } from '@/shared/tier'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { Avatar, Badge, Button, EmptyState, IconButton, ListRow, PlayerName, Screen, Skeleton, TopicCard, tokens, type TierCode } from '@/ui'
 import { countdownOf } from '../lib/countdown'
-import { playService } from '../lib/play-service'
+import { api } from '@/lib/api'
 
 /** Conditions du duel, en `ListRow` informatives (`lancer-partie.md` § 2). */
 const RULES: readonly { icon: Icon; label: MessageKey }[] = [
@@ -65,7 +65,7 @@ export function JoinPage() {
   const me = useMe()
   const identity = usePlayerIdentity()
   const now = useServerNow()
-  const room = useQuery({ queryKey: queryKeys.room(roomId), queryFn: () => playService.room(roomId), enabled: authenticated && Boolean(roomId), retry: 1 })
+  const room = useQuery({ ...roomQuery(api, roomId), enabled: authenticated && Boolean(roomId), retry: 1 })
   const view = room.data
   const host = view?.opponent
   const hostAvatar = useUserAvatar(host)

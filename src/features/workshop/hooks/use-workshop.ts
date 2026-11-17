@@ -15,10 +15,11 @@ import { useMutation, useQuery, useQueryClient, type InfiniteData, type QueryCli
 import { useMe } from '@/features/me'
 import { showPremium } from '@/features/premium'
 import { useT, type MessageKey } from '@/lib/i18n'
-import { optimisticId, optimisticUpdate, queryKeys } from '@joutio/client/query'
+import { optimisticId, optimisticUpdate, queryKeys, reportQueueQuery, teamQuery, workshopQuery, workshopTodoQuery } from '@joutio/client/query'
 import { toast } from '@/shared/toast'
 import { useDebounced } from '@/shared/use-debounced'
 import { workshopService } from '../lib/workshop-service'
+import { api } from '@/lib/api'
 
 type TopicPage = { topics: TopicCardView[]; last: boolean }
 const TOPIC_CACHES = [queryKeys.authoring.all(), ['topic'], ['topics'], queryKeys.home()] as const
@@ -33,11 +34,11 @@ export const useCreatedTopics = (enabled = true) =>
   useQuery({ queryKey: queryKeys.authoring.created(), queryFn: workshopService.createdTopics, staleTime: 30_000, enabled })
 
 /** Mes sujets › À traiter : actions en attente par sujet géré. */
-export const useTopicTodo = () => useQuery({ queryKey: queryKeys.authoring.todo(), queryFn: workshopService.todo, staleTime: 30_000 })
+export const useTopicTodo = () => useQuery({ ...workshopTodoQuery(api), staleTime: 30_000 })
 
 /** Un sujet de l'atelier et mes droits dessus. */
 export function useWorkshop(topicId: string) {
-  const query = useQuery({ queryKey: queryKeys.authoring.workshop(topicId), queryFn: () => workshopService.workshop(topicId), enabled: Boolean(topicId) })
+  const query = useQuery({ ...workshopQuery(api, topicId), enabled: Boolean(topicId) })
   return { ...query, topic: query.data?.topic, permissions: query.data?.permissions, titles: query.data?.titles ?? null, closedReason: query.data?.closedReason ?? null }
 }
 
@@ -47,9 +48,9 @@ export const useTopicQuestions = (topicId: string, enabled = true) =>
 
 /** File des signalements ouverts d'un sujet. */
 export const useReportQueue = (topicId: string, enabled = true) =>
-  useQuery({ queryKey: queryKeys.authoring.reports(topicId), queryFn: () => workshopService.reportQueue(topicId), enabled: enabled && Boolean(topicId), staleTime: 15_000 })
+  useQuery({ ...reportQueueQuery(api, topicId), enabled: enabled && Boolean(topicId), staleTime: 15_000 })
 
-export const useTeam = (topicId: string) => useQuery({ queryKey: queryKeys.authoring.team(topicId), queryFn: () => workshopService.team(topicId), enabled: Boolean(topicId) })
+export const useTeam = (topicId: string) => useQuery({ ...teamQuery(api, topicId), enabled: Boolean(topicId) })
 
 /** Joueurs à inviter dans l'équipe (2 caractères au moins). */
 export const usePlayerSearch = (query: string) =>

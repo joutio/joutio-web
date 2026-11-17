@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { queryKeys } from '@joutio/client/query'
+import { roomQuery } from '@joutio/client/query'
 import { readServerNow, useServerClock } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
@@ -16,6 +16,7 @@ import { Avatar, Button, cn, EmptyState, MatchmakingMap, Notice, PlayerName, tok
 import { useAutoTrain, useBotDifficulty, useTicket, useTicketPresence, type PlayTopic } from '../hooks/use-play'
 import { playService } from '../lib/play-service'
 import { DuelSheet } from './duel-sheet'
+import { api } from '@/lib/api'
 
 /** Épingles décoratives : le BFF n'expose pas la file d'attente (`matchmaking.md` § 5). */
 const PINS: MapPlayer[] = [
@@ -90,7 +91,7 @@ export function MatchmakingPage() {
   )
 
   const roomId = ticket.state?.roomId ?? null
-  const room = useQuery({ queryKey: queryKeys.room(roomId ?? ''), queryFn: () => playService.room(roomId ?? ''), enabled: Boolean(roomId) })
+  const room = useQuery({ ...roomQuery(api, roomId ?? ''), enabled: Boolean(roomId) })
   // `MATCHED` porte l'adversaire enrichi ; la salle reste le repli.
   const opponent = ticket.state?.opponent ?? room.data?.opponent ?? null
   const opponentAvatar = useUserAvatar(opponent)

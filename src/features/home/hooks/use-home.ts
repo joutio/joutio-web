@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { queryKeys } from '@joutio/client/query'
-import { homeService } from '../lib/home-service'
+import { homeQuery } from '@joutio/client/query'
+import { api } from '@/lib/api'
 
 export function useHome() {
-  return useQuery({ queryKey: queryKeys.home(), queryFn: homeService.get, staleTime: 60_000 })
+  return useQuery({ ...homeQuery(api), staleTime: 60_000 })
 }

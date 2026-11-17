@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useEffect, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { gameService, useGameStream } from '@/features/duel'
+import { useGameStream } from '@/features/duel'
 import { useMe } from '@/features/me'
-import { playService, useRoom } from '@/features/play'
+import { useRoom } from '@/features/play'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { queryKeys } from '@joutio/client/query'
+import { activeGamesQuery, myRoomsQuery } from '@joutio/client/query'
 import { useConnectionStore } from '@/lib/realtime'
 import { useOngoingStore } from '@/shared/ongoing-store'
 import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
 import { Banner, GlobalBannerContext } from '@/ui'
+import { api } from '@/lib/api'
 
 const CLOSED = ['CANCELLED', 'EXPIRED', 'FAILED']
 
@@ -55,8 +56,8 @@ export function OngoingRuntime({ children }: { children: ReactNode }) {
   const userId = useMe().data?.userId
   const connection = useConnectionStore((state) => state.status)
   const { games, rooms, rememberGame, trackRoom, reset } = useOngoingStore()
-  const active = useQuery({ queryKey: queryKeys.games.active(userId ?? ''), queryFn: gameService.active, enabled: Boolean(userId) })
-  const myRooms = useQuery({ queryKey: queryKeys.myRooms(), queryFn: playService.myRooms, enabled: Boolean(userId) })
+  const active = useQuery({ ...activeGamesQuery(api, userId ?? ''), enabled: Boolean(userId) })
+  const myRooms = useQuery({ ...myRoomsQuery(api), enabled: Boolean(userId) })
   const { refetch: refetchActive } = active
   const { refetch: refetchRooms } = myRooms
 

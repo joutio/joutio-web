@@ -1,4 +1,4 @@
-import type { Language, NotificationCategory, NotificationPreferenceView, PseudonymAvailability } from '@joutio/client/api-types'
+import type { Language, NotificationCategory, NotificationPreferenceView } from '@joutio/client/api-types'
 import { api, request } from '@/lib/api'
 
 const id = encodeURIComponent
@@ -6,7 +6,6 @@ const id = encodeURIComponent
 export const SETTINGS_ENDPOINTS = {
   field: (userId: string, field: 'pseudonym' | 'bio' | 'country' | 'banner' | 'language' | 'avatar-options') => `/api/profiles/${id(userId)}/${field}`,
   interests: '/api/me/interests',
-  pseudonymAvailability: '/api/profiles/pseudonym-availability',
   preferences: '/api/notification-preferences',
   preference: (category: NotificationCategory) => `/api/notification-preferences/${category}`,
   deletionCode: '/api/me/deletion-code',
@@ -24,7 +23,6 @@ export const settingsService = {
   language: (userId: string, language: Language) => api.put<void>(SETTINGS_ENDPOINTS.field(userId, 'language'), { language }),
   avatarOptions: (userId: string, avatarOptions: string | null) => api.put<void>(SETTINGS_ENDPOINTS.field(userId, 'avatar-options'), { avatarOptions }),
   interests: (interests: readonly string[]) => api.put<void>(SETTINGS_ENDPOINTS.interests, { interests }),
-  pseudonymAvailability: (value: string) => api.get<PseudonymAvailability>(SETTINGS_ENDPOINTS.pseudonymAvailability, { query: { value } }),
 
   preferences: () => api.get<NotificationPreferenceView[]>(SETTINGS_ENDPOINTS.preferences),
   setPreference: (category: NotificationCategory, enabled: boolean) => api.put<void>(SETTINGS_ENDPOINTS.preference(category), { enabled }),

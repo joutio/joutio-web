@@ -2,14 +2,14 @@ import type { MeView, PlayerProfileView } from '@joutio/client/api-types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMe } from '@/features/me'
 import { useT } from '@/lib/i18n'
-import { applyFollow, optimisticUpdate, queryKeys } from '@joutio/client/query'
+import { applyFollow, headToHeadQuery, optimisticUpdate, profileQuery, queryKeys } from '@joutio/client/query'
 import { toast } from '@/shared/toast'
 import { playerService } from '../lib/player-service'
+import { api } from '@/lib/api'
 
 /** Fiche publique d'un joueur (aussi préchargée avant un toast de notification). */
 export const playerProfileQuery = (userId: string) => ({
-  queryKey: queryKeys.profiles.profile(userId),
-  queryFn: () => playerService.profile(userId),
+  ...profileQuery(api, userId),
   staleTime: 30_000,
 })
 
@@ -22,8 +22,7 @@ export function usePlayerProfile(userId: string) {
 export function useHeadToHead(against: string) {
   const userId = useMe().data?.userId ?? ''
   return useQuery({
-    queryKey: queryKeys.profiles.headToHead(userId, against),
-    queryFn: () => playerService.headToHead(userId, against),
+    ...headToHeadQuery(api, userId, against),
     enabled: Boolean(userId && against),
     staleTime: 60_000,
   })

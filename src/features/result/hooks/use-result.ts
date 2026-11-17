@@ -8,11 +8,12 @@ import { useNavigate } from 'react-router-dom'
 import { gameService } from '@/features/duel'
 import type { PlayTopic } from '@/features/play'
 import { useT } from '@/lib/i18n'
-import { queryKeys } from '@joutio/client/query'
+import { gameResultQuery, queryKeys } from '@joutio/client/query'
 import { readServerNow, usePersonalNotifications } from '@/lib/realtime'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
 import { resultService } from '../lib/result-service'
+import { api } from '@/lib/api'
 
 /**
  * Bilan autoritaire d'un duel terminé. La récompense est calculée après la fin : on relit tant qu'elle manque (aucun
@@ -22,8 +23,7 @@ export function useGameResult(gameId: string, waitForReward: boolean) {
   const client = useQueryClient()
   const applied = useRef<string | null>(null)
   const result = useQuery({
-    queryKey: queryKeys.games.result(gameId),
-    queryFn: () => gameService.result(gameId),
+    ...gameResultQuery(api, gameId),
     enabled: Boolean(gameId),
     retry: 3,
     refetchInterval: (query) => (waitForReward && query.state.data && query.state.data.reward === null && !query.state.data.botGame ? 1_500 : false),

@@ -1,5 +1,5 @@
 import type { IdResponse, Language, PageResponse, SuggestionView, TopicCardView } from '@joutio/client/api-types'
-import type { QuestionEditorView, QuestionOperation, ReportDetail, ReportedQuestion, TeamMember, TeamRole, TopicTitles, TopicTodo, TopicWorkshop } from '@joutio/client/authoring'
+import type { QuestionEditorView, QuestionOperation, ReportDetail, TeamMember, TeamRole, TopicTitles } from '@joutio/client/authoring'
 import { api } from '@/lib/api'
 
 const id = encodeURIComponent
@@ -10,13 +10,10 @@ const QUESTIONS_PAGE = 100
 export const WORKSHOP_ENDPOINTS = {
   topics: '/api/topics',
   contributed: '/api/topics/contributed',
-  todo: '/api/topics/contributed/todo',
   topic: (topicId: string) => `/api/topics/${id(topicId)}`,
-  workshop: (topicId: string) => `/api/topics/${id(topicId)}/workshop`,
   field: (topicId: string, field: 'name' | 'description' | 'category' | 'image-url' | 'pictogram-url' | 'titles' | 'publish' | 'draft' | 'questions' | 'team') => `/api/topics/${id(topicId)}/${field}`,
   member: (topicId: string, userId: string) => `/api/topics/${id(topicId)}/team/${id(userId)}`,
   question: (questionId: string, action?: string) => `/api/questions/${id(questionId)}${action ? `/${action}` : ''}`,
-  reportQueue: (topicId: string) => `/api/question-reports/topics/${id(topicId)}`,
   reportDetail: (reportId: string) => `/api/question-reports/${id(reportId)}`,
   suggestions: '/api/suggestions',
 } as const
@@ -30,8 +27,6 @@ export const workshopService = {
   /** Sujets publiés dont le nom contient `query` (catalogue) : l'atelier y cherche un nom identique. */
   topicsNamed: (query: string) => api.get<PageResponse<TopicCardView>>(WORKSHOP_ENDPOINTS.topics, { query: { q: query, page: 0, size: 20 } }),
   /** Mes sujets › À traiter. */
-  todo: () => api.get<TopicTodo[]>(WORKSHOP_ENDPOINTS.todo),
-  workshop: (topicId: string) => api.get<TopicWorkshop>(WORKSHOP_ENDPOINTS.workshop(topicId)),
 
   createTopic: (name: string, category: string) => api.post<IdResponse>(WORKSHOP_ENDPOINTS.topics, { names: { fr: name }, category }),
   updateName: (topicId: string, language: Language, name: string) => api.put<void>(WORKSHOP_ENDPOINTS.field(topicId, 'name'), { language, name }),
@@ -103,13 +98,11 @@ export const workshopService = {
   deleteQuestion: (questionId: string) => api.delete<void>(WORKSHOP_ENDPOINTS.question(questionId)),
 
   /** File des signalements ouverts du sujet, une entrée par question. */
-  reportQueue: (topicId: string) => api.get<ReportedQuestion[]>(WORKSHOP_ENDPOINTS.reportQueue(topicId)),
   /** Un signalement (ouverture depuis une notification) : sa question. */
   reportDetail: (reportId: string) => api.get<ReportDetail>(WORKSHOP_ENDPOINTS.reportDetail(reportId)),
   /** Clôt tous les signalements ouverts d'une question : `RESOLVED` après modification, `DISMISSED` sinon. */
   resolveReports: (questionId: string, resolution: 'RESOLVED' | 'DISMISSED') => api.post<{ resolvedCount: number }>(WORKSHOP_ENDPOINTS.question(questionId, 'reports/resolve'), { resolution }),
 
-  team: (topicId: string) => api.get<TeamMember[]>(WORKSHOP_ENDPOINTS.field(topicId, 'team')),
   setMember: (topicId: string, userId: string, role: TeamRole) => api.put<TeamMember>(WORKSHOP_ENDPOINTS.member(topicId, userId), { role }),
   removeMember: (topicId: string, userId: string) => api.delete<void>(WORKSHOP_ENDPOINTS.member(topicId, userId)),
   /** Joueurs à inviter : la recherche globale, joueurs seulement. */

@@ -3,18 +3,19 @@ import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClie
 import { useMe } from '@/features/me'
 import type { TopicPage } from '@/features/topics'
 import { useT } from '@/lib/i18n'
-import { optimisticUpdate, queryKeys } from '@joutio/client/query'
+import { optimisticUpdate, queryKeys, titlesQuery, topicLeaderboardQuery, topicOverviewQuery } from '@joutio/client/query'
 import { toast } from '@/shared/toast'
 import { topicService, type BoardFilters } from '../lib/topic-service'
+import { api } from '@/lib/api'
 
 /** En-tête, chiffres et progression du sujet. */
 export function useTopicOverview(topicId: string) {
-  return useQuery({ queryKey: queryKeys.topic.overview(topicId), queryFn: () => topicService.overview(topicId), enabled: Boolean(topicId), staleTime: 30_000 })
+  return useQuery({ ...topicOverviewQuery(api, topicId), enabled: Boolean(topicId), staleTime: 30_000 })
 }
 
 /** Top 10 depuis toujours et ma ligne. */
 export function useTopicLeaderboard(topicId: string) {
-  return useQuery({ queryKey: queryKeys.topic.leaderboard(topicId), queryFn: () => topicService.leaderboard(topicId), enabled: Boolean(topicId), staleTime: 60_000 })
+  return useQuery({ ...topicLeaderboardQuery(api, topicId), enabled: Boolean(topicId), staleTime: 60_000 })
 }
 
 /** Classement complet, paginé : changer un filtre repart de la première page. */
@@ -44,7 +45,7 @@ export function useTopicGames(topicId: string) {
 /** Mes titres, pour savoir lequel est porté. */
 export function useMyTitles() {
   const userId = useMe().data?.userId
-  return useQuery({ queryKey: queryKeys.profiles.titles(userId ?? ''), queryFn: () => topicService.titles(userId!), enabled: Boolean(userId), staleTime: 60_000 })
+  return useQuery({ ...titlesQuery(api, userId ?? ''), enabled: Boolean(userId), staleTime: 60_000 })
 }
 
 /**

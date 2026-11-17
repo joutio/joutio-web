@@ -9,13 +9,14 @@ import { useNavigate } from 'react-router-dom'
 import { create } from 'zustand'
 import { useMe } from '@/features/me'
 import { useT } from '@/lib/i18n'
-import { optimisticUpdate, queryKeys } from '@joutio/client/query'
+import { optimisticUpdate, profileQuery, queryKeys, roomQuery } from '@joutio/client/query'
 import { readServerNow, subscribeStomp, useEventStream } from '@/lib/realtime'
 import { showPremium } from '@/features/premium'
 import { showDialog } from '@/shared/dialog'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
 import { PLAY_ENDPOINTS, playService } from '../lib/play-service'
+import { api } from '@/lib/api'
 
 /** Sujet passé d'écran en écran (`location.state`) : l'en-tête s'affiche sans attendre le serveur. */
 export type PlayTopic = { topicId: string; name: string; category?: string | null }
@@ -189,7 +190,7 @@ export function useContacts(direction: 'following' | 'followers', query: string,
 
 /** Salle : vue REST (sujet, adversaire) et état replié de ses notifications (REST à l'ouverture, puis STOMP). */
 export function useRoom(roomId: string) {
-  const view = useQuery({ queryKey: queryKeys.room(roomId), queryFn: () => playService.room(roomId), staleTime: Infinity, retry: 2, enabled: Boolean(roomId) })
+  const view = useQuery({ ...roomQuery(api, roomId), staleTime: Infinity, retry: 2, enabled: Boolean(roomId) })
   const stream = useEventStream<RoomNotification, ReturnType<typeof emptyRoom>>(
     roomId
       ? {
@@ -287,8 +288,7 @@ export function useCloseRoom() {
 /** Profil d'un joueur (second joueur d'un salon partagé, que la vue REST de la salle ne connaît pas). */
 export function usePlayerProfile(userId: string, enabled: boolean) {
   return useQuery({
-    queryKey: queryKeys.profiles.profile(userId),
-    queryFn: () => playService.profile(userId),
+    ...profileQuery(api, userId),
     enabled: enabled && Boolean(userId),
     staleTime: 60_000,
   })
