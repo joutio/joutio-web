@@ -1,3 +1,10 @@
+## [2.22.2](https://github.com/joutio/joutio-web/compare/v2.22.1...v2.22.2) (2026-11-17)
+
+### Bug Fixes
+
+* **result:** drop redundant training meta under the player ([8d0465f](https://github.com/joutio/joutio-web/commit/8d0465f3b067b08108ab2b9e257d2fda49842ec2))
+* **room:** fixed bottom bar for room actions, aligned with joutio-mobile ([bc55734](https://github.com/joutio/joutio-web/commit/bc55734a2426e7eef2ae480ad084265647b9c6cd))
+
 ## [2.22.1](https://github.com/joutio/joutio-web/compare/v2.22.0...v2.22.1) (2026-11-17)
 
 ### Bug Fixes
