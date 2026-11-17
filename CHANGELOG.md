@@ -1,3 +1,9 @@
+## [2.22.0](https://github.com/joutio/joutio-web/compare/v2.21.1...v2.22.0) (2026-11-17)
+
+### Features
+
+* **i18n:** avatar editor in French and English ([ab365c4](https://github.com/joutio/joutio-web/commit/ab365c4b3d89a290447522c76593b8d97ac8f34c))
+
 ## [2.21.1](https://github.com/joutio/joutio-web/compare/v2.21.0...v2.21.1) (2026-11-17)
 
 ### Bug Fixes
