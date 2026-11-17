@@ -3,6 +3,7 @@ import { TitleRibbon } from '../brand/title-ribbon'
 import { cn } from '../lib/cn'
 import type { TierCode } from '../tokens.generated'
 import { ProgressBar } from './progress-bar'
+import { useT } from '@/lib/i18n'
 
 export type TitleRowProps = {
   tier: TierCode
@@ -18,6 +19,7 @@ export type TitleRowProps = {
 
 /** Toucher la ligne porte/enlève le titre ; le ruban est borné à la ligne et tronqué si nécessaire. */
 export function TitleRow({ tier, title, progress, worn = false, locked = false, onWear, last = false, className }: TitleRowProps) {
+  const t = useT()
   const container = useRef<HTMLDivElement>(null)
   const [availableWidth, setAvailableWidth] = useState(220)
   useLayoutEffect(() => {
@@ -31,7 +33,7 @@ export function TitleRow({ tier, title, progress, worn = false, locked = false, 
     <div
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
-      aria-label={locked ? `${title}, verrouillé` : `${worn ? 'Enlever' : 'Porter'} ${title}`}
+      aria-label={locked ? t('ds.titleLocked', { title }) : t(worn ? 'ds.unwear' : 'ds.wear', { title })}
       aria-pressed={interactive ? worn : undefined}
       onClick={interactive ? onWear : undefined}
       onKeyDown={(event) => { if (interactive && event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); onWear?.() } }}
@@ -41,7 +43,7 @@ export function TitleRow({ tier, title, progress, worn = false, locked = false, 
         <TitleRibbon tier={tier} text={title} width={availableWidth} state={locked ? 'locked' : 'earned'} />
         {locked && progress && <ProgressBar value={progress.value} label={progress.label} tone={tier} />}
       </div>
-      {worn && <span aria-hidden="true" className="pointer-events-none absolute -right-4 top-3 w-20 rotate-45 bg-jo-correct text-jo-bg text-center jo-type-caption font-semibold">Porté</span>}
+      {worn && <span aria-hidden="true" className="pointer-events-none absolute -right-4 top-3 w-20 rotate-45 bg-jo-correct text-jo-bg text-center jo-type-caption font-semibold">{t('ds.worn')}</span>}
     </div>
   )
 }

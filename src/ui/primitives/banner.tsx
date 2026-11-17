@@ -2,6 +2,7 @@ import { ArrowClockwiseIcon, CheckCircleIcon, InfoIcon, RobotIcon, SwordIcon, Wa
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { Button } from './button'
+import { useT, type MessageKey } from '@/lib/i18n'
 
 export type BannerTone = 'error' | 'warning' | 'success' | 'info' | 'live' | 'training'
 
@@ -18,12 +19,12 @@ const TONES: Record<BannerTone, { icon: Icon; iconClass: string; tint: string; f
   training: { icon: RobotIcon, iconClass: 'text-jo-accent-ink', tint: 'bg-jo-warm' },
 }
 
-const CONNECTION: Record<BannerConnection, { title: string; message: string; icon: Icon }> = {
-  offline: { title: 'Pas de connexion', message: 'Tout se met à jour dès ton retour en ligne.', icon: WifiSlashIcon },
-  reconnecting: { title: 'Reconnexion…', message: 'Le temps réel reprend dans un instant.', icon: ArrowClockwiseIcon },
-  retrying: { title: 'Nouvelle tentative…', message: 'On vérifie ta connexion.', icon: WifiSlashIcon },
-  failed: { title: 'Toujours hors connexion', message: 'Vérifie ton réseau, puis réessaie.', icon: WifiSlashIcon },
-  restored: { title: 'Connexion rétablie', message: 'Tout est à jour.', icon: CheckCircleIcon },
+const CONNECTION: Record<BannerConnection, { title: MessageKey; message: MessageKey; icon: Icon }> = {
+  offline: { title: 'search.offline', message: 'ds.offlineText', icon: WifiSlashIcon },
+  reconnecting: { title: 'ds.reconnecting', message: 'ds.reconnectingText', icon: ArrowClockwiseIcon },
+  retrying: { title: 'ds.retrying', message: 'ds.retryingText', icon: WifiSlashIcon },
+  failed: { title: 'ds.stillOffline', message: 'ds.stillOfflineText', icon: WifiSlashIcon },
+  restored: { title: 'ds.restored', message: 'ds.restoredText', icon: CheckCircleIcon },
 }
 
 type BannerAction = { label: string; onClick?: () => void; loading?: boolean }
@@ -59,6 +60,7 @@ export type BannerProps =
  * Dans le flux de l'écran, utiliser `Notice`.
  */
 export function Banner(props: BannerProps) {
+  const t = useT()
   let tone: BannerTone
   let title: string
   let message: string | undefined
@@ -66,9 +68,12 @@ export function Banner(props: BannerProps) {
   let action: BannerAction | undefined
   if (props.connection) {
     const restored = props.connection === 'restored'
-    ;({ title, message, icon } = CONNECTION[props.connection])
+    const connection = CONNECTION[props.connection]
+    title = t(connection.title)
+    message = t(connection.message)
+    icon = connection.icon
     tone = restored ? 'success' : 'error'
-    action = restored ? undefined : { label: 'Réessayer', onClick: props.onRetry, loading: props.connection === 'retrying' }
+    action = restored ? undefined : { label: t('common.retry'), onClick: props.onRetry, loading: props.connection === 'retrying' }
   } else {
     ;({ title, message, icon, action } = props)
     tone = props.tone ?? 'error'

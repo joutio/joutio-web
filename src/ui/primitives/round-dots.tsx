@@ -1,4 +1,5 @@
 import { cn } from '../lib/cn'
+import { useT, type MessageKey } from '@/lib/i18n'
 
 export const ROUND_RESULTS = ['correct', 'wrong', 'current', 'upcoming', 'unplayed', 'bonus', 'bonusCorrect', 'bonusWrong'] as const
 export type RoundResult = (typeof ROUND_RESULTS)[number]
@@ -14,15 +15,15 @@ const STYLES: Record<RoundResult, string> = {
   bonusWrong: 'bg-jo-wrong text-jo-on-wrong',
 }
 
-const LABELS: Record<RoundResult, string> = {
-  correct: 'réussie',
-  wrong: 'ratée',
-  current: 'en cours',
-  upcoming: 'à venir',
-  unplayed: 'non jouée',
-  bonus: 'bonus à venir',
-  bonusCorrect: 'bonus réussie',
-  bonusWrong: 'bonus ratée',
+const LABELS: Record<RoundResult, MessageKey> = {
+  correct: 'ds.round.correct',
+  wrong: 'ds.round.wrong',
+  current: 'ds.round.current',
+  upcoming: 'ds.upcoming',
+  unplayed: 'ds.round.unplayed',
+  bonus: 'ds.round.bonus',
+  bonusCorrect: 'ds.round.bonusCorrect',
+  bonusWrong: 'ds.round.bonusWrong',
 }
 
 export type RoundDotsProps = {
@@ -33,13 +34,14 @@ export type RoundDotsProps = {
 }
 
 export function RoundDots({ results, size = 24, className }: RoundDotsProps) {
+  const t = useT()
   const roomy = size >= 20
   return (
-    <ol aria-label="Manches" className={cn('flex items-center', roomy ? 'gap-2' : 'gap-1', className)}>
+    <ol aria-label={t('ds.rounds')} className={cn('flex items-center', roomy ? 'gap-2' : 'gap-1', className)}>
       {results.map((result, index) => (
         <li
           key={index}
-          aria-label={`Manche ${index + 1}, ${LABELS[result]}`}
+          aria-label={t('ds.roundA11y', { n: index + 1, state: t(LABELS[result]) })}
           style={{ width: size, height: size }}
           className={cn('jo-type-caption grid place-items-center rounded-jo-full font-bold', STYLES[result])}
         >

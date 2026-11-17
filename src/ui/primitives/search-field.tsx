@@ -2,6 +2,7 @@ import { MagnifyingGlassIcon, XCircleIcon } from '@phosphor-icons/react'
 import { useRef, useState } from 'react'
 import { cn } from '../lib/cn'
 import { Button } from './button'
+import { useT } from '@/lib/i18n'
 
 export type SearchFieldProps = {
   value: string
@@ -19,12 +20,13 @@ export type SearchFieldProps = {
 export function SearchField({
   value,
   onChange,
-  placeholder = 'Rechercher',
-  label = 'Rechercher',
+  placeholder,
+  label,
   onCancel,
   active = false,
   className,
 }: SearchFieldProps) {
+  const t = useT()
   const [focused, setFocused] = useState(false)
   const input = useRef<HTMLInputElement>(null)
   const engaged = active || focused || value !== ''
@@ -41,16 +43,16 @@ export function SearchField({
         <input
           ref={input}
           type="search"
-          aria-label={label}
+          aria-label={label ?? t('home.search')}
           value={value}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t('home.search')}
           onChange={(event) => onChange(event.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className="jo-type-body min-w-0 flex-1 bg-transparent text-jo-text outline-none placeholder:text-jo-muted [&::-webkit-search-cancel-button]:hidden"
         />
         {value !== '' && (
-          <button type="button" aria-label="Effacer" onClick={() => {
+          <button type="button" aria-label={t('titles.clearSearch')} onClick={() => {
               onChange('')
               input.current?.focus()
             }} className="jo-focus relative flex-none cursor-pointer rounded-jo-full text-jo-muted after:absolute after:-inset-[13px]">
@@ -60,7 +62,7 @@ export function SearchField({
       </div>
       {onCancel && engaged && (
         <Button variant="plain" size="S" onClick={onCancel}>
-          Annuler
+          {t('topic.cancel')}
         </Button>
       )}
     </div>

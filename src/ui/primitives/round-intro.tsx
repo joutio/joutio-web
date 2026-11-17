@@ -5,6 +5,7 @@ import { cn } from '../lib/cn'
 import { categoryColor } from '../lib/tokens'
 import type { CategoryCode } from '../tokens.generated'
 import { RoundDots, type RoundResult } from './round-dots'
+import { useT } from '@/lib/i18n'
 
 export type RoundIntroProps = {
   round: number
@@ -30,6 +31,7 @@ export type RoundIntroProps = {
 
 /** Annonce plein écran d'une manche. Toujours sombre. */
 export function RoundIntro({ round, total, topic, category, results, bonus = false, animated = false, duration = 1900, elapsedMs = 0, onComplete, className }: RoundIntroProps) {
+  const t = useT()
   const rise = animated && 'jo-round-rise'
   // Figé au montage : un nouveau délai relancerait l'animation en cours.
   const [startAt] = useState(() => -Math.min(Math.max(0, elapsedMs), duration))
@@ -51,7 +53,7 @@ export function RoundIntro({ round, total, topic, category, results, bonus = fal
       <div className={cn('grid h-[136px] grid-cols-[auto_auto] items-center justify-center gap-4 bg-jo-accent text-jo-on-accent', animated && 'jo-round-band')}>
         <span className={cn('jo-type-numeric-giant', animated && 'jo-round-number')}>{round}</span>
         <span className={cn('grid', animated && 'jo-round-word')}>
-          <span className="jo-type-title-2 font-bold">Manche</span>
+          <span className="jo-type-title-2 font-bold">{t('ds.round')}</span>
           <span className="jo-type-callout font-semibold opacity-70">de {total}</span>
         </span>
       </div>
@@ -62,7 +64,7 @@ export function RoundIntro({ round, total, topic, category, results, bonus = fal
           {bonus && (
             <span className="jo-type-callout inline-flex h-8 items-center gap-2 rounded-jo-full bg-jo-warm px-4 font-bold text-jo-accent-ink ring-1 ring-jo-accent">
               <LightningIcon size={16} weight="fill" aria-hidden />
-              Question bonus · points doublés
+              {t('ds.bonusQuestion')}
             </span>
           )}
         </div>

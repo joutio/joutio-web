@@ -6,6 +6,7 @@ import { PremiumBadge } from '../brand/premium-badge'
 import { Avatar } from './avatar'
 import { Button } from './button'
 import { isTimerUrgent } from './timer-bar'
+import { useT } from '@/lib/i18n'
 
 export type RematchPromptProps = {
   name: string
@@ -28,6 +29,7 @@ export type RematchPromptProps = {
 
 /** Proposition de revanche, posée par l'écran au-dessus d'un voile. */
 export function RematchPrompt({ name, premium = false, tier, src, topic, seconds, total = 10, low = false, lowAt = 3, onAccept, onDecline, className }: RematchPromptProps) {
+  const t = useT()
   // L'anneau vise la fin de la seconde en cours (transition linéaire de 1 s) : il se vide en continu, sans saut au tic.
   const percent = Math.min(100, Math.max(0, ((seconds - 1) / total) * 100))
   // Même règle que `TimerBar` et `DuelHeader`.
@@ -45,7 +47,7 @@ export function RematchPrompt({ name, premium = false, tier, src, topic, seconds
     return () => opener?.focus({ preventScroll: true })
   }, [])
   return (
-    <div ref={card} role="alertdialog" aria-modal="true" aria-label={`${name} veut sa revanche`} aria-describedby={topicId} onKeyDown={trapTab} className={cn('grid justify-items-center gap-3 rounded-jo-xl bg-jo-surface px-4 pt-6 pb-4 text-center shadow-jo', className)}>
+    <div ref={card} role="alertdialog" aria-modal="true" aria-label={`${name} ${t('ds.wantsRematch')}`} aria-describedby={topicId} onKeyDown={trapTab} className={cn('grid justify-items-center gap-3 rounded-jo-xl bg-jo-surface px-4 pt-6 pb-4 text-center shadow-jo', className)}>
       <div className="relative grid size-[120px] place-items-center">
         <span
           aria-hidden
@@ -55,20 +57,20 @@ export function RematchPrompt({ name, premium = false, tier, src, topic, seconds
         <span aria-hidden className="absolute inset-[5px] rounded-jo-full bg-jo-surface" />
         <Avatar name={name} src={src} tier={tier} size="xxl" className="relative" />
       </div>
-      <span role="timer" aria-label={`${seconds} ${seconds > 1 ? 'secondes' : 'seconde'} pour répondre`} className={cn('jo-type-caption font-mono', urgent ? 'font-semibold text-jo-wrong' : 'text-jo-muted')}>
+      <span role="timer" aria-label={t(seconds > 1 ? 'ds.secondsToAnswerMany' : 'ds.secondsToAnswerOne', { count: seconds })} className={cn('jo-type-caption font-mono', urgent ? 'font-semibold text-jo-wrong' : 'text-jo-muted')}>
         {seconds} s
       </span>
       <strong className="jo-type-title-2 text-balance">
         {name}
-        {premium && <PremiumBadge size={22} className="ml-1 align-[-3px]" />} veut sa revanche
+        {premium && <PremiumBadge size={22} className="ml-1 align-[-3px]" />} {t('ds.wantsRematch')}
       </strong>
-      <span id={topicId} className="jo-type-callout text-jo-muted">Même sujet : {topic}</span>
+      <span id={topicId} className="jo-type-callout text-jo-muted">{t('ds.sameTopic')} {topic}</span>
       <div className="mt-2 grid w-full grid-cols-2 gap-2">
         <Button variant="tinted" tone="destructive" full onClick={onDecline}>
-          Refuser
+          {t('challenges.decline')}
         </Button>
         <Button full onClick={onAccept}>
-          Accepter
+          {t('challenges.accept')}
         </Button>
       </div>
     </div>

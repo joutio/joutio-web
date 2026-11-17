@@ -1,8 +1,10 @@
 import { ArrowRightIcon } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { tierColor, tierInk } from '../lib/tokens'
-import { tokens, type TierCode } from '../tokens.generated'
+import type { TierCode } from '../tokens.generated'
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
+import { tierKey } from '@joutio/client/i18n'
 
 /** Au-delà, le titre passe en `heroSmall` pour tenir sur deux lignes. */
 const LONG_HEADLINE = 12
@@ -34,9 +36,10 @@ type UnlockContentProps = {
  * Les points, « Tout passer », Partager et Continuer appartiennent à `UnlockSequence`.
  */
 export function UnlockContent({ tier, accent, crumbLead, crumbFrom, hero, heroMotion, eyebrow, headline, text, extra, next }: UnlockContentProps) {
+  const t = useT()
   const ink = tier ? tierInk(tier) : (accent?.ink ?? 'var(--jo-accent-ink)')
   const glow = tier ? tierColor(tier) : (accent?.glow ?? 'var(--jo-accent)')
-  const crumbTo = tier ? tokens.tier[tier].label : (accent?.label ?? '')
+  const crumbTo = tier ? t(tierKey(tier)) : (accent?.label ?? '')
   return (
     <div className="relative flex min-h-0 flex-1 flex-col items-center gap-3 px-6 pt-4 text-center">
       <div
@@ -65,9 +68,9 @@ export function UnlockContent({ tier, accent, crumbLead, crumbFrom, hero, heroMo
         <div className="grid w-full grid-cols-[96px_minmax(0,1fr)] items-center gap-3 rounded-jo-lg bg-jo-surface px-4 py-3 text-left">
           <div className="grid h-14 place-items-center">{next.preview}</div>
           <span className="jo-type-caption text-jo-muted">
-            Prochain :{' '}
+            {t('ds.next')}{' '}
             <strong className="font-semibold" style={{ color: next.tier ? tierInk(next.tier) : ink }}>
-              {next.tier ? tokens.tier[next.tier].label : next.label}
+              {next.tier ? t(tierKey(next.tier)) : next.label}
             </strong>{' '}
             {next.rule}
           </span>

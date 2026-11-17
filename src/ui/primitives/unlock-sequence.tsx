@@ -5,6 +5,7 @@ import { Carousel } from '../web/carousel'
 import { Button } from './button'
 import { IconButton } from './icon-button'
 import { PageDots } from './page-dots'
+import { useT } from '@/lib/i18n'
 
 export type UnlockSequenceProps = {
   /** Tous les déblocages (`RankPromotion`, `TitleUnlock`, `BadgeUnlock`…), à balayer (Embla) ; `step` désigne celui affiché. */
@@ -27,6 +28,7 @@ export type UnlockSequenceProps = {
  * Continuer autour du déblocage courant. Toujours sombre : le héros y brille mieux.
  */
 export function UnlockSequence({ slides, onStepChange, step = 0, steps = 1, last = false, onContinue, onSkip, onShare, className }: UnlockSequenceProps) {
+  const t = useT()
   return (
     <div data-jo-theme="dark" className={cn('relative isolate flex h-full flex-col overflow-hidden bg-jo-bg pt-[var(--jo-safe-top,0px)] text-jo-text', className)}>
       <div className="relative grid h-[52px] flex-none grid-cols-[1fr_auto_1fr] items-center pr-2 pl-4">
@@ -34,13 +36,13 @@ export function UnlockSequence({ slides, onStepChange, step = 0, steps = 1, last
         <PageDots count={steps} index={step} />
         {!last && (
           <Button variant="plain" tone="neutral" size="M" className="justify-self-end" onClick={onSkip}>
-            Tout passer
+            {t('ds.skipAll')}
           </Button>
         )}
       </div>
       {/* Le déblocage tient entre les deux barres, sans défiler (2026-11-16) : son héros se comprime. */}
       <Carousel
-        label="Déblocages"
+        label={t('ds.unlocks')}
         className="flex-1"
         slideClassName="flex flex-col overflow-y-hidden"
         slides={slides}
@@ -48,9 +50,9 @@ export function UnlockSequence({ slides, onStepChange, step = 0, steps = 1, last
         onIndexChange={(next) => onStepChange?.(next)}
       />
       <div className="grid flex-none grid-cols-[52px_minmax(0,1fr)] gap-2 px-5 pt-3 pb-[calc(var(--jo-safe-bottom,0px)+24px)]">
-        <IconButton icon={ShareNetworkIcon} label="Partager" variant="gray" size="L" className="w-[52px] rounded-jo-sm" onClick={onShare} />
+        <IconButton icon={ShareNetworkIcon} label={t('profile.share')} variant="gray" size="L" className="w-[52px] rounded-jo-sm" onClick={onShare} />
         <Button full onClick={onContinue}>
-          {last ? 'Voir le résultat' : 'Continuer'}
+          {last ? t('ds.seeResult') : t('onboarding.universes.continue')}
         </Button>
       </div>
     </div>

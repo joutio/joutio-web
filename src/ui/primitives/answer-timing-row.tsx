@@ -1,4 +1,5 @@
 import { cn } from '../lib/cn'
+import { useLanguageStore, useT } from '@/lib/i18n'
 
 export type AnswerTiming = {
   name: string
@@ -15,15 +16,15 @@ export type AnswerTimingRowProps = {
   className?: string
 }
 
-const duration = (seconds: number) => `${seconds.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} s`
-
 function Timing({ player, first, end }: { player: AnswerTiming; first: boolean; end?: boolean }) {
-  const time = player.seconds === undefined ? 'sans réponse' : duration(player.seconds)
+  const t = useT()
+  const language = useLanguageStore((state) => state.language)
+  const time = player.seconds === undefined ? t('ds.noAnswer') : t('ds.seconds', { value: player.seconds.toLocaleString(language, { maximumFractionDigits: 1 }) })
   const points = player.points > 0 ? `+${player.points}` : `${player.points}`
   return (
     <span className={cn('grid min-w-0', end && 'text-right', first && 'text-jo-accent-ink')}>
       <span className="truncate font-semibold">
-        {first && '1er · '}
+        {first && t('ds.first')}
         {player.name}
       </span>
       <span className="whitespace-nowrap">

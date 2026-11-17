@@ -2,6 +2,7 @@ import { CaretRightIcon, CheckCircleIcon, CircleIcon, RadioButtonIcon, type Icon
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { SwitchTrack } from './switch'
+import { useT } from '@/lib/i18n'
 
 export type ListRowProps = {
   label: string
@@ -53,6 +54,7 @@ export function ListRow({
   'data-state': dataState,
   className,
 }: ListRowProps) {
+  const t = useT()
   const stateRole = STATE_ROLES[control]
   const SelectIcon = control === 'radio' ? (on ? RadioButtonIcon : CircleIcon) : on ? CheckCircleIcon : CircleIcon
 
@@ -74,8 +76,8 @@ export function ListRow({
           {value}
           {badge !== undefined && badge > 0 && (
             <span className="jo-type-caption grid h-5 min-w-5 flex-none place-items-center rounded-jo-full bg-jo-accent px-1.5 font-semibold text-jo-on-accent">
-              {badge > 9 ? '9+' : badge}
-              <span className="sr-only"> à traiter</span>
+              <span aria-hidden>{badge > 9 ? '9+' : badge}</span>
+              <span className="sr-only">{t('ds.toHandle', { count: badge })}</span>
             </span>
           )}
           <CaretRightIcon size={14} aria-hidden />

@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { cn } from '../lib/cn'
 import { tokens, type TierCode } from '../tokens.generated'
 import { LockBadge, LOCKED_STYLE } from './lock-badge'
+import { useT } from '@/lib/i18n'
+import { tierKey } from '@joutio/client/i18n'
 
 export type TitleRibbonProps = {
   tier: TierCode
@@ -19,6 +21,7 @@ const TILE = 100 * SCALE
 const PADDING = 52
 
 export function TitleRibbon({ tier, text, width = 220, state = 'earned', className }: TitleRibbonProps) {
+  const t = useT()
   const locked = state === 'locked'
   const auto = width === 'auto'
   const label = useRef<HTMLSpanElement>(null)
@@ -36,7 +39,7 @@ export function TitleRibbon({ tier, text, width = 220, state = 'earned', classNa
   return (
     <span
       role="img"
-      aria-label={[`Titre ${tokens.tier[tier].label}`, text, locked && 'verrouillé'].filter(Boolean).join(', ')}
+      aria-label={[t('workshop.titleLabel', { tier: t(tierKey(tier)) }), text, locked && t('common.locked')].filter(Boolean).join(', ')}
       className={cn('relative inline-flex flex-none justify-center', locked && LOCKED_STYLE, className)}
       style={{ width: auto ? naturalWidth : width, height }}
     >

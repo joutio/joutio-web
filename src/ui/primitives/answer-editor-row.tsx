@@ -1,6 +1,7 @@
 import { CheckIcon } from '@phosphor-icons/react'
 import { cn } from '../lib/cn'
 import { tint } from '../lib/tokens'
+import { useT } from '@/lib/i18n'
 
 export type AnswerEditorRowProps = {
   value: string
@@ -19,6 +20,7 @@ export type AnswerEditorRowProps = {
 
 /** Saisie d'une réponse, puis bouton « Juste », dans un `radiogroup`. Le mot double la couleur. */
 export function AnswerEditorRow({ value, onChange, correct = false, onMarkCorrect, index, maxLength = 60, placeholder, last = false, className }: AnswerEditorRowProps) {
+  const t = useT()
   return (
     <div
       style={correct ? { backgroundColor: tint('var(--jo-correct)') } : undefined}
@@ -27,8 +29,8 @@ export function AnswerEditorRow({ value, onChange, correct = false, onMarkCorrec
       <input
         value={value}
         maxLength={maxLength}
-        aria-label={`Réponse ${index}`}
-        placeholder={placeholder ?? `Réponse ${index}`}
+        aria-label={t('ds.answerN', { index })}
+        placeholder={placeholder ?? t('ds.answerN', { index })}
         onChange={(event) => onChange?.(event.target.value)}
         className={cn('jo-type-body w-full min-w-0 bg-transparent text-jo-text outline-none placeholder:text-jo-muted', correct && 'font-semibold')}
       />
@@ -36,13 +38,13 @@ export function AnswerEditorRow({ value, onChange, correct = false, onMarkCorrec
         type="button"
         role="radio"
         aria-checked={correct}
-        aria-label={`Réponse ${index} : bonne réponse`}
+        aria-label={t('ds.answerCorrect', { index })}
         onClick={onMarkCorrect}
         className="jo-focus grid min-h-11 cursor-pointer place-items-center rounded-jo-sm px-2"
       >
         <span className={cn('jo-type-caption jo-transition flex h-7 items-center gap-1 rounded-jo-full px-3 font-semibold', correct ? 'bg-jo-correct text-jo-on-correct' : 'text-jo-muted ring-1 ring-jo-border ring-inset')}>
           {correct && <CheckIcon size={14} weight="bold" aria-hidden />}
-          Juste
+          {t('ds.correct')}
         </span>
       </button>
     </div>

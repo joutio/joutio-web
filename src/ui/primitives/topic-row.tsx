@@ -2,8 +2,10 @@ import { CaretRightIcon, CircleIcon, RadioButtonIcon } from '@phosphor-icons/rea
 import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '../lib/cn'
 import { TopicVisual } from './topic-visual'
-import { tokens, type CategoryCode } from '../tokens.generated'
+import type { CategoryCode } from '../tokens.generated'
 import { OfficialBadge } from '../brand/premium-badge'
+import { useT } from '@/lib/i18n'
+import { categoryKey } from '@joutio/client/i18n'
 
 export type TopicRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Sujet éditorial de Joutio (`OfficialBadge` après le nom) ; obligatoire : chaque sujet affiché dit s'il l'est. */
@@ -27,7 +29,9 @@ export type TopicRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 /** Sujet à choisir dans une liste : visuel, nom, univers, puis chevron ou radio. */
-export function TopicRow({ title, official, category, pictogram, image, sub = tokens.category[category].label, control = 'chevron', on = false, last = false, badge, className, type = 'button', ...props }: TopicRowProps) {
+export function TopicRow({ title, official, category, pictogram, image, sub: ownSub, control = 'chevron', on = false, last = false, badge, className, type = 'button', ...props }: TopicRowProps) {
+  const t = useT()
+  const sub = ownSub ?? t(categoryKey(category))
   const radio = control === 'radio'
   const SelectIcon = on ? RadioButtonIcon : CircleIcon
   return (
@@ -52,8 +56,8 @@ export function TopicRow({ title, official, category, pictogram, image, sub = to
       </span>
       {badge !== undefined && badge > 0 && (
         <span className="jo-type-caption grid h-5 min-w-5 flex-none place-items-center rounded-jo-full bg-jo-accent px-1.5 font-semibold text-jo-on-accent">
-          {badge > 9 ? '9+' : badge}
-          <span className="sr-only"> à traiter</span>
+          <span aria-hidden>{badge > 9 ? '9+' : badge}</span>
+          <span className="sr-only">{t('ds.toHandle', { count: badge })}</span>
         </span>
       )}
       {radio ? (

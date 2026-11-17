@@ -3,6 +3,7 @@ import { TierMedal } from '../brand/tier-medal'
 import type { TierCode } from '../tokens.generated'
 import { Button } from './button'
 import { UnlockContent } from './unlock-content'
+import { useT } from '@/lib/i18n'
 
 export type BadgeUnlockProps = {
   tier: TierCode
@@ -22,6 +23,7 @@ export type BadgeUnlockProps = {
 
 /** Un déblocage par badge gagné, dans `UnlockSequence` : le badge tombe. */
 export function BadgeUnlock({ tier, badge, family, icon: FamilyIcon, text, next, nextRule, reward }: BadgeUnlockProps) {
+  const t = useT()
   return (
     <UnlockContent
       tier={tier}
@@ -29,7 +31,7 @@ export function BadgeUnlock({ tier, badge, family, icon: FamilyIcon, text, next,
       crumbFrom={family}
       hero={<TierMedal tier={tier} icon={FamilyIcon} size={160} />}
       heroMotion="jo-drop"
-      eyebrow="Nouveau badge débloqué"
+      eyebrow={t('ds.newBadge')}
       headline={badge}
       text={text}
       extra={

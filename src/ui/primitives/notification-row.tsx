@@ -3,6 +3,7 @@ import { useRef, type ButtonHTMLAttributes, type PointerEvent } from 'react'
 import { cn } from '../lib/cn'
 import { useFrameScale } from '../web/web-frame'
 import { Avatar, type AvatarProps } from './avatar'
+import { useT } from '@/lib/i18n'
 
 export type NotificationRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   title: string
@@ -26,6 +27,7 @@ export type NotificationRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
  * révèle Supprimer. **Aucun bouton d'action dans la ligne** (2026-11-07) : la notification ne fait que rediriger.
  */
 export function NotificationRow({ title, sub, icon: IconComponent, player, unread = false, onDelete, last = false, chevron = true, className, type = 'button', ...props }: NotificationRowProps) {
+  const t = useT()
   const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null)
   // Cadre web réduit : les coordonnées du pointeur ramenées à celles de la mise en page.
   const scale = useFrameScale()
@@ -64,7 +66,7 @@ export function NotificationRow({ title, sub, icon: IconComponent, player, unrea
         {sub && <span className="jo-type-caption truncate text-jo-muted">{sub}</span>}
       </span>
       {unread && (
-        <span role="img" aria-label="Non lue" className="size-2 flex-none rounded-jo-full bg-jo-accent" />
+        <span role="img" aria-label={t('ds.unread')} className="size-2 flex-none rounded-jo-full bg-jo-accent" />
       )}
       {chevron && <CaretRightIcon size={16} className="flex-none text-jo-muted" aria-hidden />}
     </button>
@@ -88,7 +90,7 @@ export function NotificationRow({ title, sub, icon: IconComponent, player, unrea
         {content}
       </div>
       {onDelete && (
-        <button type="button" aria-label={`Supprimer : ${title}`} onClick={onDelete} className="jo-transition jo-focus-inset grid w-20 flex-none cursor-pointer snap-end place-items-center bg-jo-wrong text-jo-on-wrong jo-pressed:brightness-90">
+        <button type="button" aria-label={t('ds.deleteItem', { title })} onClick={onDelete} className="jo-transition jo-focus-inset grid w-20 flex-none cursor-pointer snap-end place-items-center bg-jo-wrong text-jo-on-wrong jo-pressed:brightness-90">
           <TrashIcon size={22} aria-hidden />
         </button>
       )}

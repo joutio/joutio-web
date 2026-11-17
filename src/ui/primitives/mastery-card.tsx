@@ -3,6 +3,7 @@ import { useId, useState } from 'react'
 import { cn } from '../lib/cn'
 import type { TierCode } from '../tokens.generated'
 import { ProgressBar } from './progress-bar'
+import { useT } from '@/lib/i18n'
 
 export type MasteryCardProps = {
   topic: string
@@ -20,6 +21,7 @@ export type MasteryCardProps = {
 }
 
 export function MasteryCard({ topic, gained, progress, tier, next, breakdown = [], defaultOpen = false, className }: MasteryCardProps) {
+  const t = useT()
   const [open, setOpen] = useState(defaultOpen)
   const panelId = useId()
   const expandable = breakdown.length > 0
@@ -34,13 +36,13 @@ export function MasteryCard({ topic, gained, progress, tier, next, breakdown = [
         onClick={() => setOpen((value) => !value)}
         className="jo-focus flex w-full items-center justify-between gap-2 rounded-jo-xs text-left enabled:cursor-pointer"
       >
-        <span className="jo-type-callout min-w-0 truncate font-semibold">Maîtrise · {topic}</span>
+        <span className="jo-type-callout min-w-0 truncate font-semibold">{t('ds.masteryOf', { topic })}</span>
         <span className="jo-type-callout flex flex-none items-center gap-1 font-mono font-bold text-jo-accent-ink">
-          +{gained} XP
+          {t('common.xpSigned', { sign: '+', xp: gained })}
           {expandable && <CaretDownIcon size={16} className={cn('jo-transition text-jo-muted', open && 'rotate-180')} aria-hidden />}
         </span>
       </button>
-      <ProgressBar value={progress} tone={tier} ariaLabel={`Maîtrise · ${topic}`} />
+      <ProgressBar value={progress} tone={tier} ariaLabel={t('ds.masteryOf', { topic })} />
       <span className="jo-type-caption text-jo-muted">{next}</span>
       {expandable && open && (
         <dl id={panelId} className="grid gap-1 border-t border-jo-border pt-3">

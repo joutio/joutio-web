@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { Button } from '../primitives/button'
 import { IconButton } from '../primitives/icon-button'
+import { useT } from '@/lib/i18n'
 
 /** Actions à droite : 8 px entre deux boutons-icônes, 12 px du bord, sur toutes les barres (simples comme pastilles). */
 type Common = { glass?: boolean; className?: string }
@@ -33,20 +34,21 @@ type MediaBar = Common & { variant: 'media'; onBack?: () => void; right?: ReactN
 export type MobileTopBarProps = LargeBar | InlineBar | ModalBar | MediaBar
 
 export function MobileTopBar(props: MobileTopBarProps) {
+  const t = useT()
   const glass = props.glass && 'bg-jo-glass backdrop-blur-xl'
   const threeColumns = 'grid h-[52px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2'
 
   if (props.variant === 'media') {
     return (
       <header className={cn('flex h-[52px] items-center justify-between px-3', props.className)}>
-        <IconButton icon={CaretLeftIcon} label="Retour" media onClick={props.onBack} />
+        <IconButton icon={CaretLeftIcon} label={t('topic.back')} media onClick={props.onBack} />
         {props.right && <div className="flex gap-2">{props.right}</div>}
       </header>
     )
   }
 
   if (props.variant === 'modal') {
-    const { title, cancel = 'Annuler', confirm = 'OK', confirmDisabled, onCancel, onConfirm } = props
+    const { title, cancel = t('topic.cancel'), confirm = t('ds.keyboardDone'), confirmDisabled, onCancel, onConfirm } = props
     return (
       <header className={cn(threeColumns, 'px-2', glass, props.className)}>
         <Button variant="plain" size="M" className="justify-self-start font-normal" onClick={onCancel}>

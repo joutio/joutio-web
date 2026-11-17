@@ -1,6 +1,7 @@
 import { WarningCircleIcon, XCircleIcon } from '@phosphor-icons/react'
 import { useId, useRef, type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
 
 export type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string
@@ -30,6 +31,7 @@ export function Field({
   'data-state': dataState,
   ...props
 }: FieldProps) {
+  const t = useT()
   const generatedId = useId()
   const inputId = id ?? generatedId
   const messageId = `${inputId}-message`
@@ -67,7 +69,7 @@ export function Field({
           <input ref={input} {...shared} {...props} />
         )}
         {onClear && value !== undefined && value !== '' && !multiline && !disabled && (
-          <button type="button" aria-label="Effacer" onClick={() => {
+          <button type="button" aria-label={label ? t('ds.clearField', { label }) : t('search.clear')} onClick={() => {
               onClear()
               input.current?.focus()
             }} className="jo-focus relative flex-none cursor-pointer rounded-jo-full text-jo-muted after:absolute after:-inset-3">

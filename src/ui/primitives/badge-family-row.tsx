@@ -4,6 +4,8 @@ import { cn } from '../lib/cn'
 import { tierInk } from '../lib/tokens'
 import { tokens, type TierCode } from '../tokens.generated'
 import { ProgressBar } from './progress-bar'
+import { useT } from '@/lib/i18n'
+import { tierKey } from '@joutio/client/i18n'
 
 const TIERS = Object.keys(tokens.tier) as TierCode[]
 
@@ -32,10 +34,11 @@ export type BadgeFamilyRowProps = {
  * qui reste avant le palier suivant puis la barre (2026-11-12, comme `TitleRow`).
  */
 export function BadgeFamilyRow({ name, icon, earned, progress, remaining, feats, onClick, className }: BadgeFamilyRowProps) {
+  const t = useT()
   const featCount = feats ? `${feats.filter((feat) => feat.earned).length} / ${feats.length}` : undefined
   const next = feats ? undefined : TIERS[earned]
   const reached = !feats && earned > 0 ? TIERS[earned - 1] : undefined
-  const summary = [name, featCount, reached ? tokens.tier[reached].label : undefined, next ? remaining : undefined].filter(Boolean).join(', ')
+  const summary = [name, featCount, reached ? t(tierKey(reached)) : undefined, next ? remaining : undefined].filter(Boolean).join(', ')
   return (
     <div className={cn('relative grid gap-3 overflow-hidden rounded-jo-lg bg-jo-surface px-4 pt-3 pb-4', className)}>
       <div className="flex items-baseline justify-between gap-2">
@@ -43,7 +46,7 @@ export function BadgeFamilyRow({ name, icon, earned, progress, remaining, feats,
         {featCount && <span className="jo-type-caption font-semibold whitespace-nowrap text-jo-muted">{featCount}</span>}
         {reached && (
           <span className="jo-type-caption font-semibold whitespace-nowrap" style={{ color: tierInk(reached) }}>
-            {tokens.tier[reached].label}
+            {t(tierKey(reached))}
           </span>
         )}
       </div>
@@ -60,7 +63,7 @@ export function BadgeFamilyRow({ name, icon, earned, progress, remaining, feats,
           ))}
         </div>
       )}
-      {next && <ProgressBar value={progress} tone={next} label={remaining} ariaLabel={`${name} · vers ${tokens.tier[next].label}`} />}
+      {next && <ProgressBar value={progress} tone={next} label={remaining} ariaLabel={t('ds.towards', { name, tier: t(tierKey(next)) })} />}
       {/* Posé sur la ligne : un bouton ne peut pas contenir les médailles et la barre. */}
       {onClick && <button type="button" aria-label={summary} onClick={onClick} className="jo-transition jo-focus-inset absolute inset-0 cursor-pointer rounded-jo-lg jo-pressed:bg-jo-text/5" />}
     </div>

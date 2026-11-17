@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 import { cn } from '../lib/cn'
 import { tierColor } from '../lib/tokens'
 import type { TierCode } from '../tokens.generated'
+import { useT } from '@/lib/i18n'
 
 export type MapPlayer = {
   name: string
@@ -58,12 +59,13 @@ function Pin({ player, delay, found }: { player: MapPlayer; delay?: number; foun
 
 /** Fond de la recherche d'adversaire. Défile en recherche, s'arrête sur l'adversaire trouvé. */
 export function MatchmakingMap({ state = 'search', pins = [], opponent, speed = 3, className }: MatchmakingMapProps) {
+  const t = useT()
   const found = state === 'found' && opponent
   const position = found ? longitude(opponent.lon) : 0
   // Deux copies de 200cqh : on vise celle qui laisse la carte déborder des deux côtés.
   const anchor = position < 0.5 ? position + 1 : position
   return (
-    <div role="img" aria-label={found ? `Adversaire trouvé : ${opponent.name}` : 'Carte des joueurs'} className={cn('relative size-full overflow-hidden bg-jo-bg [container-type:size]', className)}>
+    <div role="img" aria-label={found ? t('ds.opponentFound', { name: opponent.name }) : t('ds.playersMap')} className={cn('relative size-full overflow-hidden bg-jo-bg [container-type:size]', className)}>
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden"
         style={{

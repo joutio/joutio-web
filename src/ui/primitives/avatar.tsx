@@ -3,6 +3,7 @@ import { RankFrame } from '../brand/rank-frame'
 import { cn } from '../lib/cn'
 import { tierColor } from '../lib/tokens'
 import type { TierCode } from '../tokens.generated'
+import { useT, type MessageKey } from '@/lib/i18n'
 
 const SIZES = { xs: 24, sm: 32, md: 40, list: 44, row: 48, lg: 56, xl: 72, xxl: 88, preview: 140, hero: 176 } as const
 
@@ -22,10 +23,10 @@ export type AvatarProps = {
   className?: string
 }
 
-const PRESENCE = {
-  online: { label: 'En ligne', className: 'bg-jo-correct' },
-  ingame: { label: 'En partie', className: 'bg-jo-accent' },
-  offline: { label: 'Hors ligne', className: 'bg-jo-muted' },
+const PRESENCE: Record<'online' | 'ingame' | 'offline', { label: MessageKey; className: string }> = {
+  online: { label: 'presence.onlineLower', className: 'bg-jo-correct' },
+  ingame: { label: 'ds.inGame', className: 'bg-jo-accent' },
+  offline: { label: 'presence.offlineLower', className: 'bg-jo-muted' },
 }
 
 const initials = (name: string) =>
@@ -37,6 +38,7 @@ const initials = (name: string) =>
     .toUpperCase()
 
 export function Avatar({ name, src, size = 'md', tier, locked = false, presence, decorative = false, className }: AvatarProps) {
+  const t = useT()
   const px = SIZES[size]
   const image = src ? (
     <img
@@ -77,14 +79,14 @@ export function Avatar({ name, src, size = 'md', tier, locked = false, presence,
         </span>
       )}
       {locked && (
-        <span role="img" aria-label="Verrouillé" className="absolute right-0 bottom-0 grid size-[30%] place-items-center rounded-jo-full bg-jo-text text-jo-bg ring-2 ring-jo-bg">
+        <span role="img" aria-label={t('common.locked')} className="absolute right-0 bottom-0 grid size-[30%] place-items-center rounded-jo-full bg-jo-text text-jo-bg ring-2 ring-jo-bg">
           <LockSimpleIcon weight="fill" className="size-[60%]" aria-hidden />
         </span>
       )}
       {presence && (
         <span
           role="img"
-          aria-label={PRESENCE[presence].label}
+          aria-label={t(PRESENCE[presence].label)}
           className={cn(
             'absolute right-0 bottom-0 size-2.5 rounded-jo-full ring-2 ring-jo-bg',
             PRESENCE[presence].className,

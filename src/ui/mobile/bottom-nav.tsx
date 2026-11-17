@@ -1,6 +1,7 @@
 import type React from 'react'
 import type { Icon } from '@phosphor-icons/react'
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
 
 export type BottomNavItem<K extends string> = {
   key: K
@@ -17,9 +18,10 @@ export type BottomNavProps<K extends string> = {
 }
 
 export function BottomNav<K extends string>({ items, active, onChange, className }: BottomNavProps<K>) {
+  const t = useT()
   return (
     <nav
-      aria-label="Navigation principale"
+      aria-label={t('ds.mainNav')}
       style={{ '--jo-nav-count': items.length } as React.CSSProperties}
       className={cn(
         'grid flex-none grid-cols-[repeat(var(--jo-nav-count),minmax(0,1fr))] border-t border-jo-border bg-jo-glass px-2 pb-[var(--jo-safe-bottom,0px)] backdrop-blur-xl',
@@ -36,6 +38,7 @@ export function BottomNav<K extends string>({ items, active, onChange, className
             key={key}
             type="button"
             aria-current={isActive ? 'page' : undefined}
+            aria-label={badge ? t('ds.navNew', { label, count: badge > 9 ? t('ds.moreThan9') : badge }) : undefined}
             onClick={() => onChange?.(key)}
             className={cn(
               'jo-transition jo-focus relative grid h-[var(--jo-tab-bar-height,80px)] jo-regular:h-[68px] cursor-pointer content-center justify-items-center gap-[var(--jo-tab-bar-gap,4px)] jo-pressed:scale-[.94]',

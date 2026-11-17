@@ -6,6 +6,7 @@ import { OfficialBadge, PremiumBadge } from '../brand/premium-badge'
 import { useBannerPresence, useGlobalBanner } from '../primitives/banner'
 import { PlayerName } from '../primitives/player-name'
 import { IconButton } from '../primitives/icon-button'
+import { useT } from '@/lib/i18n'
 
 /** Hauteur de la zone image, safe area comprise. */
 const HERO_HEIGHT = 320
@@ -60,6 +61,7 @@ export type ParallaxScreenProps = {
  * reste accroché dessous. `right` garde les mêmes boutons sur l'image et sur la barre. Reprend le « Details Header » de sticky-parallax-header.
  */
 export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium = false, official = false, eyebrow, centered = false, barTitleStart = false, back = true, onBack, right, intro, sticky, floating, bottomBar, bottomNav, overlay, banner: own, className, children }: ParallaxScreenProps) {
+  const t = useT()
   const global = useGlobalBanner()
   const banner = useBannerPresence(global ?? own)
   const main = useRef<HTMLElement>(null)
@@ -168,7 +170,7 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium
         <div className="jo-parallax-bar absolute inset-0 bg-jo-bg" />
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-jo-border" style={{ opacity: 'calc(var(--jo-header-edge, 0) * (1 - var(--jo-tabs-dock, 0)))' }} />
         <div className={cn('jo-parallax-buttons absolute inset-x-0 bottom-0 grid h-[52px] items-center gap-2 px-3', barTitleStart ? 'grid-cols-[auto_minmax(0,1fr)_auto]' : 'grid-cols-[minmax(44px,1fr)_minmax(0,auto)_minmax(max-content,1fr)]')}>
-          <span className="pointer-events-auto justify-self-start">{back && <IconButton icon={CaretLeftIcon} label="Retour" media onClick={onBack} />}</span>
+          <span className="pointer-events-auto justify-self-start">{back && <IconButton icon={CaretLeftIcon} label={t('topic.back')} media onClick={onBack} />}</span>
           {premium ? (
             <PlayerName name={title} premium badgeSize={18} className="jo-parallax-bar-title jo-type-headline max-w-[220px]" />
           ) : (

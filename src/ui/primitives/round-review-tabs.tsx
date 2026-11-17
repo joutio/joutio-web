@@ -1,11 +1,12 @@
 import { cn } from '../lib/cn'
+import { useT, type MessageKey } from '@/lib/i18n'
 
 export type ReviewAnswer = 'correct' | 'wrong' | 'none'
 
-const DOTS: Record<ReviewAnswer, { className: string; label: string }> = {
-  correct: { className: 'bg-jo-correct', label: 'bonne réponse' },
-  wrong: { className: 'bg-jo-wrong', label: 'mauvaise réponse' },
-  none: { className: 'bg-jo-raised', label: 'sans réponse' },
+const DOTS: Record<ReviewAnswer, { className: string; label: MessageKey }> = {
+  correct: { className: 'bg-jo-correct', label: 'ds.correctLower' },
+  wrong: { className: 'bg-jo-wrong', label: 'ds.wrongLower' },
+  none: { className: 'bg-jo-raised', label: 'ds.noAnswer' },
 }
 
 export type ReviewRoundTab = {
@@ -27,14 +28,15 @@ export type RoundReviewTabsProps = {
 
 /** Sélecteur de manche de la revue : ton résultat à gauche, celui de l'adversaire à droite. */
 export function RoundReviewTabs({ rounds, value, onChange, compact = false, className }: RoundReviewTabsProps) {
+  const t = useT()
   return (
-    <div role="group" aria-label="Manches" className={cn('grid gap-1', className)} style={{ gridTemplateColumns: `repeat(${rounds.length}, minmax(0, 1fr))` }}>
+    <div role="group" aria-label={t('ds.rounds')} className={cn('grid gap-1', className)} style={{ gridTemplateColumns: `repeat(${rounds.length}, minmax(0, 1fr))` }}>
       {rounds.map((round, index) => (
         <button
           key={index}
           type="button"
           aria-current={index === value ? 'true' : undefined}
-          aria-label={`Question ${index + 1} : ta réponse, ${DOTS[round.me].label} ; adversaire, ${DOTS[round.opponent].label} ; ${round.points} points`}
+          aria-label={t('ds.reviewA11y', { n: index + 1, me: t(DOTS[round.me].label), opponent: t(DOTS[round.opponent].label), points: round.points })}
           onClick={() => onChange?.(index)}
           className={cn(
             'jo-transition jo-focus grid cursor-pointer justify-items-center gap-1 rounded-jo-md px-0.5 py-2 ring-inset',

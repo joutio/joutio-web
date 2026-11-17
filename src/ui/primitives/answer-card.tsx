@@ -2,6 +2,7 @@ import { CheckCircleIcon, XCircleIcon } from '@phosphor-icons/react'
 import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '../lib/cn'
 import { GainTag } from './gain-tag'
+import { useT, type MessageKey } from '@/lib/i18n'
 
 export type AnswerState = 'rest' | 'pending' | 'correct' | 'wrong' | 'unchosen' | 'disabled'
 export type AnswerNotch = 'none' | 'me' | 'opp' | 'both'
@@ -25,11 +26,11 @@ const CLIPS: Record<AnswerNotch, string | undefined> = {
   both: `polygon(0 0,100% 0,${RIGHT},100% 100%,0 100%,${LEFT})`,
 }
 
-const WHO: Record<AnswerNotch, string> = {
-  none: '',
-  me: ', ton choix',
-  opp: ", choix de l'adversaire",
-  both: ', vos deux choix',
+const WHO: Record<AnswerNotch, MessageKey | undefined> = {
+  none: undefined,
+  me: 'ds.yourChoice',
+  opp: 'ds.opponentChoice',
+  both: 'ds.bothChoices',
 }
 
 export type AnswerCardProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'disabled'> & {
@@ -44,18 +45,20 @@ export type AnswerCardProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'dis
 }
 
 export function AnswerCard({ label, state = 'rest', notch = state === 'pending' ? 'me' : 'none', gain, details = false, className, type = 'button', ...props }: AnswerCardProps) {
+  const t = useT()
   const revealed = state === 'correct' || state === 'wrong'
-  const verdict = state === 'correct' ? ', bonne réponse' : state === 'wrong' ? ', mauvaise réponse' : ''
+  const verdict = state === 'correct' ? t('ds.correctSuffix') : state === 'wrong' ? t('ds.wrongSuffix') : ''
   const showDetails = details && revealed
   const showGain = showDetails && gain !== undefined
   const MarkIcon = state === 'correct' ? CheckCircleIcon : XCircleIcon
-  const points = showGain ? `, plus ${gain} points` : ''
+  const points = showGain ? t('ds.plusPointsSuffix', { points: gain }) : ''
+  const who = WHO[notch]
 
   return (
     <button
       type={type}
       disabled={state !== 'rest'}
-      aria-label={`${label}${WHO[notch]}${verdict}${points}`}
+      aria-label={`${label}${who ? t(who) : ''}${verdict}${points}`}
       style={{ clipPath: CLIPS[notch] }}
       className={cn(
         'jo-type-headline jo-transition jo-focus flex min-h-16 w-full items-center justify-center rounded-jo-sm px-6 py-2 text-center leading-5 text-balance enabled:cursor-pointer jo-pressed:scale-[.98]',

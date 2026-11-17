@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { cn } from "../lib/cn";
+import { useT } from '@/lib/i18n';
 
 export type TimerState = "running" | "low" | "frozen" | "expired";
 
@@ -44,6 +45,7 @@ export function TimerBar({
   deadline,
   className,
 }: TimerBarProps) {
+  const t = useT();
   const fraction = state === "expired" ? 0 : clamp01(seconds / total);
   const urgent = isTimerUrgent(seconds, state, lowAt);
   // Zone du premier répondant : grise de 0 à `first`, masquée à gauche par une couverture qui suit le remplissage.
@@ -51,7 +53,10 @@ export function TimerBar({
   const firstPercent =
     first === undefined ? 0 : clamp01(first / total) * 100;
   const hasFirst = firstPercent > 0;
-  const label = `Temps restant : ${Math.ceil(seconds)} s${first === undefined ? "" : `, premier à répondre à ${Math.ceil(first)} s`}`;
+  const label =
+    first === undefined
+      ? t('ds.timeLeft', { seconds: Math.ceil(seconds) })
+      : t('ds.timeLeftFirst', { seconds: Math.ceil(seconds), first: Math.ceil(first) });
 
   const fill = useRef<HTMLDivElement>(null);
   const cover = useRef<HTMLDivElement>(null);

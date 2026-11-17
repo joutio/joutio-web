@@ -4,6 +4,7 @@ import type { TierCode } from '../tokens.generated'
 import { Button } from './button'
 import { Pill } from './pill'
 import { UnlockContent } from './unlock-content'
+import { useT } from '@/lib/i18n'
 
 export type TitleUnlockProps = {
   tier: TierCode
@@ -21,23 +22,24 @@ export type TitleUnlockProps = {
 
 /** Un déblocage par titre gagné, dans `UnlockSequence` : le ruban se déroule. */
 export function TitleUnlock({ tier, title, topic, text, next, nextRule, worn = false, onWear }: TitleUnlockProps) {
+  const t = useT()
   return (
     <UnlockContent
       tier={tier}
       crumbFrom={topic}
       hero={<TitleRibbon tier={tier} text={title} width={300} />}
       heroMotion="jo-unroll"
-      eyebrow="Nouveau titre débloqué"
+      eyebrow={t('ds.newTitle')}
       headline={title}
       text={text}
       extra={
         worn ? (
           <Pill tone="correct" icon={CheckCircleIcon}>
-            Titre porté
+            {t('ds.titleWorn')}
           </Pill>
         ) : (
           <Button variant="gray" tone="neutral" size="S" icon={CheckCircleIcon} onClick={onWear}>
-            Porter ce titre
+            {t('ds.wearTitle')}
           </Button>
         )
       }

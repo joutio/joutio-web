@@ -1,6 +1,7 @@
 import { cn } from '../lib/cn'
+import { useLanguageStore, useT } from '@/lib/i18n'
+import { weekdayName } from '../lib/weekday'
 
-const HEADS = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
 
 export type StreakCalendarProps = {
   month: string
@@ -15,6 +16,8 @@ export type StreakCalendarProps = {
 }
 
 export function StreakCalendar({ month, legend, offset, days, today, active, className }: StreakCalendarProps) {
+  const t = useT()
+  const language = useLanguageStore((state) => state.language)
   return (
     <section aria-label={month} className={cn('grid w-full gap-2', className)}>
       <div className="flex items-baseline justify-between">
@@ -22,7 +25,7 @@ export function StreakCalendar({ month, legend, offset, days, today, active, cla
         {legend && <span className="jo-type-caption text-jo-muted">{legend}</span>}
       </div>
       <div className="grid grid-cols-7 gap-1">
-        {HEADS.map((head, index) => (
+        {Array.from({ length: 7 }, (_, index) => weekdayName(index, language, 'narrow').toUpperCase()).map((head, index) => (
           <span key={index} className="jo-type-caption text-center font-semibold text-jo-muted">
             {head}
           </span>
@@ -45,7 +48,7 @@ export function StreakCalendar({ month, legend, offset, days, today, active, cla
             >
               {day}
               {/* La couleur ne suffit pas : l'état du jour est aussi dit en toutes lettres. */}
-              {(played || day === today) && <span className="sr-only">{[played && ', joué', day === today && ", aujourd'hui"].filter(Boolean).join('')}</span>}
+              {(played || day === today) && <span className="sr-only">{[played && `, ${t('ds.played')}`, day === today && `, ${t('ds.today')}`].filter(Boolean).join('')}</span>}
             </span>
           )
         })}

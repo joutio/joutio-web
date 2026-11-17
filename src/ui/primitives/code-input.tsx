@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
 
 export type CodeInputProps = {
   value: string
@@ -16,7 +17,8 @@ export type CodeInputProps = {
 }
 
 /** Code à usage unique : un seul champ réel, posé sur les cases affichées. */
-export function CodeInput({ value, onChange, length = 6, error = false, label = 'Code reçu par e-mail', focused = false, autoFocus = false, className }: CodeInputProps) {
+export function CodeInput({ value, onChange, length = 6, error = false, label, focused = false, autoFocus = false, className }: CodeInputProps) {
+  const t = useT()
   const [hasFocus, setHasFocus] = useState(false)
   const showCaret = (focused || hasFocus) && !error
 
@@ -43,7 +45,7 @@ export function CodeInput({ value, onChange, length = 6, error = false, label = 
       })}
       <input
         autoFocus={autoFocus}
-        aria-label={label}
+        aria-label={label ?? t('ds.codeLabel')}
         aria-invalid={error || undefined}
         inputMode="numeric"
         autoComplete="one-time-code"

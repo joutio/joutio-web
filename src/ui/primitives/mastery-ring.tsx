@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
 
 const CIRCUMFERENCE = 408.41
 const COUNT_DURATION = 1600
@@ -95,6 +96,7 @@ function useWidths(refs: readonly RefObject<HTMLElement | null>[]) {
  * anneau à sa taille demandée.
  */
 export function MasteryRing({ tier, next, gained, remaining, size: requested = 180, state = 'done', compact = false, className }: MasteryRingProps) {
+  const t = useT()
   const pending = state === 'pending'
   const root = useRef<HTMLDivElement>(null)
   const probeLeft = useRef<HTMLDivElement>(null)
@@ -115,7 +117,9 @@ export function MasteryRing({ tier, next, gained, remaining, size: requested = 1
   const remainingAngle = Math.max(216, 180 + 1.8 * percent) * rad
   const line = Math.round(size * 0.14)
   const opacity = pending ? 0 : Math.min(1, progress / 0.25)
-  const label = pending ? `Maîtrise ${tier}, points d'expérience en cours de calcul` : `Maîtrise ${tier}, ${gained} points d'expérience gagnés, ${next ? `${remaining} avant ${next}` : 'palier max'}`
+  const label = pending
+    ? t('ds.masteryPendingA11y', { tier })
+    : t('ds.masteryA11y', { tier, gained, rest: next ? t('ds.remainingBefore', { remaining, next }) : t('ds.maxTierLower') })
   const ring = (
     <div className="relative flex-none" style={{ width: size, height: size }}>
       <svg viewBox="0 0 160 160" aria-hidden className="size-full -rotate-90">
@@ -132,7 +136,7 @@ export function MasteryRing({ tier, next, gained, remaining, size: requested = 1
         />
       </svg>
       <div className="absolute inset-0 grid content-center justify-items-center gap-0.5 text-center">
-        <span className="jo-type-caption font-semibold text-jo-muted">Maîtrise</span>
+        <span className="jo-type-caption font-semibold text-jo-muted">{t('topic.mastery')}</span>
         <strong className={compact ? 'jo-type-headline font-bold' : 'jo-type-title-2 font-bold'}>{tier}</strong>
       </div>
     </div>
@@ -143,11 +147,11 @@ export function MasteryRing({ tier, next, gained, remaining, size: requested = 1
       {ring}
       <div className="grid gap-2" style={{ opacity }}>
           <div className="text-jo-accent-ink">
-            <div className="jo-type-caption font-semibold whitespace-nowrap">XP gagnée</div>
+            <div className="jo-type-caption font-semibold whitespace-nowrap">{t('ds.xpGained')}</div>
             <div className="jo-type-title-2 font-mono font-semibold">+{shownGained}</div>
           </div>
           <div>
-            <div className="jo-type-caption font-semibold whitespace-nowrap">{next ? `Avant ${next}` : 'Palier max'}</div>
+            <div className="jo-type-caption font-semibold whitespace-nowrap">{next ? t('ds.before', { next }) : t('ds.maxTier')}</div>
             <div className="jo-type-title-2 font-mono font-semibold">{total - shownGained}</div>
           </div>
       </div>
@@ -172,11 +176,11 @@ export function MasteryRing({ tier, next, gained, remaining, size: requested = 1
       {/* Libellés rayonnants à leur valeur finale, invisibles : leur largeur règle l'anneau (`fitRing`). */}
       <div aria-hidden className="pointer-events-none invisible absolute top-0 left-0">
         <div ref={probeLeft} className="absolute w-max text-right">
-          <div className="jo-type-caption font-semibold whitespace-nowrap">{next ? `Avant ${next}` : 'Palier max'}</div>
+          <div className="jo-type-caption font-semibold whitespace-nowrap">{next ? t('ds.before', { next }) : t('ds.maxTier')}</div>
           <div className="jo-type-large-title font-mono font-semibold">{total}</div>
         </div>
         <div ref={probeRight} className="absolute w-max">
-          <div className="jo-type-caption font-semibold whitespace-nowrap">XP gagnée</div>
+          <div className="jo-type-caption font-semibold whitespace-nowrap">{t('ds.xpGained')}</div>
           <div className="jo-type-large-title font-mono font-semibold">+{gained}</div>
         </div>
       </div>
@@ -190,7 +194,7 @@ export function MasteryRing({ tier, next, gained, remaining, size: requested = 1
             style={{ right: `calc(50% + ${(size * -0.5 * Math.sin(remainingAngle)).toFixed(1)}px)`, top: inset + (1 - Math.cos(remainingAngle)) * size * 0.5, opacity }}
           >
             <div className="mr-2 text-right">
-              <div className="jo-type-caption font-semibold whitespace-nowrap">{next ? `Avant ${next}` : 'Palier max'}</div>
+              <div className="jo-type-caption font-semibold whitespace-nowrap">{next ? t('ds.before', { next }) : t('ds.maxTier')}</div>
               <div className="jo-type-large-title font-mono font-semibold">{total - shownGained}</div>
             </div>
             <span className="size-[7px] rounded-jo-full bg-jo-text" />
@@ -204,7 +208,7 @@ export function MasteryRing({ tier, next, gained, remaining, size: requested = 1
             <span className="h-0.5 bg-jo-accent" style={{ width: line }} />
             <span className="size-[7px] rounded-jo-full bg-jo-accent" />
             <div className="ml-2 text-jo-accent-ink">
-              <div className="jo-type-caption font-semibold whitespace-nowrap">XP gagnée</div>
+              <div className="jo-type-caption font-semibold whitespace-nowrap">{t('ds.xpGained')}</div>
               <div className="jo-type-large-title font-mono font-semibold">+{shownGained}</div>
             </div>
           </div>

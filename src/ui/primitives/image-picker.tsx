@@ -2,6 +2,7 @@ import { ImageIcon, TrashIcon } from '@phosphor-icons/react'
 import { cn } from '../lib/cn'
 import { IconButton } from './icon-button'
 import { ProgressBar } from './progress-bar'
+import { useT } from '@/lib/i18n'
 
 const HATCH = 'repeating-linear-gradient(45deg, var(--jo-surface) 0 8px, var(--jo-raised) 8px 16px)'
 
@@ -22,14 +23,16 @@ export type ImagePickerProps = {
 }
 
 /** Choix d'une image, facultative. Le sélecteur de fichier appartient à l'écran. */
-export function ImagePicker({ image, hint = 'Ajouter une image · facultatif · JPG ou PNG, 5 Mo', error, progress, onPick, onRemove, className }: ImagePickerProps) {
+export function ImagePicker({ image, hint: ownHint, error, progress, onPick, onRemove, className }: ImagePickerProps) {
+  const t = useT()
+  const hint = ownHint ?? t('ds.addImage')
   const uploading = progress !== undefined
   return (
     <div className={cn('grid gap-1', className)}>
       {image ? (
         <div className="relative h-40 overflow-hidden rounded-jo-md">
           <img src={image} alt="" className="size-full object-cover" />
-          {!uploading && <IconButton icon={TrashIcon} label="Retirer l'image" media size="S" className="absolute top-2 right-2" onClick={onRemove} />}
+          {!uploading && <IconButton icon={TrashIcon} label={t('ds.removeImage')} media size="S" className="absolute top-2 right-2" onClick={onRemove} />}
           {uploading && (
             <div className="absolute inset-x-2 bottom-2 grid gap-1 rounded-jo-sm bg-jo-surface/90 px-3 py-2 text-jo-text">
               <span className="jo-type-caption">{hint}</span>

@@ -1,6 +1,8 @@
-import { tokens, type TierCode } from '../tokens.generated'
+import type { TierCode } from '../tokens.generated'
 import { Avatar } from './avatar'
 import { UnlockContent } from './unlock-content'
+import { useT } from '@/lib/i18n'
+import { tierKey } from '@joutio/client/i18n'
 
 export type RankPromotionProps = {
   from: TierCode
@@ -16,15 +18,16 @@ export type RankPromotionProps = {
 
 /** Premier déblocage de la séquence (`UnlockSequence`) : le cadre se forge. */
 export function RankPromotion({ from, tier, next, name, src, text, nextRule }: RankPromotionProps) {
+  const t = useT()
   return (
     <UnlockContent
       tier={tier}
       crumbLead={<Avatar name={name} src={src} tier={from} size="sm" />}
-      crumbFrom={tokens.tier[from].label}
+      crumbFrom={t(tierKey(from))}
       hero={<Avatar name={name} src={src} tier={tier} size="hero" />}
       heroMotion="jo-celebrate"
-      eyebrow="Nouveau rang débloqué"
-      headline={tokens.tier[tier].label}
+      eyebrow={t('ds.newRank')}
+      headline={t(tierKey(tier))}
       text={text}
       next={next && nextRule ? { tier: next, rule: nextRule, preview: <Avatar name={name} src={src} tier={next} size="row" locked /> } : undefined}
     />

@@ -1,9 +1,10 @@
 import { CheckIcon, FireIcon, XIcon } from '@phosphor-icons/react'
 import { cn } from '../lib/cn'
+import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
+import { weekdayName } from '../lib/weekday'
 
 export type StreakDay = 'done' | 'today' | 'missed' | 'future'
 
-const DAY_LABELS = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
 
 const DAY_STYLES: Record<StreakDay, string> = {
   done: 'bg-jo-accent text-jo-on-accent',
@@ -12,7 +13,7 @@ const DAY_STYLES: Record<StreakDay, string> = {
   future: 'text-jo-muted ring-1 ring-jo-border ring-inset',
 }
 
-const DAY_NAMES: Record<StreakDay, string> = { done: 'joué', today: "aujourd'hui", missed: 'manqué', future: 'à venir' }
+const DAY_NAMES: Record<StreakDay, MessageKey> = { done: 'ds.played', today: 'ds.today', missed: 'ds.missed', future: 'ds.upcoming' }
 
 export type StreakProps = {
   count: number
@@ -24,6 +25,8 @@ export type StreakProps = {
 }
 
 export function Streak({ count, hint, week, compact = false, className }: StreakProps) {
+  const t = useT()
+  const language = useLanguageStore((state) => state.language)
   const active = count > 0
   return (
     <div className={cn('grid w-full gap-4', className)}>
@@ -32,15 +35,15 @@ export function Streak({ count, hint, week, compact = false, className }: Streak
           <FireIcon size={24} weight="fill" aria-hidden />
         </span>
         <div className="min-w-0">
-          <strong className="jo-type-numeric block">{count > 1 ? `${count} jours` : `${count} jour`}</strong>
+          <strong className="jo-type-numeric block">{t(count > 1 ? 'ds.daysMany' : 'ds.daysOne', { count })}</strong>
           {hint && <span className="jo-type-caption text-jo-muted">{hint}</span>}
         </div>
       </div>
       {!compact && week && (
         <ol className="grid grid-cols-7 gap-2">
           {week.map((day, index) => (
-            <li key={index} className="grid justify-items-center gap-1" aria-label={`${DAY_LABELS[index]}, ${DAY_NAMES[day]}`}>
-              <span className="jo-type-caption font-semibold text-jo-muted">{DAY_LABELS[index]}</span>
+            <li key={index} className="grid justify-items-center gap-1" aria-label={t('ds.weekday', { day: weekdayName(index, language, 'long'), state: t(DAY_NAMES[day]) })}>
+              <span className="jo-type-caption font-semibold text-jo-muted">{weekdayName(index, language, 'narrow').toUpperCase()}</span>
               <span className={cn('grid size-9 place-items-center rounded-jo-full', DAY_STYLES[day])}>
                 {day === 'done' && <CheckIcon size={16} aria-hidden />}
                 {day === 'today' && <FireIcon size={16} weight="fill" aria-hidden />}

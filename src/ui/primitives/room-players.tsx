@@ -3,6 +3,7 @@ import { cn } from '../lib/cn'
 import type { TierCode } from '../tokens.generated'
 import { Avatar } from './avatar'
 import { PlayerName } from './player-name'
+import { useT } from '@/lib/i18n'
 
 export type RoomPlayer = {
   name: string
@@ -23,6 +24,7 @@ export type RoomPlayersProps = {
 }
 
 function Seat({ player }: { player: RoomPlayer }) {
+  const t = useT()
   const away = player.away ?? false
   return (
     <div className="grid min-w-0 justify-items-center gap-2 text-center">
@@ -40,7 +42,7 @@ function Seat({ player }: { player: RoomPlayer }) {
       </span>
       <PlayerName name={player.name} premium={player.premium} className="jo-type-headline justify-center" />
       <span className={cn('jo-type-caption font-semibold', away ? 'text-jo-muted' : 'text-jo-correct')}>
-        {player.status ?? (away ? 'Pas encore là' : 'Dans le salon')}
+        {player.status ?? (away ? t('ds.notHereYet') : t('room.inRoom'))}
       </span>
     </div>
   )
@@ -48,10 +50,11 @@ function Seat({ player }: { player: RoomPlayer }) {
 
 /** Face-à-face du salon : présence de chacun, place encore libre, éclair vert quand les deux sont là. */
 export function RoomPlayers({ me, opponent, className }: RoomPlayersProps) {
+  const t = useT()
   const ready = Boolean(opponent) && !me.away && !opponent?.away
   return (
     <div
-      aria-label={ready ? 'Les deux joueurs sont là' : undefined}
+      aria-label={ready ? t('room.bothHere') : undefined}
       className={cn('grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-3', className)}
     >
       <Seat player={me} />
@@ -65,8 +68,8 @@ export function RoomPlayers({ me, opponent, className }: RoomPlayersProps) {
           <span className="grid size-[88px] place-items-center rounded-jo-full border-2 border-dashed border-jo-border text-jo-muted">
             <UserPlusIcon size={30} aria-hidden />
           </span>
-          <strong className="jo-type-headline text-jo-muted">En attente</strong>
-          <span className="jo-type-caption text-jo-muted">Le duel démarre à deux</span>
+          <strong className="jo-type-headline text-jo-muted">{t('ds.waiting')}</strong>
+          <span className="jo-type-caption text-jo-muted">{t('ds.startsWithTwo')}</span>
         </div>
       )}
     </div>

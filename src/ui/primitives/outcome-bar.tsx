@@ -1,4 +1,5 @@
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
 
 export type OutcomeBarProps = {
   wins: number
@@ -8,9 +9,9 @@ export type OutcomeBarProps = {
 }
 
 const OUTCOMES = [
-  { key: 'wins', label: 'Victoires', color: 'var(--jo-correct)', ink: 'text-jo-correct' },
-  { key: 'draws', label: 'Nuls', color: 'var(--jo-accent)', ink: 'text-jo-accent-ink' },
-  { key: 'losses', label: 'Défaites', color: 'var(--jo-wrong)', ink: 'text-jo-wrong' },
+  { key: 'wins', label: 'profile.wins', color: 'var(--jo-correct)', ink: 'text-jo-correct' },
+  { key: 'draws', label: 'profile.draws', color: 'var(--jo-accent)', ink: 'text-jo-accent-ink' },
+  { key: 'losses', label: 'profile.losses', color: 'var(--jo-wrong)', ink: 'text-jo-wrong' },
 ] as const
 
 /** En % de la largeur : marge d'un libellé au bord, et écart entre deux centres de libellés. */
@@ -33,12 +34,13 @@ function labelPositions(shares: readonly number[]) {
 
 /** Répartition des issues : libellés et pourcentages, jamais la couleur seule. */
 export function OutcomeBar({ wins, draws, losses, className }: OutcomeBarProps) {
+  const t = useT()
   const values = { wins, draws, losses }
   const total = wins + draws + losses
   const percent = (value: number) => (total > 0 ? Math.round((value * 100) / total) : 0)
   const shown = OUTCOMES.filter(({ key }) => percent(values[key]) > 0)
   const positions = labelPositions(shown.map(({ key }) => (values[key] * 100) / total))
-  const summary = shown.map(({ key, label }) => `${label} ${percent(values[key])} %`).join(', ') || 'Aucune partie'
+  const summary = shown.map(({ key, label }) => `${t(label)} ${percent(values[key])} %`).join(', ') || t('history.emptyTopic')
 
   return (
     <div role="img" aria-label={summary} className={cn('grid w-full gap-2', className)}>
@@ -51,7 +53,7 @@ export function OutcomeBar({ wins, draws, losses, className }: OutcomeBarProps) 
         <div className="grid overflow-hidden">
           {shown.map(({ key, label, ink }, index) => (
             <span key={key} className="relative col-start-1 row-start-1 grid w-max -translate-x-1/2 justify-items-center" style={{ left: `${positions[index]}%` }}>
-              <span className="jo-type-caption text-jo-muted">{label}</span>
+              <span className="jo-type-caption text-jo-muted">{t(label)}</span>
               <strong className={cn('jo-type-headline font-mono', ink)}>{percent(values[key])} %</strong>
             </span>
           ))}

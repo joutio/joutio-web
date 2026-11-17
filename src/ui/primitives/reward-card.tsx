@@ -3,14 +3,15 @@ import { Avatar } from './avatar'
 import { Badge, type BadgeProps } from './badge'
 import { Button } from './button'
 import { ProgressBar } from './progress-bar'
+import { useT, type MessageKey } from '@/lib/i18n'
 
 export type RewardState = 'unlocked' | 'active' | 'locked' | 'premium'
 
-const STATES: Record<RewardState, { variant: BadgeProps['variant']; label: string }> = {
-  unlocked: { variant: 'correct', label: 'Débloquée' },
-  active: { variant: 'accent', label: 'Utilisée' },
-  locked: { variant: 'neutral', label: 'Verrouillée' },
-  premium: { variant: 'accent', label: 'Premium' },
+const STATES: Record<RewardState, { variant: BadgeProps['variant']; label: MessageKey }> = {
+  unlocked: { variant: 'correct', label: 'ds.unlocked' },
+  active: { variant: 'accent', label: 'ds.used' },
+  locked: { variant: 'neutral', label: 'ds.locked' },
+  premium: { variant: 'accent', label: 'pending.premium' },
 }
 
 export type RewardCardProps = {
@@ -30,6 +31,7 @@ export type RewardCardProps = {
 }
 
 export function RewardCard({ title, rule, state = 'unlocked', image, avatarName, progress, progressLabel, cta, onSelect, className }: RewardCardProps) {
+  const t = useT()
   const { variant, label } = STATES[state]
   const classes = cn(
     'grid grid-cols-[72px_minmax(0,1fr)] items-center gap-4 rounded-jo-lg bg-jo-surface p-4',
@@ -43,7 +45,7 @@ export function RewardCard({ title, rule, state = 'unlocked', image, avatarName,
       <div className="grid min-w-0 gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <strong className="jo-type-headline">{title}</strong>
-          <Badge variant={variant}>{label}</Badge>
+          <Badge variant={variant}>{t(label)}</Badge>
         </div>
         {rule && <p className="jo-type-callout text-pretty text-jo-muted">{rule}</p>}
         {progress !== undefined && <ProgressBar value={progress} label={progressLabel} showValue />}

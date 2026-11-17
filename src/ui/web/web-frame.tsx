@@ -6,6 +6,7 @@ import { REGULAR_WIDTH, RegularContext } from '../lib/regular-width'
 import { AdSlot } from '../primitives/ad-slot'
 import { buttonStyles } from '../primitives/button'
 import { StoreButtons, type StoreLinks } from '../site/store-buttons'
+import { useT } from '@/lib/i18n'
 
 /**
  * Écran de l'iPhone Duo ouvert **en paysage**, en points (`DEVICES['iphone-duo-open']` du lab, tourné, 2026-11-16) : la
@@ -72,7 +73,9 @@ function useSize() {
  * feuilles, dialogues et toasts. Les bascules suivent la largeur du cadre (`@container/web`), pas la fenêtre. L'arbre
  * est le même avec ou sans cadre : l'app n'est jamais remontée au redimensionnement.
  */
-export function WebFrame({ stores, tagline = 'Le quiz en duel, sur tous les sujets.', qrSrc, ads = false, className, children }: WebFrameProps) {
+export function WebFrame({ stores, tagline: ownTagline, qrSrc, ads = false, className, children }: WebFrameProps) {
+  const t = useT()
+  const tagline = ownTagline ?? t('frame.tagline')
   const [root, { width, height }] = useSize()
   // Cadre paysage (890 × 626) dès que la fenêtre le contient en largeur, avec la marque dans les marges.
   const landscape = width >= FRAMED_FROM
@@ -116,17 +119,17 @@ export function WebFrame({ stores, tagline = 'Le quiz en duel, sur tous les suje
               {children}
             </div>
           </div>
-          <aside className={cn(aside, 'col-start-3 justify-items-start')} aria-label="Installer l'app">
+          <aside className={cn(aside, 'col-start-3 justify-items-start')} aria-label={t('frame.install')}>
             <div className="grid max-w-[280px] gap-4">
-              <p className="jo-type-headline m-0">Joue aussi sur mobile</p>
+              <p className="jo-type-headline m-0">{t('frame.alsoOnMobile')}</p>
               {qrSrc ? (
-                <img src={qrSrc} alt="QR code vers l'app Joutio" className="size-28 rounded-jo-md bg-white p-2 @min-[1440px]/web:size-36" />
+                <img src={qrSrc} alt={t('frame.qr')} className="size-28 rounded-jo-md bg-white p-2 @min-[1440px]/web:size-36" />
               ) : (
-                <span role="img" aria-label="QR code vers l'app Joutio" className="grid size-28 place-items-center @min-[1440px]/web:size-36 rounded-jo-md bg-jo-surface text-jo-text ring-1 ring-jo-border">
+                <span role="img" aria-label={t('frame.qr')} className="grid size-28 place-items-center @min-[1440px]/web:size-36 rounded-jo-md bg-jo-surface text-jo-text ring-1 ring-jo-border">
                   <QrCodeIcon aria-hidden className="size-20 @min-[1440px]/web:size-24" />
                 </span>
               )}
-              <p className="jo-type-caption m-0 text-jo-muted">Scanne avec ton téléphone, ou télécharge l'app.</p>
+              <p className="jo-type-caption m-0 text-jo-muted">{t('frame.scan')}</p>
               <span className="hidden @min-[1440px]/web:block">
                 {/* Toujours empilés : côte à côte, ils débordaient de la marge. */}
                 <StoreButtons links={stores} className="@xl:grid-flow-row @xl:auto-cols-auto" />
@@ -135,11 +138,11 @@ export function WebFrame({ stores, tagline = 'Le quiz en duel, sur tous les suje
               <div className="grid gap-2 @min-[1440px]/web:hidden">
                 <a href={stores.appStore} className={cn(buttonStyles({ variant: 'filled', tone: 'neutral', size: 'M', full: true }), 'gap-2 no-underline')}>
                   <AppleLogoIcon size={20} weight="fill" aria-hidden />
-                  App Store
+                  {t('store.appStoreShort')}
                 </a>
                 <a href={stores.googlePlay} className={cn(buttonStyles({ variant: 'filled', tone: 'neutral', size: 'M', full: true }), 'gap-2 no-underline')}>
                   <GooglePlayLogoIcon size={18} weight="fill" aria-hidden />
-                  Google Play
+                  {t('store.googlePlay')}
                 </a>
               </div>
             </div>

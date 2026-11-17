@@ -3,14 +3,15 @@ import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '../lib/cn'
 import { TopicVisual } from './topic-visual'
 import type { CategoryCode } from '../tokens.generated'
+import { useT, type MessageKey } from '@/lib/i18n'
 
 export type MatchOutcome = 'win' | 'loss' | 'draw' | 'forfeit'
 
-const OUTCOMES: Record<MatchOutcome, { label: string; className: string }> = {
-  win: { label: 'Victoire', className: 'text-jo-correct' },
-  loss: { label: 'Défaite', className: 'text-jo-wrong' },
-  draw: { label: 'Égalité', className: 'text-jo-muted' },
-  forfeit: { label: 'Abandon', className: 'text-jo-muted' },
+const OUTCOMES: Record<MatchOutcome, { label: MessageKey; className: string }> = {
+  win: { label: 'ds.win', className: 'text-jo-correct' },
+  loss: { label: 'ds.loss', className: 'text-jo-wrong' },
+  draw: { label: 'ds.draw', className: 'text-jo-muted' },
+  forfeit: { label: 'ds.forfeit', className: 'text-jo-muted' },
 }
 
 export type MatchRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -29,6 +30,7 @@ export type MatchRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 export function MatchRow({ topic, category, pictogram, image, sub, outcome, score, bot = false, last = false, className, type = 'button', ...props }: MatchRowProps) {
+  const t = useT()
   const { label, className: outcomeClass } = OUTCOMES[outcome]
   return (
     <button
@@ -44,7 +46,7 @@ export function MatchRow({ topic, category, pictogram, image, sub, outcome, scor
         {bot && (
           <span className="absolute -right-1 -bottom-1 grid size-5 place-items-center rounded-jo-full bg-jo-raised text-jo-muted ring-2 ring-jo-surface">
             <RobotIcon size={12} aria-hidden />
-            <span className="sr-only">Contre le bot</span>
+            <span className="sr-only">{`, ${t('ds.againstBot')}`}</span>
           </span>
         )}
       </TopicVisual>
@@ -53,7 +55,7 @@ export function MatchRow({ topic, category, pictogram, image, sub, outcome, scor
         {sub && <span className="jo-type-caption truncate text-jo-muted">{sub}</span>}
       </span>
       <span className="grid flex-none justify-items-end gap-0.5">
-        <span className={cn('jo-type-caption font-semibold', outcomeClass)}>{label}</span>
+        <span className={cn('jo-type-caption font-semibold', outcomeClass)}>{t(label)}</span>
         <span className="jo-type-callout font-mono font-semibold">{score}</span>
       </span>
     </button>

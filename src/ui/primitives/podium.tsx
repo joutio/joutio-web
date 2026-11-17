@@ -4,6 +4,7 @@ import { tierColor, tint } from '../lib/tokens'
 import type { TierCode } from '../tokens.generated'
 import { Avatar } from './avatar'
 import { PlayerLink, PlayerName } from './player-name'
+import { useT } from '@/lib/i18n'
 
 /** Couleur et hauteur de chaque marche, de la 1re à la 3e place. */
 const STEPS: { tier: TierCode; height: number }[] = [
@@ -49,9 +50,10 @@ function Step({ player, rank }: { player: PodiumPlayer; rank: number }) {
 
 /** Les trois premiers d'un classement : le 1er au centre, le 2e à gauche, le 3e à droite. */
 export function Podium({ players, className }: PodiumProps) {
+  const t = useT()
   const [first, second, third] = players
   return (
-    <ol aria-label="Podium" className={cn('m-0 flex list-none items-end gap-2 p-0', className)}>
+    <ol aria-label={t('ds.podium')} className={cn('m-0 flex list-none items-end gap-2 p-0', className)}>
       {second && <Step player={second} rank={2} />}
       {first && <Step player={first} rank={1} />}
       {third && <Step player={third} rank={3} />}

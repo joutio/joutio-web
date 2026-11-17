@@ -1,6 +1,7 @@
 import useEmblaCarousel from 'embla-carousel-react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
 
 /**
  * Durée de la glisse vers la page voisine (unités Embla, défaut 25). Plus lente qu'Embla par défaut : à 25, le passage
@@ -29,6 +30,7 @@ export type CarouselProps = {
  * `MobileSheet`, le balayage ne tire pas la feuille.
  */
 export function Carousel({ slides, index, onIndexChange, label, className, slideClassName }: CarouselProps) {
+  const t = useT()
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const [viewport, api] = useEmblaCarousel({ startIndex: index, duration: SWIPE_DURATION })
   const report = useRef(onIndexChange)
@@ -59,7 +61,7 @@ export function Carousel({ slides, index, onIndexChange, label, className, slide
       ref={viewport}
       data-vaul-no-drag
       role="region"
-      aria-roledescription="carrousel"
+      aria-roledescription={t('ds.carousel')}
       aria-label={label}
       className={cn('min-h-0 overflow-hidden', className)}
     >
@@ -67,8 +69,8 @@ export function Carousel({ slides, index, onIndexChange, label, className, slide
         {slides.map((slide, slideIndex) => (
           <section
             key={slideIndex}
-            aria-roledescription="diapositive"
-            aria-label={`${slideIndex + 1} sur ${slides.length}`}
+            aria-roledescription={t('ds.slide')}
+            aria-label={t('ds.slideOf', { index: slideIndex + 1, count: slides.length })}
             aria-hidden={slideIndex !== index}
             inert={slideIndex !== index}
             className={cn('jo-no-scrollbar h-full min-w-0 flex-[0_0_100%] overflow-x-hidden overflow-y-auto overscroll-y-contain', slideClassName)}

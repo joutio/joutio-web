@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { useFrameScale } from '../web/web-frame'
+import { useT } from '@/lib/i18n'
 
 export type Detent = 'peek' | 'half' | 'full'
 
@@ -33,6 +34,7 @@ const ORDER: readonly Detent[] = ['peek', 'half', 'full']
  * épinglé. Au relâcher, elle se cale sur le cran le plus proche, ou sur le suivant après un geste de 24 px.
  */
 export function DetentSheet({ detents = DEFAULT_DETENTS, onPeekHeight, locked = false, detent, onDetentChange, label, header, footer, children, className }: DetentSheetProps) {
+  const t = useT()
   // Cadre web réduit : les coordonnées du pointeur ramenées à celles de la mise en page.
   const scale = useFrameScale()
   const ref = useRef<HTMLDivElement>(null)
@@ -108,11 +110,11 @@ export function DetentSheet({ detents = DEFAULT_DETENTS, onPeekHeight, locked = 
       <div
         role="slider"
         tabIndex={0}
-        aria-label={`Hauteur de « ${label} »`}
+        aria-label={t('ds.detentHeight', { label })}
         aria-valuemin={0}
         aria-valuemax={2}
         aria-valuenow={index}
-        aria-valuetext={detent === 'peek' ? 'Réduite' : detent === 'half' ? 'À moitié' : 'Plein écran'}
+        aria-valuetext={t(detent === 'peek' ? 'ds.detentPeek' : detent === 'half' ? 'ds.detentHalf' : 'ds.detentFull')}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}

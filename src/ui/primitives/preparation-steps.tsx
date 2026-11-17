@@ -1,5 +1,6 @@
 import { CheckIcon, CircleNotchIcon } from '@phosphor-icons/react'
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
 
 export type PreparationStep = { id: string; label: string }
 
@@ -18,10 +19,11 @@ export type PreparationStepsProps = {
 
 /** Étapes de préparation d'une salle (2026-11-07, d'après le stepper de joutio-web). */
 export function PreparationSteps({ steps, current, detail, complete = false, engaged = false, className }: PreparationStepsProps) {
+  const t = useT()
   return (
     <div
       role="progressbar"
-      aria-label="Préparation du duel"
+      aria-label={t('ds.preparation')}
       aria-valuemin={0}
       aria-valuemax={steps.length}
       aria-valuenow={Math.min(current, steps.length)}

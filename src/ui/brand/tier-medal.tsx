@@ -2,6 +2,8 @@ import { LightningIcon, type Icon } from '@phosphor-icons/react'
 import { cn } from '../lib/cn'
 import { tokens, type TierCode } from '../tokens.generated'
 import { LockBadge, LOCKED_STYLE } from './lock-badge'
+import { useT } from '@/lib/i18n'
+import { tierKey } from '@joutio/client/i18n'
 
 export type TierMedalProps = {
   tier: TierCode
@@ -16,11 +18,12 @@ export type TierMedalProps = {
 const LOCK_MIN_SIZE = 40
 
 export function TierMedal({ tier, icon: IconComponent = LightningIcon, size = 56, state = 'earned', className }: TierMedalProps) {
+  const t = useT()
   const locked = state === 'locked'
   return (
     <span
       role="img"
-      aria-label={`Médaille ${tokens.tier[tier].label}${locked ? ', verrouillée' : ''}`}
+      aria-label={t('ds.medal', { tier: t(tierKey(tier)), locked: locked ? t('ds.lockedSuffixF') : '' })}
       className={cn('relative inline-block flex-none', locked && LOCKED_STYLE, className)}
       style={{ width: size, height: size * 1.1 }}
     >

@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { cn } from '../lib/cn'
+import { useT } from '@/lib/i18n'
 
 /** Sceau certifié à 12 festons (24 × 24), centré. */
 const SEAL = (() => {
@@ -56,14 +57,16 @@ function SealBadge({ size = 18, className, label, fill, ink }: SealProps) {
  * réduit). Annoncé « Premium ».
  */
 export function PremiumBadge(props: PremiumBadgeProps) {
-  return <SealBadge {...props} label="Premium" fill="var(--jo-accent)" ink="var(--jo-on-accent)" />
+  const t = useT()
+  return <SealBadge {...props} label={t('pending.premium')} fill="var(--jo-accent)" ink="var(--jo-on-accent)" />
 }
 
 /**
  * Marque des sujets **officiels** (éditoriaux de Joutio), à droite du nom du sujet (`marque.md` § OfficialBadge) : même
  * sceau que Premium, en `official` (bleu) avec coche `onOfficial`. Annoncé « Officiel » (`label` traduit par l'app).
  */
-export function OfficialBadge({ label = 'Officiel', ...props }: PremiumBadgeProps & { label?: string }) {
-  return <SealBadge {...props} label={label} fill="var(--jo-official)" ink="var(--jo-on-official)" />
+export function OfficialBadge({ label, ...props }: PremiumBadgeProps & { label?: string }) {
+  const t = useT()
+  return <SealBadge {...props} label={label ?? t('ds.official')} fill="var(--jo-official)" ink="var(--jo-on-official)" />
 }
 
