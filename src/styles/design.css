@@ -61,6 +61,12 @@
   outline-offset: -2px;
 }
 
+/* Fond des barres d'actions (barre basse d'un écran, saisie du chat) : celui de la barre d'onglets, teinte `glass`
+   sur le fond de l'écran, opaque même quand le contenu défile dessous. */
+.jo-bottom-bar {
+  background: linear-gradient(var(--jo-glass), var(--jo-glass)), var(--jo-bg);
+}
+
 .jo-no-scrollbar {
   scrollbar-width: none;
 }

@@ -66,7 +66,7 @@ export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, cla
       </main>
       {/* Sans bottom nav, la barre basse porte la safe area : ses boutons ne passent jamais sous l'indicateur d'accueil. */}
       {bottomBar && (
-        <div ref={foot} className={cn('relative flex-none bg-jo-bg', !bottomNav && 'pb-[var(--jo-safe-bottom,0px)]')}>
+        <div ref={foot} className={cn('jo-bottom-bar relative flex-none', !bottomNav && 'pb-[var(--jo-safe-bottom,0px)]')}>
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-jo-border" style={{ opacity: 'var(--jo-footer-edge, 0)' }} />
           {bottomBar}
         </div>

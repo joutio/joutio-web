@@ -178,7 +178,7 @@ export function ParallaxScreen({ heroHeight = HERO_HEIGHT, image, title, premium
         </div>
       </div>
       </div>
-      {bottomBar && <div className={cn('flex-none border-t border-jo-border bg-jo-bg px-4 pt-2', bottomNav ? 'pb-2' : 'pb-[calc(var(--jo-safe-bottom,0px)+8px)]')}>{bottomBar}</div>}
+      {bottomBar && <div className={cn('jo-bottom-bar flex-none border-t border-jo-border px-4 pt-2', bottomNav ? 'pb-2' : 'pb-[calc(var(--jo-safe-bottom,0px)+8px)]')}>{bottomBar}</div>}
       </div>
       {bottomNav}
       {overlay}
