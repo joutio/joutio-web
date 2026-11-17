@@ -18,7 +18,7 @@ export type ResultPlayer = Pick<AvatarProps, 'src' | 'tier'> & {
   score: number
   /** Résultat de chaque manche, une pastille par entrée. */
   streak: readonly RoundResult[]
-  /** Ligne sous le nom, par exemple `Elo 856 · entraînement, sans effet sur l'Elo`. */
+  /** Ligne sous le nom, par exemple le niveau du bot (`Niveau normal`). */
   meta?: string
   /** `PremiumBadge` après le pseudonyme. */
   premium?: boolean

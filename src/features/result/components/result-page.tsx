@@ -280,7 +280,6 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           tier: myTier,
           score: data.myScore,
           streak: streakOf(game, userId),
-          meta: bot ? t('result.trainingElo', { elo: formatNumber(rating, language) }) : undefined,
           premium: me?.premium === true,
           onOpen: identity.open(userId),
         }}
