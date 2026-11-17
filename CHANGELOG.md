@@ -1,3 +1,9 @@
+## [2.21.1](https://github.com/joutio/joutio-web/compare/v2.21.0...v2.21.1) (2026-11-17)
+
+### Bug Fixes
+
+* **data:** optimistic mutations without re-reads ([be098c0](https://github.com/joutio/joutio-web/commit/be098c094080e83ffe89a856ecb0607e3099f8be))
+
 ## [2.21.0](https://github.com/joutio/joutio-web/compare/v2.20.1...v2.21.0) (2026-11-17)
 
 ### Features
