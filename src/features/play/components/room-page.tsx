@@ -35,16 +35,21 @@ const STEPS: readonly { id: string; label: MessageKey }[] = [
   { id: 'launch', label: 'room.stepLaunch' },
 ]
 
-function Page({ onBack, children }: { onBack: () => void; children: ReactNode }) {
+function Page({ onBack, bottomBar, children }: { onBack: () => void; bottomBar?: ReactNode; children: ReactNode }) {
   const t = useT()
-  return <Screen header={<MobileTopBar variant="inline" title={t('room.title')} back={t('topic.back')} onBack={onBack} />}>{children}</Screen>
+  return (
+    <Screen header={<MobileTopBar variant="inline" title={t('room.title')} back={t('topic.back')} onBack={onBack} />} bottomBar={bottomBar}>
+      {children}
+    </Screen>
+  )
 }
 
 /**
  * Salon de préparation (`defis.md` § 2, lab `defis.tsx` `RoomBody`) : un seul écran pour toute salle — partagée, défi
  * nominatif, bot ou issue d'un appariement. Présence de chacun, étapes de préparation, décompte ; « Copier le lien »
  * pour un salon partagé (`web.md`) ; relance de l'adversaire nommé absent ; annulation par l'initiateur. Le retour
- * pendant l'attente quitte le salon sans le fermer. La partie créée ouvre l'arène.
+ * pendant l'attente quitte le salon sans le fermer. Actions fixées en bas, hors du défilement (comme joutio-mobile). La
+ * partie créée ouvre l'arène.
  */
 export function RoomPage() {
   const t = useT()
@@ -151,26 +156,10 @@ export function RoomPage() {
   const cancelLabel = t(vsBot ? 'room.cancelDuel' : nominative ? 'room.cancelChallenge' : 'room.closeRoom')
 
   return (
-    <Page onBack={back}>
-      <div className="flex min-h-full flex-col gap-6 px-4 pt-2 pb-6">
-        <div className="grid justify-items-center gap-2 text-center">
-          <Pill icon={kind.icon}>{kind.label}</Pill>
-          <h1 className="jo-type-title-1">{topic}</h1>
-          {countdown && (
-            <span className="jo-type-callout text-jo-muted">
-              {t('room.expiresIn')} <span className="font-mono">{countdown}</span>
-            </span>
-          )}
-        </div>
-        <RoomPlayers me={meSeat} opponent={opponentSeat} />
-        <PreparationSteps
-          steps={STEPS.map((step) => ({ id: step.id, label: t(step.label) }))}
-          current={preparationStep(roomStatus)}
-          detail={detail}
-          engaged={engaged}
-          complete={preparationComplete(roomStatus)}
-        />
-        <div className="mt-auto grid gap-3">
+    <Page
+      onBack={back}
+      bottomBar={
+        <div className="grid gap-2 p-4">
           {presence.failed && (
             <div className="grid gap-2">
               <p className="jo-type-caption m-0 text-center text-jo-muted">{presence.problem?.detail ?? t('room.presenceError')}</p>
@@ -195,6 +184,26 @@ export function RoomPage() {
             </Button>
           )}
         </div>
+      }
+    >
+      <div className="grid gap-6 px-4 pt-2 pb-6">
+        <div className="grid justify-items-center gap-2 text-center">
+          <Pill icon={kind.icon}>{kind.label}</Pill>
+          <h1 className="jo-type-title-1">{topic}</h1>
+          {countdown && (
+            <span className="jo-type-callout text-jo-muted">
+              {t('room.expiresIn')} <span className="font-mono">{countdown}</span>
+            </span>
+          )}
+        </div>
+        <RoomPlayers me={meSeat} opponent={opponentSeat} />
+        <PreparationSteps
+          steps={STEPS.map((step) => ({ id: step.id, label: t(step.label) }))}
+          current={preparationStep(roomStatus)}
+          detail={detail}
+          engaged={engaged}
+          complete={preparationComplete(roomStatus)}
+        />
       </div>
     </Page>
   )
