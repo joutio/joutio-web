@@ -1,9 +1,10 @@
-import type { MasteryTier } from '@joutio/client/api-types'
+import type { BadgeView, MasteryTier } from '@joutio/client/api-types'
 import { isBonusRound, ROUNDS, sortedRounds, type GameResultView, type GameRoundState, type GameState } from '@joutio/client/game'
 import { FlagIcon, LightningIcon, WarningCircleIcon, XIcon } from '@phosphor-icons/react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
+import { badgeUnlockOf } from '@/features/profile'
 import { useShare } from '@/features/share'
 import { useBotDifficulty, usePlayerProfile, useStartMatchmaking, useStartTraining, type PlayTopic } from '@/features/play'
 import { formatNumber, MASTERY_TIERS, MASTERY_XP, useMyTitles, useWearTitle } from '@/features/topic'
@@ -13,6 +14,7 @@ import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
 import {
+  BadgeUnlock,
   Button,
   cn,
   EloSummary,
@@ -49,12 +51,16 @@ const COMPACT_RESULT_HEIGHT = 640
 const ORDER = Object.keys(tokens.tier) as TierCode[]
 const masteryOf = (xp: number): MasteryTier => MASTERY_TIERS.reduce<MasteryTier>((best, tier) => (xp >= MASTERY_XP[tier] ? tier : best), MASTERY_TIERS[0] as MasteryTier)
 
-type Unlock = { kind: 'streak'; days: number } | { kind: 'rank'; from: TierCode; tier: TierCode } | { kind: 'title'; tier: MasteryTier }
+type Unlock =
+  | { kind: 'streak'; days: number }
+  | { kind: 'rank'; from: TierCode; tier: TierCode }
+  | { kind: 'title'; tier: MasteryTier }
+  | { kind: 'badge'; badge: BadgeView }
 
 /**
- * Déblocages de la partie, dans l'ordre de la spec (série, rang, puis titres), déduits du bilan comme sur le mobile :
- * nouveau jour de série (première partie classée du jour, 2026-11-13), palier d'Elo avant / après, chaque palier de
- * maîtrise franchi. Les badges attendent que le BFF les rattache à la partie (`resultat.md` § 8).
+ * Déblocages de la partie, dans l'ordre de la spec (série, rang, titres, puis badges), comme sur le mobile : nouveau
+ * jour de série (première partie classée du jour, 2026-11-13), palier d'Elo avant / après, chaque palier de maîtrise
+ * franchi, puis les badges que le BFF rattache à la partie (`GameResultView.badges`).
  */
 function unlocksOf(result: GameResultView, streakDays: number | null): Unlock[] {
   if (result.botGame) return []
@@ -75,6 +81,7 @@ function unlocksOf(result: GameResultView, streakDays: number | null): Unlock[] 
       if (tier) unlocks.push({ kind: 'title', tier })
     }
   }
+  for (const badge of result.badges ?? []) unlocks.push({ kind: 'badge', badge })
   return unlocks
 }
 
@@ -206,7 +213,9 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           ? t('result.shareStreak', { days: current.days })
           : current?.kind === 'rank'
             ? t('result.shareRank', { tier: tokens.tier[current.tier].label })
-            : t('result.shareTitle', { topic: topic.name })
+            : current?.kind === 'badge'
+              ? t('result.shareBadge', { badge: badgeUnlockOf(current.badge, t).name })
+              : t('result.shareTitle', { topic: topic.name })
       // Lien universel du sujet (`partage.md` § 4).
       shareLink({ kind: 'topic', id: topic.topicId, title: t('profile.share'), text })
     }
@@ -225,6 +234,10 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
             nextRule={next ? t('result.rankNext', { elo: formatNumber(tokens.tier[next].minElo, language) }) : undefined}
           />
         )
+      }
+      if (unlock.kind === 'badge') {
+        const shown = badgeUnlockOf(unlock.badge, t)
+        return <BadgeUnlock tier={unlock.badge.tier as TierCode} badge={shown.name} family={shown.family} icon={shown.icon} text={shown.text} />
       }
       const key = `${topic.topicId}:${unlock.tier}`
       const next = MASTERY_TIERS[MASTERY_TIERS.indexOf(unlock.tier) + 1]

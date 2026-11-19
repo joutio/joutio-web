@@ -1,4 +1,4 @@
-import type { BadgeCollectionView, BadgeFamily, BadgeItemView } from '@joutio/client/api-types'
+import type { BadgeCollectionView, BadgeFamily, BadgeItemView, BadgeView } from '@joutio/client/api-types'
 import {
   CalendarCheckIcon,
   CompassIcon,
@@ -111,6 +111,17 @@ function summarize(family: BadgeFamily, badges: readonly BadgeItemView[], t: T, 
     remaining: family === 'EXPLOIT' ? undefined : remaining,
     feats: family === 'EXPLOIT' ? sorted.map((badge) => ({ tier: badge.tier, earned: badge.earned })) : undefined,
     rungs,
+  }
+}
+
+/** Écran de déblocage d'un badge (`BadgeUnlock`, `resultat.md` § 3) : nom, famille, emblème et phrase de la famille. */
+export function badgeUnlockOf(badge: BadgeView, t: T): { name: string; family: string; icon: Icon; text: string } {
+  const known = badge.family in ICONS
+  return {
+    name: FEATS.has(badge.code) ? t(`badges.feat.${badge.code}` as MessageKey) : badge.label,
+    family: known ? t(`badges.family.${badge.family}` as MessageKey) : badge.family,
+    icon: ICONS[badge.family] ?? SparkleIcon,
+    text: known ? t(`badges.family.${badge.family}.text` as MessageKey) : '',
   }
 }
 

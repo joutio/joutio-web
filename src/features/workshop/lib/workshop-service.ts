@@ -66,7 +66,7 @@ export const workshopService = {
             current = (await api.post<IdResponse>(WORKSHOP_ENDPOINTS.field(topicId, 'questions'), operation.payload)).id
             break
           case 'translation':
-            await api.post<void>(WORKSHOP_ENDPOINTS.question(q, 'translations'), { language: operation.language, text: operation.text, answers: operation.answers })
+            await api.post<void>(WORKSHOP_ENDPOINTS.question(q, 'translations'), { language: operation.language, text: operation.text, answers: operation.answers, imageAlt: operation.imageAlt })
             break
           case 'text':
             await api.put<void>(WORKSHOP_ENDPOINTS.question(q, 'text'), { language: operation.language, text: operation.text })
@@ -79,6 +79,9 @@ export const workshopService = {
             break
           case 'imageUrl':
             await api.put<void>(WORKSHOP_ENDPOINTS.question(q, 'image-url'), { imageUrl: operation.imageUrl })
+            break
+          case 'imageAlt':
+            await api.put<void>(WORKSHOP_ENDPOINTS.question(q, 'image-alt'), { language: operation.language, imageAlt: operation.imageAlt })
             break
         }
         completed.push(operation)

@@ -246,6 +246,7 @@ export function DuelPage() {
                 text={arena.questionText}
                 meta={t('duel.meta', { topic, round: roundNumber, total: ROUNDS })}
                 image={arena.imageUrl ?? undefined}
+                imageAlt={arena.imageAlt}
                 answers={answersShown ? answers : undefined}
                 details={answerDetails}
                 animated={animateQuestion && scene.kind === 'question'}

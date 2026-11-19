@@ -18,7 +18,7 @@ type PageProps = { round: GameRoundState; me: string; opponent: string | null; m
  * réduite à la place disponible, réponses en 2 × 2), comme le lab et le mobile. Pseudonymes, jamais « toi ».
  */
 function ReviewPage({ round, me, opponent, myName, opponentName, language }: PageProps) {
-  const { questionText, answers } = localizedQuestion(round, language)
+  const { questionText, answers, imageAlt } = localizedQuestion(round, language)
   const mine = round.playerAnswers[me]
   const theirs = opponent ? round.playerAnswers[opponent] : undefined
   const first = mine && (!theirs || mine.timeMs <= theirs.timeMs) ? 'me' : theirs ? 'opponent' : undefined
@@ -41,7 +41,7 @@ function ReviewPage({ round, me, opponent, myName, opponentName, language }: Pag
         opponent={{ name: opponentName, seconds: theirs ? theirs.timeMs / 1000 : undefined, points: theirs?.points ?? 0 }}
       />
       <div className="min-h-0 flex-1">
-        <QuestionBlock text={questionText} image={round.imageUrl ?? undefined} layout="2x2" answers={cards} />
+        <QuestionBlock text={questionText} image={round.imageUrl ?? undefined} imageAlt={imageAlt} layout="2x2" answers={cards} />
       </div>
     </div>
   )

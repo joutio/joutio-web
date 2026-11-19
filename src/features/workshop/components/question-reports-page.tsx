@@ -75,6 +75,7 @@ function QuestionPage({ question, number, snapshot, peek }: { question: Question
         <QuestionBlock
           text={snapshot?.questionText ?? content?.text ?? ''}
           image={(snapshot ? snapshot.imageUrl : question.imageUrl) ?? undefined}
+          imageAlt={content?.imageAlt ?? ''}
           answers={QUESTION_CHOICES.map((choice) => ({ label: answers.find((answer) => answer.choice === choice)?.text ?? '', state: choice === correct ? ('correct' as const) : ('rest' as const) }))}
         />
       </div>
