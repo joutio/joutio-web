@@ -1,3 +1,9 @@
+## [2.22.3](https://github.com/joutio/joutio-web/compare/v2.22.2...v2.22.3) (2026-11-19)
+
+### Bug Fixes
+
+* **duel:** versus intro played once, resilient answers, edit-profile save ([dfa74b7](https://github.com/joutio/joutio-web/commit/dfa74b77263c187205347f54f3a151240743984f))
+
 ## [2.22.2](https://github.com/joutio/joutio-web/compare/v2.22.1...v2.22.2) (2026-11-17)
 
 ### Bug Fixes
