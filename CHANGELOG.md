@@ -1,3 +1,9 @@
+## [2.24.0](https://github.com/joutio/joutio-web/compare/v2.23.1...v2.24.0) (2026-11-19)
+
+### Features
+
+* **duel:** send the answer time measured from the answers display ([ebf345f](https://github.com/joutio/joutio-web/commit/ebf345ff2f3898de30941da92568e0f09404fd8c))
+
 ## [2.23.1](https://github.com/joutio/joutio-web/compare/v2.23.0...v2.23.1) (2026-11-19)
 
 ### Bug Fixes
