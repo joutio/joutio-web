@@ -1,3 +1,9 @@
+## [2.25.0](https://github.com/joutio/joutio-web/compare/v2.24.0...v2.25.0) (2026-11-19)
+
+### Features
+
+* **settings:** server notification preferences for rematches, followers and reports ([f2dccab](https://github.com/joutio/joutio-web/commit/f2dccabe47efa7e90ae91ad94df114fb6a456cda))
+
 ## [2.24.0](https://github.com/joutio/joutio-web/compare/v2.23.1...v2.24.0) (2026-11-19)
 
 ### Features
