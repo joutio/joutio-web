@@ -1,3 +1,9 @@
+## [2.22.4](https://github.com/joutio/joutio-web/compare/v2.22.3...v2.22.4) (2026-11-19)
+
+### Bug Fixes
+
+* **screen:** permanent top hairline on bottom action bars ([f9570d2](https://github.com/joutio/joutio-web/commit/f9570d2b58a63e9a0b3215814d66f5a71e2926cc))
+
 ## [2.22.3](https://github.com/joutio/joutio-web/compare/v2.22.2...v2.22.3) (2026-11-19)
 
 ### Bug Fixes
