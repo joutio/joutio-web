@@ -449,8 +449,9 @@
 
 /* Timeline du face-à-face : entrée, tenue, repli du VS, ouverture des volets. */
 .jo-versus-clock {
-  --jo-versus-timing: 4000ms var(--jo-motion-base-easing) both;
-  animation: jo-versus-clock 4000ms linear both;
+  /* `--jo-versus-delay` négatif : la séquence reprend à l'instant serveur du face-à-face. */
+  --jo-versus-timing: var(--jo-versus-duration, 4000ms) var(--jo-motion-base-easing) var(--jo-versus-delay, 0ms) both;
+  animation: jo-versus-clock var(--jo-versus-duration, 4000ms) linear var(--jo-versus-delay, 0ms) both;
 }
 
 .jo-versus-top {

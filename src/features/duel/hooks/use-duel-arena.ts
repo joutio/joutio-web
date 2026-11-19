@@ -1,4 +1,3 @@
-import type { ApiError } from '@joutio/client/api-types'
 import {
   answerDeadlineMs,
   firstAnswerPct,
@@ -12,9 +11,9 @@ import {
   type GameChoice,
   type GameState,
 } from '@joutio/client/game'
-import { useMutation } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { gameService } from '../lib/game-service'
+import { sendAnswer } from '../lib/send-answer'
 
 /* Repris de joutio-mobile (features/duel/hooks/use-duel-arena.ts) : garder aligné. */
 
@@ -54,8 +53,6 @@ export interface UseDuelArenaParams {
  * verrouiller le joueur.</p>
  */
 export function useDuelArena({ gameId, game, now, serverNow, userId, language, refresh }: UseDuelArenaParams) {
-  // Réponse : pas de retry automatique (la fenêtre est courte) ; un échec se réconcilie par l'historique.
-  const answer = useMutation({ mutationFn: (choice: GameChoice) => gameService.answer(gameId, choice), retry: 1 })
   // Sélection locale optimiste : affichée dès le clic, remplacée par l'écho serveur
   // (`PLAYER_ANSWERED`). `sentAt` sert au rattrapage REST si l'écho tarde.
   const [pending, setPending] = useState<{
@@ -137,16 +134,17 @@ export function useDuelArena({ gameId, game, now, serverNow, userId, language, r
 
   const handleAnswer = (choice: string) => {
     if (!isAnswerable || !isGameChoice(choice)) return
-    setPending({ round: roundIndex, choice, sentAt: serverNow() })
-    answer.mutate(choice, {
-      onError: (error) => {
-        // Après les retries automatiques : réseau/timeout, 5xx ou 409 (réponse peut-être
-        // déjà enregistrée) → réconcilier par l'historique, sans rien afficher.
-        const status = (error as ApiError | undefined)?.statusCode
-        if (status === 409 || status == null || status === 408 || status >= 500) {
-          refresh()
-        }
-      },
+    const round = roundIndex
+    setPending({ round, choice, sentAt: serverNow() })
+    sendAnswer({
+      send: (signal) => gameService.answer(gameId, round + 1, choice, signal),
+      serverNow,
+      deadline: answerDeadlineMs(currentRound),
+    }).catch(() => {
+      // Refus ou échéance atteinte sans accusé : la sélection est levée (le joueur peut retenter tant que la manche
+      // est ouverte) et l'historique dit si la réponse a tout de même été enregistrée.
+      setPending((current) => (current?.round === round ? null : current))
+      refresh()
     })
   }
 

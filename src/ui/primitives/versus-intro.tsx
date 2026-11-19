@@ -1,3 +1,4 @@
+import { useState, type CSSProperties } from 'react'
 import { CategoryIcon } from '../brand/category-icon'
 import { cn } from '../lib/cn'
 import { categoryColor, tierColor } from '../lib/tokens'
@@ -28,8 +29,15 @@ export type VersusIntroProps = {
   topic: string
   category: CategoryCode
   rounds: number
-  /** Joue la séquence complète, 4 s, jusqu'à l'ouverture des volets. Sans animation : l'état tenu. */
+  /** Joue la séquence complète jusqu'à l'ouverture des volets. Sans animation : l'état tenu. */
   animated?: boolean
+  /** Durée de la séquence (ms). */
+  duration?: number
+  /**
+   * Temps déjà écoulé dans la séquence au montage (ms) : arrivée tardive ou remontage, elle reprend à cet instant au lieu
+   * de rejouer depuis le début. Figé au montage.
+   */
+  elapsedMs?: number
   /** Fin de la séquence, y compris en mouvement réduit : l'écran démonte alors le composant. */
   onComplete?: () => void
   className?: string
@@ -71,13 +79,16 @@ function Panel({ player, side, animated }: { player: VersusPlayer; side: 'top' |
 }
 
 /** Face-à-face plein écran avant la première manche. Toujours sombre. */
-export function VersusIntro({ me, opponent, topic, category, rounds, animated = false, onComplete, className }: VersusIntroProps) {
+export function VersusIntro({ me, opponent, topic, category, rounds, animated = false, duration = 4000, elapsedMs = 0, onComplete, className }: VersusIntroProps) {
+  // Figé au montage : un nouveau délai relancerait l'animation en cours.
+  const [startAt] = useState(() => -Math.min(Math.max(0, elapsedMs), duration))
   return (
     <div
       data-jo-theme="dark"
       onAnimationEnd={(event) => {
         if (event.target === event.currentTarget) onComplete?.()
       }}
+      style={{ '--jo-versus-duration': `${duration}ms`, '--jo-versus-delay': `${startAt}ms` } as CSSProperties}
       className={cn('relative h-full overflow-hidden text-jo-text', animated ? 'jo-versus-clock' : 'bg-jo-bg', className)}
     >
       <Panel player={me} side="top" animated={animated} />

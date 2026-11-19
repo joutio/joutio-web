@@ -5,7 +5,8 @@ import {
   ROUND_INTRO_MS,
   ROUNDS,
   sortedRounds,
-  TRANSITION_GRACE_MS,
+  SWOOSH_DURATION_MS,
+  VS_DURATION_MS,
   type GameState,
 } from '@joutio/client/game'
 import { countryFlag, countryName } from '@joutio/client/geo'
@@ -41,6 +42,7 @@ import { useDuelArena } from '../hooks/use-duel-arena'
 import { useEquippedTitle } from '../hooks/use-equipped-title'
 import { useGameStream, usePrefetchQuestionImages } from '../hooks/use-game'
 import { gameService } from '../lib/game-service'
+import { versusElapsedMs } from '../lib/versus'
 import { DuelCancelled } from './duel-cancelled'
 
 /** Marge pendant laquelle l'intro de manche finit son animation après le début de la question (ms). */
@@ -187,7 +189,7 @@ export function DuelPage() {
 
   const roundNumber = arena.roundIndex + 1
   const versus = scene.kind === 'vs' || scene.kind === 'swoosh'
-  const versusElapsed = scene.kind === 'vs' || scene.kind === 'swoosh' ? scene.elapsedMs : 0
+  const versusElapsed = versusElapsedMs(scene)
   // L'arène reste montée sous l'intro de manche : l'intro la recouvre puis se retire.
   const inRound = scene.kind === 'question' || scene.kind === 'reveal' || scene.kind === 'roundIntro'
   const revealed = scene.kind === 'reveal'
@@ -288,7 +290,9 @@ export function DuelPage() {
             topic={topic}
             category={category}
             rounds={ROUNDS}
-            animated={versusElapsed <= LATE_JOIN_MS + TRANSITION_GRACE_MS}
+            animated
+            duration={VS_DURATION_MS + SWOOSH_DURATION_MS}
+            elapsedMs={versusElapsed}
           />
         </div>
       )}

@@ -4,7 +4,7 @@ import { countryFlag, countryName } from '@joutio/client/geo'
 import { MAX_PSEUDONYM } from '@joutio/client/profile'
 import { CameraIcon, GlobeHemisphereWestIcon, TrashIcon, WarningIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
-import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm, useFormState, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 import { useBlocker, useNavigate } from 'react-router-dom'
 import { useMe } from '@/features/me'
@@ -19,8 +19,12 @@ import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
 import { Avatar, Field, IconButton, ListRow, MobileTopBar, ProgressBar, Screen } from '@/ui'
 
-/** Profil et bannière : la bannière est une URL déjà envoyée, sans règle de saisie. */
-const schema = profileSchema.extend({ bannerUrl: z.string().nullable() })
+/**
+ * Profil et bannière : la bannière est une URL déjà envoyée, sans règle de saisie. Les règles du pseudonyme sont
+ * appliquées par `usePseudonymCheck`, seulement s'il a changé : un pseudonyme antérieur aux règles reste enregistrable
+ * avec le reste du profil.
+ */
+const schema = profileSchema.extend({ pseudonym: z.string().trim(), bannerUrl: z.string().nullable() })
 
 /**
  * Éditer le profil (`design/specs/screens/editer-profil.md`, lab `/screens/profil?variant=edit`) : page plein écran
@@ -36,6 +40,14 @@ export function EditProfilePage() {
   const src = useUserAvatar(me)
   const initial = { pseudonym: me?.pseudonym ?? '', bio: me?.bio ?? '', country: me?.country ?? null, bannerUrl: me?.bannerUrl ?? null }
   const form = useForm({ resolver: zodResolver(schema), mode: 'onChange', defaultValues: initial })
+  // Lu à chaque rendu, avant tout court-circuit : react-hook-form ne suit `isValid` qu'une fois lu.
+  const { isValid } = useFormState({ control: form.control })
+  // Profil arrivé après l'ouverture : le brouillon part des valeurs enregistrées.
+  const loaded = me !== undefined
+  useEffect(() => {
+    if (loaded) form.reset(initial)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- une seule fois, à l'arrivée du profil
+  }, [loaded])
   const draft = { ...initial, ...useWatch({ control: form.control }) }
   const setCountry = (country: string | null) => form.setValue('country', country, { shouldValidate: true })
   const setBanner = (url: string | null) => form.setValue('bannerUrl', url, { shouldValidate: true })
@@ -118,7 +130,7 @@ export function EditProfilePage() {
           title={t('editProfile.title')}
           cancel={t('common.cancel')}
           confirm={t('settings.save')}
-          confirmDisabled={!dirty || !pseudonymOk || !form.formState.isValid || uploading || saving}
+          confirmDisabled={!dirty || !pseudonymOk || !isValid || uploading || saving}
           onCancel={close}
           onConfirm={() => void save()}
         />

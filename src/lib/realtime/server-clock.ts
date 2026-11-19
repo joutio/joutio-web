@@ -8,15 +8,28 @@ import { serverTimeQuery } from '@joutio/client/query'
  * sur l'onglet, puis **ré-ancré sur chaque trame temps réel** (`recordServerInstant`). Les échéances (décomptes,
  * chrono) restent justes malgré une horloge d'appareil décalée. Même mécanique que `joutio-mobile`.
  */
-let offsetMs = 0
+let offsetMs: number | null = null
+
+/**
+ * Un recul plus petit que ce seuil vient d'une trame retardée (la latence du réseau réduit `serveur - réception`), pas
+ * d'un vrai décalage : l'ignorer garde une horloge qui ne recule jamais, sinon une scène du duel repassait en arrière et
+ * son intro se rejouait (2026-11-19). Un recul plus grand (montre de l'appareil changée) est appliqué.
+ */
+export const CLOCK_BACKSTEP_TOLERANCE_MS = 300
+
+/** Décalage retenu après un échantillon : on garde le plus grand, sauf vrai recalage. */
+export function nextClockOffset(current: number | null, sample: number): number {
+  if (current === null || sample >= current || current - sample >= CLOCK_BACKSTEP_TOLERANCE_MS) return sample
+  return current
+}
 
 /** Ré-ancre l'horloge sur un instant serveur (ms epoch) reçu à `receivedAt`. */
 export function recordServerInstant(serverEpochMs: number, receivedAt: number = Date.now()) {
-  if (Number.isFinite(serverEpochMs)) offsetMs = serverEpochMs - receivedAt
+  if (Number.isFinite(serverEpochMs)) offsetMs = nextClockOffset(offsetMs, serverEpochMs - receivedAt)
 }
 
 /** Instant serveur courant estimé (ms epoch). */
-export const readServerNow = () => Date.now() + offsetMs
+export const readServerNow = () => Date.now() + (offsetMs ?? 0)
 
 /** Mesure le décalage tant que l'écran est monté (et à chaque retour sur l'onglet). */
 export function useServerClock() {

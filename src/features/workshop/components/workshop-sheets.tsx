@@ -2,7 +2,7 @@ import type { Language } from '@joutio/client/api-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { topicDescriptionsSchema, topicNamesSchema, topicTitlesSchema } from '@joutio/client/forms'
 import { useState } from 'react'
-import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm, useFormState, useWatch } from 'react-hook-form'
 import { useT } from '@/lib/i18n'
 import { useImageUpload } from '../hooks/use-image-upload'
 import {
@@ -121,6 +121,7 @@ export function DescriptionSheet({ open, initial, saving, onClose, onSave }: {
   const t = useT()
   const [language, setLanguage] = useState<Language>('fr')
   const form = useForm({ resolver: zodResolver(topicDescriptionsSchema), mode: 'onChange', defaultValues: initial })
+  const { isValid } = useFormState({ control: form.control })
   const draft = useWatch({ control: form.control })
   const changesOf = (values: Localized) =>
     (['fr', 'en'] as const)
@@ -134,7 +135,7 @@ export function DescriptionSheet({ open, initial, saving, onClose, onSave }: {
       title={t('workshop.description')}
       subtitle={t('workshop.descriptionSub')}
       footer={
-        <Button full loading={saving} disabled={!changed || !form.formState.isValid} onClick={() => void form.handleSubmit((values) => onSave(changesOf(values)))()}>
+        <Button full loading={saving} disabled={!changed || !isValid} onClick={() => void form.handleSubmit((values) => onSave(changesOf(values)))()}>
           {t('settings.save')}
         </Button>
       }
