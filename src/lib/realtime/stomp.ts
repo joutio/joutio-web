@@ -52,8 +52,8 @@ const client = new Client({
   reconnectDelay: 1000,
   reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
   maxReconnectDelay: 5000,
-  heartbeatIncoming: 10_000,
-  heartbeatOutgoing: 10_000,
+  heartbeatIncoming: 4_000,
+  heartbeatOutgoing: 4_000,
   debug: () => undefined,
   beforeConnect: () => {
     setStatus(navigator.onLine === false ? 'offline' : everConnected ? 'reconnecting' : 'connecting')

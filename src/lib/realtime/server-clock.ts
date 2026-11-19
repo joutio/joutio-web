@@ -1,52 +1,59 @@
-import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { addLiveFrame, addRoundTrip, CLOCK_BURST, clockOffset, emptyClock, type ClockState, type RoundTrip } from '@joutio/client/game'
+import type { ServerTimeView } from '@joutio/client/query'
 import { api } from '../api'
-import { serverTimeQuery } from '@joutio/client/query'
 
 /**
- * Horloge serveur : décalage local → serveur mesuré par `GET /api/clock` à l'ouverture d'un écran de jeu et au retour
- * sur l'onglet, puis **ré-ancré sur chaque trame temps réel** (`recordServerInstant`). Les échéances (décomptes,
- * chrono) restent justes malgré une horloge d'appareil décalée. Même mécanique que `joutio-mobile`.
+ * Horloge serveur (`duel-horloge-ntp`, règles dans `@joutio/client/game`) : une rafale d'allers-retours
+ * `GET /api/clock` à l'ouverture d'un écran de jeu et au retour sur l'onglet garde l'échantillon de RTT minimal, puis
+ * chaque trame temps réel peut **relever** le décalage (jamais le baisser : une trame retardée sous-estime). Les
+ * échéances (décomptes, chrono) restent justes malgré une horloge d'appareil décalée. Même mécanique que
+ * `joutio-mobile`.
  */
-let offsetMs: number | null = null
+let clock: ClockState = emptyClock
 
-/**
- * Un recul plus petit que ce seuil vient d'une trame retardée (la latence du réseau réduit `serveur - réception`), pas
- * d'un vrai décalage : l'ignorer garde une horloge qui ne recule jamais, sinon une scène du duel repassait en arrière et
- * son intro se rejouait (2026-11-19). Un recul plus grand (montre de l'appareil changée) est appliqué.
- */
-export const CLOCK_BACKSTEP_TOLERANCE_MS = 300
-
-/** Décalage retenu après un échantillon : on garde le plus grand, sauf vrai recalage. */
-export function nextClockOffset(current: number | null, sample: number): number {
-  if (current === null || sample >= current || current - sample >= CLOCK_BACKSTEP_TOLERANCE_MS) return sample
-  return current
-}
-
-/** Ré-ancre l'horloge sur un instant serveur (ms epoch) reçu à `receivedAt`. */
+/** Ré-ancre l'horloge sur l'instant serveur (ms epoch) d'une trame temps réel reçue à `receivedAt`. */
 export function recordServerInstant(serverEpochMs: number, receivedAt: number = Date.now()) {
-  if (Number.isFinite(serverEpochMs)) offsetMs = nextClockOffset(offsetMs, serverEpochMs - receivedAt)
+  clock = addLiveFrame(clock, serverEpochMs, receivedAt)
 }
 
 /** Instant serveur courant estimé (ms epoch). */
-export const readServerNow = () => Date.now() + (offsetMs ?? 0)
+export const readServerNow = () => Date.now() + (clockOffset(clock) ?? 0)
+
+let syncing: Promise<void> | null = null
+
+/**
+ * Rafale de mesures, appliquée d'un bloc à la fin : pendant un duel, le décalage ne recule donc qu'une fois par
+ * rafale, jamais mesure par mesure. Une seule rafale à la fois.
+ */
+export function syncServerClock(): Promise<void> {
+  syncing ??= (async () => {
+    const trips: RoundTrip[] = []
+    for (let n = 0; n < CLOCK_BURST; n += 1) {
+      const sentAt = Date.now()
+      try {
+        const { epochMillis } = await api.get<ServerTimeView>('/api/clock')
+        trips.push({ sentAt, receivedAt: Date.now(), serverEpochMs: epochMillis })
+      } catch {
+        // Mesure perdue : les autres suffisent, la rafale suivante réessaie.
+      }
+    }
+    // Appliquées sur l'horloge courante : les trames reçues pendant la rafale restent comptées.
+    clock = trips.reduce(addRoundTrip, clock)
+  })().finally(() => {
+    syncing = null
+  })
+  return syncing
+}
 
 /** Mesure le décalage tant que l'écran est monté (et à chaque retour sur l'onglet). */
 export function useServerClock() {
-  const { data, dataUpdatedAt, refetch } = useQuery({
-    ...serverTimeQuery(api),
-    refetchOnMount: 'always',
-    staleTime: Infinity,
-    retry: 3,
-  })
   useEffect(() => {
-    if (data) recordServerInstant(data.epochMillis, dataUpdatedAt)
-  }, [data, dataUpdatedAt])
-  useEffect(() => {
-    const onVisible = () => document.visibilityState === 'visible' && void refetch()
+    void syncServerClock()
+    const onVisible = () => document.visibilityState === 'visible' && void syncServerClock()
     document.addEventListener('visibilitychange', onVisible)
     return () => document.removeEventListener('visibilitychange', onVisible)
-  }, [refetch])
+  }, [])
 }
 
 /** Instant serveur relu à `intervalMs` (décomptes). */
