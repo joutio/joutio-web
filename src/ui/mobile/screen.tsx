@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { setStyleVar } from '../lib/style-var'
 import { useBannerPresence, useGlobalBanner } from '../primitives/banner'
@@ -28,24 +28,6 @@ export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, cla
   const banner = useBannerPresence(global ?? own)
   const head = useRef<HTMLDivElement>(null)
   const main = useRef<HTMLElement>(null)
-  const foot = useRef<HTMLDivElement>(null)
-  // Filet du haut de la barre basse (2026-11-14) : visible tant que du contenu reste sous elle, effacé en bas de page
-  // ou quand tout tient. Écrit sur la barre seule, comme `--jo-header-edge` sur l'en-tête.
-  const updateFootEdge = () => {
-    const element = main.current
-    if (!element || !foot.current) return
-    const below = element.scrollHeight - element.clientHeight - element.scrollTop
-    setStyleVar(foot.current, '--jo-footer-edge', String(Math.max(0, Math.min(1, below / 8))))
-  }
-  useLayoutEffect(() => {
-    const element = main.current
-    if (!element || !bottomBar) return
-    updateFootEdge()
-    const observer = new ResizeObserver(updateFootEdge)
-    observer.observe(element)
-    if (element.firstElementChild) observer.observe(element.firstElementChild)
-    return () => observer.disconnect()
-  })
   return (
     // Largeur « regular » (cadre web paysage, `jo-regular`, 2026-11-16) : la bottom nav passe en rail à gauche du contenu
     // (`flex-row-reverse` : l'ordre du DOM reste contenu puis navigation). Les overlays couvrent les deux.
@@ -60,14 +42,14 @@ export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, cla
       </div>
       <main ref={main} onScroll={(event) => {
         setStyleVar(head.current, '--jo-header-edge', String(Math.max(0, Math.min(1, event.currentTarget.scrollTop / 8))))
-        if (bottomBar) updateFootEdge()
       }} className={cn('jo-no-scrollbar min-h-0 flex-1 overflow-y-auto', !bottomNav && !bottomBar && 'pb-[var(--jo-safe-bottom,0px)]')}>
         {children}
       </main>
-      {/* Sans bottom nav, la barre basse porte la safe area : ses boutons ne passent jamais sous l'indicateur d'accueil. */}
+      {/* Sans bottom nav, la barre basse porte la safe area : ses boutons ne passent jamais sous l'indicateur d'accueil.
+          Filet haut `border` permanent (2026-11-19), défilement ou non. */}
       {bottomBar && (
-        <div ref={foot} className={cn('jo-bottom-bar relative flex-none', !bottomNav && 'pb-[var(--jo-safe-bottom,0px)]')}>
-          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-jo-border" style={{ opacity: 'var(--jo-footer-edge, 0)' }} />
+        <div className={cn('jo-bottom-bar relative flex-none', !bottomNav && 'pb-[var(--jo-safe-bottom,0px)]')}>
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-jo-border" />
           {bottomBar}
         </div>
       )}
