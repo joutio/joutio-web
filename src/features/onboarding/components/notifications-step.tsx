@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowCounterClockwiseIcon, BellRingingIcon, LightningIcon, MedalIcon } from '@phosphor-icons/react'
+import { ArrowCounterClockwiseIcon, BellRingingIcon, LightningIcon, UserPlusIcon } from '@phosphor-icons/react'
 import { useT } from '@/lib/i18n'
 import { enablePush } from '@/lib/push'
 import { trackEvent } from '@/lib/telemetry'
@@ -60,7 +60,7 @@ export function NotificationsStep() {
       <div className="overflow-hidden rounded-jo-lg bg-jo-surface">
         <ListRow icon={LightningIcon} label={t('onboarding.notifications.challenge')} control="none" />
         <ListRow icon={ArrowCounterClockwiseIcon} label={t('onboarding.notifications.rematch')} control="none" />
-        <ListRow icon={MedalIcon} label={t('onboarding.notifications.rank')} control="none" last />
+        <ListRow icon={UserPlusIcon} label={t('onboarding.notifications.follower')} control="none" last />
       </div>
     </Steps>
   )

@@ -10,8 +10,8 @@ import {
   GlobeHemisphereWestIcon,
   InfoIcon,
   LifebuoyIcon,
+  FlagIcon,
   LightningIcon,
-  MedalIcon,
   PaletteIcon,
   ProhibitIcon,
   RobotIcon,
@@ -19,7 +19,9 @@ import {
   SparkleIcon,
   SpeakerHighIcon,
   TrashIcon,
+  UserPlusIcon,
 } from '@phosphor-icons/react'
+import type { NotificationCategory } from '@joutio/client/api-types'
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useMe } from '@/features/me'
@@ -108,12 +110,13 @@ function PrivacyPage() {
 
 function NotificationsPage() {
   const t = useT()
-  const device = useDeviceSettings()
   const preferences = useNotificationPreferences()
   const setPreference = useSetNotificationPreference()
   const [push, setPush] = useState<PushAvailability>(pushPermission)
   const [enabling, setEnabling] = useState(false)
-  const rooms = preferences.data?.find((item) => item.category === 'ROOM')?.enabled ?? true
+  // Préférences serveur, activées par défaut (`reglages.md` § 5).
+  const enabled = (category: NotificationCategory) => preferences.data?.find((item) => item.category === category)?.enabled ?? true
+  const toggle = (category: NotificationCategory) => (on: boolean) => setPreference.mutate({ category, enabled: on })
 
   const activatePush = async () => {
     setEnabling(true)
@@ -140,9 +143,10 @@ function NotificationsPage() {
         />
       )}
       <Group title={t('notifications.when')}>
-        <ListRow icon={LightningIcon} label={t('settings.notifyChallenges')} sub={t('notifications.challengesSub')} control="toggle" on={rooms} onToggle={(on) => setPreference.mutate({ category: 'ROOM', enabled: on })} />
-        <ListRow icon={ArrowCounterClockwiseIcon} label={t('settings.notifyRematches')} sub={t('notifications.rematchesSub')} control="toggle" on={device.rematches} onToggle={(on) => device.set('rematches', on)} />
-        <ListRow icon={MedalIcon} label={t('settings.notifyRanks')} sub={t('notifications.ranksSub')} control="toggle" on={device.ranks} onToggle={(on) => device.set('ranks', on)} last />
+        <ListRow icon={LightningIcon} label={t('settings.notifyChallenges')} sub={t('notifications.challengesSub')} control="toggle" on={enabled('ROOM')} onToggle={toggle('ROOM')} />
+        <ListRow icon={ArrowCounterClockwiseIcon} label={t('settings.notifyRematches')} sub={t('notifications.rematchesSub')} control="toggle" on={enabled('REMATCH')} onToggle={toggle('REMATCH')} />
+        <ListRow icon={UserPlusIcon} label={t('settings.notifyFollowers')} sub={t('notifications.followersSub')} control="toggle" on={enabled('FOLLOW')} onToggle={toggle('FOLLOW')} />
+        <ListRow icon={FlagIcon} label={t('settings.notifyReports')} sub={t('notifications.reportsSub')} control="toggle" on={enabled('QUESTION')} onToggle={toggle('QUESTION')} last />
       </Group>
     </SettingsScreen>
   )
