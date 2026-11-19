@@ -11,7 +11,7 @@ import {
   type GameChoice,
   type GameState,
 } from '@joutio/client/game'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { gameService } from '../lib/game-service'
 import { sendAnswer } from '../lib/send-answer'
 
@@ -104,6 +104,14 @@ export function useDuelArena({ gameId, game, now, serverNow, userId, language, r
 
   const isAnswerable = scene.kind === 'question' && !scene.locked && !scene.overdue && !yourPick && pendingAnswer == null
 
+  // Affichage réel des réponses de chaque manche (montre locale, une durée seulement) : le temps de réflexion envoyé
+  // part de là, pas de l'horodatage serveur que la latence décale.
+  const answersShownAt = useRef<Record<number, number>>({})
+  const showing = scene.kind === 'question'
+  useEffect(() => {
+    if (showing && !(roundIndex in answersShownAt.current)) answersShownAt.current[roundIndex] = Date.now()
+  }, [showing, roundIndex])
+
   // Rattrapage REST : l'écho de ma réponse tarde → l'arène rejoue l'historique au lieu
   // d'attendre le reconnect WS (jusqu'à 30 s).
   const pendingEchoOverdue = pendingAnswer != null && now - pendingAnswer.sentAt > PENDING_ECHO_GRACE_MS
@@ -136,9 +144,10 @@ export function useDuelArena({ gameId, game, now, serverNow, userId, language, r
   const handleAnswer = (choice: string) => {
     if (!isAnswerable || !isGameChoice(choice)) return
     const round = roundIndex
+    const clientElapsedMs = Math.max(0, Date.now() - (answersShownAt.current[round] ?? Date.now()))
     setPending({ round, choice, sentAt: serverNow() })
     sendAnswer({
-      send: (signal) => gameService.answer(gameId, round + 1, choice, signal),
+      send: (signal) => gameService.answer(gameId, round + 1, choice, clientElapsedMs, signal),
       serverNow,
       deadline: answerDeadlineMs(currentRound),
     }).catch(() => {
