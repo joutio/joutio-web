@@ -1,3 +1,9 @@
+## [2.23.1](https://github.com/joutio/joutio-web/compare/v2.23.0...v2.23.1) (2026-11-19)
+
+### Bug Fixes
+
+* **duel:** NTP-like server clock and 4 s STOMP heartbeat ([14d446c](https://github.com/joutio/joutio-web/commit/14d446cb30dd46344b16ebcac26a807d8413b844))
+
 ## [2.23.0](https://github.com/joutio/joutio-web/compare/v2.22.4...v2.23.0) (2026-11-19)
 
 ### Features
