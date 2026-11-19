@@ -1,3 +1,9 @@
+## [2.23.0](https://github.com/joutio/joutio-web/compare/v2.22.4...v2.23.0) (2026-11-19)
+
+### Features
+
+* **result:** badge unlocks in the result sequence and image descriptions ([bb9f2a6](https://github.com/joutio/joutio-web/commit/bb9f2a6760f05887ab179dcea402986ec9ffe625))
+
 ## [2.22.4](https://github.com/joutio/joutio-web/compare/v2.22.3...v2.22.4) (2026-11-19)
 
 ### Bug Fixes
