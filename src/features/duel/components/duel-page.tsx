@@ -197,9 +197,11 @@ export function DuelPage() {
   // (rendu, horloge), ce qui coupait le retrait du bandeau. Au-delà de la marge, la scène serveur l'emporte.
   const introRound = scene.kind === 'roundIntro' ? scene.round : scene.kind === 'question' && scene.round === introSeen && scene.elapsedMs < INTRO_TAIL_MS ? scene.round : null
   const introOpen = introRound !== null && introDone !== introRound
-  // Réponses : seulement dans la scène de question (la lecture de 2 s est jouée par l'animation, calée sur
-  // `revealAt` du serveur) ou à la révélation, jamais derrière l'intro.
-  const answersShown = !introOpen && (scene.kind === 'question' || scene.kind === 'reveal')
+  // Réponses : à leur place mais invisibles pendant la lecture verrouillée, puis visibles dès la révélation serveur
+  // (`revealedAt`) ou au résultat de la manche, jamais derrière l'intro. Elles entrent une à une et se cliquent dès
+  // leur entrée ; le chrono part à la fin (`timerRunning`).
+  const answersMounted = !introOpen && (scene.kind === 'question' || scene.kind === 'reveal')
+  const answersShown = answersMounted && !(scene.kind === 'question' && scene.locked)
   const animateQuestion = !arena.joinedLate || introDone === arena.roundIndex
   const answers: AnswerCardProps[] = arena.answers.map(({ choice, label }) => {
     const mine = arena.yourPick === choice || arena.pendingChoice === choice
@@ -212,7 +214,7 @@ export function DuelPage() {
     return { label, state, notch, onClick: () => arena.handleAnswer(choice) }
   })
   const seconds = Math.max(0, Math.ceil(arena.timeLeftDisplay))
-  const timerState = revealed || (scene.kind === 'question' && scene.locked) ? 'frozen' : 'running'
+  const timerState = scene.kind === 'question' && scene.timerRunning ? 'running' : 'frozen'
   const gaugeYou = arena.gauge.you === 'idle' ? 'rest' : arena.gauge.you
   const gaugeThem = arena.gauge.them === 'idle' ? 'rest' : arena.gauge.them
 
@@ -247,9 +249,12 @@ export function DuelPage() {
                 meta={t('duel.meta', { topic, round: roundNumber, total: ROUNDS })}
                 image={arena.imageUrl ?? undefined}
                 imageAlt={arena.imageAlt}
-                answers={answersShown ? answers : undefined}
+                answers={answersMounted ? answers : undefined}
+                answersShown={answersShown}
                 details={answerDetails}
                 animated={animateQuestion && scene.kind === 'question'}
+                // La lecture est la phase verrouillée du serveur : les réponses entrent sans délai à leur arrivée.
+                readDelay={false}
               />
             </div>
           </div>

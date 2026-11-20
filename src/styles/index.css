@@ -342,9 +342,9 @@
   animation-delay: calc(var(--jo-question-read) + var(--jo-answer-index) * var(--jo-answer-stagger));
 }
 
-/* Réponses inactives jusqu'à la fin de l'apparition. Reste actif en mouvement réduit. */
+/* Durée de l'apparition, sans effet visuel : sa fin déclenche `onRevealed`, y compris en mouvement réduit. */
 .jo-question-answers {
-  animation: jo-question-lock calc(var(--jo-question-read) + (var(--jo-answer-count) - 1) * var(--jo-answer-stagger) + var(--jo-motion-base-duration)) linear;
+  animation: jo-question-appear calc(var(--jo-question-read) + (var(--jo-answer-count) - 1) * var(--jo-answer-stagger) + var(--jo-motion-base-duration)) linear;
 }
 
 @keyframes jo-fade {
@@ -360,17 +360,19 @@
   }
 }
 
+/* Une réponse ne se clique qu'une fois à l'écran : `pointer-events` bascule à mi-entrée. */
 @keyframes jo-answer-in {
   from {
     opacity: 0;
     transform: translateY(32px);
+    pointer-events: none;
   }
 }
 
-@keyframes jo-question-lock {
+@keyframes jo-question-appear {
   from,
   to {
-    pointer-events: none;
+    visibility: visible;
   }
 }
 
