@@ -2,7 +2,7 @@ import type { ChallengeView } from '@joutio/client/api-types'
 import { describe, expect, it } from 'vitest'
 import { splitChallenges } from './challenges-service'
 
-const user = (userId: string) => ({ userId, pseudonym: userId, avatarOptions: null, suspended: false })
+const user = (userId: string) => ({ userId, pseudonym: userId, avatarOptions: null, suspended: false, premium: false })
 const challenge = (challengeId: string, from: string, to: string, expiresAt: string, status: ChallengeView['status'] = 'PENDING'): ChallengeView => ({
   challengeId,
   topic: { topicId: 't', names: { fr: 'Sujet' }, category: null, imageUrl: null, pictogramUrl: null },
