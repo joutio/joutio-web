@@ -34,7 +34,7 @@ export function BirthDateStep() {
 
   return (
     <Screen
-      bottomNav={
+      footer={
         <div className="flex-none bg-jo-bg px-4 pt-2 pb-[calc(var(--jo-safe-bottom,0px)+16px)]">
           <Button full disabled={!form.formState.isValid} loading={save.isPending} onClick={() => void submit()}>
             {t('birth.continue')}

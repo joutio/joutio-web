@@ -13,6 +13,11 @@ export type ScreenProps = {
   /** Barre fixe au-dessus de la bottom nav : action, ligne du joueur, etc. */
   bottomBar?: ReactNode
   bottomNav?: ReactNode
+  /**
+   * Pied d'action d'un parcours sans navigation (onboarding : Continuer) : sous le contenu, il porte lui-même la safe
+   * area. Contrairement à `bottomNav`, il ne passe jamais en rail en largeur « regular » (2026-11-20).
+   */
+  footer?: ReactNode
   /** Sheets et overlays, rendus dans l'écran. */
   overlay?: ReactNode
   className?: string
@@ -23,7 +28,7 @@ export type ScreenProps = {
  * Structure d'un écran mobile : header, contenu scrollable, barre basse facultative, bottom nav.
  * Les safe areas viennent de `--jo-safe-top` et `--jo-safe-bottom`, à 0 par défaut.
  */
-export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, className, children }: ScreenProps) {
+export function Screen({ banner: own, header, bottomBar, bottomNav, footer, overlay, className, children }: ScreenProps) {
   const global = useGlobalBanner()
   const banner = useBannerPresence(global ?? own)
   const head = useRef<HTMLDivElement>(null)
@@ -42,17 +47,18 @@ export function Screen({ banner: own, header, bottomBar, bottomNav, overlay, cla
       </div>
       <main ref={main} onScroll={(event) => {
         setStyleVar(head.current, '--jo-header-edge', String(Math.max(0, Math.min(1, event.currentTarget.scrollTop / 8))))
-      }} className={cn('jo-no-scrollbar min-h-0 flex-1 overflow-y-auto', !bottomNav && !bottomBar && 'pb-[var(--jo-safe-bottom,0px)]')}>
+      }} className={cn('jo-no-scrollbar min-h-0 flex-1 overflow-y-auto', !bottomNav && !bottomBar && !footer && 'pb-[var(--jo-safe-bottom,0px)]')}>
         {children}
       </main>
       {/* Sans bottom nav, la barre basse porte la safe area : ses boutons ne passent jamais sous l'indicateur d'accueil.
           Filet haut `border` permanent (2026-11-19), défilement ou non. */}
       {bottomBar && (
-        <div className={cn('jo-bottom-bar relative flex-none', !bottomNav && 'pb-[var(--jo-safe-bottom,0px)]')}>
+        <div className={cn('jo-bottom-bar relative flex-none', !bottomNav && !footer && 'pb-[var(--jo-safe-bottom,0px)]')}>
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-jo-border" />
           {bottomBar}
         </div>
       )}
+      {footer}
       </div>
       {bottomNav}
       {overlay}
