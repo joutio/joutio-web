@@ -1,3 +1,9 @@
+## [2.26.0](https://github.com/joutio/joutio-web/compare/v2.25.0...v2.26.0) (2026-11-20)
+
+### Features
+
+* **duel:** answers clickable as they enter, timer after the appearance ([8b59577](https://github.com/joutio/joutio-web/commit/8b59577b936d866414726cb8113f383732a925f0))
+
 ## [2.25.0](https://github.com/joutio/joutio-web/compare/v2.24.0...v2.25.0) (2026-11-19)
 
 ### Features
