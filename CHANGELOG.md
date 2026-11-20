@@ -1,3 +1,9 @@
+## [2.28.0](https://github.com/joutio/joutio-web/compare/v2.27.2...v2.28.0) (2026-11-20)
+
+### Features
+
+* **challenges:** remind a sent challenge ([4b6e1f4](https://github.com/joutio/joutio-web/commit/4b6e1f4905a8d302858d28d59b73a30f583a7f54))
+
 ## [2.27.2](https://github.com/joutio/joutio-web/compare/v2.27.1...v2.27.2) (2026-11-20)
 
 ### Bug Fixes
