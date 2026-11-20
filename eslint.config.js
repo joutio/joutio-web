@@ -6,8 +6,8 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 /**
- * Dépendances exclues par le kit web (`design/specs/web-kit.md` § 3) : les composants viennent du lab. Exceptions
- * du 2026-11-12 : Vaul (feuilles, `MobileSheet`) et Embla (`Carousel`) ; Radix reste interdit en import direct.
+ * Dépendances exclues par le kit web (`design/specs/web-kit.md` § 3) : les composants viennent du lab. Exception
+ * du 2026-11-12 : Vaul (feuilles, `MobileSheet`) ; Radix reste interdit en import direct.
  */
 const EXCLUDED = [
   '@radix-ui/*',

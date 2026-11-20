@@ -7,7 +7,6 @@ import {
   Banner,
   BottomNav,
   Button,
-  Carousel,
   Chip,
   Dialog,
   EmptyState,
@@ -18,6 +17,7 @@ import {
   Logo,
   Menu,
   MobileSheet,
+  TabsScrollView,
   MobileTopBar,
   Notice,
   Pill,
@@ -68,20 +68,23 @@ export function DevUiPage() {
             <ListRow label="Première ligne" sub="Avec sous-titre" />
             <ListRow label="Interrupteur" control="toggle" on={toggle} onToggle={setToggle} last />
           </MobileSheet>
-          {/* Carrousel (Embla) dans une feuille haute (Vaul) : balayage horizontal, chaque page défile verticalement. */}
+          {/* Pages à balayer (défilement natif aimanté) dans une feuille haute (Vaul) : chaque page défile verticalement. */}
           <MobileSheet open={review} onClose={() => setReview(false)} title="Carrousel" subtitle={`Page ${slide + 1} sur 3`} tall>
-            <Carousel
-              label="Pages"
+            <TabsScrollView
+              contained
               className="-mx-4 h-full"
-              index={slide}
-              onIndexChange={setSlide}
-              slides={[0, 1, 2].map((page) => (
-                <div key={page} className="grid gap-2 px-4">
-                  {Array.from({ length: 24 }, (_, row) => (
-                    <ListRow key={row} label={`Page ${page + 1} · ligne ${row + 1}`} last={row === 23} />
-                  ))}
-                </div>
-              ))}
+              value={String(slide)}
+              onChange={(next) => setSlide(Number(next))}
+              pages={[0, 1, 2].map((page) => ({
+                value: String(page),
+                content: (
+                  <div className="jo-no-scrollbar grid h-full gap-2 overflow-y-auto overscroll-y-contain px-4">
+                    {Array.from({ length: 24 }, (_, row) => (
+                      <ListRow key={row} label={`Page ${page + 1} · ligne ${row + 1}`} last={row === 23} />
+                    ))}
+                  </div>
+                ),
+              }))}
             />
           </MobileSheet>
           {unlock && (

@@ -24,7 +24,7 @@ export type TabsScrollViewProps<T extends string> = {
  * Contenu d'onglets. Deux usages, comme dans le lab :
  * - **onglets** (Profil, Fiche sujet…) : sur le web (décision du 2026-11-12), pas de balayage, seule la page de l'onglet
  *   choisi est affichée, les autres restent montées mais masquées (données et défilement conservés) ;
- * - **pages à balayer** (`contained` : Détails du duel, Signalements d'une question) : défilement horizontal natif
+ * - **pages à balayer** (`contained` : Détails du duel, Signalements d'une question, séquence de déblocages) : défilement horizontal natif
  *   aimanté, porté tel quel du lab (2026-11-12, rendu identique demandé) — il suit la page choisie et la met à jour au
  *   balayage.
  */

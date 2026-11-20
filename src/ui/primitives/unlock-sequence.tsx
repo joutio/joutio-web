@@ -1,14 +1,14 @@
 import { ShareNetworkIcon } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn'
-import { Carousel } from '../web/carousel'
+import { TabsScrollView } from '../mobile/tabs-scroll-view'
 import { Button } from './button'
 import { IconButton } from './icon-button'
 import { PageDots } from './page-dots'
 import { useT } from '@/lib/i18n'
 
 export type UnlockSequenceProps = {
-  /** Tous les déblocages (`RankPromotion`, `TitleUnlock`, `BadgeUnlock`…), à balayer (Embla) ; `step` désigne celui affiché. */
+  /** Tous les déblocages (`RankPromotion`, `TitleUnlock`, `BadgeUnlock`…), à balayer (défilement natif aimanté, comme Détails du duel) ; `step` désigne celui affiché. */
   slides: readonly ReactNode[]
   /** Déblocage atteint au balayage. */
   onStepChange?: (step: number) => void
@@ -41,13 +41,15 @@ export function UnlockSequence({ slides, onStepChange, step = 0, steps = 1, last
         )}
       </div>
       {/* Le déblocage tient entre les deux barres, sans défiler (2026-11-16) : son héros se comprime. */}
-      <Carousel
-        label={t('ds.unlocks')}
-        className="flex-1"
-        slideClassName="flex flex-col overflow-y-hidden"
-        slides={slides}
-        index={step}
-        onIndexChange={(next) => onStepChange?.(next)}
+      <TabsScrollView
+        contained
+        className="min-h-0 flex-1"
+        value={String(step)}
+        onChange={(next) => onStepChange?.(Number(next))}
+        pages={slides.map((slide, index) => ({
+          value: String(index),
+          content: <div className="flex h-full flex-col overflow-hidden">{slide}</div>,
+        }))}
       />
       <div className="grid flex-none grid-cols-[52px_minmax(0,1fr)] gap-2 px-5 pt-3 pb-[calc(var(--jo-safe-bottom,0px)+24px)]">
         <IconButton icon={ShareNetworkIcon} label={t('profile.share')} variant="gray" size="L" className="w-[52px] rounded-jo-sm" onClick={onShare} />

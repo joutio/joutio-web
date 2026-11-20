@@ -30,7 +30,6 @@ web (`design/specs/platforms/web.md`, `desktop.md`).
   - `@fontsource-variable/geist(-mono)`, `@joutio/client` ;
   - `@dicebear/core` et `@dicebear/styles` : avatars, styles chargés à la demande ;
   - `vaul` : feuilles rendues dans la colonne, sans portail ;
-  - `embla-carousel-react` : séquence de déblocages ;
   - `uqr` : QR code local du partage.
 - **Développement** : Vite 8, Tailwind v4, TypeScript strict, ESLint, Vitest (jsdom, Testing
   Library).
