@@ -1,3 +1,9 @@
+## [2.27.2](https://github.com/joutio/joutio-web/compare/v2.27.1...v2.27.2) (2026-11-20)
+
+### Bug Fixes
+
+* **result:** measure compact height once the pages appear ([15ac4bf](https://github.com/joutio/joutio-web/commit/15ac4bf3fdf23c372b218e014a151792346026be))
+
 ## [2.27.1](https://github.com/joutio/joutio-web/compare/v2.27.0...v2.27.1) (2026-11-20)
 
 ### Bug Fixes
