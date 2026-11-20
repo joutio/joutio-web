@@ -1,8 +1,8 @@
 import type { ChallengeView } from '@joutio/client/api-types'
-import type { RoomView } from '@joutio/client/rooms'
+import { remindDelay, type RoomView } from '@joutio/client/rooms'
 import { useQueryClient } from '@tanstack/react-query'
 import { DoorOpenIcon, LightningIcon, WarningCircleIcon } from '@phosphor-icons/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
@@ -19,7 +19,7 @@ import { CHALLENGES_TABS, ROUTES, type ChallengesTab } from '@/shared/routes'
 import { useTabParam } from '@/shared/use-tab-param'
 import { topicName } from '@/shared/topics'
 import { Button, ChallengeListRow, EmptyState, FeedFooter, JoutioTabs, ListRow, MobileTopBar, Screen, SectionHeader, Skeleton } from '@/ui'
-import { refreshChallenges, useAcceptChallenge, useCancelChallenges, useDeclineChallenges, useMyChallenges, useMyRooms } from '../hooks/use-challenges'
+import { refreshChallenges, useAcceptChallenge, useCancelChallenges, useDeclineChallenges, useMyChallenges, useMyRooms, useRemindChallenge } from '../hooks/use-challenges'
 import { openRooms, RECEIVED_PAGE, splitChallenges } from '../lib/challenges-service'
 
 const TAB_LABELS: Record<ChallengesTab, MessageKey> = {
@@ -48,10 +48,21 @@ type RowProps = {
   accept: ReturnType<typeof useAcceptChallenge>
   decline: ReturnType<typeof useDeclineChallenges>
   cancel: ReturnType<typeof useCancelChallenges>
+  remind: ReturnType<typeof useRemindChallenge>
+}
+
+/** Re-rend la ligne toutes les 15 s tant que `active` : le décompte de la relance avance sans relire le serveur. */
+function useTicking(active: boolean) {
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    if (!active) return
+    const timer = window.setInterval(() => setTick((tick) => tick + 1), 15_000)
+    return () => window.clearInterval(timer)
+  }, [active])
 }
 
 /** Un défi : le joueur, le sujet et le délai, puis deux actions (Refuser / Accepter, Annuler / Relancer). */
-function ChallengeRow({ challenge, kind, last, accept, decline, cancel }: RowProps) {
+function ChallengeRow({ challenge, kind, last, accept, decline, cancel, remind }: RowProps) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const duration = useDuration()
@@ -59,6 +70,8 @@ function ChallengeRow({ challenge, kind, last, accept, decline, cancel }: RowPro
   const src = useUserAvatar(player)
   const identity = usePlayerIdentity()
   const now = readServerNow()
+  const remindIn = kind === 'sent' ? remindDelay(challenge, now) : 0
+  useTicking(remindIn > 0)
   const status =
     kind === 'received'
       ? t('challenges.expiresIn', { duration: duration(Date.parse(challenge.expiresAt) - now) })
@@ -87,8 +100,13 @@ function ChallengeRow({ challenge, kind, last, accept, decline, cancel }: RowPro
       onClick={identity.open(player.userId)}
       last={last}
       primaryVariant="tinted"
-      // Relancer un défi n'existe pas côté BFF (`defis.md` § 5) : visible, inactif, comme le mobile.
-      primary={{ label: t('challenges.remind'), disabled: true }}
+      // Relance au plus toutes les 10 min (`defis.md` § 5) : le décompte s'affiche dans le bouton.
+      primary={{
+        label: remindIn > 0 ? t('challenges.remindIn', { duration: duration(remindIn) }) : t('challenges.remind'),
+        loading: remind.isPending && remind.variables === id,
+        disabled: remindIn > 0 || remind.isPending,
+        onClick: () => remind.mutate(id),
+      }}
       secondary={{ label: t('challenges.cancel'), loading: cancel.isPending && Boolean(cancel.variables?.includes(id)), disabled: cancel.isPending, onClick: () => cancel.mutate([id]) }}
     />
   )
@@ -133,6 +151,7 @@ export function ChallengesPage() {
   const accept = useAcceptChallenge()
   const decline = useDeclineChallenges()
   const cancel = useCancelChallenges()
+  const remind = useRemindChallenge()
   const createRoom = useCreatePrivateRoom()
   const [tab, setTab] = useTabParam(CHALLENGES_TABS, 'received')
   const [receivedPages, setReceivedPages] = useState(1)
@@ -169,7 +188,7 @@ export function ChallengesPage() {
       ],
     })
 
-  const rowProps = { accept, decline, cancel }
+  const rowProps = { accept, decline, cancel, remind }
 
   return (
     <Screen

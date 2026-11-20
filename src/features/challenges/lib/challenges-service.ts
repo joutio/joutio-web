@@ -9,6 +9,7 @@ export const CHALLENGES_ENDPOINTS = {
   accept: (challengeId: string) => `/api/challenges/${id(challengeId)}/accept`,
   decline: (challengeId: string) => `/api/challenges/${id(challengeId)}/decline`,
   cancel: (challengeId: string) => `/api/challenges/${id(challengeId)}/cancel`,
+  remind: (challengeId: string) => `/api/challenges/${id(challengeId)}/remind`,
 } as const
 
 /** Défis nominatifs et salons du joueur (`defis.md` § 6). */
@@ -17,6 +18,7 @@ export const challengesService = {
   accept: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.accept(challengeId)),
   decline: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.decline(challengeId)),
   cancel: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.cancel(challengeId)),
+  remind: (challengeId: string) => api.post<void>(CHALLENGES_ENDPOINTS.remind(challengeId)),
 }
 
 export const RECEIVED_PAGE = 10

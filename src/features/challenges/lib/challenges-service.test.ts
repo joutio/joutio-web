@@ -13,6 +13,7 @@ const challenge = (challengeId: string, from: string, to: string, expiresAt: str
   gameId: null,
   createdAt: expiresAt,
   expiresAt,
+  remindableAt: expiresAt,
 })
 
 describe('splitChallenges', () => {

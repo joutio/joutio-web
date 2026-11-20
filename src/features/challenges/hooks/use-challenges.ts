@@ -1,5 +1,5 @@
 import type { ChallengeView } from '@joutio/client/api-types'
-import { applyRoomPresence, roomsWaitingForViewer, type RoomView } from '@joutio/client/rooms'
+import { afterReminder, applyRoomPresence, roomsWaitingForViewer, type RoomView } from '@joutio/client/rooms'
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,7 +7,7 @@ import { useMe } from '@/features/me'
 import { useTabBadges } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { challengesQuery, myRoomsQuery, optimisticUpdate, queryKeys } from '@joutio/client/query'
-import { useRoomPresenceEvents } from '@/lib/realtime'
+import { readServerNow, useRoomPresenceEvents } from '@/lib/realtime'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
@@ -90,6 +90,34 @@ function useSettleChallenges(run: (id: string) => Promise<unknown>, status: 'DEC
 
 export const useDeclineChallenges = () => useSettleChallenges(challengesService.decline, 'DECLINED', 'challenges.declineError')
 export const useCancelChallenges = () => useSettleChallenges(challengesService.cancel, 'CANCELLED', 'challenges.cancelError')
+
+/**
+ * Relance d'un défi envoyé, **optimiste** : la prochaine relance est repoussée de 10 min sur place, restaurée si le
+ * serveur refuse (`defis.md` § 5).
+ */
+export function useRemindChallenge() {
+  const client = useQueryClient()
+  const t = useT()
+  return useMutation({
+    onMutate: async (challengeId: string) => {
+      const previous = client.getQueryData<ChallengeView[]>(queryKeys.challenges())
+      await optimisticUpdate(client, [queryKeys.challenges()], () =>
+        client.setQueryData<ChallengeView[]>(queryKeys.challenges(), (items) =>
+          items?.map((item) => (item.challengeId === challengeId ? afterReminder(item, readServerNow()) : item)),
+        ),
+      )
+      return { previous }
+    },
+    mutationFn: (challengeId: string) => challengesService.remind(challengeId),
+    onSuccess: () => toast.success(t('challenges.reminded')),
+    onError: (_cause, challengeId, context) => {
+      const before = context?.previous?.find((item) => item.challengeId === challengeId)
+      if (before) client.setQueryData<ChallengeView[]>(queryKeys.challenges(), (items) => items?.map((item) => (item.challengeId === challengeId ? before : item)))
+      void client.invalidateQueries({ queryKey: queryKeys.challenges() })
+      toast.error(t('challenges.remindError'), t('challenges.retryText'))
+    },
+  })
+}
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
