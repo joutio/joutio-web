@@ -1,3 +1,9 @@
+## [2.26.2](https://github.com/joutio/joutio-web/compare/v2.26.1...v2.26.2) (2026-11-20)
+
+### Bug Fixes
+
+* **ui:** swipe unlock sequence with native snap scrolling ([94ea75c](https://github.com/joutio/joutio-web/commit/94ea75ca4165baa01ba396fdba6afe85d1cd242b))
+
 ## [2.26.1](https://github.com/joutio/joutio-web/compare/v2.26.0...v2.26.1) (2026-11-20)
 
 ### Bug Fixes
