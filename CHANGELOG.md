@@ -1,3 +1,9 @@
+## [2.27.0](https://github.com/joutio/joutio-web/compare/v2.26.2...v2.27.0) (2026-11-20)
+
+### Features
+
+* **players:** premium badge from player views ([e745bb6](https://github.com/joutio/joutio-web/commit/e745bb6fb65f62409a192d37677e282ede376508))
+
 ## [2.26.2](https://github.com/joutio/joutio-web/compare/v2.26.1...v2.26.2) (2026-11-20)
 
 ### Bug Fixes
