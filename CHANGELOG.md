@@ -1,3 +1,9 @@
+## [2.27.1](https://github.com/joutio/joutio-web/compare/v2.27.0...v2.27.1) (2026-11-20)
+
+### Bug Fixes
+
+* **onboarding:** keep the action footer below content on wide screens ([3c40a58](https://github.com/joutio/joutio-web/commit/3c40a583be72b3c47d1ff84fae1e7a9136f2960c))
+
 ## [2.27.0](https://github.com/joutio/joutio-web/compare/v2.26.2...v2.27.0) (2026-11-20)
 
 ### Features
