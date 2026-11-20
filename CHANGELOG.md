@@ -1,3 +1,9 @@
+## [2.26.1](https://github.com/joutio/joutio-web/compare/v2.26.0...v2.26.1) (2026-11-20)
+
+### Bug Fixes
+
+* **docker:** rebuild on patched base images ([dfa4885](https://github.com/joutio/joutio-web/commit/dfa48855452fc97507458f11d6a50e09f50f6a0a))
+
 ## [2.26.0](https://github.com/joutio/joutio-web/compare/v2.25.0...v2.26.0) (2026-11-20)
 
 ### Features
