@@ -1,7 +1,7 @@
 import type { ChallengeView } from '@joutio/client/api-types'
-import { remindDelay, type RoomView } from '@joutio/client/rooms'
+import { remindDelay, splitRoomsByOrigin, type RoomView } from '@joutio/client/rooms'
 import { useQueryClient } from '@tanstack/react-query'
-import { DoorOpenIcon, LightningIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { DoorOpenIcon, LightningIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMe, usePlayerIdentity } from '@/features/me'
@@ -119,11 +119,12 @@ function RoomRow({ room, last }: { room: RoomView; last: boolean }) {
   const language = useLanguageStore((state) => state.language)
   const duration = useDuration()
   const name = topicName(room.topic.names, language)
-  const who = room.opponent ? t('challenges.roomWith', { name: room.opponent.pseudonym }) : t('challenges.roomWaiting')
+  const opponent = room.opponent ? t('challenges.roomWith', { name: room.opponent.pseudonym }) : t('challenges.roomWaiting')
+  const who = room.origin === 'REMATCH' ? `${t('result.rematch')} · ${opponent}` : opponent
   const sub = room.expiresAt ? `${who} · ${t('challenges.expiresIn', { duration: duration(Date.parse(room.expiresAt) - readServerNow()) })}` : who
   return (
     <ListRow
-      icon={DoorOpenIcon}
+      icon={room.origin === 'SHARED' ? DoorOpenIcon : SwordIcon}
       label={name}
       sub={sub}
       control="chevron"
@@ -160,6 +161,7 @@ export function ChallengesPage() {
 
   const { received, sent } = splitChallenges(challenges.data, userId)
   const salons = openRooms(rooms.data)
+  const roomSections = splitRoomsByOrigin(salons)
   const loading = challenges.isPending || rooms.isPending
   const failed = challenges.isError || rooms.isError
   const empty = !loading && !failed && received.length + sent.length + salons.length === 0
@@ -290,16 +292,25 @@ export function ChallengesPage() {
             </section>
           )}
           {tab === 'sent' && sent.length === 0 && <EmptyState icon={LightningIcon} title={t('challenges.noSent')} description={t('challenges.noSentText')} />}
-          {tab === 'rooms' && salons.length > 0 && (
-            <section className="grid gap-3">
-              <SectionHeader title={t('challenges.privateRooms')} />
-              <div className={CARD}>
-                {salons.map((room, index) => (
-                  <RoomRow key={room.roomId} room={room} last={index === salons.length - 1} />
-                ))}
-              </div>
-            </section>
-          )}
+          {tab === 'rooms' &&
+            (
+              [
+                ['challenges.acceptedChallenges', roomSections.challenges],
+                ['challenges.privateRooms', roomSections.shared],
+              ] as const
+            ).map(
+              ([title, list]) =>
+                list.length > 0 && (
+                  <section key={title} className="grid gap-3">
+                    <SectionHeader title={t(title)} />
+                    <div className={CARD}>
+                      {list.map((room, index) => (
+                        <RoomRow key={room.roomId} room={room} last={index === list.length - 1} />
+                      ))}
+                    </div>
+                  </section>
+                ),
+            )}
           {tab === 'rooms' && salons.length === 0 && (
             <EmptyState
               icon={DoorOpenIcon}
