@@ -1,3 +1,9 @@
+## [2.30.0](https://github.com/joutio/joutio-web/compare/v2.29.0...v2.30.0) (2026-11-21)
+
+### Features
+
+* **block:** block and unblock players, blocked players page ([a04bb28](https://github.com/joutio/joutio-web/commit/a04bb287f8a41b98777fbcd3dbad4e4d5aa05d4e))
+
 ## [2.29.0](https://github.com/joutio/joutio-web/compare/v2.28.0...v2.29.0) (2026-11-20)
 
 ### Features
