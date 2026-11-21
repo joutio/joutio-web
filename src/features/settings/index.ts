@@ -1,4 +1,5 @@
 export { AvatarEditorPage } from './components/avatar-editor-page'
+export { BlockedPlayersPage } from './components/blocked-players-page'
 export { DeleteAccountPage } from './components/delete-account-page'
 export { SettingsButton } from './components/settings-button'
 export { SettingsCategoryPage } from './components/settings-category-page'

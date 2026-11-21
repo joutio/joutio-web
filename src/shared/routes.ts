@@ -22,6 +22,8 @@ export const ROUTES = {
   settings: '/me/settings',
   /** Page d'une catégorie des Réglages (`reglages.md` § 1). */
   settingsPage: (page: SettingsPage) => `/me/settings/${page}`,
+  /** Joueurs bloqués, poussé depuis Confidentialité (`reglages.md` § 1). */
+  blockedPlayers: '/me/settings/privacy/blocked',
   /** Éditer le profil (`editer-profil.md`). */
   editProfile: '/me/edit',
   /** Éditeur d'avatar et suppression du compte : poussés depuis les Réglages (`web.md` § 2 : « Réglages (avatar, suppression) »). */

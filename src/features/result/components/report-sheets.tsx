@@ -56,10 +56,15 @@ export type ReportPlayerSheetProps = {
   gameId?: string
   /** Contexte, par exemple « Ce duel · Rois de France ». */
   subtitle: string
+  /** Proposé après l'envoi : ferme la feuille puis demande confirmation du blocage. Absent si déjà bloqué. */
+  onBlock?: () => void
 }
 
-/** Signaler l'adversaire depuis le résultat (`resultat.md` § Signalements), le duel en contexte. */
-export function ReportPlayerSheet({ open, onClose, userId, name, gameId, subtitle }: ReportPlayerSheetProps) {
+/**
+ * Signaler un joueur, depuis le résultat (le duel en contexte) ou sa fiche (`resultat.md` § Signalements). Après
+ * l'envoi : « Bloquer {pseudo} » ou « Fermer ».
+ */
+export function ReportPlayerSheet({ open, onClose, userId, name, gameId, subtitle, onBlock }: ReportPlayerSheetProps) {
   const t = useT()
   const form = useForm({ resolver: zodResolver(userReportSchema), mode: 'onChange', defaultValues: { reasons: [] as UserReportReason[], comment: '' } })
   const report = useMutation({
@@ -75,9 +80,28 @@ export function ReportPlayerSheet({ open, onClose, userId, name, gameId, subtitl
       subtitle={sent ? undefined : subtitle}
       footer={
         sent ? (
-          <Button full variant="gray" tone="neutral" onClick={onClose}>
-            {t('report.close')}
-          </Button>
+          onBlock ? (
+            <div className="grid gap-2">
+              <Button
+                full
+                variant="tinted"
+                tone="destructive"
+                onClick={() => {
+                  onClose()
+                  onBlock()
+                }}
+              >
+                {t('report.block', { name })}
+              </Button>
+              <Button full variant="plain" tone="neutral" onClick={onClose}>
+                {t('report.close')}
+              </Button>
+            </div>
+          ) : (
+            <Button full variant="gray" tone="neutral" onClick={onClose}>
+              {t('report.close')}
+            </Button>
+          )
         ) : (
           <Button full disabled={!form.formState.isValid} loading={report.isPending} onClick={() => void form.handleSubmit((values) => report.mutate(values))()}>
             {t('report.send')}
@@ -86,7 +110,7 @@ export function ReportPlayerSheet({ open, onClose, userId, name, gameId, subtitl
       }
     >
       {sent ? (
-        <p className="jo-type-callout m-0 text-center text-pretty text-jo-muted">{t('report.playerThanks')}</p>
+        <p className="jo-type-callout m-0 text-center text-pretty text-jo-muted">{t(onBlock ? 'report.thanksBlock' : 'report.playerThanks')}</p>
       ) : (
         <div className="grid gap-3">
           <Controller

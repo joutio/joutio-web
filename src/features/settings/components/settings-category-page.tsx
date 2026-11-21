@@ -24,6 +24,7 @@ import {
 import type { NotificationCategory } from '@joutio/client/api-types'
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useBlockedPlayers } from '@/features/block'
 import { useMe } from '@/features/me'
 import { useAutoTrain } from '@/features/play'
 import { showPremium } from '@/features/premium'
@@ -95,10 +96,20 @@ function AccountPage() {
 
 function PrivacyPage() {
   const t = useT()
+  const navigate = useNavigate()
+  const from = useSettingsOrigin()
+  const blocked = useBlockedPlayers()
   return (
     <SettingsScreen title={t('settings.privacyCategory')}>
       <Group title={t('privacy.players')}>
-        <ListRow icon={ProhibitIcon} label={t('privacy.blocked')} value={t('settings.premiumSoon')} control="value" disabled last />
+        <ListRow
+          icon={ProhibitIcon}
+          label={t('privacy.blocked')}
+          value={blocked.data?.length ? String(blocked.data.length) : undefined}
+          control="chevron"
+          onClick={() => void navigate(ROUTES.blockedPlayers, { state: { from } })}
+          last
+        />
       </Group>
       <Group title={t('privacy.data')}>
         <ListRow icon={ShieldCheckIcon} label={t('privacy.policy')} control="chevron" onClick={openSite('/privacy')} />

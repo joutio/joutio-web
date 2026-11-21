@@ -1,7 +1,8 @@
 import { countryFlag, countryName } from '@joutio/client/geo'
-import { CheckIcon, DotsThreeIcon, FlagIcon, LightningIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import { CheckIcon, DotsThreeIcon, FlagIcon, LightningIcon, ProhibitIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useBlockPlayer, useConfirmBlock } from '@/features/block'
 import { finishedGames, GameGroups, useHistoryGames } from '@/features/history'
 import { useMe, usePlayerIdentity } from '@/features/me'
 import { useChallengePlayer } from '@/features/play'
@@ -40,8 +41,8 @@ const HERO_HEIGHT = 336
 /**
  * Fiche joueur (`design/specs/screens/fiche-joueur.md`, lab `/screens/fiche-joueur?view=compact`) : bannière en
  * parallaxe, avatar, titre porté, rang, pays, présence, puis Défier (65 %) et Suivre (35 %) qui passent dans la barre
- * compacte au défilement ; « Ton bilan » et les 10 dernières parties contre lui. Le menu ⋯ porte Signaler ; Bloquer
- * attend son endpoint BFF (écart consigné). Ma propre fiche renvoie au Profil.
+ * compacte au défilement ; « Ton bilan » et les 10 dernières parties contre lui. Le menu ⋯ porte Signaler et Bloquer ;
+ * un joueur bloqué porte la pastille « Bloqué » et « Débloquer » à la place des actions. Ma propre fiche renvoie au Profil.
  */
 export function PlayerPage() {
   const { userId = '' } = useParams()
@@ -54,6 +55,8 @@ export function PlayerPage() {
   const head = useHeadToHead(userId)
   const follow = useFollowPlayer(userId)
   const challenge = useChallengePlayer()
+  const block = useBlockPlayer({ userId, pseudonym: profile.data?.pseudonym ?? '' })
+  const confirmBlock = useConfirmBlock()
   const myId = me.data?.userId ?? ''
   const games = useHistoryGames(myId, { opponentId: userId, outcome: 'ALL', sort: 'RECENT' })
   const data = profile.data
@@ -75,7 +78,8 @@ export function PlayerPage() {
 
   const progression = data?.progression
   const tier = progression ? tierOf(progression.rating) : undefined
-  const canAct = Boolean(data && !data.isMe && !data.suspended && !data.bot)
+  const blocked = Boolean(data?.blocked)
+  const canAct = Boolean(data && !data.isMe && !data.suspended && !data.bot && !blocked)
   const name = data?.pseudonym ?? t('player.title')
   const latest = finishedGames(games.data?.pages.flatMap((page) => page.content) ?? []).slice(0, 10)
   const played = (head.data?.played ?? 0) > 0
@@ -86,6 +90,7 @@ export function PlayerPage() {
     setChallengeKey((value) => value + 1)
     setChallengeOpen(true)
   }
+  const askBlock = () => confirmBlock(name, () => block.mutate(true))
   const toggleFollow = () => {
     if (data && !follow.isPending) follow.mutate(!data.following)
   }
@@ -125,9 +130,15 @@ export function PlayerPage() {
                 )}
                 {data.country && <Pill>{`${countryFlag(data.country)} ${countryName(data.country, language)}`}</Pill>}
                 {data.suspended && <Pill tone="suspended">{t('player.suspended')}</Pill>}
+                {blocked && <Pill tone="wrong">{t('player.blockedBadge')}</Pill>}
               </div>
-              {!data.suspended && !data.bot && <span className="jo-type-caption text-jo-muted">{presenceLine(data.presence, t)}</span>}
+              {!data.suspended && !data.bot && !blocked && <span className="jo-type-caption text-jo-muted">{presenceLine(data.presence, t)}</span>}
             </div>
+            {blocked && (
+              <Button full variant="gray" tone="neutral" loading={block.isPending} onClick={() => block.mutate(false)}>
+                {t('player.unblock')}
+              </Button>
+            )}
             {canAct && (
               <div className="grid grid-cols-[65fr_35fr] gap-2">
                 {/* 65 / 35 : le défi est l'action principale (décision du 2026-11-06). */}
@@ -167,6 +178,7 @@ export function PlayerPage() {
                         setReportOpen(true)
                       },
                     },
+                    ...(blocked ? [] : [{ label: t('player.block'), icon: ProhibitIcon, destructive: true, onClick: askBlock }]),
                   ]}
                 />
               </div>
@@ -183,7 +195,7 @@ export function PlayerPage() {
                 })
               }
             />
-            <ReportPlayerSheet key={reportKey} open={reportOpen} onClose={() => setReportOpen(false)} userId={data.userId} name={name} subtitle={t('player.reportSubtitle')} />
+            <ReportPlayerSheet key={reportKey} open={reportOpen} onClose={() => setReportOpen(false)} userId={data.userId} name={name} subtitle={t('player.reportSubtitle')} onBlock={blocked ? undefined : askBlock} />
           </>
         ) : undefined
       }

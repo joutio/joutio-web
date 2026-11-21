@@ -55,7 +55,7 @@ Routes notables :
 - `/welcome` : onboarding ;
 - `/login` (alias qui relance la connexion) et `/callback` ;
 - `/me/edit` ;
-- `/me/settings[/{account,privacy,notifications,game,display,help}]` ;
+- `/me/settings[/{account,privacy,notifications,game,display,help}]`, `/me/settings/privacy/blocked` ;
 - `/join/:roomId` ;
 - `/dev/ui` : vitrine du socle, en dev seulement.
 

@@ -8,16 +8,29 @@ import { CARD, useSettingsOrigin } from '../lib/settings-options'
 
 /**
  * Cadre d'une page des Réglages : barre avec retour (« Profil » ou « Accueil » à la racine, « Réglages » dans une
- * catégorie) et bottom nav sur l'onglet d'origine.
+ * catégorie, la catégorie `parent` dans une page poussée) et bottom nav sur l'onglet d'origine.
  */
-export function SettingsScreen({ title, root = false, overlay, children }: { title: string; root?: boolean; overlay?: ReactNode; children: ReactNode }) {
+export function SettingsScreen({
+  title,
+  root = false,
+  parent,
+  overlay,
+  children,
+}: {
+  title: string
+  root?: boolean
+  /** Page poussée depuis une catégorie (Joueurs bloqués depuis Confidentialité). */
+  parent?: { path: string; label: string }
+  overlay?: ReactNode
+  children: ReactNode
+}) {
   const t = useT()
   const navigate = useNavigate()
   const from = useSettingsOrigin()
   const origin = TABS.find((tab) => tab.key === from)
-  const parent = root ? (origin?.path ?? ROUTES.me) : ROUTES.settings
-  const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(parent, { replace: true, state: { from } }))
-  const label = root ? t(origin?.label ?? 'nav.profile') : t('profile.settings')
+  const target = parent?.path ?? (root ? (origin?.path ?? ROUTES.me) : ROUTES.settings)
+  const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(target, { replace: true, state: { from } }))
+  const label = parent?.label ?? (root ? t(origin?.label ?? 'nav.profile') : t('profile.settings'))
   return (
     <Screen header={<MobileTopBar variant="inline" back={label} title={title} onBack={back} />} bottomNav={<TabNav active={from} />} overlay={overlay}>
       <div className="grid gap-6 px-4 pt-2 pb-8">{children}</div>

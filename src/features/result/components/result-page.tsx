@@ -3,6 +3,7 @@ import { isBonusRound, ROUNDS, sortedRounds, type GameResultView, type GameRound
 import { FlagIcon, LightningIcon, WarningCircleIcon, XIcon } from '@phosphor-icons/react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useBlockPlayer, useConfirmBlock } from '@/features/block'
 import { useMe, usePlayerIdentity } from '@/features/me'
 import { badgeUnlockOf } from '@/features/profile'
 import { useShare } from '@/features/share'
@@ -178,6 +179,8 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const matchmaking = useStartMatchmaking({ replace: true })
   const difficulty = useBotDifficulty((state) => state.difficulty)
   const rematch = useSendRematch({ userId, opponentId, topic, gameId })
+  const block = useBlockPlayer({ userId: opponentId ?? '', pseudonym: opponentName })
+  const confirmBlock = useConfirmBlock()
   const [step, setStep] = useState(0)
   const [sequenceDone, setSequenceDone] = useState(!celebrate)
   // Pages verticales du résultat : 0 le résultat, 1 Détails du duel (`resultat.md` § 6, comme le mobile).
@@ -383,6 +386,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
               name={opponentName}
               gameId={gameId}
               subtitle={t('result.reportContext', { topic: topic.name })}
+              onBlock={opponentProfile.data?.blocked ? undefined : () => confirmBlock(opponentName, () => block.mutate(true))}
             />
           )}
         </>
