@@ -1,3 +1,9 @@
+## [2.31.0](https://github.com/joutio/joutio-web/compare/v2.30.0...v2.31.0) (2026-11-25)
+
+### Features
+
+* migrate to @joutio/client 11.1, challenges as invited rooms ([cf23d8d](https://github.com/joutio/joutio-web/commit/cf23d8d31707c9987e97d4fa8eba2aedd54290e1))
+
 ## [2.30.0](https://github.com/joutio/joutio-web/compare/v2.29.0...v2.30.0) (2026-11-21)
 
 ### Features
