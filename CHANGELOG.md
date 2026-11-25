@@ -1,3 +1,9 @@
+## [2.32.0](https://github.com/joutio/joutio-web/compare/v2.31.0...v2.32.0) (2026-11-25)
+
+### Features
+
+* migrate to @joutio/client 12, live duel reward ([d1e9ff8](https://github.com/joutio/joutio-web/commit/d1e9ff8a70c8928b019a9e6d5a36d25f90e5d099))
+
 ## [2.31.0](https://github.com/joutio/joutio-web/compare/v2.30.0...v2.31.0) (2026-11-25)
 
 ### Features
