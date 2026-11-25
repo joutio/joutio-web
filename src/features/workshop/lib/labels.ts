@@ -1,4 +1,4 @@
-import type { QuestionReportReason } from '@joutio/client/api-types'
+import type { QuestionReportReason } from '@joutio/client/authoring'
 import type { QuestionStatus } from '@joutio/client/authoring'
 import type { MessageKey } from '@/lib/i18n'
 

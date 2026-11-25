@@ -1,4 +1,4 @@
-import { buildShareUrl, type ShareKind } from '@joutio/client/share'
+import { buildShareUrl, type ShareKind } from '@joutio/client/core/share'
 import { useCallback } from 'react'
 import { useShareStore } from './share-store'
 

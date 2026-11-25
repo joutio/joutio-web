@@ -2,7 +2,7 @@ import type { TierCode } from '../tokens.generated'
 import { Avatar } from './avatar'
 import { UnlockContent } from './unlock-content'
 import { useT } from '@/lib/i18n'
-import { tierKey } from '@joutio/client/i18n'
+import { tierKey } from '@joutio/client/core/i18n'
 
 export type RankPromotionProps = {
   from: TierCode

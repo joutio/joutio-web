@@ -1,23 +1,11 @@
-import type { Language } from '@joutio/client/api-types'
+import type { Language } from '@joutio/client/core/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { topicDescriptionsSchema, topicNamesSchema, topicTitlesSchema } from '@joutio/client/forms'
+import { topicDescriptionsSchema, topicNamesSchema, topicTitlesSchema } from '@joutio/client/authoring'
 import { useState } from 'react'
 import { Controller, useForm, useFormState, useWatch } from 'react-hook-form'
 import { useT } from '@/lib/i18n'
 import { useImageUpload } from '../hooks/use-image-upload'
-import {
-  MASTERY_TIER_LABELS,
-  MASTERY_TIERS,
-  normalizeTitles,
-  TITLE_MAX_LENGTH,
-  titleLabel,
-  titlesChanged,
-  titlesDraft,
-  type TitleLanguage,
-  type TopicTitles,
-  MAX_DESCRIPTION,
-  MAX_NAME,
-} from '@joutio/client/authoring'
+import { MASTERY_TIER_LABELS, MASTERY_TIERS, normalizeTitles, TITLE_MAX_LENGTH, titleLabel, titlesChanged, titlesDraft, type TitleLanguage, type TopicTitles, MAX_DESCRIPTION, MAX_NAME } from '@joutio/client/authoring'
 import { formatNumber, MASTERY_XP } from '@/features/topic'
 import { Badge, Button, Field, ImagePicker, ListRow, MobileSheet, RadioGroup, Segmented, tokens, type CategoryCode } from '@/ui'
 

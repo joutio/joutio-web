@@ -4,7 +4,7 @@ import { useT } from '@/lib/i18n'
 import { enablePush } from '@/lib/push'
 import { trackEvent } from '@/lib/telemetry'
 import { Button, ListRow, Notice } from '@/ui'
-import { useCompleteOnboarding } from '../hooks/use-onboarding'
+import { useCompleteOnboarding } from '@joutio/client/onboarding'
 import { useOnboardingStore } from '../onboarding-store'
 import { Steps } from './steps'
 
@@ -18,7 +18,7 @@ export function NotificationsStep() {
 
   // Après « Passer » : pas de premier thème, l'onboarding se termine ici.
   const next = () => {
-    if (skipped) complete.mutate(undefined, { onSuccess: () => trackEvent('onboarding_skipped') })
+    if (skipped) complete.mutate([], { onSuccess: () => trackEvent('onboarding_skipped') })
     else go('first')
   }
 

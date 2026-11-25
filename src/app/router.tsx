@@ -18,7 +18,7 @@ import { SearchPage } from '@/features/search'
 import { SocialPage } from '@/features/social'
 import { LeaderboardPage, TopicPage } from '@/features/topic'
 import { TopicsPage } from '@/features/topics'
-import { ModerationPage, MyTopicPage, QuestionEditorPage, QuestionReportsPage, QuestionsPage, TeamPage } from '@/features/workshop'
+import { ModerationPage, MyTopicPage, QuestionEditorPage, QuestionReportsPage, QuestionsPage, ReportRedirect, TeamPage } from '@/features/workshop'
 import { AppFrame, AuthenticatedLayout, CallbackPage, LoginRedirect } from '@/features/shell'
 import { PersonalRuntime } from './personal-runtime'
 
@@ -69,6 +69,7 @@ export const router = createBrowserRouter([
               { path: '/me/topics/:topicId/team', element: <TeamPage /> },
               { path: '/me/topics/:topicId/moderation', element: <ModerationPage /> },
               { path: '/me/topics/:topicId/reports/:questionId', element: <QuestionReportsPage /> },
+              { path: '/me/topics/:topicId/report/:reportId', element: <ReportRedirect /> },
               { path: '/search', element: <SearchPage /> },
               { path: '/social', element: <SocialPage /> },
               { path: '/challenges', element: <ChallengesPage /> },

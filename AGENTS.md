@@ -12,8 +12,9 @@ web (`design/specs/platforms/web.md`, `desktop.md`).
 - **Le lab fait foi** : textes, composants, comportements. Son code se **porte** (même API, mêmes
   classes, mêmes jetons) mais ne s'importe jamais (`eslint` l'interdit). En cas d'écart, on corrige
   l'app ; un manque du lab se règle d'abord dans le lab.
-- **Domaine et textes** : `@joutio/client` (pin exact), avec le repli du duel, les salles, l'atelier,
-  les DTOs et `@joutio/client/i18n`. Aucune règle métier dupliquée ici.
+- **Domaine, données et textes** : `@joutio/client` (pin exact, 11.1.0) : repli du duel, salles (un défi est une salle
+  `INVITED`), atelier, DTOs, **toutes les lectures, mutations et la synchronisation temps réel**, et
+  `@joutio/client/core/i18n`. Aucune règle métier dupliquée ici.
 - **Cadre** (D16, `design/specs/platforms/desktop.md`) : plein écran sur téléphone ; `WebFrame` en iPhone Duo
   ouvert portrait (626 × 890) sur tablette en portrait, en paysage (890 × 626, filet en `outline`) dès 938 px, marque
   dans les marges dès 1 280 px. Largeur « regular » (cadre paysage, ou ≥ 700 px et paysage) décidée par `WebFrame`
@@ -23,8 +24,10 @@ web (`design/specs/platforms/web.md`, `desktop.md`).
 ## Dépendances admises
 
 - **Exécution** :
-  - `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `zustand` ;
-  - `zod`, `react-hook-form`, `@hookform/resolvers` (`zodResolver`) : formulaires sur les schémas de `@joutio/client/forms` ;
+  - `react`, `react-dom`, `react-router-dom`, `zustand` ;
+  - `@tanstack/react-query` : dépendance pair de `@joutio/client` seulement, jamais importée par l'app ;
+  - `zod`, `react-hook-form`, `@hookform/resolvers` (`zodResolver`) : formulaires sur les schémas de
+    `@joutio/client` (`schema/` de chaque feature : `me`, `profile`, `authoring`) ;
   - `@stomp/stompjs`, `@phosphor-icons/react` ;
   - `class-variance-authority`, `clsx`, `tailwind-merge` ;
   - `@fontsource-variable/geist(-mono)`, `@joutio/client` ;
@@ -42,11 +45,12 @@ web (`design/specs/platforms/web.md`, `desktop.md`).
 ```
 src/
   main.tsx      polices, CSS, télémétrie, initSession puis rendu
-  app/          providers, router, runtime personnel, invalidations temps réel
+  app/          JoutioClientProvider (cache vidé en fin de session), router, runtime personnel (useJoutioSync)
   styles/       index.css + fichiers synchronisés du lab (ne pas éditer)
   ui/           design system porté du lab (barrel `@/ui`) : lib/ brand/ primitives/ mobile/ web/ site/
-  lib/          config (Zod), endpoints, api (HTTP + RFC 7807), session (OIDC PKCE maison), realtime (STOMP,
-                EventStream), query-client, i18n, push, telemetry (clés et cache optimiste : `@joutio/client/query`)
+  lib/          config (Zod), endpoints, api (HTTP + RFC 7807, `http` : HttpClient de la lib), session (OIDC PKCE
+                maison), realtime (STOMP, `realtime` : RealtimeTransport de la lib, horloge serveur), i18n, push,
+                telemetry
   shared/       routes, stores, toasts, dialogues, avatars, utilitaires
   features/<f>/ components/ hooks/ lib/ index.ts (import par le barrel uniquement)
 ```
@@ -57,6 +61,7 @@ Routes notables :
 - `/me/edit` ;
 - `/me/settings[/{account,privacy,notifications,game,display,help}]`, `/me/settings/privacy/blocked` ;
 - `/join/:roomId` ;
+- `/me/topics/:topicId/report/:reportId` : signalement ouvert depuis une notification, redirigé vers ses signalements ;
 - `/dev/ui` : vitrine du socle, en dev seulement.
 
 ## Règles propres
@@ -74,8 +79,26 @@ Routes notables :
     `unknownUser`, `suspended`).
   - `401` → renouvellement puis un seul rejeu ; `401 unknownUser` et `403 accountSuspended` →
     fin de session.
-- **Temps réel** : connexion STOMP suspendue quand l'onglet est caché, avec backoff croissant ;
-  `EventStream` dédoublonne par `sequenceNumber` et tamponne les trous ; bannière `connection`.
+- **Données** (`docs/frontend/donnees-et-etat.md`) : l'app ne touche jamais au cache. Ni `useQueryClient`, ni
+  `useQuery`/`useMutation`, ni clé, ni service de lecture ou d'écriture local : uniquement les hooks de
+  `@joutio/client`, l'identifiant du joueur lu dans la session (`selectUserId`). Toasts et navigation passent à
+  `mutate(v, { onSuccess, onError })` ; une sortie d'écran (fermer un salon, annuler une recherche) se fait dès l'appel.
+  Restent côté app : l'envoi d'images (`shared/media`, progression d'envoi) et la rafale `/api/clock` de l'horloge
+  serveur. `useAction` (`shared/`) ne sert qu'à la connexion chez identity, hors BFF.
+- **Compte** : `useMe` n'est appelé que sous session (`AppFrame`, `AuthenticatedLayout`, onboarding et
+  `JoinPage` séparent leur partie connectée) ; `useAccountLanguage` applique la langue du compte.
+- **Temps réel** : connexion STOMP suspendue quand l'onglet est caché, avec backoff croissant ; bannière `connection`.
+  Les flux (partie, salle, ticket) et la synchronisation personnelle (`useJoutioSync`, monté dans `PersonalRuntime`)
+  sont ceux de `@joutio/client` (délai de grâce d'un agrégat neuf compris) ; l'arène appelle `resync()` quand une
+  transition serveur ou l'écho d'une réponse tarde. Le transport ré-ancre l'horloge serveur sur chaque trame d'agrégat.
+  Le bandeau « Partie en cours » lit `useActiveGames`, tenu à jour par la lib. Les canaux de
+  présence (salon, ticket) sont ouverts par l'écran qui les affiche ; les toasts de notification lisent le flux
+  personnel par `useSubscription`.
+- **Défis** : onglet Défis sur `useDefis` (Salons rangés par `origin` : défis acceptés puis salons privés), pastille
+  `useDefisBadge`, revanche par `useCreateChallenge` + `useRoomStream` (échéance du serveur), proposition reçue
+  `useIncomingRematch`. Le lien Web Push `/social?tab=challenges&type=…` du BFF mène à `/challenges`.
+- **Lien partagé** : `returnTo` garde `/join/{roomId}` pendant la connexion et l'onboarding ; le premier thème ne
+  crée pas son salon tant qu'un lien attend (`returnTo.joinPending()`).
 - **Web Push** (`public/sw.js`, `lib/push`) : seulement sur une action explicite.
 - **Langue** : français par défaut tant que `MeView.language` est inconnu. Ajouter une clé :
   1. l'ajouter dans `@joutio/client` (FR et EN) ;

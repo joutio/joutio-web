@@ -1,15 +1,17 @@
-import type { PlayerCardView } from '@joutio/client/api-types'
 import type { BotDifficulty } from '@joutio/client/game'
+import type { PlayerCardView } from '@joutio/client/profile'
+import { useContacts } from '@joutio/client/social'
 import { GlobeHemisphereWestIcon, LinkIcon, MagnifyingGlassIcon, RobotIcon, UserPlusIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { usePlayerIdentity } from '@/features/me'
 import { useT, type MessageKey } from '@/lib/i18n'
+import { selectUserId, useSessionStore } from '@/lib/session'
 import { useUserAvatar } from '@/shared/avatar'
 import { feedFooterProps } from '@/shared/paging'
 import { tierOf } from '@/shared/tier'
 import { useDebounced } from '@/shared/use-debounced'
 import { Button, EmptyState, FeedFooter, ListRow, MobileSheet, PlayerRow, RadioGroup, SearchField, Segmented, Skeleton } from '@/ui'
-import { useBotDifficulty, useChallengePlayer, useContacts, useCreatePrivateRoom, useStartMatchmaking, useStartTraining, type PlayTopic } from '../hooks/use-play'
+import { useBotDifficulty, useChallengePlayer, useCreatePrivateRoom, useStartMatchmaking, useStartTraining, type PlayTopic } from '../hooks/use-play'
 
 export type DuelStep = 'modes' | 'training' | 'player'
 type Contacts = 'following' | 'followers'
@@ -44,10 +46,12 @@ function ContactRow({ player, last, onClick }: { player: PlayerCardView; last: b
   )
 }
 
-function PlayerList({ direction, query, enabled, onChallenge }: { direction: Contacts; query: string; enabled: boolean; onChallenge: (player: PlayerCardView) => void }) {
+/** Mes abonnements ou abonnés, montés seulement quand l'étape est ouverte. */
+function PlayerList({ direction, query, onChallenge }: { direction: Contacts; query: string; onChallenge: (player: PlayerCardView) => void }) {
   const t = useT()
-  const list = useContacts(direction, query, enabled)
-  const players = list.data?.pages.flatMap((page) => page.content) ?? []
+  const userId = useSessionStore(selectUserId) ?? undefined
+  const list = useContacts({ userId, direction, query, sort: 'RECENT' })
+  const players = (list.data?.pages.flatMap((page) => page.content) ?? [])
   if (list.isPending)
     return (
       <div className="grid gap-2">
@@ -112,8 +116,8 @@ export function DuelSheet({ open, onClose, topic, startStep = 'modes', direct = 
   const choose = (mode: (typeof MODES)[number]['id']) => {
     if (pending) return
     if (mode === 'player' || mode === 'training') return setStep(mode)
-    if (mode === 'world') matchmaking.mutate(topic, { onSuccess: onClose })
-    else room.mutate(topic, { onSuccess: onClose })
+    if (mode === 'world') matchmaking.start(topic, { onSuccess: onClose })
+    else room.start(topic, { onSuccess: onClose })
   }
 
   return (
@@ -132,7 +136,7 @@ export function DuelSheet({ open, onClose, topic, startStep = 'modes', direct = 
         title={t('play.levelTitle')}
         subtitle={topic.name}
         footer={
-          <Button full loading={training.isPending} onClick={() => training.mutate({ topic, difficulty: level }, { onSuccess: onClose })}>
+          <Button full loading={training.isPending} onClick={() => training.start(topic, level, { onSuccess: onClose })}>
             {t('play.startTraining')}
           </Button>
         }
@@ -160,15 +164,16 @@ export function DuelSheet({ open, onClose, topic, startStep = 'modes', direct = 
               onChange={setContacts}
             />
           </div>
-          <PlayerList
-            direction={contacts}
-            query={search}
-            enabled={open && step === 'player'}
-            onChallenge={(player) => {
-              onClose()
-              challenge.mutate({ topic, opponent: { userId: player.userId, pseudonym: player.pseudonym } })
-            }}
-          />
+          {open && step === 'player' && (
+            <PlayerList
+              direction={contacts}
+              query={search}
+              onChallenge={(player) => {
+                onClose()
+                challenge.start({ topic, opponent: { userId: player.userId, pseudonym: player.pseudonym } })
+              }}
+            />
+          )}
         </div>
       </MobileSheet>
     </>

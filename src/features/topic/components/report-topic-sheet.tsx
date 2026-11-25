@@ -1,11 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CONTENT_NOTICE_CATEGORIES, CONTENT_NOTICES_ENDPOINT, type ContentNoticeCategory, type ContentNoticeRequest } from '@joutio/client/api-types'
-import { contentNoticeSchema, MAX_NOTICE_DESCRIPTION } from '@joutio/client/forms'
-import { buildShareUrl } from '@joutio/client/share'
-import { useMutation } from '@tanstack/react-query'
+import { CONTENT_NOTICE_CATEGORIES, useSubmitContentNotice, type ContentNoticeCategory } from '@joutio/client/authoring'
+import { contentNoticeSchema, MAX_NOTICE_DESCRIPTION } from '@joutio/client/authoring'
+import { buildShareUrl } from '@joutio/client/core/share'
 import { Controller, useForm } from 'react-hook-form'
-import { useMe } from '@/features/me'
-import { api } from '@/lib/api'
+import { useMe } from '@joutio/client/me'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { toast } from '@/shared/toast'
 import { Button, Field, ListRow, MobileSheet } from '@/ui'
@@ -23,9 +21,10 @@ export function ReportTopicSheet({ open, onClose, topicId, name }: { open: boole
     mode: 'onChange',
     defaultValues: { description: '', goodFaith: false },
   })
-  const report = useMutation({
-    mutationFn: ({ category, description, goodFaith }: { category: ContentNoticeCategory; description: string; goodFaith: boolean }) =>
-      api.post<unknown>(CONTENT_NOTICES_ENDPOINT, {
+  const report = useSubmitContentNotice()
+  const send = ({ category, description, goodFaith }: { category: ContentNoticeCategory; description: string; goodFaith: boolean }) =>
+    report.mutate(
+      {
         name: me.data?.pseudonym ?? '',
         email: me.data?.email ?? '',
         quality: category === 'COPYRIGHT' || category === 'IMAGE_RIGHTS' ? 'RIGHTS_HOLDER' : 'THIRD_PARTY',
@@ -33,9 +32,9 @@ export function ReportTopicSheet({ open, onClose, topicId, name }: { open: boole
         category,
         description,
         goodFaith,
-      } satisfies ContentNoticeRequest),
-    onError: () => toast.error(t('report.error'), t('home.errorText')),
-  })
+      },
+      { onError: () => toast.error(t('report.error'), t('home.errorText')) },
+    )
   const sent = report.isSuccess
   const ready = form.formState.isValid && Boolean(me.data?.email)
   return (
@@ -50,7 +49,7 @@ export function ReportTopicSheet({ open, onClose, topicId, name }: { open: boole
             {t('report.close')}
           </Button>
         ) : (
-          <Button full disabled={!ready} loading={report.isPending} onClick={() => void form.handleSubmit((values) => report.mutate(values))()}>
+          <Button full disabled={!ready} loading={report.isPending} onClick={() => void form.handleSubmit(send)()}>
             {t('report.send')}
           </Button>
         )

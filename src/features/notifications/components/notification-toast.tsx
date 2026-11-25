@@ -1,6 +1,6 @@
-import { usePlayerProfile } from '@/features/player'
+import { useProfile } from '@joutio/client/profile'
 import { useT } from '@/lib/i18n'
-import type { NotificationView } from '@/lib/realtime'
+import type { NotificationView } from '@joutio/client/notifications'
 import { useUserAvatar } from '@/shared/avatar'
 import { tierOf } from '@/shared/tier'
 import { Toast } from '@/ui'
@@ -10,7 +10,7 @@ import { NOTIFICATION_ICONS, notificationActorId, notificationTitleKey } from '.
 export function NotificationToast({ notification, onOpen }: { notification: NotificationView; onOpen: () => void }) {
   const t = useT()
   const actorId = notificationActorId(notification)
-  const actor = usePlayerProfile(actorId ?? '').data
+  const actor = useProfile(actorId ?? undefined).data
   const src = useUserAvatar(actor)
   const name = actor?.pseudonym ?? t('notifications.somePlayer')
   return (

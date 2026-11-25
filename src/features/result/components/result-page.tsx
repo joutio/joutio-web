@@ -1,14 +1,16 @@
-import type { BadgeView, MasteryTier } from '@joutio/client/api-types'
-import { isBonusRound, ROUNDS, sortedRounds, type GameResultView, type GameRoundState, type GameState } from '@joutio/client/game'
+import type { BadgeView, MasteryTier } from '@joutio/client/profile'
+import { Arena, isBonusRound, ROUNDS, useGameResult, useGameStream, type GameResultView, type GameRoundState, type GameState } from '@joutio/client/game'
+import { useProfile, useTitles, useWearTitle } from '@joutio/client/profile'
 import { FlagIcon, LightningIcon, WarningCircleIcon, XIcon } from '@phosphor-icons/react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useBlockPlayer, useConfirmBlock } from '@/features/block'
-import { useMe, usePlayerIdentity } from '@/features/me'
+import { useMe } from '@joutio/client/me'
+import { usePlayerIdentity } from '@/features/me'
 import { badgeUnlockOf } from '@/features/profile'
 import { useShare } from '@/features/share'
-import { useBotDifficulty, usePlayerProfile, useStartMatchmaking, useStartTraining, type PlayTopic } from '@/features/play'
-import { formatNumber, MASTERY_TIERS, MASTERY_XP, useMyTitles, useWearTitle } from '@/features/topic'
+import { useBotDifficulty, useStartMatchmaking, useStartTraining, type PlayTopic } from '@/features/play'
+import { formatNumber, MASTERY_TIERS, MASTERY_XP } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
@@ -38,7 +40,8 @@ import {
   type RoundResult,
   type TierCode,
 } from '@/ui'
-import { useGameHistory, useGameResult, useSendRematch, useStreakUnlock } from '../hooks/use-result'
+import { toast } from '@/shared/toast'
+import { useSendRematch, useStreakUnlock } from '../hooks/use-result'
 import { nextStreakMilestone } from '@joutio/client/profile'
 import { celebrated } from '../lib/celebrated'
 import { reviewRoundsOf } from '../lib/review'
@@ -87,7 +90,7 @@ function unlocksOf(result: GameResultView, streakDays: number | null): Unlock[] 
 }
 
 function streakOf(game: GameState, playerId: string | null): RoundResult[] {
-  const rounds = sortedRounds(game)
+  const rounds = new Arena(game).sortedRounds()
   return Array.from({ length: ROUNDS }, (_, index) => {
     const round = rounds[index]
     if (!round || round.phase !== 'CLOSED') return 'unplayed'
@@ -124,11 +127,14 @@ export function ResultPage() {
     celebrated.add(gameId)
     void navigate(`${location.pathname}${location.search}`, { replace: true, state: { ...passed, celebrate: false } })
   }, [gameId, location.pathname, location.search, navigate, passed])
-  const history = useGameHistory(gameId)
-  const result = useGameResult(gameId, celebrate)
+  // La partie terminée, repliée de son historique : manches et forfait (le flux n'apporte plus rien).
+  const history = useGameStream(gameId || undefined)
+  // La lib relit le résultat tant que la récompense manque.
+  const result = useGameResult(gameId || undefined)
+  const game = history.status?.loaded ? history.state : null
 
-  if (history.isPending || result.isPending) return <Loading />
-  if (history.isError || result.isError || !history.data || !result.data) {
+  if ((!history.status && gameId) || (history.status && !history.status.loaded && !history.status.notFound) || result.isPending) return <Loading />
+  if (history.status?.notFound || result.isError || !game || !result.data) {
     return (
       <div className="grid h-full place-items-center bg-jo-bg px-4">
         <EmptyState
@@ -137,11 +143,8 @@ export function ResultPage() {
           description={t('home.errorText')}
           action={
             <Button
-              loading={history.isRefetching || result.isRefetching}
-              onClick={() => {
-                void history.refetch()
-                void result.refetch()
-              }}
+              loading={result.isRefetching}
+              onClick={() => void result.refetch()}
             >
               {t('common.retry')}
             </Button>
@@ -150,7 +153,7 @@ export function ResultPage() {
       </div>
     )
   }
-  return <ResultContent gameId={gameId} game={history.data} data={result.data} passed={passed?.topic} celebrate={celebrate} />
+  return <ResultContent gameId={gameId} game={game} data={result.data} passed={passed?.topic} celebrate={celebrate} />
 }
 
 type ContentProps = { gameId: string; game: GameState; data: GameResultView; passed?: PlayTopic; celebrate: boolean }
@@ -171,14 +174,14 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const topic: PlayTopic = { topicId: data.topic.topicId, name: passed?.name ?? topicName(data.topic.names, language), category: passed?.category ?? data.topic.category }
   const outcome: MatchOutcome = game.forfeiterId === userId ? 'forfeit' : data.winnerId === null ? 'draw' : data.winnerId === userId ? 'win' : 'loss'
   const myAvatar = useUserAvatar(me)
-  const opponentProfile = usePlayerProfile(opponentId ?? '', Boolean(opponentId) && !bot)
+  const opponentProfile = useProfile(opponentId && !bot ? opponentId : undefined)
   const opponentAvatar = useUserAvatar(bot ? null : (data.opponent ?? opponentProfile.data))
-  const titles = useMyTitles()
-  const wear = useWearTitle()
+  const titles = useTitles(userId || undefined)
+  const wear = useWearTitle(userId)
   const training = useStartTraining({ replace: true })
   const matchmaking = useStartMatchmaking({ replace: true })
   const difficulty = useBotDifficulty((state) => state.difficulty)
-  const rematch = useSendRematch({ userId, opponentId, topic, gameId })
+  const rematch = useSendRematch({ opponentId, topic, gameId })
   const block = useBlockPlayer({ userId: opponentId ?? '', pseudonym: opponentName })
   const confirmBlock = useConfirmBlock()
   const [step, setStep] = useState(0)
@@ -197,7 +200,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
   const myTier = tierOf(rating)
   const opponentTier = data.opponentRated && data.opponentRating != null ? tierOf(data.opponentRating) : undefined
   // La série est lue avant d'ouvrir la séquence : son écran vient en premier et ne doit pas s'insérer en cours de route.
-  const streak = useStreakUnlock(gameId, userId, celebrate && !bot)
+  const streak = useStreakUnlock(userId, celebrate && !bot)
   const streakPending = celebrate && !sequenceDone && !bot && !streak.isFetched
   const unlocks = celebrate && !sequenceDone && !streakPending ? unlocksOf(data, streak.data ?? null) : []
 
@@ -254,7 +257,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
           next={next as TierCode | undefined}
           nextRule={next ? t('result.titleNext', { xp: formatNumber(MASTERY_XP[next], language) }) : undefined}
           worn={titles.data?.equippedKey === key}
-          onWear={() => wear.mutate(key)}
+          onWear={() => wear.mutate(key, { onError: () => toast.error(t('topic.wearTitleError'), t('home.errorText')) })}
         />
       )
     }
@@ -331,11 +334,11 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
       )}
       <div className="grid grid-cols-2 gap-2">
         {bot ? (
-          <Button full icon={LightningIcon} loading={training.isPending} onClick={() => training.mutate({ topic, difficulty })}>
+          <Button full icon={LightningIcon} loading={training.isPending} onClick={() => training.start(topic, difficulty)}>
             {t('result.replay')}
           </Button>
         ) : (
-          <Button full icon={LightningIcon} loading={rematch.sending} disabled={rematch.state !== 'idle' || !opponentId || data.opponentDeleted} onClick={() => void rematch.send()}>
+          <Button full icon={LightningIcon} loading={rematch.sending} disabled={rematch.state !== 'idle' || !opponentId || data.opponentDeleted} onClick={rematch.send}>
             {rematch.state === 'pending' && rematch.seconds > 0
               ? t('result.rematchWaiting', { seconds: rematch.seconds })
               : rematch.state === 'refused'
@@ -343,7 +346,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
                 : t('result.rematch')}
           </Button>
         )}
-        <Button variant="gray" tone="neutral" full loading={matchmaking.isPending} onClick={() => matchmaking.mutate(topic)}>
+        <Button variant="gray" tone="neutral" full loading={matchmaking.isPending} onClick={() => matchmaking.start(topic)}>
           {t('result.newOpponent')}
         </Button>
       </div>
@@ -386,7 +389,7 @@ function ResultContent({ gameId, game, data, passed, celebrate }: ContentProps) 
               name={opponentName}
               gameId={gameId}
               subtitle={t('result.reportContext', { topic: topic.name })}
-              onBlock={opponentProfile.data?.blocked ? undefined : () => confirmBlock(opponentName, () => block.mutate(true))}
+              onBlock={opponentProfile.data?.blocked ? undefined : () => confirmBlock(opponentName, () => block.block(true))}
             />
           )}
         </>

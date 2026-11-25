@@ -1,22 +1,19 @@
 import { CheckCircleIcon, RobotIcon } from '@phosphor-icons/react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useCancelMatchmaking, useCancelRooms, useCreateBotRoom, useEnqueueMatchmaking, useMatchmakingStream, useRoom } from '@joutio/client/rooms'
+import { useTopicOverview } from '@joutio/client/topics'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { roomQuery } from '@joutio/client/query'
 import { readServerNow, useServerClock } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
-import { useTopicOverview } from '@/features/topic'
 import { tierOf } from '@/shared/tier'
 import { toast } from '@/shared/toast'
 import { Avatar, Button, cn, EmptyState, MatchmakingMap, Notice, PlayerName, tokens, type MapPlayer } from '@/ui'
-import { useAutoTrain, useBotDifficulty, useTicket, useTicketPresence, type PlayTopic } from '../hooks/use-play'
-import { playService } from '../lib/play-service'
+import { useAutoTrain, useBotDifficulty, useBotRoomError, useTicketPresence, type PlayTopic } from '../hooks/use-play'
 import { DuelSheet } from './duel-sheet'
-import { api } from '@/lib/api'
 
 /** Épingles décoratives : le BFF n'expose pas la file d'attente (`matchmaking.md` § 5). */
 const PINS: MapPlayer[] = [
@@ -76,7 +73,7 @@ export function MatchmakingPage() {
   const ticketId = params.get('ticket') ?? ''
   const topic = (location.state as { topic?: PlayTopic } | null)?.topic
   useServerClock()
-  const ticket = useTicket(ticketId)
+  const ticket = useMatchmakingStream(ticketId || undefined)
   const status = ticket.state?.status ?? 'SEARCHING'
   const seconds = useSecondsLeft(ticket.state?.deadlineAt ?? null)
   const autoTrain = useAutoTrain()
@@ -91,14 +88,14 @@ export function MatchmakingPage() {
   )
 
   const roomId = ticket.state?.roomId ?? null
-  const room = useQuery({ ...roomQuery(api, roomId ?? ''), enabled: Boolean(roomId) })
+  const room = useRoom(roomId ?? undefined)
   // `MATCHED` porte l'adversaire enrichi ; la salle reste le repli.
   const opponent = ticket.state?.opponent ?? room.data?.opponent ?? null
   const opponentAvatar = useUserAvatar(opponent)
   const identity = usePlayerIdentity()
   const topicId = topic?.topicId ?? ticket.state?.topicId ?? room.data?.topic.topicId ?? ''
   // Rechargement sans état de navigation : le nom vient de la fiche du sujet.
-  const overview = useTopicOverview(topic?.name ? '' : topicId)
+  const overview = useTopicOverview(topic?.name || !topicId ? undefined : topicId)
   const topicLabel = topic?.name ?? (overview.data ? topicName(overview.data.topic.names, language) : '')
   const rating = opponent?.rating ?? null
   const tier = rating !== null ? tierOf(rating) : undefined
@@ -106,26 +103,25 @@ export function MatchmakingPage() {
   const meta = [tier ? tokens.tier[tier].label : undefined, rating !== null ? String(rating) : undefined, country, t('mm.starting')].filter(Boolean).join(' · ')
 
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.topics, { replace: true }))
+  const closeRooms = useCancelRooms()
   const toRoom = (id: string) => {
     // Écran quitté entre-temps (« Annuler l'entraînement ») : la salle créée trop tard est fermée.
     if (!mounted.current) {
-      playService.cancelRoom(id).catch(() => undefined)
+      closeRooms.mutate([id])
       return
     }
     void navigate(ROUTES.room(id), { replace: true, state: { topic } })
   }
-  const training = useMutation({
-    mutationFn: () => playService.createBotRoom(topicId, difficulty),
-    onSuccess: ({ id }) => toRoom(id),
-    onError: () => toast.error(t('play.trainingError'), t('home.errorText')),
-  })
-  const retry = useMutation({
-    mutationFn: () => playService.enqueue(topicId),
-    onSuccess: (next) => {
-      void navigate(ROUTES.play(next.ticketId), { replace: true, state: { topic } })
-    },
-    onError: () => toast.error(t('play.matchmakingError'), t('home.errorText')),
-  })
+  const botRoom = useCreateBotRoom()
+  const botRoomError = useBotRoomError()
+  const train = () => botRoom.mutate({ topicId, difficulty }, { onSuccess: ({ id }) => toRoom(id), onError: botRoomError })
+  const enqueue = useEnqueueMatchmaking()
+  const retry = () =>
+    enqueue.mutate(topicId, {
+      onSuccess: (next) => void navigate(ROUTES.play(next.ticketId), { replace: true, state: { topic } }),
+      onError: () => toast.error(t('play.matchmakingError'), t('home.errorText')),
+    })
+  const cancelTicket = useCancelMatchmaking()
 
   // Adversaire trouvé : 1,2 s sur sa carte, puis la salle prépare le duel.
   useEffect(() => {
@@ -137,7 +133,7 @@ export function MatchmakingPage() {
 
   // Expiré, réglage activé : l'entraînement démarre seul. Échec : retour.
   useEffect(() => {
-    if (status === 'EXPIRED' && autoTrain.enabled && topicId && !training.isPending && !training.isSuccess) training.mutate()
+    if (status === 'EXPIRED' && autoTrain.enabled && topicId && botRoom.isIdle) train()
     if (status === 'FAILED') {
       toast.error(t('mm.failed'), t('mm.failedText'))
       back()
@@ -148,7 +144,7 @@ export function MatchmakingPage() {
   // Quitter l'écran pendant la recherche (ou perdre la connexion) l'annule : le serveur le constate.
   // « Annuler la recherche » est une intention du joueur : la commande part, l'écran se ferme sans attendre.
   const cancelSearch = () => {
-    playService.cancelTicket(ticketId).catch(() => undefined)
+    cancelTicket.mutate(ticketId)
     back()
   }
   useTicketPresence(ticketId, status === 'SEARCHING')
@@ -198,11 +194,11 @@ export function MatchmakingPage() {
             description={t('mm.noneText', { topic: topicLabel })}
             action={
               <div className="grid gap-2">
-                <Button full size="L" icon={RobotIcon} loading={training.isPending} onClick={() => training.mutate()}>
+                <Button full size="L" icon={RobotIcon} loading={botRoom.isPending} onClick={train}>
                   {t('mm.train')}
                 </Button>
                 <div className="grid grid-cols-2 gap-2">
-                  <Button variant="tinted" full loading={retry.isPending} onClick={() => retry.mutate()}>
+                  <Button variant="tinted" full loading={enqueue.isPending} onClick={retry}>
                     {t('mm.retry')}
                   </Button>
                   <Button variant="gray" tone="neutral" full onClick={() => setFriendOpen(true)}>

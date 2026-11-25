@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { OTP_LENGTH, OTP_RESEND_SECONDS, otpSchema } from '@joutio/client/forms'
+import { OTP_LENGTH, OTP_RESEND_SECONDS, otpSchema } from '@joutio/client/me'
 import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { isApiError } from '@/lib/api'

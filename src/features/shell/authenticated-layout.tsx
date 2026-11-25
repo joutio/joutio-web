@@ -1,5 +1,5 @@
+import { useMe } from '@joutio/client/me'
 import { useLocation, Navigate, Outlet } from 'react-router-dom'
-import { useMe } from '@/features/me'
 import { BirthDateStep, TermsStep } from '@/features/onboarding'
 import { returnTo, selectStatus, useSessionStore } from '@/lib/session'
 import { BootError } from '@/shared/boot-error'
@@ -13,11 +13,21 @@ import { ConnectionBanner } from './connection-banner'
 export function AuthenticatedLayout() {
   const status = useSessionStore(selectStatus)
   const location = useLocation()
-  const me = useMe()
-  const required = me.data?.birthDateRequired === true
 
   if (status === 'loading') return <LoadingScreen />
-  if (status !== 'authenticated' || me.data?.onboardingCompleted === false) {
+  if (status !== 'authenticated') {
+    returnTo.remember(`${location.pathname}${location.search}`)
+    return <Navigate to="/welcome" replace />
+  }
+  return <Member />
+}
+
+/** Sous session : le compte décide de l'onboarding, de la date de naissance et des CGU avant de jouer. */
+function Member() {
+  const location = useLocation()
+  const me = useMe()
+
+  if (me.data?.onboardingCompleted === false) {
     returnTo.remember(`${location.pathname}${location.search}`)
     return <Navigate to="/welcome" replace />
   }
@@ -25,7 +35,7 @@ export function AuthenticatedLayout() {
   if (!me.data) return <LoadingScreen />
 
   // Compte récent sans date de naissance (lien de salon, reprise) : demandée avant de jouer.
-  if (required) return <BirthDateStep />
+  if (me.data.birthDateRequired === true) return <BirthDateStep />
   // CGU en vigueur pas encore acceptées (première connexion ou nouvelle version) : présentées avant de jouer.
   if (me.data.termsUpToDate === false) return <TermsStep />
 

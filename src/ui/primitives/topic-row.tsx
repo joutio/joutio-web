@@ -5,7 +5,7 @@ import { TopicVisual } from './topic-visual'
 import type { CategoryCode } from '../tokens.generated'
 import { OfficialBadge } from '../brand/premium-badge'
 import { useT } from '@/lib/i18n'
-import { categoryKey } from '@joutio/client/i18n'
+import { categoryKey } from '@joutio/client/core/i18n'
 
 export type TopicRowProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Sujet éditorial de Joutio (`OfficialBadge` après le nom) ; obligatoire : chaque sujet affiché dit s'il l'est. */

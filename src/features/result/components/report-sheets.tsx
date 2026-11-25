@@ -1,12 +1,10 @@
-import type { QuestionReportReason, UserReportReason } from '@joutio/client/api-types'
+import type { QuestionReportReason, UserReportReason } from '@joutio/client/authoring'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MAX_REPORT_COMMENT, questionReportSchema, userReportSchema } from '@joutio/client/forms'
-import { useMutation } from '@tanstack/react-query'
+import { MAX_REPORT_COMMENT, questionReportSchema, useReportQuestion, useReportUser, userReportSchema } from '@joutio/client/authoring'
 import { Controller, useForm } from 'react-hook-form'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { toast } from '@/shared/toast'
 import { Button, Field, ListRow, MobileSheet } from '@/ui'
-import { resultService } from '../lib/result-service'
 
 const PLAYER_REASONS: UserReportReason[] = ['HARASSMENT', 'HATE_SPEECH', 'INAPPROPRIATE_CONTENT', 'CHEATING', 'SPAM', 'OTHER']
 const QUESTION_REASONS: QuestionReportReason[] = ['QUESTION', 'IMAGE', 'ANSWERS']
@@ -67,10 +65,10 @@ export type ReportPlayerSheetProps = {
 export function ReportPlayerSheet({ open, onClose, userId, name, gameId, subtitle, onBlock }: ReportPlayerSheetProps) {
   const t = useT()
   const form = useForm({ resolver: zodResolver(userReportSchema), mode: 'onChange', defaultValues: { reasons: [] as UserReportReason[], comment: '' } })
-  const report = useMutation({
-    mutationFn: ({ reasons, comment }: { reasons: UserReportReason[]; comment: string }) => resultService.reportPlayer(userId, { reasons, comment: comment || undefined, gameId }),
-    onError: () => toast.error(t('report.error'), t('home.errorText')),
-  })
+  const report = useReportUser()
+  const send = ({ reasons, comment }: { reasons: UserReportReason[]; comment: string }) => {
+    report.mutate({ userId, report: { reasons, comment: comment || undefined, gameId } }, { onError: () => toast.error(t('report.error'), t('home.errorText')) })
+  }
   const sent = report.isSuccess
   return (
     <MobileSheet
@@ -103,7 +101,7 @@ export function ReportPlayerSheet({ open, onClose, userId, name, gameId, subtitl
             </Button>
           )
         ) : (
-          <Button full disabled={!form.formState.isValid} loading={report.isPending} onClick={() => void form.handleSubmit((values) => report.mutate(values))()}>
+          <Button full disabled={!form.formState.isValid} loading={report.isPending} onClick={() => void form.handleSubmit(send)()}>
             {t('report.send')}
           </Button>
         )
@@ -142,12 +140,10 @@ export function ReportQuestionSheet({ open, onClose, questionId, gameId, hasImag
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const form = useForm({ resolver: zodResolver(questionReportSchema), mode: 'onChange', defaultValues: { reasons: [] as QuestionReportReason[], comment: '' } })
-  const report = useMutation({
-    mutationFn: ({ question, reasons, comment }: { question: string; reasons: QuestionReportReason[]; comment: string }) =>
-      resultService.reportQuestion(question, { gameId, reasons, comment: comment || undefined, language }),
-    onSuccess: onSent,
-    onError: () => toast.error(t('report.error'), t('home.errorText')),
-  })
+  const report = useReportQuestion()
+  const send = (questionId: string, { reasons, comment }: { reasons: QuestionReportReason[]; comment: string }) => {
+    report.mutate({ questionId, report: { gameId, reasons, comment: comment || undefined, language } }, { onSuccess: onSent, onError: () => toast.error(t('report.error'), t('home.errorText')) })
+  }
   const sent = report.isSuccess
   const items = QUESTION_REASONS.filter((reason) => hasImage || reason !== 'IMAGE')
   return (
@@ -166,7 +162,7 @@ export function ReportQuestionSheet({ open, onClose, questionId, gameId, hasImag
             full
             disabled={!form.formState.isValid || !questionId}
             loading={report.isPending}
-            onClick={() => void form.handleSubmit((values) => questionId && report.mutate({ question: questionId, ...values }))()}
+            onClick={() => void form.handleSubmit((values) => questionId && send(questionId, values))()}
           >
             {t('report.send')}
           </Button>

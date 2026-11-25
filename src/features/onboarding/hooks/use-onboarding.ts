@@ -1,49 +1,23 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { MeView } from '@joutio/client/api-types'
-import { queryKeys, recommendationsQuery } from '@joutio/client/query'
 import { isApiError } from '@/lib/api'
 import { endSession, loginWithCode, loginRedirect, requestLoginCode } from '@/lib/session'
-import { onboardingService } from '../lib/onboarding-service'
-import { api } from '@/lib/api'
+import { useAction } from '@/shared/use-action'
 
-export function useRequestLoginCode() {
-  return useMutation({ mutationFn: (email: string) => requestLoginCode(email) })
-}
+const sendCode = (email: string) => requestLoginCode(email)
 
 /** Vérifie le code (cookie `AUTH_TX` chez identity), puis enchaîne l'autorisation PKCE : la page quitte l'app. */
-export function useLoginWithCode() {
-  return useMutation({
-    mutationFn: async ({ email, code }: { email: string; code: string }) => {
-      await loginWithCode(email, code)
-      await loginRedirect()
-    },
+async function login({ email, code }: { email: string; code: string }) {
+  try {
+    await loginWithCode(email, code)
+  } catch (error) {
     // Compte suspendu : identity refuse le code (`403`), l'onboarding affiche l'écran dédié.
-    onError: (error) => {
-      if (isApiError(error) && error.statusCode === 403) void endSession('suspended', error.suspendedUntil, error.suspensionReason)
-    },
-  })
+    if (isApiError(error) && error.statusCode === 403) void endSession('suspended', error.suspendedUntil, error.suspensionReason)
+    throw error
+  }
+  await loginRedirect()
 }
 
-export function useSaveInterests() {
-  const client = useQueryClient()
-  return useMutation({
-    mutationFn: (interests: readonly string[]) => onboardingService.saveInterests(interests),
-    onSuccess: (_result, interests) => client.setQueryData<MeView>(queryKeys.me(), (me) => (me ? { ...me, interests: [...interests] } : me)),
-  })
-}
+/** Envoi du code de connexion par e-mail (identity, hors BFF). */
+export const useRequestLoginCode = () => useAction(sendCode)
 
-export function useRecommendations(interests: readonly string[]) {
-  return useQuery({
-    ...recommendationsQuery(api, interests),
-    enabled: interests.length > 0,
-  })
-}
-
-/** Termine l'onboarding : `me` passe à `onboardingCompleted`, la garde ouvre l'app. */
-export function useCompleteOnboarding() {
-  const client = useQueryClient()
-  return useMutation({
-    mutationFn: onboardingService.complete,
-    onSuccess: (me) => client.setQueryData(queryKeys.me(), me),
-  })
-}
+/** Connexion par code (identity, hors BFF). */
+export const useLoginWithCode = () => useAction(login)

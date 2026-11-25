@@ -1,4 +1,4 @@
-import type { TopicSort } from '@joutio/client/api-types'
+import type { TopicSort } from '@joutio/client/topics'
 import { ArrowsDownUpIcon, HeartIcon, MagnifyingGlassIcon, PencilSimpleIcon, SlidersHorizontalIcon, SquaresFourIcon, WarningCircleIcon, type Icon } from '@phosphor-icons/react'
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -29,8 +29,8 @@ import {
   tokens,
   type CategoryCode,
 } from '@/ui'
-import { useTopicFacets, useTopics } from '../hooks/use-topics'
-import { DEFAULT_TOPIC_SORT, pageSizeFor, type TopicScope } from '../lib/topics-service'
+import { DEFAULT_TOPIC_SORT, useCatalogue, useFacets, type TopicScope } from '@joutio/client/topics'
+import { pageSizeFor } from '../lib/catalogue'
 
 const UNIVERSES = Object.keys(tokens.category) as CategoryCode[]
 
@@ -163,8 +163,8 @@ export function TopicsPage() {
 
   const container = useRef<HTMLDivElement>(null)
   const columns = useGridColumns(container)
-  const list = useTopics({ query: search, categories: selected, sort, followed: scope === 'FOLLOWED', mine: scope === 'MINE', size: pageSizeFor(columns) })
-  const facets = useTopicFacets(search, scope)
+  const list = useCatalogue({ query: search, categories: selected, sort, hideFollowed: false, followed: scope === 'FOLLOWED', mine: scope === 'MINE', size: pageSizeFor(columns) })
+  const facets = useFacets(search, scope)
   // Un échec de chargement ou de rafraîchissement remplace la grille ; seul l'échec de la page suivante la garde.
   const failed = list.isError && !list.isFetchNextPageError
   const topics = failed ? [] : (list.data?.pages.flatMap((page) => page.topics) ?? [])

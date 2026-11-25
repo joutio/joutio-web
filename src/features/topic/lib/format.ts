@@ -1,7 +1,7 @@
-import type { MasteryTier } from '@joutio/client/api-types'
+import type { MasteryTier } from '@joutio/client/profile'
 
-/** Formats localisés partagés avec le mobile (`@joutio/client/i18n`). */
-export { dayLabel, formatNumber } from '@joutio/client/i18n'
+/** Formats localisés partagés avec le mobile (`@joutio/client/core/i18n`). */
+export { dayLabel, formatNumber } from '@joutio/client/core/i18n'
 
 /** Seuils d'XP de maîtrise d'un sujet (`MasteryTier` de `joutio-profile-domain`) : conditions des titres verrouillés. */
 export const MASTERY_XP: Record<MasteryTier, number> = {

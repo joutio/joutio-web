@@ -1,13 +1,14 @@
-import type { TopicCardView } from '@joutio/client/api-types'
+import type { TopicCardView } from '@joutio/client/topics'
 import { CompassIcon, FireIcon, GearSixIcon, HeartIcon, MagnifyingGlassIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe } from '@joutio/client/me'
 import { NotificationBell } from '@/features/notifications'
 import { useMyActivity } from '@/features/profile'
 import { TabNav } from '@/features/shell'
 import { MyTopicsList } from '@/features/workshop'
-import { PAGE_SIZE, useTopicFacets, useTopics, type TopicFilters } from '@/features/topics'
+import { useHome } from '@joutio/client/home'
+import { PAGE_SIZE, useCatalogue, useFacets, type CatalogueFilters } from '@joutio/client/topics'
 import { useT } from '@/lib/i18n'
 import { feedFooterProps } from '@/shared/paging'
 import { ROUTES } from '@/shared/routes'
@@ -38,7 +39,6 @@ import {
   tokens,
   type CategoryCode,
 } from '@/ui'
-import { useHome } from '../hooks/use-home'
 import { useAppBanner } from './app-banner'
 
 const LANDSCAPE_WIDTH = 240
@@ -119,14 +119,14 @@ function ForYou({
 }
 
 /** Sujets suivis : 20 par page côté serveur (`GET /api/topics?followed=true`), puces d'univers des facettes. */
-const followedFilters = (categories: readonly CategoryCode[]): TopicFilters => ({ query: '', categories, sort: 'ALPHA', followed: true })
+const followedFilters = (categories: readonly CategoryCode[]): CatalogueFilters => ({ query: '', categories, sort: 'ALPHA', hideFollowed: false, followed: true })
 
 function Followed() {
   const t = useT()
   const open = useOpenTopic()
   const [selected, setSelected] = useState<CategoryCode[]>([])
-  const list = useTopics(followedFilters(selected))
-  const facets = useTopicFacets('', true)
+  const list = useCatalogue(followedFilters(selected))
+  const facets = useFacets('', 'FOLLOWED')
   const universes = (facets.data?.categories ?? []).filter((facet) => facet.count > 0).map((facet) => toCategoryCode(facet.category))
   const topics = list.data?.pages.flatMap((page) => page.topics) ?? []
   const toggle = (category: CategoryCode) => setSelected(selected.includes(category) ? selected.filter((item) => item !== category) : [...selected, category])

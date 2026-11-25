@@ -1,19 +1,5 @@
-import {
-  answerDeadlineMs,
-  firstAnswerPct,
-  isGameChoice,
-  LATE_JOIN_MS,
-  localizedQuestion,
-  PENDING_ECHO_GRACE_MS,
-  ROUND_SECONDS,
-  sceneAt,
-  type ArenaScene,
-  type GameChoice,
-  type GameState,
-} from '@joutio/client/game'
+import { answerDeadlineMs, Arena, firstAnswerPct, isGameChoice, LATE_JOIN_MS, localizedQuestion, PENDING_ECHO_GRACE_MS, ROUND_SECONDS, useAnswerQuestion, type ArenaScene, type GameChoice, type GameState } from '@joutio/client/game'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { gameService } from '../lib/game-service'
-import { sendAnswer } from '../lib/send-answer'
 
 /* Repris de joutio-mobile (features/duel/hooks/use-duel-arena.ts) : garder aligné. */
 
@@ -41,8 +27,6 @@ export interface UseDuelArenaParams {
   serverNow: () => number
   userId: string
   language: string
-  /** Rejoue l'historique REST (rattrapage / réconciliation d'une réponse optimiste). */
-  refresh: () => void
 }
 
 /**
@@ -52,7 +36,9 @@ export interface UseDuelArenaParams {
  * <p>La saisie suit la phase serveur (`ANSWERABLE`) : l'horloge cliente n'a pas le pouvoir de
  * verrouiller le joueur.</p>
  */
-export function useDuelArena({ gameId, game, now, serverNow, userId, language, refresh }: UseDuelArenaParams) {
+export function useDuelArena({ gameId, game, now, serverNow, userId, language }: UseDuelArenaParams) {
+  // Réponse renvoyée par la lib tant que la manche est ouverte (le serveur est idempotent par manche).
+  const answer = useAnswerQuestion(gameId)
   // Sélection locale optimiste : affichée dès le clic, remplacée par l'écho serveur
   // (`PLAYER_ANSWERED`). `sentAt` sert au rattrapage REST si l'écho tarde.
   const [pending, setPending] = useState<{
@@ -61,7 +47,7 @@ export function useDuelArena({ gameId, game, now, serverNow, userId, language, r
     sentAt: number
   } | null>(null)
 
-  const scene: ArenaScene = useMemo(() => sceneAt(game, now), [game, now])
+  const scene: ArenaScene = useMemo(() => new Arena(game).sceneAt(now), [game, now])
 
   const roundIndex = scene.kind === 'question' || scene.kind === 'reveal' ? scene.round : scene.kind === 'roundIntro' ? scene.round : 0
   const currentRound = scene.kind === 'question' || scene.kind === 'reveal' ? scene.roundState : null
@@ -102,6 +88,9 @@ export function useDuelArena({ gameId, game, now, serverNow, userId, language, r
   const pendingAnswer = pending && pending.round === roundIndex && scene.kind === 'question' && !yourPick ? pending : null
   const pendingChoice = pendingAnswer?.choice ?? null
 
+  // L'écho de ma réponse tarde : l'arène demande un rattrapage (`resync`) au lieu d'attendre la reconnexion.
+  const pendingEchoOverdue = pendingAnswer != null && now - pendingAnswer.sentAt > PENDING_ECHO_GRACE_MS
+
   const isAnswerable = scene.kind === 'question' && !scene.locked && !scene.overdue && !yourPick && pendingAnswer == null
 
   // Affichage réel des réponses de chaque manche (montre locale, une durée seulement) : le temps de réflexion envoyé
@@ -111,10 +100,6 @@ export function useDuelArena({ gameId, game, now, serverNow, userId, language, r
   useEffect(() => {
     if (showing && !(roundIndex in answersShownAt.current)) answersShownAt.current[roundIndex] = Date.now()
   }, [showing, roundIndex])
-
-  // Rattrapage REST : l'écho de ma réponse tarde → l'arène rejoue l'historique au lieu
-  // d'attendre le reconnect WS (jusqu'à 30 s).
-  const pendingEchoOverdue = pendingAnswer != null && now - pendingAnswer.sentAt > PENDING_ECHO_GRACE_MS
 
   const timeLeftDisplay = scene.kind === 'question' || scene.kind === 'reveal' ? scene.timeLeft : ROUND_SECONDS
 
@@ -146,16 +131,13 @@ export function useDuelArena({ gameId, game, now, serverNow, userId, language, r
     const round = roundIndex
     const clientElapsedMs = Math.max(0, Date.now() - (answersShownAt.current[round] ?? Date.now()))
     setPending({ round, choice, sentAt: serverNow() })
-    sendAnswer({
-      send: (signal) => gameService.answer(gameId, round + 1, choice, clientElapsedMs, signal),
-      serverNow,
-      deadline: answerDeadlineMs(currentRound),
-    }).catch(() => {
-      // Refus ou échéance atteinte sans accusé : la sélection est levée (le joueur peut retenter tant que la manche
-      // est ouverte) et l'historique dit si la réponse a tout de même été enregistrée.
-      setPending((current) => (current?.round === round ? null : current))
-      refresh()
-    })
+    answer.mutate(
+      { round: round + 1, choice, clientElapsedMs },
+      {
+        // Refus ou renvois épuisés : la sélection est levée, le joueur peut retenter tant que la manche est ouverte.
+        onError: () => setPending((current) => (current?.round === round ? null : current)),
+      },
+    )
   }
 
   return {
@@ -183,8 +165,8 @@ export function useDuelArena({ gameId, game, now, serverNow, userId, language, r
     gain,
     firstAnswerPctValue,
     pendingChoice,
-    isAnswerable,
     pendingEchoOverdue,
+    isAnswerable,
     timeLeftDisplay,
     gauge,
     handleAnswer,

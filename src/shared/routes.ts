@@ -41,6 +41,8 @@ export const ROUTES = {
   /** Signalements d'une question, en file ; `highlight` : signalement de la notification. */
   questionReports: (topicId: string, questionId: string, highlight?: string) =>
     `/me/topics/${encodeURIComponent(topicId)}/reports/${encodeURIComponent(questionId)}${highlight ? `?highlight=${encodeURIComponent(highlight)}` : ''}`,
+  /** Signalement ouvert depuis une notification : sa question est lue, puis ses signalements s'ouvrent. */
+  reportOf: (topicId: string, reportId: string) => `/me/topics/${encodeURIComponent(topicId)}/report/${encodeURIComponent(reportId)}`,
   /** Série et Sujets joués : écrans poussés du Profil, absents de `web.md` § 2. */
   myStreak: '/me/streak',
   myPlayedTopics: '/me/played',

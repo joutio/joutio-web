@@ -1,156 +1,80 @@
-import type { MeView, TopicOverviewView } from '@joutio/client/api-types'
-import { applyGameNotification, emptyGame } from '@joutio/client/game'
-import { activityDate, streakDayUnlocked } from '@joutio/client/profile'
-import { profileService } from '@/features/profile'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { activityDate, streakDayUnlocked, useActivity } from '@joutio/client/profile'
+import { useCreateChallenge, useRoomStream } from '@joutio/client/rooms'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { gameService } from '@/features/duel'
 import type { PlayTopic } from '@/features/play'
 import { useT } from '@/lib/i18n'
-import { gameResultQuery, queryKeys } from '@joutio/client/query'
-import { readServerNow, usePersonalNotifications } from '@/lib/realtime'
+import { readServerNow } from '@/lib/realtime'
 import { ROUTES } from '@/shared/routes'
 import { toast } from '@/shared/toast'
-import { resultService } from '../lib/result-service'
-import { api } from '@/lib/api'
 
-/**
- * Bilan autoritaire d'un duel terminé. La récompense est calculée après la fin : on relit tant qu'elle manque (aucun
- * canal STOMP ne la porte), puis plus jamais. Une partie consultée depuis l'historique n'attend rien.
- */
-export function useGameResult(gameId: string, waitForReward: boolean) {
-  const client = useQueryClient()
-  const applied = useRef<string | null>(null)
-  const result = useQuery({
-    ...gameResultQuery(api, gameId),
-    enabled: Boolean(gameId),
-    retry: 3,
-    refetchInterval: (query) => (waitForReward && query.state.data && query.state.data.reward === null && !query.state.data.botGame ? 1_500 : false),
-  })
-  useEffect(() => {
-    const data = result.data
-    if (!waitForReward || !data || (!data.botGame && !data.reward) || applied.current === gameId) return
-    applied.current = gameId
-    client.setQueryData<MeView>(queryKeys.me(), (me) => (me ? { ...me, progression: data.progression } : me))
-    client.setQueryData<TopicOverviewView>(queryKeys.topic.overview(data.topic.topicId), (view) =>
-      view?.myProgress
-        ? {
-            ...view,
-            myProgress: {
-              ...view.myProgress,
-              xp: data.topicMastery.xp,
-              tierProgressPercent: data.topicMastery.tierProgressPercent,
-              tierRemainingXp: data.topicMastery.tierRemainingXp,
-            },
-          }
-        : view,
-    )
-    // Profil, sujet et accueil calculés par le serveur après la partie : marqués périmés sans relecture (`refetchType:
-    // 'none'`), relus à leur prochaine ouverture ; progression et maîtrise sont déjà posées depuis le résultat.
-    const userId = client.getQueryData<MeView>(queryKeys.me())?.userId
-    if (userId) void client.invalidateQueries({ queryKey: queryKeys.profiles.all(userId), refetchType: 'none' })
-    void client.invalidateQueries({ queryKey: queryKeys.topic.all(data.topic.topicId), refetchType: 'none' })
-    void client.invalidateQueries({ queryKey: queryKeys.home(), refetchType: 'none' })
-  }, [client, gameId, result.data, waitForReward])
-  return result
-}
-
-/** Partie terminée, repliée depuis l'historique REST (aucun STOMP : plus rien ne bouge). */
-export function useGameHistory(gameId: string) {
-  return useQuery({
-    queryKey: queryKeys.games.notifications(gameId),
-    queryFn: () => gameService.notifications(gameId),
-    enabled: Boolean(gameId),
-    staleTime: Infinity,
-    select: (envelopes) =>
-      [...envelopes].sort((left, right) => left.sequenceNumber - right.sequenceNumber).reduce((state, envelope) => applyGameNotification(state, envelope.payload), emptyGame(gameId)),
-  })
-}
-
-/** Secondes avant une échéance serveur. */
-function useSecondsUntil(at: number | null) {
+/** Secondes avant une échéance serveur (affichage seulement). */
+function useSecondsUntil(at: string | null) {
   const [now, setNow] = useState(readServerNow)
   useEffect(() => {
-    if (at === null) return
+    if (!at) return
     const timer = window.setInterval(() => setNow(readServerNow()), 250)
     return () => window.clearInterval(timer)
   }, [at])
-  return at === null ? 0 : Math.max(0, Math.ceil((at - now) / 1000))
+  return at ? Math.max(0, Math.ceil((Date.parse(at) - now) / 1000)) : 0
 }
 
 export type RematchState = 'idle' | 'pending' | 'refused'
 
-/** Fenêtre de réponse d'une revanche (le défi expire vite côté serveur). */
-const REMATCH_WINDOW_MS = 10_000
-
 /**
- * Proposer une revanche (repris de `joutio-mobile`, `use-rematch.ts`) : défi nominatif avec la partie d'origine, puis la
- * réponse arrive par le flux personnel — `ROOM_ACCEPTED` ouvre le salon, `CHALLENGE_DECLINED` l'annonce. Aucun GET de
- * confirmation ; sans réponse à l'échéance, le bouton revient.
+ * Proposer une revanche : `useCreateChallenge` avec la partie d'origine, puis la salle (`useRoomStream`) dit la réponse —
+ * `WAITING_PLAYERS` ouvre le salon, `DECLINED` l'annonce, `EXPIRED` (échéance du serveur) rend le bouton. Aucune
+ * minuterie locale ni GET de confirmation.
  */
-export function useSendRematch({ userId, opponentId, topic, gameId }: { userId?: string; opponentId: string | null; topic: PlayTopic; gameId: string }) {
+export function useSendRematch({ opponentId, topic, gameId }: { opponentId: string | null; topic: PlayTopic; gameId: string }) {
   const t = useT()
   const navigate = useNavigate()
-  const [state, setState] = useState<RematchState>('idle')
-  const [sending, setSending] = useState(false)
-  const [challenge, setChallenge] = useState<{ id: string; deadline: number } | null>(null)
-  const seconds = useSecondsUntil(challenge?.deadline ?? null)
-  const settled = useRef(false)
-
-  usePersonalNotifications(state === 'pending' ? userId : undefined, (notification) => {
-    if (settled.current) return
-    if (notification.type === 'ROOM_ACCEPTED' && notification.actorId === opponentId && notification.topicId === topic.topicId && notification.sourceId) {
-      settled.current = true
-      void navigate(ROUTES.room(notification.sourceId), { replace: true, state: { topic } })
-    }
-    if (notification.type === 'CHALLENGE_DECLINED' && challenge && notification.sourceId === challenge.id) {
-      settled.current = true
-      setState('refused')
-      setChallenge(null)
-      toast.error(t('result.rematchDeclined'))
-    }
-  })
+  const challenge = useCreateChallenge()
+  const [roomId, setRoomId] = useState<string | null>(null)
+  const { state: room, status } = useRoomStream(roomId ?? undefined)
+  // Salle connue (`ROOM_CREATED` replié) : avant, l'état vide n'a pas de statut significatif.
+  const known = Boolean(status?.loaded && room?.topicId)
+  const roomStatus = known ? room?.status : undefined
+  const seconds = useSecondsUntil(roomStatus === 'INVITED' ? (room?.expiresAt ?? null) : null)
+  const settled = useRef<string | null>(null)
 
   useEffect(() => {
-    if (state !== 'pending' || !challenge || seconds > 0 || settled.current) return
-    settled.current = true
-    // Fin de la fenêtre : l'état revient au repos.
-    setState('idle')
-    setChallenge(null)
-    toast.error(t('result.rematchNoAnswer'), t('result.rematchNoAnswerText'))
-  }, [state, challenge, seconds, t])
+    if (!roomId || settled.current === roomId || !roomStatus || roomStatus === 'INVITED') return
+    settled.current = roomId
+    if (roomStatus === 'WAITING_PLAYERS') void navigate(ROUTES.room(roomId), { replace: true, state: { topic } })
+    else if (roomStatus === 'DECLINED') toast.error(t('result.rematchDeclined'))
+    else toast.error(t('result.rematchNoAnswer'), t('result.rematchNoAnswerText'))
+  }, [roomId, roomStatus, navigate, topic, t])
 
-  const send = async () => {
+  // Refusée : le bouton le dit ; expirée ou annulée : il revient, une nouvelle revanche repart d'une nouvelle salle.
+  const answered = roomStatus !== undefined && roomStatus !== 'INVITED' && roomStatus !== 'WAITING_PLAYERS'
+  const state: RematchState =
+    roomStatus === 'DECLINED' ? 'refused' : challenge.isPending || (roomId !== null && !answered) ? 'pending' : 'idle'
+
+  const send = () => {
     if (state !== 'idle' || !opponentId || !topic.topicId) return
-    settled.current = false
-    setState('pending')
-    setSending(true)
-    try {
-      const { id } = await resultService.rematch(topic.topicId, opponentId, gameId)
-      if (!settled.current) setChallenge({ id, deadline: readServerNow() + REMATCH_WINDOW_MS })
-    } catch {
-      setState('idle')
-      toast.error(t('result.rematchError'), t('home.errorText'))
-    } finally {
-      setSending(false)
-    }
+    challenge.mutate(
+      { topicId: topic.topicId, opponentId, gameId },
+      {
+        onSuccess: ({ id }) => setRoomId(id),
+        onError: () => toast.error(t('result.rematchError'), t('home.errorText')),
+      },
+    )
   }
 
-  return { state, seconds, sending, send }
+  return { state, seconds, sending: challenge.isPending, send }
 }
 
 /**
- * Nouveau jour de série ouvert par cette partie (2026-11-13, `resultat.md` § 1) : l'activité est relue **une fois** pour
- * la partie (jamais le cache du profil, qui peut dater d'avant le duel), puis la règle partagée tranche. Jamais pour un
- * entraînement contre le bot, qui ne compte pas dans la série.
+ * Nouveau jour de série ouvert par cette partie (2026-11-13, `resultat.md` § 1) : la fin de partie marque le profil
+ * périmé (`@joutio/client`), l'activité est donc relue à l'ouverture du résultat ; seule une lecture faite après le
+ * montage compte, puis la règle partagée tranche. Jamais pour un entraînement contre le bot.
  */
-export function useStreakUnlock(gameId: string, userId: string | undefined, enabled: boolean) {
-  return useQuery({
-    queryKey: queryKeys.games.streakUnlock(gameId),
-    queryFn: async () => streakDayUnlocked(await profileService.activity(userId ?? ''), activityDate(readServerNow())),
-    enabled: enabled && Boolean(userId),
-    staleTime: Infinity,
-    retry: 1,
-  })
+export function useStreakUnlock(userId: string | undefined, enabled: boolean) {
+  const activity = useActivity(enabled ? userId : undefined)
+  const fresh = activity.isFetchedAfterMount && activity.data !== undefined
+  return {
+    isFetched: !enabled || fresh || activity.isError,
+    data: fresh && activity.data ? streakDayUnlocked(activity.data, activityDate(readServerNow())) : null,
+  }
 }

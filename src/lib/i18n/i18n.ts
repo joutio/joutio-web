@@ -1,11 +1,11 @@
 import { useCallback } from 'react'
 import { create } from 'zustand'
-import type { Language } from '@joutio/client/api-types'
-import { translate, type MessageKey, type MessageValues } from '@joutio/client/i18n'
+import type { Language } from '@joutio/client/core/types'
+import { translate, type MessageKey, type MessageValues } from '@joutio/client/core/i18n'
 
 /**
  * Textes de l'app, en français et en anglais (`MeView.language`). Les dictionnaires et `translate` sont partagés avec
- * le mobile dans `@joutio/client/i18n` (ADR 0002) ; l'app ne garde que la langue courante et `useT`.
+ * le mobile dans `@joutio/client/core/i18n` (ADR 0002) ; l'app ne garde que la langue courante et `useT`.
  */
 export { translate, type MessageKey }
 

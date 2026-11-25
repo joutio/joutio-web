@@ -1,14 +1,5 @@
-import type { Language } from '@joutio/client/api-types'
-import {
-  contentFor,
-  QUESTION_CHOICES,
-  reasonCounts,
-  snapshotDiffers,
-  type OwnerQuestionReport,
-  type QuestionEditorView,
-  type ReportedQuestion,
-  type ReportSnapshot,
-} from '@joutio/client/authoring'
+import type { Language } from '@joutio/client/core/types'
+import { contentFor, QUESTION_CHOICES, reasonCounts, snapshotDiffers, type OwnerQuestionReport, type QuestionEditorView, type ReportedQuestion, type ReportSnapshot } from '@joutio/client/authoring'
 import { CheckCircleIcon, ClockCounterClockwiseIcon, PencilSimpleIcon, ProhibitIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
@@ -19,7 +10,7 @@ import { topicName } from '@/shared/topics'
 import { useBack } from '@/shared/use-back'
 import { Button, cn, DetentSheet, EmptyState, MobileTopBar, Pill, QuestionBlock, Screen, Segmented, Skeleton, TabsScrollView, type Detent } from '@/ui'
 import { useDismissReports, useReportQueue, useTopicQuestions, useWorkshop } from '../hooks/use-workshop'
-import { questionNumber } from '../lib/workshop-service'
+import { questionNumber } from '../lib/questions'
 import { REASON_LABEL } from '../lib/labels'
 
 type Version = 'current' | 'reported'

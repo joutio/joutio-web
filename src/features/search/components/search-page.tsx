@@ -1,12 +1,9 @@
-import type { SuggestionView } from '@joutio/client/api-types'
+import { MIN_SEARCH_LENGTH, useSuggestions, type SuggestionView } from '@joutio/client/search'
 import { ClockCounterClockwiseIcon, MagnifyingGlassIcon, WarningCircleIcon, WifiSlashIcon } from '@phosphor-icons/react'
-import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayerIdentity } from '@/features/me'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { queryKeys } from '@joutio/client/query'
-import { api } from '@/lib/api'
 import { useConnectionStore } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { ROUTES } from '@/shared/routes'
@@ -15,7 +12,6 @@ import { useBack } from '@/shared/use-back'
 import { useDebounced } from '@/shared/use-debounced'
 import { Button, EmptyState, ListRow, PlayerRow, Screen, SearchField, SectionHeader, Skeleton, TopicRow } from '@/ui'
 
-const MIN_QUERY = 2
 const MAX_RECENTS = 5
 const RECENTS_KEY = 'joutio.search.recents'
 const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
@@ -57,13 +53,9 @@ export function SearchPage() {
   const [query, setQuery] = useState('')
   const [recents, setRecents] = useState(readRecents)
   const term = useDebounced(query.trim(), 250)
-  const searching = term.length >= MIN_QUERY
-  const results = useQuery({
-    queryKey: queryKeys.suggestions.term(term),
-    queryFn: () => api.get<SuggestionView[]>('/api/suggestions', { query: { q: term, limit: 10 } }),
-    enabled: searching && !offline,
-    staleTime: 30_000,
-  })
+  const searching = term.length >= MIN_SEARCH_LENGTH
+  // Hors ligne, rien n'est lu (terme vide : `useSuggestions` ne lance aucune requête).
+  const results = useSuggestions(offline ? '' : term)
   const topics = (results.data ?? []).filter((item) => item.type === 'TOPIC')
   const players = (results.data ?? []).filter((item) => item.type === 'PLAYER')
 
@@ -90,7 +82,7 @@ export function SearchPage() {
       <div className="grid gap-6 px-4 pt-2 pb-8">
         {offline ? (
           <EmptyState icon={WifiSlashIcon} title={t('search.offline')} description={t('search.offlineText')} />
-        ) : query.trim().length < MIN_QUERY ? (
+        ) : query.trim().length < MIN_SEARCH_LENGTH ? (
           recents.length > 0 ? (
             <section className="grid gap-3">
               <SectionHeader

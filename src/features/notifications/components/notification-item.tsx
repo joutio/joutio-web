@@ -1,20 +1,20 @@
-import type { ChallengeView } from '@joutio/client/api-types'
+import { useRemoveNotification } from '@joutio/client/notifications'
+import { useProfile } from '@joutio/client/profile'
+import { useMyRooms } from '@joutio/client/rooms'
 import { BellIcon } from '@phosphor-icons/react'
-import { useQuery } from '@tanstack/react-query'
-import { usePlayerProfile } from '@/features/player'
 import { useLanguageStore, useT } from '@/lib/i18n'
-import { queryKeys } from '@joutio/client/query'
-import type { NotificationView } from '@/lib/realtime'
+import type { NotificationView } from '@joutio/client/notifications'
 import { readServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
 import { useDuration } from '@/shared/duration'
 import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
 import { NotificationRow } from '@/ui'
-import { useDeleteNotification, useOpenNotification } from '../hooks/use-notifications'
+import { toast } from '@/shared/toast'
+import { useOpenNotification } from '../hooks/use-notifications'
 import { NOTIFICATION_ICONS, notificationActorId, notificationTitleKey } from '../lib/notification-presentation'
 import { opensScreen } from '../lib/notification-target'
-import { isExpired, isUnread } from '../lib/notifications-service'
+import { isExpired, isUnread } from '../lib/inbox'
 
 /** Délai écoulé : « à l'instant », « il y a 12 min », « il y a 3 h », « il y a 2 j », puis la date. */
 function useRelativeTime() {
@@ -40,20 +40,20 @@ export function NotificationItem({ notification, last }: { notification: Notific
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const open = useOpenNotification()
-  const remove = useDeleteNotification()
+  const remove = useRemoveNotification()
   const relative = useRelativeTime()
   const duration = useDuration()
   const actorId = notificationActorId(notification)
-  const actor = usePlayerProfile(actorId ?? '').data
+  const actor = useProfile(actorId ?? undefined).data
   const src = useUserAvatar(actor)
-  // Défis tenus à jour par le runtime (badge de l'onglet) : lus en cache, sans requête de plus.
-  const challenges = useQuery<ChallengeView[]>({ queryKey: queryKeys.challenges(), enabled: false }).data
-  const challenge = notification.type === 'CHALLENGE_RECEIVED' ? challenges?.find((item) => item.challengeId === notification.sourceId) : undefined
+  // Défi reçu : sa salle (`sourceId`), parmi les salles du joueur tenues à jour par le flux personnel.
+  const rooms = useMyRooms().data
+  const challenge = notification.type === 'CHALLENGE_RECEIVED' ? rooms?.find((room) => room.roomId === notification.sourceId) : undefined
 
   const name = actor?.pseudonym ?? t('notifications.somePlayer')
   const title = t(notificationTitleKey(notification), { name })
   const now = readServerNow()
-  const pending = challenge?.status === 'PENDING' && !isExpired(notification, now)
+  const pending = challenge?.status === 'INVITED' && !isExpired(notification, now)
   const when = relative(notification.createdAt, now)
   const sub = challenge
     ? `${topicName(challenge.topic.names, language)} · ${pending ? t('challenges.expiresIn', { duration: duration(Date.parse(challenge.expiresAt) - now) }) : when}`
@@ -68,7 +68,7 @@ export function NotificationItem({ notification, last }: { notification: Notific
       unread={isUnread(notification)}
       chevron={opensScreen(notification.type)}
       onClick={() => open(notification)}
-      onDelete={() => remove.mutate(notification.notificationId)}
+      onDelete={() => remove.mutate(notification.notificationId, { onError: () => toast.error(t('notifications.deleteError'), t('home.errorText')) })}
       last={last}
     />
   )

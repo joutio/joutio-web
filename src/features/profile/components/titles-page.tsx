@@ -1,4 +1,4 @@
-import type { TitleView } from '@joutio/client/api-types'
+import type { TitleView } from '@joutio/client/profile'
 import { CrownSimpleIcon, SlidersHorizontalIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'

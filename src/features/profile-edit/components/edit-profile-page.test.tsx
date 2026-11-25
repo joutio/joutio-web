@@ -6,10 +6,15 @@ import { EditProfilePage } from './edit-profile-page'
 // Pseudonyme antérieur aux règles (commence par un chiffre) : il ne doit pas bloquer l'enregistrement du reste.
 const me = { userId: 'u1', pseudonym: '4me', bio: '', country: null, bannerUrl: null }
 
-vi.mock('@/features/me', () => ({ useMe: () => ({ data: me }) }))
+vi.mock('@joutio/client/me', async (original) => ({
+  ...(await original<typeof import('@joutio/client/me')>()),
+  useMe: () => ({ data: me }),
+  useUpdateMyProfile: () => ({ mutateAsync: vi.fn() }),
+}))
+vi.mock('@joutio/client/profile', async (original) => ({ ...(await original<typeof import('@joutio/client/profile')>()), useUpdateBanner: () => ({ mutateAsync: vi.fn() }) }))
 vi.mock('@/features/settings', () => ({
   usePseudonymCheck: (value: string, current: string | undefined) => (value.trim() === current ? { state: 'unchanged' } : { state: 'available' }),
-  useUpdateMe: () => ({ mutateAsync: vi.fn() }),
+  useProfileSaveError: () => () => undefined,
   pseudonymError: () => undefined,
   pseudonymHint: () => '',
 }))

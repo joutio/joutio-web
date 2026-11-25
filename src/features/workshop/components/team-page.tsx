@@ -1,4 +1,4 @@
-import type { SuggestionView } from '@joutio/client/api-types'
+import type { SuggestionView } from '@joutio/client/search'
 import type { TeamMember } from '@joutio/client/authoring'
 import { ShieldCheckIcon, TrashIcon, UserPlusIcon } from '@phosphor-icons/react'
 import { useState } from 'react'

@@ -4,7 +4,7 @@ import { tierColor, tierInk } from '../lib/tokens'
 import type { TierCode } from '../tokens.generated'
 import { cn } from '../lib/cn'
 import { useT } from '@/lib/i18n'
-import { tierKey } from '@joutio/client/i18n'
+import { tierKey } from '@joutio/client/core/i18n'
 
 /** Au-delà, le titre passe en `heroSmall` pour tenir sur deux lignes. */
 const LONG_HEADLINE = 12

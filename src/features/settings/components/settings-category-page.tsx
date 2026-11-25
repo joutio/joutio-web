@@ -21,11 +21,13 @@ import {
   TrashIcon,
   UserPlusIcon,
 } from '@phosphor-icons/react'
-import type { NotificationCategory } from '@joutio/client/api-types'
+import type { NotificationCategory } from '@joutio/client/notifications'
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { useBlockedPlayers } from '@/features/block'
-import { useMe } from '@/features/me'
+import { useBlockedPlayers, useUpdateInterests, useUpdateLanguage } from '@joutio/client/me'
+import { useNotificationPreferences, useSetNotificationPreference } from '@joutio/client/notifications'
+import { selectUserId, useSessionStore } from '@/lib/session'
+import { useMe } from '@joutio/client/me'
 import { useAutoTrain } from '@/features/play'
 import { showPremium } from '@/features/premium'
 import { config } from '@/lib/config'
@@ -36,8 +38,7 @@ import { useDeviceSettings } from '@/shared/device-settings'
 import { ROUTES, type SettingsPage } from '@/shared/routes'
 import { toast } from '@/shared/toast'
 import { Button, CategoryTile, ListRow, MobileSheet, Notice, RadioGroup, tokens, type CategoryCode } from '@/ui'
-import { useNotificationPreferences, useSetNotificationPreference, useUpdateMe } from '../hooks/use-settings'
-import { MAX_INTERESTS } from '../lib/settings-service'
+import { MAX_INTERESTS } from '../lib/settings-options'
 import { BirthDateSheet } from './birth-date-sheet'
 import { APPEARANCE, LANGUAGES, useSettingsOrigin } from '../lib/settings-options'
 import { Group, SettingsScreen } from './settings-screen'
@@ -127,7 +128,7 @@ function NotificationsPage() {
   const [enabling, setEnabling] = useState(false)
   // Préférences serveur, activées par défaut (`reglages.md` § 5).
   const enabled = (category: NotificationCategory) => preferences.data?.find((item) => item.category === category)?.enabled ?? true
-  const toggle = (category: NotificationCategory) => (on: boolean) => setPreference.mutate({ category, enabled: on })
+  const toggle = (category: NotificationCategory) => (on: boolean) => setPreference.mutate({ category, enabled: on }, { onError: () => toast.error(t('settings.preferenceError')) })
 
   const activatePush = async () => {
     setEnabling(true)
@@ -168,7 +169,7 @@ function GamePage() {
   const me = useMe().data
   const device = useDeviceSettings()
   const autoTrain = useAutoTrain()
-  const saveInterests = useUpdateMe('interests')
+  const saveInterests = useUpdateInterests()
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState<string[]>([])
   const interests = me?.interests ?? []
@@ -185,7 +186,7 @@ function GamePage() {
           subtitle={t('settings.interestsCount', { count: draft.length, max: MAX_INTERESTS })}
           tall
           footer={
-            <Button full disabled={draft.join() === interests.join()} loading={saveInterests.isPending} onClick={() => saveInterests.mutate(draft, { onSuccess: () => setOpen(false) })}>
+            <Button full disabled={draft.join() === interests.join()} loading={saveInterests.isPending} onClick={() => saveInterests.mutate(draft, { onSuccess: () => setOpen(false), onError: () => toast.error(t('settings.saveError'), t('home.errorText')) })}>
               {t('settings.save')}
             </Button>
           }
@@ -230,7 +231,7 @@ function DisplayPage() {
   const t = useT()
   const me = useMe().data
   const theme = useThemeStore()
-  const saveLanguage = useUpdateMe('language')
+  const saveLanguage = useUpdateLanguage(useSessionStore(selectUserId) ?? '')
   const [sheet, setSheet] = useState<'language' | 'appearance'>()
   return (
     <SettingsScreen
@@ -246,7 +247,7 @@ function DisplayPage() {
                   control="radio"
                   on={me?.language === option.value}
                   onToggle={() => {
-                    if (option.value !== me?.language) saveLanguage.mutate(option.value)
+                    if (option.value !== me?.language) saveLanguage.mutate(option.value, { onError: () => toast.error(t('settings.saveError'), t('home.errorText')) })
                     setSheet(undefined)
                   }}
                   last={index === LANGUAGES.length - 1}

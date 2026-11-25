@@ -1,5 +1,7 @@
 import { customTitle } from '@joutio/client/authoring'
-import type { GameHistoryItemView, GameOutcome, LeaderboardEntryView, TopicOverviewView } from '@joutio/client/api-types'
+import type { GameHistoryItemView } from '@joutio/client/profile'
+import type { GameOutcome } from '@joutio/client/game'
+import type { LeaderboardEntryView, TopicOverviewView } from '@joutio/client/topics'
 import { SwordIcon, TrophyIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
 import { usePlayerIdentity } from '@/features/me'
@@ -9,7 +11,11 @@ import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { Button, EmptyState, MatchRow, PlayerRow, Podium, SectionHeader, Skeleton, TitleRow, tokens, type MatchOutcome } from '@/ui'
-import { useMyTitles, useTopicGames, useTopicLeaderboard, useWearTitle } from '../hooks/use-topic'
+import { useHistory } from '@joutio/client/profile'
+import { useTopicLeaderboard } from '@joutio/client/topics'
+import { selectUserId, useSessionStore } from '@/lib/session'
+import { useMyTitles, useWearTitle } from '../hooks/use-topic'
+import { GAMES_SIZE } from '../lib/board'
 import { dayLabel, formatNumber, MASTERY_TIERS, MASTERY_XP } from '../lib/format'
 
 const OUTCOMES: Partial<Record<GameOutcome, MatchOutcome>> = { WIN: 'win', LOSS: 'loss', DRAW: 'draw' }
@@ -48,9 +54,10 @@ export function GamesTab({ topicId }: { topicId: string }) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const navigate = useNavigate()
-  const games = useTopicGames(topicId)
+  // Mes dernières parties du sujet : le BFF n'expose pas celles de tous les joueurs (`fiche-sujet.md` § 5).
+  const games = useHistory(useSessionStore(selectUserId) ?? undefined, { topicId, outcome: 'ALL', sort: 'RECENT' })
   // Parties terminées seulement : une partie en attente ou annulée n'a pas d'issue à montrer.
-  const finished = (games.data?.content ?? []).filter((game) => OUTCOMES[game.outcome])
+  const finished = (games.data?.pages.flatMap((page) => page.content) ?? []).slice(0, GAMES_SIZE).filter((game) => OUTCOMES[game.outcome])
   const groups: { day: string; games: GameHistoryItemView[] }[] = []
   for (const game of finished) {
     const day = dayLabel(new Date(game.playedAt), language, { today: t('topic.today'), yesterday: t('topic.yesterday') })
@@ -155,7 +162,7 @@ export function BoardTab({ topicId }: { topicId: string }) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const navigate = useNavigate()
-  const board = useTopicLeaderboard(topicId)
+  const board = useTopicLeaderboard(topicId || undefined)
   const entries = board.data?.entries.content ?? []
   const [first, second, third, ...rest] = entries
   const podium = [first, second, third].filter((entry): entry is LeaderboardEntryView => entry !== undefined)

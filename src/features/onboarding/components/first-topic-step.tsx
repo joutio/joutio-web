@@ -1,13 +1,14 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { LightningIcon, SwordIcon } from '@phosphor-icons/react'
-import { useCreateBotRoom } from '@/features/play'
+import { useCompleteOnboarding, useRecommendations } from '@joutio/client/onboarding'
+import { useCreateBotRoom } from '@joutio/client/rooms'
+import { useBotRoomError } from '@/features/play'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { returnTo } from '@/lib/session'
 import { trackEvent } from '@/lib/telemetry'
 import { ROUTES } from '@/shared/routes'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { Button, EmptyState, Notice, RadioGroup, Skeleton, TopicCard, TopicRow } from '@/ui'
-import { useCompleteOnboarding, useRecommendations } from '../hooks/use-onboarding'
 import { useOnboardingStore } from '../onboarding-store'
 import { Steps } from './steps'
 
@@ -15,7 +16,8 @@ import { Steps } from './steps'
  * Premier thème : aperçu du thème choisi, puis la liste radio des recommandations. Titre et aperçu restent fixes, seule
  * la liste défile ; un dégradé signale la suite. « Explorer l'accueil » termine l'onboarding ; « Découvrir le duel » crée
  * d'abord le salon bot (robot facile, thème choisi) et attend la réponse, puis termine l'onboarding : la sortie de
- * l'onboarding ouvre directement ce salon, sans passer par l'accueil (2026-11-14).
+ * l'onboarding ouvre directement ce salon, sans passer par l'accueil (2026-11-14). Un lien partagé en attente
+ * (`returnTo`, `partage.md` § 3) l'emporte : l'onboarding se termine sans créer de salon et le lien s'ouvre.
  */
 export function FirstTopicStep() {
   const t = useT()
@@ -24,6 +26,7 @@ export function FirstTopicStep() {
   const recommendations = useRecommendations(universes)
   const complete = useCompleteOnboarding()
   const botRoom = useCreateBotRoom()
+  const botRoomError = useBotRoomError()
   const topics = recommendations.data ?? []
   const [pickedId, setPickedId] = useState<string | null>(null)
   const picked = topics.find((topic) => topic.topicId === pickedId) ?? topics[0]
@@ -36,24 +39,25 @@ export function FirstTopicStep() {
   }
   useLayoutEffect(updateMore, [topics.length])
 
-  const finish = () => complete.mutate(undefined, { onSuccess: () => trackEvent('onboarding_completed') })
+  const finish = () => complete.mutate(universes, { onSuccess: () => trackEvent('onboarding_completed') })
   // Salon d'abord (commande traitée, le salon existe), puis onboarding terminé : la sortie de l'onboarding
-  // (`onboarding-page.tsx`, `returnTo`) ouvre ce salon au lieu de l'accueil.
-  const play = async () => {
+  // (`onboarding-page.tsx`, `returnTo`) ouvre ce salon au lieu de l'accueil. Un lien en attente n'est jamais écrasé.
+  const play = () => {
     if (!picked) return
-    let roomId: string
-    try {
-      roomId = (await botRoom.mutateAsync({ topicId: picked.topicId, difficulty: 'EASY' })).id
-    } catch {
-      return
-    }
-    returnTo.remember(ROUTES.room(roomId))
-    try {
-      await complete.mutateAsync()
-      trackEvent('onboarding_completed')
-    } catch {
-      returnTo.remember(null)
-    }
+    if (returnTo.joinPending()) return finish()
+    botRoom.mutate(
+      { topicId: picked.topicId, difficulty: 'EASY' },
+      {
+        onSuccess: ({ id }) => {
+          returnTo.remember(ROUTES.room(id))
+          complete.mutate(universes, {
+            onSuccess: () => trackEvent('onboarding_completed'),
+            onError: () => returnTo.remember(null),
+          })
+        },
+        onError: botRoomError,
+      },
+    )
   }
 
   return (
@@ -68,7 +72,7 @@ export function FirstTopicStep() {
       footer={
         <div className="grid gap-2">
           {complete.isError && <Notice tone="error" title={t('onboarding.first.completeError')} message={t('common.checkConnection')} />}
-          <Button full icon={LightningIcon} disabled={!picked} loading={complete.isPending || botRoom.isPending} onClick={() => void play()}>
+          <Button full icon={LightningIcon} disabled={!picked} loading={complete.isPending || botRoom.isPending} onClick={play}>
             {t('onboarding.first.play')}
           </Button>
         </div>

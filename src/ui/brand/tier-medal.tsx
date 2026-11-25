@@ -3,7 +3,7 @@ import { cn } from '../lib/cn'
 import { tokens, type TierCode } from '../tokens.generated'
 import { LockBadge, LOCKED_STYLE } from './lock-badge'
 import { useT } from '@/lib/i18n'
-import { tierKey } from '@joutio/client/i18n'
+import { tierKey } from '@joutio/client/core/i18n'
 
 export type TierMedalProps = {
   tier: TierCode

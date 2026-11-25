@@ -1,10 +1,9 @@
 import type { Icon } from '@phosphor-icons/react'
 import { ClockCountdownIcon, LightningIcon, LinkBreakIcon, NumberCircleTwoIcon, QuestionIcon, TimerIcon, XIcon } from '@phosphor-icons/react'
-import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMe, usePlayerIdentity } from '@/features/me'
+import { useMe } from '@joutio/client/me'
+import { useRoom } from '@joutio/client/rooms'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
-import { roomQuery } from '@joutio/client/query'
 import { useServerNow } from '@/lib/realtime'
 import { returnTo, selectStatus, useSessionStore } from '@/lib/session'
 import { useUserAvatar } from '@/shared/avatar'
@@ -13,7 +12,6 @@ import { tierOf } from '@/shared/tier'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { Avatar, Badge, Button, EmptyState, IconButton, ListRow, PlayerName, Screen, Skeleton, TopicCard, tokens, type TierCode } from '@/ui'
 import { countdownOf } from '../lib/countdown'
-import { api } from '@/lib/api'
 
 /** Conditions du duel, en `ListRow` informatives (`lancer-partie.md` § 2). */
 const RULES: readonly { icon: Icon; label: MessageKey }[] = [
@@ -50,6 +48,14 @@ function Seat({ name, src, rating, premium, guest }: SeatProps) {
   )
 }
 
+/** Ma place du face-à-face, avec une session : le compte n'est lu qu'ici. */
+function MySeat() {
+  const me = useMe().data
+  const src = useUserAvatar(me)
+  if (!me) return <Skeleton shape="circle" width={88} />
+  return <Seat name={me.pseudonym} src={src} rating={me.progression?.rating} premium={me.premium} />
+}
+
 /**
  * Rejoindre un salon (`lancer-partie.md` § 2, lab `rejoindre.tsx`, refonte face-à-face du 2026-11-14), ouvert par un
  * lien partagé, hors onglets : Fermer et échéance en haut, invitation, face-à-face de l'hôte et du joueur (place à
@@ -62,14 +68,12 @@ export function JoinPage() {
   const navigate = useNavigate()
   const { roomId = '' } = useParams()
   const authenticated = useSessionStore(selectStatus) === 'authenticated'
-  const me = useMe()
-  const identity = usePlayerIdentity()
   const now = useServerNow()
-  const room = useQuery({ ...roomQuery(api, roomId), enabled: authenticated && Boolean(roomId), retry: 1 })
+  // Sans session, rien n'est lu : la page invite à se connecter, le lien est gardé pendant la connexion.
+  const room = useRoom(authenticated && roomId ? roomId : undefined)
   const view = room.data
   const host = view?.opponent
   const hostAvatar = useUserAvatar(host)
-  const myAvatar = useUserAvatar(authenticated ? me.data : null)
   const unavailable = room.isError || (view && (view.status !== 'WAITING_PLAYERS' || view.gameId !== null))
   const countdown = countdownOf(view?.expiresAt, now)
 
@@ -105,7 +109,6 @@ export function JoinPage() {
   }
 
   const loading = authenticated && room.isPending
-  const myProgression = me.data?.progression
   return (
     <Screen
       header={
@@ -122,7 +125,7 @@ export function JoinPage() {
       // 370 px de bouton : la colonne plus la gouttière de 16 px de chaque côté.
       bottomBar={
         <div className="mx-auto grid w-full max-w-[402px] gap-2 px-4 pt-2 pb-2">
-          <Button full icon={LightningIcon} disabled={authenticated && (room.isPending || me.data?.onboardingCompleted === false)} onClick={join}>
+          <Button full icon={LightningIcon} disabled={authenticated && room.isPending} onClick={join}>
             {t(authenticated ? 'join.join' : 'join.signIn')}
           </Button>
           {!authenticated && <p className="jo-type-caption m-0 text-center text-pretty text-jo-muted">{t('join.noAccount')}</p>}
@@ -137,16 +140,12 @@ export function JoinPage() {
               <Skeleton shape="circle" width={88} />
             </div>
           ) : (
-            <Seat name={host.pseudonym} src={hostAvatar} rating={host.rating} premium={identity.premium(host)} />
+            <Seat name={host.pseudonym} src={hostAvatar} rating={host.rating} premium={host.premium} />
           )}
           <span className="mt-[30px] grid size-7 place-items-center rounded-jo-full bg-jo-accent text-jo-on-accent" aria-hidden>
             <LightningIcon size={14} weight="fill" />
           </span>
-          {authenticated && me.data ? (
-            <Seat name={me.data.pseudonym} src={myAvatar} rating={myProgression?.rating} premium={me.data.premium === true} />
-          ) : (
-            <Seat name={t('join.guest')} guest={t('join.guestHint')} />
-          )}
+          {authenticated ? <MySeat /> : <Seat name={t('join.guest')} guest={t('join.guestHint')} />}
         </div>
         {view && (
           // Même largeur que les cartes paysage des rails de l'Accueil (240 px), centrée.

@@ -9,7 +9,7 @@ import {
   UserCircleIcon,
 } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe } from '@joutio/client/me'
 import { showPremium } from '@/features/premium'
 import { useT } from '@/lib/i18n'
 import { logout } from '@/lib/session'

@@ -1,4 +1,5 @@
-import type { BadgeCollectionView, MeView, TitlesView, TopicStatView } from '@joutio/client/api-types'
+import type { BadgeCollectionView, TitlesView, TopicStatView } from '@joutio/client/profile'
+import type { MeView } from '@joutio/client/me'
 import { ChartLineUpIcon, ClockCounterClockwiseIcon, CrownSimpleIcon, MedalIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -22,7 +23,7 @@ import {
   TopicsDonut,
   categoryColor,
 } from '@/ui'
-import { useMyActivity, useMyBadges, useMyRecentGames, useMyTopics } from '../hooks/use-profile'
+import { RECENT_GAMES, useMyActivity, useMyBadges, useMyRecentGames, useMyTopics } from '../hooks/use-profile'
 import { badgesSummary, familiesOf, type BadgeFamilySummary } from '../lib/badges'
 import { rankProgress, titleLabel } from '../lib/ranks'
 import { streakHint, weekOf } from '../lib/streak'
@@ -237,6 +238,7 @@ export function HistoryTab() {
   const t = useT()
   const navigate = useNavigate()
   const games = useMyRecentGames()
+  const recent = (games.data?.pages.flatMap((page) => page.content) ?? []).slice(0, RECENT_GAMES)
   return (
     <div className="grid gap-4 px-4 pt-1 pb-8">
       <SectionHeader
@@ -251,10 +253,10 @@ export function HistoryTab() {
         <Rows />
       ) : games.isError ? (
         <ErrorState title={t('history.error')} retrying={games.isRefetching} onRetry={() => void games.refetch()} />
-      ) : (games.data?.content.length ?? 0) === 0 ? (
+      ) : recent.length === 0 ? (
         <EmptyState icon={ClockCounterClockwiseIcon} title={t('history.empty')} description={t('history.emptyText')} />
       ) : (
-        <GameGroups games={games.data!.content} />
+        <GameGroups games={recent} />
       )}
     </div>
   )

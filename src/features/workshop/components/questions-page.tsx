@@ -9,7 +9,7 @@ import { useBack } from '@/shared/use-back'
 import { Button, Chip, EmptyState, FeedFooter, IconButton, ListRow, MobileSheet, MobileTopBar, Notice, ProgressBar, RadioGroup, Screen, SearchField, SectionHeader, Skeleton } from '@/ui'
 import { useCreationLimits, useFrozen, useTopicQuestions, useWorkshop } from '../hooks/use-workshop'
 import { FrozenNotice } from './frozen-notice'
-import { questionNumber } from '../lib/workshop-service'
+import { questionNumber } from '../lib/questions'
 import { STATUS_LABEL } from '../lib/labels'
 import { QuestionStatusIcon } from './question-status'
 

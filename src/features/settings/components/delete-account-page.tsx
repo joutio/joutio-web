@@ -1,10 +1,10 @@
 import { CheckCircleIcon, WarningIcon } from '@phosphor-icons/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { OTP_LENGTH, otpSchema } from '@joutio/client/forms'
+import { OTP_LENGTH, otpSchema } from '@joutio/client/me'
 import { useEffect, useRef } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe } from '@joutio/client/me'
 import { useMyBadges } from '@/features/profile'
 import { formatNumber, useMyTitles } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
@@ -12,7 +12,7 @@ import { clearSession } from '@/lib/session'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { Button, CodeInput, EmptyState, MobileTopBar, Notice, Screen, tokens } from '@/ui'
-import { useDeleteAccount, useRequestDeletionCode } from '../hooks/use-settings'
+import { useDeleteAccount, useRequestDeletionCode } from '@joutio/client/me'
 
 /**
  * Supprimer mon compte (`reglages.md` § 3, lab `supprimer-compte.tsx`) : ce que le joueur perd, puis le code reçu par

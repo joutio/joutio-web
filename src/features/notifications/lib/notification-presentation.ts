@@ -1,6 +1,6 @@
 import { CheckIcon, FlagIcon, LightningIcon, ShieldWarningIcon, SwordIcon, UserPlusIcon, WarningIcon, XIcon, type Icon } from '@phosphor-icons/react'
 import type { MessageKey } from '@/lib/i18n'
-import type { NotificationView } from '@/lib/realtime'
+import type { NotificationView } from '@joutio/client/notifications'
 
 /** Pictogramme des notifications sans joueur. */
 export const NOTIFICATION_ICONS: Record<NotificationView['type'], Icon> = {

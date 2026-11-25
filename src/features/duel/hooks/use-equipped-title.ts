@@ -1,4 +1,4 @@
-import { useTopicOverview } from '@/features/topic'
+import { useTopicOverview } from '@joutio/client/topics'
 import { topicName } from '@/shared/topics'
 import { tokens, type TierCode } from '@/ui'
 
@@ -8,7 +8,7 @@ import { tokens, type TierCode } from '@/ui'
  */
 export function useEquippedTitle(key: string | null | undefined, language: string): string | undefined {
   const [topicId = '', tier] = (key ?? '').split(':') as [string?, TierCode?]
-  const overview = useTopicOverview(topicId)
+  const overview = useTopicOverview(topicId || undefined)
   if (!tier || !overview.data) return undefined
   return overview.data.titles?.[language]?.[tier] ?? overview.data.titles?.fr?.[tier] ?? `${tokens.tier[tier].label} · ${topicName(overview.data.topic.names, language)}`
 }

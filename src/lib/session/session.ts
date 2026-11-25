@@ -1,6 +1,5 @@
 import { api } from '../api/api-client'
 import { ENDPOINTS } from '../endpoints'
-import { queryClient } from '../query-client'
 import { authorizeUrl, exchangeCode, pkceChallenge, randomToken, refreshTokens, TokenError } from './oauth'
 import { registerSessionGateway } from './session-gateway'
 import { claimsOf, useSessionStore, type SessionEndReason, type TokenSet } from './session-store'
@@ -72,10 +71,9 @@ export async function refreshSessionOrEnd(): Promise<TokenSet | null> {
   return result.status === 'ok' ? result.tokens : null
 }
 
-/** Purge locale : jetons, cache des requêtes, statut anonyme. */
+/** Purge locale : jetons et statut anonyme (le cache des requêtes se vide avec la session, `app/app.tsx`). */
 export function clearSession(): void {
   apply(null)
-  queryClient.clear()
 }
 
 /** Fin de session subie, avec sa raison. */

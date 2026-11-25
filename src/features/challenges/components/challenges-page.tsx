@@ -1,10 +1,8 @@
-import type { ChallengeView } from '@joutio/client/api-types'
-import { remindDelay, splitRoomsByOrigin, type RoomView } from '@joutio/client/rooms'
-import { useQueryClient } from '@tanstack/react-query'
+import { invitationReminderDelay, useAcceptInvitation, useCancelRooms, useDeclineInvitations, useDefis, useRemindRoom, type RoomView } from '@joutio/client/rooms'
 import { DoorOpenIcon, LightningIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMe, usePlayerIdentity } from '@/features/me'
+import { usePlayerIdentity } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
 import { SettingsButton } from '@/features/settings'
 import { useCreatePrivateRoom } from '@/features/play'
@@ -18,9 +16,11 @@ import { useDuration } from '@/shared/duration'
 import { CHALLENGES_TABS, ROUTES, type ChallengesTab } from '@/shared/routes'
 import { useTabParam } from '@/shared/use-tab-param'
 import { topicName } from '@/shared/topics'
+import { toast } from '@/shared/toast'
 import { Button, ChallengeListRow, EmptyState, FeedFooter, JoutioTabs, ListRow, MobileTopBar, Screen, SectionHeader, Skeleton } from '@/ui'
-import { refreshChallenges, useAcceptChallenge, useCancelChallenges, useDeclineChallenges, useMyChallenges, useMyRooms, useRemindChallenge } from '../hooks/use-challenges'
-import { openRooms, RECEIVED_PAGE, splitChallenges } from '../lib/challenges-service'
+
+/** Défis reçus par page de l'onglet Reçus. */
+const RECEIVED_PAGE = 10
 
 const TAB_LABELS: Record<ChallengesTab, MessageKey> = {
   received: 'challenges.received',
@@ -42,13 +42,14 @@ function Loading() {
 }
 
 type RowProps = {
-  challenge: ChallengeView
+  room: RoomView
   kind: 'received' | 'sent'
   last: boolean
-  accept: ReturnType<typeof useAcceptChallenge>
-  decline: ReturnType<typeof useDeclineChallenges>
-  cancel: ReturnType<typeof useCancelChallenges>
-  remind: ReturnType<typeof useRemindChallenge>
+  accept: (room: RoomView) => void
+  accepting: string | null
+  decline: ReturnType<typeof useDeclineInvitations>
+  cancel: ReturnType<typeof useCancelRooms>
+  remind: ReturnType<typeof useRemindRoom>
 }
 
 /** Re-rend la ligne toutes les 15 s tant que `active` : le décompte de la relance avance sans relire le serveur. */
@@ -61,43 +62,49 @@ function useTicking(active: boolean) {
   }, [active])
 }
 
-/** Un défi : le joueur, le sujet et le délai, puis deux actions (Refuser / Accepter, Annuler / Relancer). */
-function ChallengeRow({ challenge, kind, last, accept, decline, cancel, remind }: RowProps) {
+/** Un défi (salle `INVITED`) : le joueur, le sujet et le délai, puis deux actions (Refuser / Accepter, Annuler / Relancer). */
+function ChallengeRow({ room, kind, last, accept, accepting, decline, cancel, remind }: RowProps) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const duration = useDuration()
-  const player = kind === 'received' ? challenge.challenger : challenge.opponent
+  const player = room.opponent
   const src = useUserAvatar(player)
   const identity = usePlayerIdentity()
   const now = readServerNow()
-  const remindIn = kind === 'sent' ? remindDelay(challenge, now) : 0
+  const remindIn = kind === 'sent' ? invitationReminderDelay(room, now) : 0
   useTicking(remindIn > 0)
   const status =
     kind === 'received'
-      ? t('challenges.expiresIn', { duration: duration(Date.parse(challenge.expiresAt) - now) })
-      : t('challenges.waiting', { duration: duration(now - Date.parse(challenge.createdAt)) })
-  const sub = `${topicName(challenge.topic.names, language)} · ${status}`
-  const id = challenge.challengeId
+      ? t('challenges.expiresIn', { duration: duration(Date.parse(room.expiresAt) - now) })
+      : t('challenges.waiting', { duration: duration(now - Date.parse(room.createdAt)) })
+  const sub = `${topicName(room.topic.names, language)} · ${status}`
+  const id = room.roomId
+  const name = player?.pseudonym ?? t('topic.opponent')
   if (kind === 'received')
     return (
       <ChallengeListRow
-        name={player.pseudonym}
+        name={name}
         premium={identity.premium(player)}
         src={src}
         sub={sub}
-        onClick={identity.open(player.userId)}
+        onClick={identity.open(player?.userId)}
         last={last}
-        primary={{ label: t('challenges.accept'), loading: accept.isPending && accept.variables?.challengeId === id, disabled: accept.isPending, onClick: () => accept.mutate(challenge) }}
-        secondary={{ label: t('challenges.decline'), loading: decline.isPending && Boolean(decline.variables?.includes(id)), disabled: decline.isPending, onClick: () => decline.mutate([id]) }}
+        primary={{ label: t('challenges.accept'), loading: accepting === id, disabled: accepting !== null, onClick: () => accept(room) }}
+        secondary={{
+          label: t('challenges.decline'),
+          loading: decline.isPending && Boolean(decline.variables?.includes(id)),
+          disabled: decline.isPending,
+          onClick: () => decline.mutate([id], { onError: () => toast.error(t('challenges.declineError'), t('challenges.retryText')) }),
+        }}
       />
     )
   return (
     <ChallengeListRow
-      name={player.pseudonym}
+      name={name}
       premium={identity.premium(player)}
       src={src}
       sub={sub}
-      onClick={identity.open(player.userId)}
+      onClick={identity.open(player?.userId)}
       last={last}
       primaryVariant="tinted"
       // Relance au plus toutes les 10 min (`defis.md` § 5) : le décompte s'affiche dans le bouton.
@@ -105,14 +112,23 @@ function ChallengeRow({ challenge, kind, last, accept, decline, cancel, remind }
         label: remindIn > 0 ? t('challenges.remindIn', { duration: duration(remindIn) }) : t('challenges.remind'),
         loading: remind.isPending && remind.variables === id,
         disabled: remindIn > 0 || remind.isPending,
-        onClick: () => remind.mutate(id),
+        onClick: () =>
+          remind.mutate(id, {
+            onSuccess: () => toast.success(t('challenges.reminded')),
+            onError: () => toast.error(t('challenges.remindError'), t('challenges.retryText')),
+          }),
       }}
-      secondary={{ label: t('challenges.cancel'), loading: cancel.isPending && Boolean(cancel.variables?.includes(id)), disabled: cancel.isPending, onClick: () => cancel.mutate([id]) }}
+      secondary={{
+        label: t('challenges.cancel'),
+        loading: cancel.isPending && Boolean(cancel.variables?.includes(id)),
+        disabled: cancel.isPending,
+        onClick: () => cancel.mutate([id], { onError: () => toast.error(t('challenges.cancelError'), t('challenges.retryText')) }),
+      }}
     />
   )
 }
 
-/** Un salon ouvert : ouvre le salon. */
+/** Une salle qui attend les joueurs : ouvre le salon. */
 function RoomRow({ room, last }: { room: RoomView; last: boolean }) {
   const t = useT()
   const navigate = useNavigate()
@@ -138,32 +154,28 @@ function RoomRow({ room, last }: { room: RoomView; last: boolean }) {
  * Défis (`design/specs/screens/defis.md`, lab `/screens/defis?view=compact`) : barre « Défis » (cloche, Réglages), puis
  * onglets Reçus / Envoyés / Salons comme l'Accueil (2026-11-14), leur nombre dans le libellé. Reçus (par défaut) :
  * liste paginée et « Tout refuser » confirmé. L'onglet est dans l'URL (`?tab=sent`) : les notifications y mènent.
- * Rafraîchi par le flux personnel.
+ * Un défi est une salle `INVITED` : `useDefis` range les salles du joueur, tenues à jour par le flux personnel.
  */
 export function ChallengesPage() {
   const t = useT()
   const navigate = useNavigate()
-  const client = useQueryClient()
   const language = useLanguageStore((state) => state.language)
-  const me = useMe()
-  const userId = me.data?.userId ?? ''
-  const challenges = useMyChallenges(Boolean(userId))
-  const rooms = useMyRooms(Boolean(userId))
-  const accept = useAcceptChallenge()
-  const decline = useDeclineChallenges()
-  const cancel = useCancelChallenges()
-  const remind = useRemindChallenge()
+  const defis = useDefis()
+  const acceptInvitation = useAcceptInvitation()
+  const decline = useDeclineInvitations()
+  const cancel = useCancelRooms()
+  const remind = useRemindRoom()
   const createRoom = useCreatePrivateRoom()
   const [tab, setTab] = useTabParam(CHALLENGES_TABS, 'received')
   const [receivedPages, setReceivedPages] = useState(1)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [pickerKey, setPickerKey] = useState(0)
 
-  const { received, sent } = splitChallenges(challenges.data, userId)
-  const salons = openRooms(rooms.data)
-  const roomSections = splitRoomsByOrigin(salons)
-  const loading = challenges.isPending || rooms.isPending
-  const failed = challenges.isError || rooms.isError
+  const received = defis.data?.received ?? []
+  const sent = defis.data?.sent ?? []
+  const salons = defis.data?.waiting ?? []
+  const loading = defis.isPending
+  const failed = defis.isError
   const empty = !loading && !failed && received.length + sent.length + salons.length === 0
   const receivedRows = received.slice(0, receivedPages * RECEIVED_PAGE)
   const counts: Record<ChallengesTab, number> = { received: received.length, sent: sent.length, rooms: salons.length }
@@ -185,12 +197,34 @@ export function ChallengesPage() {
       icon: LightningIcon,
       tone: 'danger',
       actions: [
-        { label: t('challenges.refuseAll'), variant: 'filled', tone: 'destructive', onClick: () => decline.mutate(received.map((challenge) => challenge.challengeId)) },
+        {
+          label: t('challenges.refuseAll'),
+          variant: 'filled',
+          tone: 'destructive',
+          onClick: () =>
+            decline.mutate(
+              received.map((room) => room.roomId),
+              { onError: () => toast.error(t('challenges.declineError'), t('challenges.retryText')) },
+            ),
+        },
         { label: t('common.cancel'), variant: 'plain', tone: 'neutral' },
       ],
     })
 
-  const rowProps = { accept, decline, cancel, remind }
+  // Accepter : la salle (même `roomId` que le défi) s'ouvre une fois l'acceptation validée.
+  const accept = (room: RoomView) =>
+    acceptInvitation.mutate(room.roomId, {
+      onSuccess: () =>
+        void navigate(ROUTES.room(room.roomId), { state: { topic: { topicId: room.topic.topicId, name: topicName(room.topic.names, language), category: room.topic.category } } }),
+      onError: () => toast.error(t('challenges.acceptError')),
+    })
+  const accepting = acceptInvitation.isPending ? (acceptInvitation.variables ?? null) : null
+  const rowProps = { accept, accepting, decline, cancel, remind }
+  // Onglet Salons, selon l'origine (`defis.md` § 1) : défis acceptés (défi, revanche, appariement), puis salons privés.
+  const roomSections = [
+    ['challenges.acceptedChallenges', salons.filter((room) => room.origin !== 'SHARED')],
+    ['challenges.privateRooms', salons.filter((room) => room.origin === 'SHARED')],
+  ] as const
 
   return (
     <Screen
@@ -218,7 +252,7 @@ export function ChallengesPage() {
           title={t('challenges.createRoom')}
           open={pickerOpen}
           onClose={() => setPickerOpen(false)}
-          onPick={(topic) => createRoom.mutate({ topicId: topic.topicId, name: topicName(topic.names, language), category: topic.category ?? undefined })}
+          onPick={(topic) => createRoom.start({ topicId: topic.topicId, name: topicName(topic.names, language), category: topic.category })}
         />
       }
     >
@@ -230,7 +264,7 @@ export function ChallengesPage() {
           title={t('challenges.errorTitle')}
           description={t('home.errorText')}
           action={
-            <Button loading={challenges.isFetching || rooms.isFetching} onClick={() => refreshChallenges(client)}>
+            <Button loading={defis.isFetching} onClick={() => void defis.refetch()}>
               {t('common.retry')}
             </Button>
           }
@@ -268,8 +302,8 @@ export function ChallengesPage() {
                 }
               />
               <div className={CARD}>
-                {receivedRows.map((challenge, index) => (
-                  <ChallengeRow key={challenge.challengeId} challenge={challenge} kind="received" last={index === receivedRows.length - 1} {...rowProps} />
+                {receivedRows.map((room, index) => (
+                  <ChallengeRow key={room.roomId} room={room} kind="received" last={index === receivedRows.length - 1} {...rowProps} />
                 ))}
               </div>
               <FeedFooter
@@ -285,20 +319,15 @@ export function ChallengesPage() {
             <section className="grid gap-3">
               <SectionHeader title={t('challenges.sent')} />
               <div className={CARD}>
-                {sent.map((challenge, index) => (
-                  <ChallengeRow key={challenge.challengeId} challenge={challenge} kind="sent" last={index === sent.length - 1} {...rowProps} />
+                {sent.map((room, index) => (
+                  <ChallengeRow key={room.roomId} room={room} kind="sent" last={index === sent.length - 1} {...rowProps} />
                 ))}
               </div>
             </section>
           )}
           {tab === 'sent' && sent.length === 0 && <EmptyState icon={LightningIcon} title={t('challenges.noSent')} description={t('challenges.noSentText')} />}
           {tab === 'rooms' &&
-            (
-              [
-                ['challenges.acceptedChallenges', roomSections.challenges],
-                ['challenges.privateRooms', roomSections.shared],
-              ] as const
-            ).map(
+            roomSections.map(
               ([title, list]) =>
                 list.length > 0 && (
                   <section key={title} className="grid gap-3">

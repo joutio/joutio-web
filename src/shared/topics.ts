@@ -1,4 +1,4 @@
-import type { TopicNames } from '@joutio/client/api-types'
+import type { TopicNames } from '@joutio/client/topics'
 import { tokens, type CategoryCode } from '@/ui'
 
 /** Code d'univers du BFF (`TopicCategory`) vers celui des jetons ; inconnu ou absent : `GENERAL`. */

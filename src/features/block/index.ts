@@ -1,1 +1,1 @@
-export { useBlockedPlayers, useBlockPlayer, useConfirmBlock } from './hooks/use-block'
+export { useBlockPlayer, useConfirmBlock } from './hooks/use-block'

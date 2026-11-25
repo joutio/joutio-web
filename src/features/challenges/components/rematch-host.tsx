@@ -1,17 +1,16 @@
-import type { ChallengeView } from '@joutio/client/api-types'
+import { useAcceptInvitation, useDeclineInvitations, useIncomingRematch } from '@joutio/client/rooms'
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { useMe, usePlayerIdentity } from '@/features/me'
-import { useLanguageStore } from '@/lib/i18n'
-import { readServerNow, usePersonalNotifications, type NotificationView } from '@/lib/realtime'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { usePlayerIdentity } from '@/features/me'
+import { useLanguageStore, useT } from '@/lib/i18n'
+import { readServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
-import { useToastStore } from '@/shared/toast'
+import { ROUTES } from '@/shared/routes'
+import { toast, useToastStore } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import { RematchPrompt } from '@/ui'
-import { challengesService } from '../lib/challenges-service'
-import { useAcceptChallenge, useDeclineChallenges } from '../hooks/use-challenges'
 
-/** Secondes avant l'échéance de la proposition (horloge serveur). */
+/** Secondes avant l'échéance de la proposition (horloge serveur), pour l'affichage seulement. */
 function useSecondsUntil(at: string | null) {
   const [now, setNow] = useState(readServerNow)
   useEffect(() => {
@@ -23,71 +22,45 @@ function useSecondsUntil(at: string | null) {
 }
 
 /**
- * Demandes de revanche reçues (`CHALLENGE_RECEIVED` avec la partie d'origine, `resultat.md` § 6) : `RematchPrompt` sur
- * un voile, au-dessus de toute page, repris de `joutio-mobile` (`RematchHost`). Jamais pendant un duel (toasts
- * suspendus) : la demande attend la fin s'il reste du temps. Accepter ouvre le salon ; refuser ou laisser filer le délai
- * ferme la proposition.
+ * Revanche reçue (`resultat.md` § 6) : `RematchPrompt` sur un voile, au-dessus de toute page, tant que
+ * `useIncomingRematch` porte une salle `INVITED` d'origine `REMATCH`. Jamais pendant un duel (toasts suspendus) : la
+ * demande attend la fin s'il reste du temps. Accepter ouvre le salon (même `roomId`) ; refuser la retire ; l'échéance
+ * du serveur (`ROOM_STATUS` `EXPIRED`) la retire d'elle-même.
  */
 export function RematchHost() {
-  const me = useMe().data
+  const t = useT()
+  const navigate = useNavigate()
   const language = useLanguageStore((state) => state.language)
   const immersive = useToastStore((state) => state.suppressed > 0)
-  const [requests, setRequests] = useState<NotificationView[]>([])
-  const [views, setViews] = useState<Record<string, ChallengeView>>({})
-  const request = requests[0] ?? null
-  const view = request?.sourceId ? views[request.sourceId] : undefined
-  const seconds = useSecondsUntil(request?.expiresAt ?? view?.expiresAt ?? null)
-  // Revanche acceptée depuis le résultat : le nouveau salon remplace la partie précédente dans l'historique, Quitter ne
-  // ramène pas à l'ancien résultat (2026-11-16).
-  const { pathname } = useLocation()
-  const accept = useAcceptChallenge({ replace: pathname.startsWith('/games/') })
-  const decline = useDeclineChallenges()
-  const avatar = useUserAvatar(view?.challenger)
+  const room = useIncomingRematch().data
+  const seconds = useSecondsUntil(room?.expiresAt ?? null)
+  const accept = useAcceptInvitation()
+  const decline = useDeclineInvitations()
+  const avatar = useUserAvatar(room?.opponent)
   const identity = usePlayerIdentity()
+  // Revanche acceptée depuis le résultat : le salon remplace la partie précédente dans l'historique, Quitter ne ramène
+  // pas à l'ancien résultat (2026-11-16).
+  const { pathname } = useLocation()
 
-  usePersonalNotifications(me?.userId, (notification, deleted) => {
-    if (deleted) {
-      setRequests((current) => current.filter((item) => item.notificationId !== notification.notificationId))
-      return
-    }
-    if (notification.type !== 'CHALLENGE_RECEIVED' || !notification.gameId || !notification.sourceId) return
-    const challengeId = notification.sourceId
-    setRequests((current) => (current.some((item) => item.notificationId === notification.notificationId) ? current : [...current, notification]))
-    // Pseudonyme, avatar et sujet : lus une fois sur le défi (la notification n'en porte que les identifiants).
-    challengesService
-      .get(challengeId)
-      .then((challenge) => setViews((current) => ({ ...current, [challengeId]: challenge })))
-      .catch(() => undefined)
-  })
-
-  const close = () => setRequests((current) => current.slice(1))
-  // Délai écoulé : la proposition s'en va d'elle-même.
-  const deadline = request?.expiresAt ?? view?.expiresAt ?? null
-  useEffect(() => {
-    if (!request || !deadline) return
-    const timer = window.setTimeout(() => setRequests((current) => (current[0] === request ? current.slice(1) : current)), Math.max(0, Date.parse(deadline) - readServerNow()))
-    return () => window.clearTimeout(timer)
-  }, [request, deadline])
-
-  if (!request || !view || immersive || seconds <= 0) return null
+  if (!room || immersive || seconds <= 0) return null
+  const topic = { topicId: room.topic.topicId, name: topicName(room.topic.names, language), category: room.topic.category }
   return (
     <div className="fixed inset-0 z-50 grid place-items-center px-4">
       <div aria-hidden className="absolute inset-0 bg-jo-scrim" />
       <RematchPrompt
         className="relative w-full max-w-[360px]"
-        name={view.challenger.pseudonym}
-        premium={identity.premium(view.challenger)}
+        name={room.opponent?.pseudonym ?? t('topic.opponent')}
+        premium={identity.premium(room.opponent)}
         src={avatar}
-        topic={topicName(view.topic.names, language)}
+        topic={topic.name}
         seconds={seconds}
-        onAccept={() => {
-          close()
-          accept.mutate(view)
-        }}
-        onDecline={() => {
-          close()
-          decline.mutate([view.challengeId])
-        }}
+        onAccept={() =>
+          accept.mutate(room.roomId, {
+            onSuccess: () => void navigate(ROUTES.room(room.roomId), { state: { topic }, replace: pathname.startsWith('/games/') }),
+            onError: () => toast.error(t('challenges.acceptError')),
+          })
+        }
+        onDecline={() => decline.mutate([room.roomId], { onError: () => toast.error(t('challenges.declineError'), t('challenges.retryText')) })}
       />
     </div>
   )

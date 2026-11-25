@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/shared/routes'
-import { useMe } from './use-me'
+import { useMe } from '@joutio/client/me'
 
 /** Vue joueur du BFF (`premium` sur toutes les vues joueur depuis le 2026-11-20) ou objet d'écran qui la recopie. */
 type PlayerLike = object | null | undefined

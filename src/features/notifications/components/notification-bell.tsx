@@ -1,9 +1,10 @@
+import { useUnreadCount } from '@joutio/client/notifications'
 import { BellIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
 import { useT } from '@/lib/i18n'
 import { ROUTES } from '@/shared/routes'
 import { IconButton } from '@/ui'
-import { useUnreadCount } from '../hooks/use-unread-count'
+
 
 /** Cloche des barres d'onglets : badge des non-lues, ouvre la boîte de réception. `media` : sur l'image du Profil. */
 export function NotificationBell({ media = false }: { media?: boolean }) {

@@ -1,4 +1,4 @@
-import type { NotificationView } from '@/lib/realtime'
+import type { NotificationView } from '@joutio/client/notifications'
 import type { ChallengesTab } from '@/shared/routes'
 
 export type NotificationTarget =

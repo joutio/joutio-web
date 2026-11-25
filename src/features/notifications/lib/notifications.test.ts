@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import type { NotificationView } from '@/lib/realtime'
+import type { NotificationView } from '@joutio/client/notifications'
 import { durationParts } from '@/shared/duration'
 import { createNotificationDeduplicator, notificationTarget, shouldToast } from './notification-target'
-import { dayOf } from './notifications-service'
+import { dayOf } from './inbox'
 
 const notice = (patch: Partial<NotificationView>): NotificationView => ({
   notificationId: 'n1',

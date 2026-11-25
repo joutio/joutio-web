@@ -5,7 +5,7 @@ import { tierInk } from '../lib/tokens'
 import { tokens, type TierCode } from '../tokens.generated'
 import { ProgressBar } from './progress-bar'
 import { useT } from '@/lib/i18n'
-import { tierKey } from '@joutio/client/i18n'
+import { tierKey } from '@joutio/client/core/i18n'
 
 const TIERS = Object.keys(tokens.tier) as TierCode[]
 

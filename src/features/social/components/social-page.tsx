@@ -1,17 +1,20 @@
-import type { PeopleSort, PlayerCardView } from '@joutio/client/api-types'
+import type { PeopleSort, PlayerCardView } from '@joutio/client/profile'
+import { useContacts } from '@joutio/client/social'
 import { MagnifyingGlassIcon, SlidersHorizontalIcon, SwordIcon, UsersThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useMe, usePlayerIdentity } from '@/features/me'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { useMe } from '@joutio/client/me'
+import { usePlayerIdentity } from '@/features/me'
 import { NotificationBell } from '@/features/notifications'
 import { SettingsButton } from '@/features/settings'
-import { useChallengePlayer, useContacts } from '@/features/play'
+import { useChallengePlayer } from '@/features/play'
 import { ChallengeTopicSheet, relativeSeen } from '@/features/player'
 import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
+import { selectUserId, useSessionStore } from '@/lib/session'
 import { feedFooterProps } from '@/shared/paging'
-import { ROUTES } from '@/shared/routes'
+import { CHALLENGES_TABS, ROUTES, type ChallengesTab } from '@/shared/routes'
 import { useTabParam } from '@/shared/use-tab-param'
 import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
@@ -67,8 +70,8 @@ function ContactRow({ player, last, onChallenge }: { player: PlayerCardView; las
 
 function Players({ tab, query, sort, onChallenge }: { tab: Tab; query: string; sort: PeopleSort; onChallenge: (player: PlayerCardView) => void }) {
   const t = useT()
-  const list = useContacts(tab, query, true, sort)
-  const players = list.data?.pages.flatMap((page) => page.content) ?? []
+  const list = useContacts({ userId: useSessionStore(selectUserId) ?? undefined, direction: tab, query, sort })
+  const players = (list.data?.pages.flatMap((page) => page.content) ?? [])
   if (list.isPending) return <Loading />
   if (list.isError && !list.isFetchNextPageError)
     return (
@@ -106,11 +109,24 @@ function Players({ tab, query, sort, onChallenge }: { tab: Tab; query: string; s
 }
 
 /**
+ * Lien de notification Web Push du BFF (`docs/api/compte.md` : `/social?tab=challenges&type=received&room={roomId}`,
+ * routes du mobile) : sur le web, les défis ont leur onglet propre, le lien y mène.
+ */
+export function SocialPage() {
+  const [params] = useSearchParams()
+  if (params.get('tab') === 'challenges') {
+    const type = params.get('type') as ChallengesTab | null
+    return <Navigate to={ROUTES.challengesTab(type && CHALLENGES_TABS.includes(type) ? type : 'received')} replace />
+  }
+  return <SocialContent />
+}
+
+/**
  * Social (`design/specs/screens/social.md`, lab `/screens/social?view=compact`) : abonnements et abonnés, recherche,
  * tri (feuille « Trier par ») et défi par l'épée de chaque ligne. La ligne ouvre la fiche ; on suit depuis la fiche.
  * La recherche et le tri valent pour les deux onglets ; le serveur pagine par 20.
  */
-export function SocialPage() {
+function SocialContent() {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const me = useMe().data
@@ -195,8 +211,8 @@ export function SocialPage() {
             onClose={() => setChallengeOpen(false)}
             onPick={(topic) => {
               if (!challenged) return
-              challenge.mutate({
-                topic: { topicId: topic.topicId, name: topicName(topic.names, language), category: topic.category ?? undefined },
+              challenge.start({
+                topic: { topicId: topic.topicId, name: topicName(topic.names, language), category: topic.category },
                 opponent: { userId: challenged.userId, pseudonym: challenged.pseudonym },
               })
             }}

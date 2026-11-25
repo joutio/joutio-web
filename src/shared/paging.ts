@@ -1,6 +1,6 @@
 import type { FeedFooterState } from '@/ui'
 
-/** Ce que `FeedFooter` lit d'une `useInfiniteQuery`. */
+/** Ce que `FeedFooter` lit d'une liste paginée de `@joutio/client`. */
 export function feedFooterProps(query: {
   hasNextPage: boolean
   isFetchingNextPage: boolean
@@ -12,3 +12,4 @@ export function feedFooterProps(query: {
   const more = () => void query.fetchNextPage()
   return { state, pages: query.data?.pages.length ?? 0, onLoadMore: more, onRetry: more }
 }
+

@@ -1,17 +1,23 @@
 import { ClockCounterClockwiseIcon, SlidersHorizontalIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useMe } from '@/features/me'
-import { usePlayerProfile } from '@/features/play'
+import {
+  DEFAULT_HISTORY_FILTERS,
+  useHistory,
+  useProfile,
+  type HistoryFilterState,
+  type HistoryOpponentType,
+  type HistoryOutcome,
+  type HistorySort,
+} from '@joutio/client/profile'
+import { useTopicOverview } from '@joutio/client/topics'
 import { TabNav } from '@/features/shell'
-import { useTopicOverview } from '@/features/topic'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
+import { selectUserId, useSessionStore } from '@/lib/session'
 import { feedFooterProps } from '@/shared/paging'
 import { ROUTES } from '@/shared/routes'
 import { topicName } from '@/shared/topics'
 import { Button, EmptyState, FeedFooter, IconButton, ListRow, MobileSheet, MobileTopBar, RadioGroup, Screen, SectionHeader, Skeleton } from '@/ui'
-import { useHistoryGames } from '../hooks/use-history'
-import { DEFAULT_HISTORY_FILTERS, type HistoryFilterState, type HistoryOpponentType, type HistoryOutcome, type HistorySort } from '../lib/history-service'
 import { GameGroups } from './game-groups'
 import { finishedGames } from '../lib/outcomes'
 
@@ -68,17 +74,18 @@ export function HistoryPage() {
   const [params] = useSearchParams()
   const topicId = params.get('topicId') ?? undefined
   const opponentId = params.get('opponentId') ?? undefined
-  const userId = useMe().data?.userId ?? ''
-  const topic = useTopicOverview(topicId ?? '').data?.topic
-  const opponent = usePlayerProfile(opponentId ?? '', Boolean(opponentId)).data
+  const userId = useSessionStore(selectUserId) ?? undefined
+  const topic = useTopicOverview(topicId).data?.topic
+  const opponent = useProfile(opponentId).data
   const [filters, setFilters] = useState<HistoryFilterState>(DEFAULT_HISTORY_FILTERS)
   const [sheetOpen, setSheetOpen] = useState(false)
   const query = useMemo(
     () => ({ ...filters, topicId, opponentId, opponentType: opponentId ? 'HUMAN' as const : filters.opponentType }),
     [filters, topicId, opponentId],
   )
-  const list = useHistoryGames(userId, query)
-  const games = finishedGames(list.data?.pages.flatMap((page) => page.content) ?? [])
+  const list = useHistory(userId, query)
+  const items = (list.data?.pages.flatMap((page) => page.content) ?? [])
+  const games = finishedGames(items)
   const total = list.data?.pages[0]?.totalElements ?? 0
   const filterActive = (!opponentId && filters.opponentType !== undefined) || filters.outcome !== 'ALL' || filters.sort !== 'RECENT'
   const count = t(total > 1 ? 'history.countMany' : 'history.countOne', { count: total })

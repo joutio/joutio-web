@@ -1,4 +1,4 @@
-import { formatDate } from '@joutio/client/i18n'
+import { formatDate } from '@joutio/client/core/i18n'
 
 /** Jour `index` de la semaine (0 = lundi) dans la langue de l'app : `narrow` (« L ») ou `long` (« lundi »). */
 export const weekdayName = (index: number, language: string, weekday: 'narrow' | 'long') =>

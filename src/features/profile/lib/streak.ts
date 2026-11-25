@@ -1,4 +1,4 @@
-import type { ActivityView } from '@joutio/client/api-types'
+import type { ActivityView } from '@joutio/client/profile'
 import type { MessageKey } from '@/lib/i18n'
 import type { StreakCalendarProps, StreakDay } from '@/ui'
 

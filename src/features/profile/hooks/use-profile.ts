@@ -1,36 +1,24 @@
-import { useQuery } from '@tanstack/react-query'
-import { useMe } from '@/features/me'
-import { activityQuery, badgesQuery, playedTopicsQuery, queryKeys, rewardsQuery } from '@joutio/client/query'
-import { profileService } from '../lib/profile-service'
-import { api } from '@/lib/api'
+import { useRewards } from '@joutio/client/me'
+import { DEFAULT_HISTORY_FILTERS, useActivity, useBadges, useHistory, usePlayedTopics } from '@joutio/client/profile'
+import { selectUserId, useSessionStore } from '@/lib/session'
 
-const useUserId = () => useMe().data?.userId ?? ''
+/** Lectures du joueur connecté : `@joutio/client` avec l'identifiant de la session. */
+const useMyId = () => useSessionStore(selectUserId) ?? undefined
 
 /** Série et jours joués sur 365 jours. */
-export function useMyActivity() {
-  const userId = useUserId()
-  return useQuery({ enabled: Boolean(userId), ...activityQuery(api, userId), staleTime: 60_000 })
-}
+export const useMyActivity = () => useActivity(useMyId())
 
 /** Collection de badges, par famille. */
-export function useMyBadges() {
-  const userId = useUserId()
-  return useQuery({ enabled: Boolean(userId), ...badgesQuery(api, userId), staleTime: 60_000 })
-}
+export const useMyBadges = () => useBadges(useMyId())
 
 /** Sujets joués : parties et XP par sujet (donut, Sujets joués). */
-export function useMyTopics() {
-  const userId = useUserId()
-  return useQuery({ enabled: Boolean(userId), ...playedTopicsQuery(api, userId), staleTime: 60_000 })
-}
+export const useMyTopics = () => usePlayedTopics(useMyId())
 
 /** Récompenses (styles d'avatar) : Micah dans la page Série. */
-export function useMyRewards() {
-  return useQuery({ ...rewardsQuery(api), staleTime: 60_000 })
-}
+export const useMyRewards = useRewards
 
-/** Les 10 dernières parties, tous sujets confondus. */
-export function useMyRecentGames() {
-  const userId = useUserId()
-  return useQuery({ enabled: Boolean(userId), queryKey: queryKeys.profiles.recentGames(userId), queryFn: () => profileService.recentGames(userId), staleTime: 60_000 })
-}
+/** Mes parties, les plus récentes d'abord (onglet Historique du Profil : les 10 premières). */
+export const useMyRecentGames = () => useHistory(useMyId(), DEFAULT_HISTORY_FILTERS)
+
+/** Dernières parties de l'onglet Historique du Profil. */
+export const RECENT_GAMES = 10

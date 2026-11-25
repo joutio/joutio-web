@@ -1,4 +1,4 @@
-import type { ApiError } from '@joutio/client/api-types'
+import type { ApiError } from '@joutio/client/core/types'
 
 /** Types de problème RFC 7807 (`urn:joutio:*`) dont la plomberie dépend. */
 export const PROBLEM = {

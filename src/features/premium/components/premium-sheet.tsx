@@ -2,7 +2,7 @@ import { ChartLineUpIcon, CheckIcon, CrownSimpleIcon, LightningIcon, PencilSimpl
 import { planLimits, PREMIUM_LIMITS } from '@joutio/client/premium'
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe } from '@joutio/client/me'
 import { useT, type MessageKey } from '@/lib/i18n'
 import { Button, ListRow, MobileSheet } from '@/ui'
 import { usePremiumSheet, type PremiumReason } from '../premium-store'

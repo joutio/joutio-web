@@ -1,25 +1,27 @@
+import { useJoutioSync } from '@joutio/client/sync'
 import { Outlet } from 'react-router-dom'
-import { RematchHost, useChallengesRuntime } from '@/features/challenges'
+import { RematchHost, useChallengesBadge } from '@/features/challenges'
 import { useNotificationsRuntime } from '@/features/notifications'
 import { OngoingRuntime } from '@/features/ongoing'
 import { PremiumHost } from '@/features/premium'
-import { useRealtimeInvalidation } from './realtime-invalidation'
+import { selectUserId, useSessionStore } from '@/lib/session'
 
 /**
- * Flux personnel de l'app connectée, monté une fois : chaque événement poussé relit les vues qu'il touche
- * (`useRealtimeInvalidation`, table unique), pastille de l'onglet Défis, toasts. Aucun polling. Porte aussi la feuille
- * Premium, ouverte de partout, et le bandeau « Partie en cours ».
+ * App connectée, montée une fois : `useJoutioSync` (`@joutio/client`) tient le cache à jour sur les flux personnels
+ * (inbox, salles, succès), la pastille de l'onglet Défis suit les salles, les notifications reçues s'annoncent en toast.
+ * Aucun polling. Porte aussi la feuille Premium, ouverte de partout, et le bandeau « Partie en cours ».
  */
 export function PersonalRuntime() {
-  useRealtimeInvalidation()
-  useChallengesRuntime()
-  useNotificationsRuntime()
+  const userId = useSessionStore(selectUserId) ?? undefined
+  useJoutioSync(userId)
+  useChallengesBadge()
+  useNotificationsRuntime(userId)
   return (
     <>
       <OngoingRuntime>
         <Outlet />
       </OngoingRuntime>
-      {/* Demandes de revanche reçues, au-dessus de toute page (sauf pendant un duel). */}
+      {/* Revanche reçue, au-dessus de toute page (sauf pendant un duel). */}
       <RematchHost />
       <PremiumHost />
     </>

@@ -1,16 +1,21 @@
-import { countryFlag, countryName } from '@joutio/client/geo'
+import { countryFlag, countryName } from '@joutio/client/core/geo'
 import { CheckIcon, DotsThreeIcon, FlagIcon, LightningIcon, ProhibitIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useBlockPlayer, useConfirmBlock } from '@/features/block'
-import { finishedGames, GameGroups, useHistoryGames } from '@/features/history'
-import { useMe, usePlayerIdentity } from '@/features/me'
+import { finishedGames, GameGroups } from '@/features/history'
+import { useHeadToHead, useHistory, useProfile } from '@joutio/client/profile'
+import { useFollowPlayer } from '@joutio/client/social'
+import { useTopicOverview } from '@joutio/client/topics'
+import { usePlayerIdentity } from '@/features/me'
 import { useChallengePlayer } from '@/features/play'
 import { ReportPlayerSheet } from '@/features/result'
 import { TabNav } from '@/features/shell'
-import { formatNumber, useTopicOverview } from '@/features/topic'
+import { formatNumber } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'
+import { selectUserId, useSessionStore } from '@/lib/session'
 import { useUserAvatar } from '@/shared/avatar'
+import { toast } from '@/shared/toast'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
@@ -31,7 +36,6 @@ import {
   tokens,
   type TierCode,
 } from '@/ui'
-import { useFollowPlayer, useHeadToHead, usePlayerProfile } from '../hooks/use-player'
 import { presenceLine } from '../lib/presence'
 import { ChallengeTopicSheet } from './challenge-topic-sheet'
 
@@ -49,16 +53,15 @@ export function PlayerPage() {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
   const navigate = useNavigate()
-  const me = useMe()
+  const myId = useSessionStore(selectUserId) ?? undefined
   const identity = usePlayerIdentity()
-  const profile = usePlayerProfile(userId)
-  const head = useHeadToHead(userId)
-  const follow = useFollowPlayer(userId)
+  const profile = useProfile(userId || undefined)
+  const head = useHeadToHead(myId, userId)
+  const follow = useFollowPlayer(myId ?? '', userId)
   const challenge = useChallengePlayer()
   const block = useBlockPlayer({ userId, pseudonym: profile.data?.pseudonym ?? '' })
   const confirmBlock = useConfirmBlock()
-  const myId = me.data?.userId ?? ''
-  const games = useHistoryGames(myId, { opponentId: userId, outcome: 'ALL', sort: 'RECENT' })
+  const games = useHistory(myId, { opponentId: userId, outcome: 'ALL', sort: 'RECENT' })
   const data = profile.data
   const src = useUserAvatar(data)
   const [challengeOpen, setChallengeOpen] = useState(false)
@@ -69,7 +72,7 @@ export function PlayerPage() {
 
   // Le titre porté n'a que `topicId:TIER` : son nom vient des titres du sujet.
   const [titleTopicId = '', titleTier] = (data?.equippedTitle ?? '').split(':') as [string?, TierCode?]
-  const titleOverview = useTopicOverview(titleTopicId)
+  const titleOverview = useTopicOverview(titleTopicId || undefined)
   const titleText = titleTier
     ? (titleOverview.data?.titles?.[language]?.[titleTier] ??
       titleOverview.data?.titles?.fr?.[titleTier] ??
@@ -81,7 +84,7 @@ export function PlayerPage() {
   const blocked = Boolean(data?.blocked)
   const canAct = Boolean(data && !data.isMe && !data.suspended && !data.bot && !blocked)
   const name = data?.pseudonym ?? t('player.title')
-  const latest = finishedGames(games.data?.pages.flatMap((page) => page.content) ?? []).slice(0, 10)
+  const latest = finishedGames((games.data?.pages.flatMap((page) => page.content) ?? [])).slice(0, 10)
   const played = (head.data?.played ?? 0) > 0
 
   if (data?.isMe) return <Navigate to={ROUTES.me} replace />
@@ -90,9 +93,11 @@ export function PlayerPage() {
     setChallengeKey((value) => value + 1)
     setChallengeOpen(true)
   }
-  const askBlock = () => confirmBlock(name, () => block.mutate(true))
+  const askBlock = () => confirmBlock(name, () => block.block(true))
   const toggleFollow = () => {
-    if (data && !follow.isPending) follow.mutate(!data.following)
+    if (!data || follow.isPending) return
+    const next = !data.following
+    follow.mutate(next, { onError: () => toast.error(t(next ? 'player.followError' : 'player.unfollowError'), t('home.errorText')) })
   }
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.social, { replace: true }))
 
@@ -135,7 +140,7 @@ export function PlayerPage() {
               {!data.suspended && !data.bot && !blocked && <span className="jo-type-caption text-jo-muted">{presenceLine(data.presence, t)}</span>}
             </div>
             {blocked && (
-              <Button full variant="gray" tone="neutral" loading={block.isPending} onClick={() => block.mutate(false)}>
+              <Button full variant="gray" tone="neutral" loading={block.isPending} onClick={() => block.block(false)}>
                 {t('player.unblock')}
               </Button>
             )}
@@ -189,8 +194,8 @@ export function PlayerPage() {
               open={challengeOpen}
               onClose={() => setChallengeOpen(false)}
               onPick={(topic) =>
-                challenge.mutate({
-                  topic: { topicId: topic.topicId, name: topicName(topic.names, language), category: topic.category ?? undefined },
+                challenge.start({
+                  topic: { topicId: topic.topicId, name: topicName(topic.names, language), category: topic.category },
                   opponent: { userId: data.userId, pseudonym: data.pseudonym },
                 })
               }

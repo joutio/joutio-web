@@ -1,25 +1,12 @@
-import type { Language } from '@joutio/client/api-types'
-import {
-  buildQuestionPlan,
-  draftFromQuestion,
-  emptyDraft,
-  frenchFilled,
-  MAX_ALT,
-  MAX_ANSWER,
-  MAX_QUESTION,
-  missingAlt,
-  questionActions,
-  translationStatus,
-  workshopRole,
-  type QuestionDraft,
-} from '@joutio/client/authoring'
+import type { Language } from '@joutio/client/core/types'
+import { buildQuestionPlan, draftFromQuestion, emptyDraft, frenchFilled, MAX_ALT, MAX_ANSWER, MAX_QUESTION, missingAlt, questionActions, translationStatus, workshopRole, type QuestionDraft } from '@joutio/client/authoring'
 import { ArchiveIcon, ArrowCounterClockwiseIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { questionDraftSchema } from '@joutio/client/forms'
+import { questionDraftSchema } from '@joutio/client/authoring'
 import { useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe } from '@joutio/client/me'
 import { useT } from '@/lib/i18n'
 import { showDialog } from '@/shared/dialog'
 import { ROUTES } from '@/shared/routes'
@@ -27,7 +14,7 @@ import { useBack } from '@/shared/use-back'
 import { AnswerEditorRow, Button, cn, EmptyState, Field, ImagePicker, ListRow, MobileTopBar, Notice, RadioGroup, Screen, SectionHeader, Segmented, Skeleton } from '@/ui'
 import { useArchiveQuestion, useCreationLimits, useDeleteQuestion, useFrozen, useSaveQuestion, useTopicQuestions, useWorkshop } from '../hooks/use-workshop'
 import { FrozenNotice } from './frozen-notice'
-import { questionNumber } from '../lib/workshop-service'
+import { questionNumber } from '../lib/questions'
 import { useImageUpload } from '../hooks/use-image-upload'
 
 const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'

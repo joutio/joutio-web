@@ -1,14 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MAX_BIO, profileSchema } from '@joutio/client/forms'
-import { countryFlag, countryName } from '@joutio/client/geo'
+import { MAX_BIO } from '@joutio/client/profile'
+import { profileSchema } from '@joutio/client/me'
+import { countryFlag, countryName } from '@joutio/client/core/geo'
 import { MAX_PSEUDONYM } from '@joutio/client/profile'
 import { CameraIcon, GlobeHemisphereWestIcon, TrashIcon, WarningIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, useFormState, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 import { useBlocker, useNavigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
-import { pseudonymError, pseudonymHint, usePseudonymCheck, useUpdateMe } from '@/features/settings'
+import { useMe, useUpdateMyProfile } from '@joutio/client/me'
+import { useUpdateBanner } from '@joutio/client/profile'
+import { pseudonymError, pseudonymHint, useProfileSaveError, usePseudonymCheck } from '@/features/settings'
 import { isApiError } from '@/lib/api'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
@@ -57,10 +59,9 @@ export function EditProfilePage() {
   const uploading = progress !== undefined
   const [saving, setSaving] = useState(false)
   const file = useRef<HTMLInputElement>(null)
-  const savePseudonym = useUpdateMe('pseudonym')
-  const saveBio = useUpdateMe('bio')
-  const saveCountry = useUpdateMe('country')
-  const saveBanner = useUpdateMe('bannerUrl')
+  const saveProfile = useUpdateMyProfile(me?.userId ?? '')
+  const saveBanner = useUpdateBanner(me?.userId ?? '')
+  const saveError = useProfileSaveError()
   const check = usePseudonymCheck(draft.pseudonym, me?.pseudonym)
   const changed = {
     pseudonym: draft.pseudonym.trim() !== initial.pseudonym,
@@ -109,14 +110,14 @@ export function EditProfilePage() {
   const save = form.handleSubmit(async (values) => {
     setSaving(true)
     try {
-      if (changed.pseudonym) await savePseudonym.mutateAsync(values.pseudonym)
-      if (changed.bio) await saveBio.mutateAsync(values.bio || null)
-      if (changed.country) await saveCountry.mutateAsync(values.country)
+      // Pseudonyme, bio et pays partent en une commande (`PUT /api/me`) ; la bannière a la sienne.
+      if (changed.pseudonym || changed.bio || changed.country) await saveProfile.mutateAsync({ pseudonym: values.pseudonym.trim(), bio: values.bio.trim(), country: values.country })
       if (changed.bannerUrl) await saveBanner.mutateAsync(values.bannerUrl)
       toast.success(t('editProfile.saved'))
       close()
-    } catch {
-      // Chaque mutation affiche sa propre erreur ; la page reste ouverte avec le brouillon.
+    } catch (error) {
+      // La page reste ouverte avec le brouillon.
+      saveError(error)
     } finally {
       setSaving(false)
     }

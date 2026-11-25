@@ -1,5 +1,5 @@
 import { ScrollIcon } from '@phosphor-icons/react'
-import { useAcceptTerms, useMe } from '@/features/me'
+import { useAcceptTerms, useMe } from '@joutio/client/me'
 import { config } from '@/lib/config'
 import { useT } from '@/lib/i18n'
 import { toast } from '@/shared/toast'

@@ -1,6 +1,7 @@
-import type { UserRefView } from '@joutio/client/api-types'
+import type { UserRefView } from '@joutio/client/profile'
 import { ProhibitIcon, WarningCircleIcon } from '@phosphor-icons/react'
-import { useBlockedPlayers, useBlockPlayer } from '@/features/block'
+import { useBlockedPlayers } from '@joutio/client/me'
+import { useBlockPlayer } from '@/features/block'
 import { usePlayerIdentity } from '@/features/me'
 import { useT } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
@@ -55,7 +56,7 @@ function BlockedRow({ player, last }: { player: UserRefView; last: boolean }) {
       premium={identity.premium(player)}
       src={src}
       onClick={identity.open(player.userId)}
-      cta={{ label: t('player.unblock'), onClick: () => unblock.mutate(false) }}
+      cta={{ label: t('player.unblock'), onClick: () => unblock.block(false) }}
       last={last}
     />
   )

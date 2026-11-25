@@ -1,8 +1,11 @@
-import type { Language } from '@joutio/client/api-types'
+import type { Language } from '@joutio/client/core/types'
 import { useLocation } from 'react-router-dom'
 import { TABS, type TabKey } from '@/features/shell'
 import type { MessageKey } from '@/lib/i18n'
 import type { ThemePreference } from '@/lib/theme'
+
+/** Centres d'intérêt : 3 univers au plus. */
+export const MAX_INTERESTS = 3
 
 export const CARD = 'overflow-hidden rounded-jo-lg bg-jo-surface'
 

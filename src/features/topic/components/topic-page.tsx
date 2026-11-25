@@ -10,7 +10,8 @@ import { ROUTES } from '@/shared/routes'
 import { useTabParam } from '@/shared/use-tab-param'
 import { toCategoryCode, topicName } from '@/shared/topics'
 import { Button, Dialog, EmptyState, IconButton, JoutioTabs, Menu, ParallaxScreen, Pill, ProgressBar, Screen, Skeleton, Stat, TabsScrollView, tokens } from '@/ui'
-import { useFollowTopic, useTopicLeaderboard, useTopicOverview } from '../hooks/use-topic'
+import { useTopicLeaderboard, useTopicOverview } from '@joutio/client/topics'
+import { useFollowTopic } from '../hooks/use-topic'
 import { formatNumber } from '../lib/format'
 import { ReportTopicSheet } from './report-topic-sheet'
 import { BOARD_TOP, BoardTab, GamesTab, MyBoardRow, ProgressTab } from './topic-tabs'
@@ -58,8 +59,8 @@ export function TopicPage() {
   const language = useLanguageStore((state) => state.language)
   const navigate = useNavigate()
   const { topicId = '' } = useParams()
-  const overview = useTopicOverview(topicId)
-  const board = useTopicLeaderboard(topicId)
+  const overview = useTopicOverview(topicId || undefined)
+  const board = useTopicLeaderboard(topicId || undefined)
   const follow = useFollowTopic(topicId)
   const [tab, setTab] = useTabParam<Tab>(['games', 'board', 'progress'], 'games')
   const [unfollowOpen, setUnfollowOpen] = useState(false)

@@ -1,23 +1,33 @@
-import { preparationComplete, preparationStep, roomFailureKind, wizzState, type RoomFailureKind, type RoomStatus } from '@joutio/client/rooms'
+import { useMe } from '@joutio/client/me'
+import { useProfile } from '@joutio/client/profile'
+import { preparationComplete, preparationStep, Room, useCancelRooms, useRemindRoom, useRoom, useRoomStream, type JoinRefusal, type RoomFailureKind, type RoomStatus } from '@joutio/client/rooms'
 import { LightningIcon, LinkIcon, RobotIcon, ShareNetworkIcon, SwordIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useMe, usePlayerIdentity } from '@/features/me'
+import { usePlayerIdentity } from '@/features/me'
 import { useShare } from '@/features/share'
 import { useT, useLanguageStore, type MessageKey } from '@/lib/i18n'
 import { useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
-import { useOngoingStore } from '@/shared/ongoing-store'
 import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
+import { toast } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import { Button, EmptyState, MobileTopBar, Pill, PreparationSteps, RoomPlayers, Screen, type RoomPlayer } from '@/ui'
-import { useCloseRoom, usePlayerProfile, useRoom, useRoomPresence, useWizzRoom, type PlayTopic } from '../hooks/use-play'
+import { useRoomPresence, type PlayTopic } from '../hooks/use-play'
 import { countdownOf } from '../lib/countdown'
 
 const TERMINAL: Partial<Record<RoomStatus, { title: MessageKey; text: MessageKey }>> = {
   CANCELLED: { title: 'room.cancelledTitle', text: 'room.cancelledText' },
   EXPIRED: { title: 'room.expiredTitle', text: 'room.expiredText' },
+  DECLINED: { title: 'room.cancelledTitle', text: 'room.cancelledText' },
+}
+
+/** Refus d'entrée poussé par le serveur (`useJoinRefusal`) ; une salle disparue a son écran de fin. */
+const REFUSAL_TEXT: Record<Exclude<JoinRefusal, 'GONE'>, MessageKey> = {
+  FULL: 'join.unavailableText',
+  NOT_INVITED: 'room.presenceError',
+  UNAVAILABLE: 'room.presenceError',
 }
 
 /** Explication d'un échec selon le motif serveur (`ROOM_FAILED.reason`) ; repli générique. */
@@ -64,13 +74,11 @@ export function RoomPage() {
   const identity = usePlayerIdentity()
   const userId = me.data?.userId ?? ''
   const myAvatar = useUserAvatar(me.data)
-  const { view, room, status } = useRoom(roomId)
-  // Suivi au-delà de l'écran : la partie créée après l'avoir quitté apparaît dans le bandeau « Partie en cours ».
-  const trackRoom = useOngoingStore((state) => state.trackRoom)
-  useEffect(() => trackRoom(roomId), [roomId, trackRoom])
+  const view = useRoom(roomId || undefined)
+  const { state: room, status } = useRoomStream(roomId || undefined)
   const presence = useRoomPresence(roomId)
-  const wizz = useWizzRoom(roomId)
-  const closing = useCloseRoom()
+  const remind = useRemindRoom()
+  const closing = useCancelRooms()
 
   const topic = view.data ? topicName(view.data.topic.names, language) : (passed?.name ?? '')
   const gameId = room?.gameId ?? view.data?.gameId ?? null
@@ -80,16 +88,17 @@ export function RoomPage() {
   // Salle nominative : l'adversaire est connu dès la création (défi, appariement) ; partagée : il arrive par le lien.
   const nominative = Boolean(room?.opponentId)
   const shared = !vsBot && !nominative
-  const waiting = roomStatus === 'WAITING_PLAYERS'
+  // Défi pas encore accepté (`INVITED`) : l'attente commence déjà.
+  const waiting = roomStatus === 'WAITING_PLAYERS' || roomStatus === 'INVITED'
   const terminal =
     roomStatus === 'FAILED'
-      ? { title: 'room.failedTitle' as const, text: FAILURE_TEXT[roomFailureKind(room?.failureReason)] }
+      ? { title: 'room.failedTitle' as const, text: FAILURE_TEXT[Room.failureKind(room?.failureReason)] }
       : TERMINAL[roomStatus]
   const engaged = !waiting && !terminal
 
   const opponentId = vsBot ? null : isInitiator ? (room?.opponentId ?? room?.participantId ?? null) : (room?.initiatorId ?? null)
   const opponentView = view.data?.opponent ?? null
-  const fetched = usePlayerProfile(opponentId ?? '', Boolean(opponentId) && !opponentView)
+  const fetched = useProfile(opponentId && !opponentView ? opponentId : undefined)
   const opponentProfile = opponentView ?? fetched.data ?? null
   const opponentAvatar = useUserAvatar(opponentProfile)
   const opponentName = vsBot ? t('topic.bot') : opponentProfile?.pseudonym
@@ -97,12 +106,11 @@ export function RoomPage() {
   const opponentPresent = vsBot ? true : room ? (isInitiator ? room.participantPresent : room.initiatorPresent) : false
   const countdown = waiting ? countdownOf(room?.expiresAt ?? view.data?.expiresAt ?? null, now) : null
 
-  const serverWizz = room ? wizzState(room, userId || null, now) : { available: false, cooldownEndsAt: null }
-  const localCooldown = wizz.sentAt === null ? 0 : wizz.sentAt + 10_000
-  const wizzAvailable = serverWizz.available && localCooldown <= now
-  const cooldownEndsAt = Math.max(serverWizz.cooldownEndsAt ?? 0, localCooldown) || null
-  const wizzSeconds = cooldownEndsAt ? Math.max(0, Math.ceil((cooldownEndsAt - now) / 1000)) : 0
-  const wizzVisible = nominative && waiting && (wizzAvailable || wizz.isPending || wizzSeconds > 0)
+  // Relance de l'adversaire absent : disponibilité et cadence lues sur le flux de la salle (`ROOM_REMINDED`).
+  const reminder = room ? room.reminderState(userId || null, now) : { available: false, cooldownEndsAt: null }
+  const wizzSeconds = reminder.cooldownEndsAt ? Math.max(0, Math.ceil((reminder.cooldownEndsAt - now) / 1000)) : 0
+  const wizzVisible = nominative && waiting && (reminder.available || remind.isPending || wizzSeconds > 0)
+  const wizz = () => remind.mutate(roomId, { onError: () => toast.error(t('play.wizzError')) })
 
   // La partie est créée : l'arène remplace le salon (le retour ramène à l'écran d'avant).
   const done = useRef(false)
@@ -115,14 +123,15 @@ export function RoomPage() {
   // Quitter l'écran, fermer l'onglet ou perdre la connexion : le serveur le constate (canal de présence).
 
   const back = () => (window.history.state?.idx > 0 ? void navigate(-1) : void navigate(ROUTES.challenges, { replace: true }))
-  const cancel = () =>
-    closing.mutate(roomId, {
-      onSuccess: () => back(),
-    })
+  // L'initiateur ferme le salon : l'écran se quitte dès l'appel, un refus s'annonce en toast.
+  const cancel = () => {
+    closing.mutate([roomId], { onError: () => toast.error(t('play.closeError'), t('home.errorText')) })
+    back()
+  }
   const share = useShare()
   const shareRoom = () => share({ kind: 'room', id: roomId, title: t('share.roomTitle'), text: t('share.roomText') })
 
-  if (terminal || status?.terminalError) {
+  if (terminal || status?.notFound || presence.refusal === 'GONE') {
     const copy = terminal ?? { title: 'room.notFoundTitle' as const, text: 'room.notFoundText' as const }
     return (
       <Page onBack={back}>
@@ -160,16 +169,16 @@ export function RoomPage() {
       onBack={back}
       bottomBar={
         <div className="grid gap-2 p-4">
-          {presence.failed && (
+          {presence.refusal && (
             <div className="grid gap-2">
-              <p className="jo-type-caption m-0 text-center text-jo-muted">{presence.problem?.detail ?? t('room.presenceError')}</p>
+              <p className="jo-type-caption m-0 text-center text-jo-muted">{t(REFUSAL_TEXT[presence.refusal])}</p>
               <Button full variant="gray" tone="neutral" onClick={presence.retry}>
                 {t('common.retry')}
               </Button>
             </div>
           )}
           {wizzVisible && (
-            <Button full icon={LightningIcon} loading={wizz.isPending} disabled={!wizzAvailable} onClick={() => wizz.mutate()}>
+            <Button full icon={LightningIcon} loading={remind.isPending} disabled={!reminder.available} onClick={wizz}>
               {wizzSeconds > 0 ? t('room.wizzIn', { seconds: wizzSeconds }) : t('room.wizz', { name: opponentName ?? t('topic.opponent') })}
             </Button>
           )}

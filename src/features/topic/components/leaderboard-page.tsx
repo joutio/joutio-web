@@ -1,8 +1,9 @@
-import type { LeaderboardEntryView } from '@joutio/client/api-types'
+import type { LeaderboardEntryView } from '@joutio/client/topics'
 import { SlidersHorizontalIcon, TrophyIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMe, usePlayerIdentity } from '@/features/me'
+import { useMe } from '@joutio/client/me'
+import { usePlayerIdentity } from '@/features/me'
 import { TabNav } from '@/features/shell'
 import { useLanguageStore, useT, type MessageKey } from '@/lib/i18n'
 import { useUserAvatar } from '@/shared/avatar'
@@ -11,9 +12,9 @@ import { ROUTES } from '@/shared/routes'
 import { tierOf } from '@/shared/tier'
 import { topicName } from '@/shared/topics'
 import { Button, EmptyState, FeedFooter, IconButton, ListRow, MobileSheet, MobileTopBar, Podium, RadioGroup, Screen, SectionHeader, Skeleton, tokens } from '@/ui'
-import { useTopicBoard, useTopicOverview } from '../hooks/use-topic'
+import { useTopicBoard, useTopicOverview } from '@joutio/client/topics'
 import { formatNumber } from '../lib/format'
-import { DEFAULT_BOARD_FILTERS, type BoardFilters, type BoardPeriod, type BoardScope } from '../lib/topic-service'
+import { DEFAULT_BOARD_FILTERS, rankingFilters, type BoardFilters, type BoardPeriod, type BoardScope } from '../lib/board'
 import { BoardRow, MyBoardRow } from './topic-tabs'
 
 const PERIODS: readonly { value: BoardPeriod; label: MessageKey }[] = [
@@ -51,10 +52,10 @@ export function LeaderboardPage() {
   const navigate = useNavigate()
   const { topicId = '' } = useParams()
   const me = useMe().data
-  const topic = useTopicOverview(topicId).data?.topic
+  const topic = useTopicOverview(topicId || undefined).data?.topic
   const [filters, setFilters] = useState<BoardFilters>(DEFAULT_BOARD_FILTERS)
   const [sheetOpen, setSheetOpen] = useState(false)
-  const board = useTopicBoard(topicId, filters)
+  const board = useTopicBoard(topicId || undefined, rankingFilters(filters))
   const entries = board.data?.pages.flatMap((page) => page.entries.content) ?? []
   const mine = board.data?.pages[0]?.me ?? null
   const [first, second, third, ...rest] = entries

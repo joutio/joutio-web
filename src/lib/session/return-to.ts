@@ -7,6 +7,10 @@ export const returnTo = {
   remember(path: string | null) {
     transient.write(RETURN_KEY, path && path.startsWith('/') && !path.startsWith('//') ? path : null)
   },
+  /** Un lien de salon partagé attend (ouvert sans compte, `partage.md` § 3) : l'onboarding ne crée pas son salon. */
+  joinPending(): boolean {
+    return transient.read(RETURN_KEY)?.startsWith('/join/') ?? false
+  },
   consume(): string {
     const path = transient.read(RETURN_KEY)
     transient.write(RETURN_KEY, null)

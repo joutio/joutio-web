@@ -1,17 +1,16 @@
-import type { ChallengeView } from '@joutio/client/api-types'
+import { useNotifications, useReadAllNotifications, useRemoveAllNotifications, type NotificationView } from '@joutio/client/notifications'
+import { useMyRooms, type RoomView } from '@joutio/client/rooms'
 import { BellIcon, ChecksIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react'
-import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { TabNav } from '@/features/shell'
 import { useT, type MessageKey } from '@/lib/i18n'
-import { queryKeys } from '@joutio/client/query'
-import { readServerNow, type NotificationView } from '@/lib/realtime'
+import { readServerNow } from '@/lib/realtime'
 import { showDialog } from '@/shared/dialog'
 import { feedFooterProps } from '@/shared/paging'
 import { ROUTES } from '@/shared/routes'
 import { Button, EmptyState, FeedFooter, IconButton, MobileTopBar, Screen, SectionHeader, Skeleton } from '@/ui'
-import { useDeleteAllNotifications, useMarkAllRead, useNotifications } from '../hooks/use-notifications'
-import { dayOf, isExpired, isUnread, type NotificationDay } from '../lib/notifications-service'
+import { toast } from '@/shared/toast'
+import { dayOf, isExpired, isUnread, type NotificationDay } from '../lib/inbox'
 import { NotificationItem } from './notification-item'
 
 const DAY_LABELS: Record<NotificationDay, MessageKey> = { today: 'notifications.today', week: 'notifications.week', older: 'notifications.older' }
@@ -31,11 +30,11 @@ function Loading() {
  * Sections consécutives sur les éléments chargés (l'ordre du flux fait foi, une page prolonge le dernier groupe). Dans
  * une section, les défis reçus encore ouverts remontent en tête : eux seuls attendent une réponse.
  */
-function groupByDay(items: readonly NotificationView[], challenges: readonly ChallengeView[] | undefined) {
+function groupByDay(items: readonly NotificationView[], rooms: readonly RoomView[] | undefined) {
   const now = readServerNow()
   const today = new Date(now)
   const waiting = (item: NotificationView) =>
-    item.type === 'CHALLENGE_RECEIVED' && isUnread(item) && !isExpired(item, now) && challenges?.find((challenge) => challenge.challengeId === item.sourceId)?.status !== 'ACCEPTED'
+    item.type === 'CHALLENGE_RECEIVED' && isUnread(item) && !isExpired(item, now) && rooms?.find((room) => room.roomId === item.sourceId)?.status !== 'WAITING_PLAYERS'
   const groups: { day: NotificationDay; items: NotificationView[] }[] = []
   for (const item of items) {
     const day = dayOf(item.createdAt, today)
@@ -56,9 +55,9 @@ export function NotificationsPage() {
   const t = useT()
   const navigate = useNavigate()
   const inbox = useNotifications()
-  const readAll = useMarkAllRead()
-  const removeAll = useDeleteAllNotifications()
-  const challenges = useQuery<ChallengeView[]>({ queryKey: queryKeys.challenges(), enabled: false }).data
+  const readAll = useReadAllNotifications()
+  const removeAll = useRemoveAllNotifications()
+  const rooms = useMyRooms().data
   const items = inbox.data?.pages.flatMap((page) => page.content) ?? []
   const failed = inbox.isError
   const anyUnread = items.some(isUnread)
@@ -72,7 +71,7 @@ export function NotificationsPage() {
       title: t('notifications.clearTitle'),
       message: t('notifications.clearText'),
       actions: [
-        { label: t('notifications.clear'), variant: 'filled', tone: 'destructive', onClick: () => removeAll.mutate() },
+        { label: t('notifications.clear'), variant: 'filled', tone: 'destructive', onClick: () => removeAll.mutate(undefined, { onError: () => toast.error(t('notifications.deleteAllError'), t('home.errorText')) }) },
         { label: t('common.cancel'), variant: 'plain', tone: 'neutral' },
       ],
     })
@@ -87,7 +86,7 @@ export function NotificationsPage() {
           onBack={back}
           right={
             <>
-              <IconButton icon={ChecksIcon} label={t('notifications.readAll')} variant="plain" tone="accent" disabled={!anyUnread} onClick={() => readAll.mutate()} />
+              <IconButton icon={ChecksIcon} label={t('notifications.readAll')} variant="plain" tone="accent" disabled={!anyUnread} onClick={() => readAll.mutate(undefined, { onError: () => toast.error(t('notifications.readAllError'), t('home.errorText')) })} />
               <IconButton icon={TrashIcon} label={t('notifications.clear')} variant="plain" tone="destructive" disabled={inbox.isPending || failed || items.length === 0} onClick={confirmClear} />
             </>
           }
@@ -112,7 +111,7 @@ export function NotificationsPage() {
       {inbox.isSuccess && items.length === 0 && <EmptyState className="pt-16" icon={BellIcon} title={t('notifications.emptyTitle')} description={t('notifications.emptyText')} />}
       {!failed && items.length > 0 && (
         <div className="grid gap-6 px-4 pt-1 pb-8">
-          {groupByDay(items, challenges).map(({ day, items: group }) => (
+          {groupByDay(items, rooms).map(({ day, items: group }) => (
             <section key={day} className="grid gap-3">
               <SectionHeader title={t(DAY_LABELS[day])} />
               <div className="overflow-hidden rounded-jo-lg bg-jo-surface">

@@ -1,6 +1,6 @@
 import { WarningCircleIcon } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe } from '@joutio/client/me'
 import { TabNav } from '@/features/shell'
 import { formatNumber } from '@/features/topic'
 import { useLanguageStore, useT } from '@/lib/i18n'

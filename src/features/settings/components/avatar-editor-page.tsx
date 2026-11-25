@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMe } from '@/features/me'
+import { useMe } from '@joutio/client/me'
+import { useUpdateAvatarOptions } from '@joutio/client/profile'
+import { useProfileSaveError } from '../hooks/use-settings'
 import { showPremium } from '@/features/premium'
 import { useMyBadges, useMyRewards } from '@/features/profile'
 import { formatNumber } from '@/features/topic'
@@ -12,7 +14,6 @@ import { defaultOptionsFor, getAvatarStyle, humanizeVariant, isAvatarStyleLoaded
 import type { AvatarStyleId } from '@/shared/avatar/styles/types'
 import { ROUTES } from '@/shared/routes'
 import { Avatar, ColorSwatch, JoutioTabs, MobileTopBar, OptionTile, RadioGroup, RewardCard, Screen, SectionHeader, TabsScrollView, type TabsScrollPage } from '@/ui'
-import { useUpdateMe } from '../hooks/use-settings'
 import { styleEntries, type StyleEntry } from '../lib/avatar-styles'
 
 const STYLES_TO_LOAD = ['micah', 'lorelei', 'notionists'] as const
@@ -60,7 +61,8 @@ export function AvatarEditorPage() {
   const me = useMe().data
   const rewards = useMyRewards()
   const badges = useMyBadges()
-  const save = useUpdateMe('avatarOptions')
+  const save = useUpdateAvatarOptions(me?.userId ?? '')
+  const saveError = useProfileSaveError()
   const [initial] = useState(() => parseAvatarOptions(me?.avatarOptions))
   const [draft, setDraft] = useState<AvatarDraft>(initial)
   const [tab, setTab] = useTabParam<string>(null, 'style')
@@ -172,7 +174,7 @@ export function AvatarEditorPage() {
           onCancel={close}
           onConfirm={() => {
             // Optimiste : `me` change tout de suite, restauré (avec un toast) si le BFF refuse.
-            save.mutate(JSON.stringify(draft))
+            save.mutate(JSON.stringify(draft), { onError: saveError })
             close()
           }}
         />

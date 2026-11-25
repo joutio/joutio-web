@@ -1,4 +1,4 @@
-import type { BadgeCollectionView, BadgeFamily, BadgeItemView, BadgeView } from '@joutio/client/api-types'
+import type { BadgeCollectionView, BadgeFamily, BadgeItemView, BadgeView } from '@joutio/client/profile'
 import {
   CalendarCheckIcon,
   CompassIcon,

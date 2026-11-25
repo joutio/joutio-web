@@ -1,22 +1,13 @@
-import {
-  isBonusRound,
-  LATE_JOIN_MS,
-  MAX_SCORE,
-  ROUND_INTRO_MS,
-  ROUNDS,
-  sortedRounds,
-  SWOOSH_DURATION_MS,
-  VS_DURATION_MS,
-  type GameState,
-} from '@joutio/client/game'
-import { countryFlag, countryName } from '@joutio/client/geo'
+import { Arena, isBonusRound, LATE_JOIN_MS, MAX_SCORE, ROUND_INTRO_MS, ROUNDS, SWOOSH_DURATION_MS, useAbandonGame, useGameStream, VS_DURATION_MS, type GameState } from '@joutio/client/game'
+import { countryFlag, countryName } from '@joutio/client/core/geo'
 import { FlagIcon } from '@phosphor-icons/react'
-import { useMutation } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useBlocker, useLocation, useNavigate, useParams, type BlockerFunction } from 'react-router-dom'
-import { useMe, usePlayerIdentity } from '@/features/me'
-import { usePlayerProfile, type PlayTopic } from '@/features/play'
-import { useTopicOverview } from '@/features/topic'
+import { useMe } from '@joutio/client/me'
+import { useProfile } from '@joutio/client/profile'
+import { useTopicOverview } from '@joutio/client/topics'
+import { usePlayerIdentity } from '@/features/me'
+import { type PlayTopic } from '@/features/play'
 import { useLanguageStore, useT } from '@/lib/i18n'
 import { readServerNow, useServerClock, useServerNow } from '@/lib/realtime'
 import { useUserAvatar } from '@/shared/avatar'
@@ -40,8 +31,7 @@ import {
 } from '@/ui'
 import { useDuelArena } from '../hooks/use-duel-arena'
 import { useEquippedTitle } from '../hooks/use-equipped-title'
-import { useGameStream, usePrefetchQuestionImages } from '../hooks/use-game'
-import { gameService } from '../lib/game-service'
+import { usePrefetchQuestionImages } from '../hooks/use-game'
 import { versusElapsedMs } from '../lib/versus'
 import { DuelCancelled } from './duel-cancelled'
 
@@ -50,7 +40,7 @@ const INTRO_TAIL_MS = 400
 
 /** Pastilles des manches, d'après les réponses du joueur. */
 function roundResults(game: GameState, userId: string, current: number): RoundResult[] {
-  const rounds = sortedRounds(game)
+  const rounds = new Arena(game).sortedRounds()
   return Array.from({ length: ROUNDS }, (_, index) => {
     const bonus = isBonusRound(index)
     const round = rounds[index]
@@ -74,7 +64,7 @@ function Dark({ children }: { children: ReactNode }) {
 
 /**
  * Duel (`duel.md`, lab `duel.tsx`) : toujours sombre, sans onglets ni toasts. Le fil est piloté par les seuls instants
- * serveur (`sceneAt` de `@joutio/client`) : face-à-face → manche → question → révélation → … → résultat.
+ * serveur (`Arena.sceneAt` de `@joutio/client`) : face-à-face → manche → question → révélation → … → résultat.
  * Quitter l'écran (retour, lien) pendant la partie ouvre la confirmation d'abandon.
  */
 export function DuelPage() {
@@ -97,14 +87,14 @@ export function DuelPage() {
   const game = stream.state
 
   // Sujet : passé par le salon, sinon relu (rechargement de la page).
-  const overview = useTopicOverview(passed?.name ? '' : (game?.topicId ?? ''))
+  const overview = useTopicOverview(passed?.name ? undefined : (game?.topicId ?? undefined))
   const topic = passed?.name ?? (overview.data ? topicName(overview.data.topic.names, language) : '')
   const category = toCategoryCode(passed?.category ?? overview.data?.topic.category)
 
   const isPlayer1 = game?.player1Id === userId
   const opponentId = game ? (isPlayer1 ? game.player2Id : game.player1Id) : null
   const vsBot = game?.player2Type === 'BOT'
-  const opponentProfile = usePlayerProfile(opponentId ?? '', Boolean(opponentId) && !vsBot)
+  const opponentProfile = useProfile(opponentId && !vsBot ? opponentId : undefined)
   const myAvatar = useUserAvatar(me)
   const myTitle = useEquippedTitle(me?.equippedTitle, language)
   const opponentTitle = useEquippedTitle(vsBot ? null : opponentProfile.data?.equippedTitle, language)
@@ -118,19 +108,18 @@ export function DuelPage() {
     serverNow: readServerNow,
     userId,
     language,
-    refresh: () => stream.refresh(),
   })
   const scene = arena.scene
   const expired = game?.status === 'CANCELED' && game.canceledReason === 'GAME_EXPIRED'
   // Une partie expirée n'a pas de bilan : elle garde son écran dédié.
   const finished = scene.kind === 'result' && !expired
 
-  // Rattrapage : une transition serveur attendue tarde, ou l'écho de ma réponse : on rejoue l'historique.
+  // Rattrapage : une transition serveur attendue tarde, ou l'écho de ma réponse : le flux rejoue l'historique.
   const overdue = 'overdue' in scene && scene.overdue
+  const { resync } = stream
   useEffect(() => {
-    if (overdue || arena.pendingEchoOverdue) stream.refresh()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [overdue, arena.pendingEchoOverdue])
+    if (overdue || arena.pendingEchoOverdue) resync()
+  }, [overdue, arena.pendingEchoOverdue, resync])
 
   // Fin : la scène décide (la révélation finale reste affichée `RESULT_DELAY_MS`) ; le bilan remplace l'arène.
   const leaving = useRef(false)
@@ -148,15 +137,16 @@ export function DuelPage() {
   }, [playing])
   const block = useCallback<BlockerFunction>(({ currentLocation, nextLocation }) => !leaving.current && playingRef.current && currentLocation.pathname !== nextLocation.pathname, [])
   const blocker = useBlocker(block)
-  const abandon = useMutation({
-    mutationFn: () => gameService.abandon(gameId),
-    onSuccess: () => {
-      leaving.current = true
-      if (blocker.state === 'blocked') blocker.proceed()
-      else void navigate(-1)
-    },
-    onError: () => toast.error(t('duel.abandonError')),
-  })
+  const abandonGame = useAbandonGame(gameId, userId)
+  const abandon = () =>
+    abandonGame.mutate(undefined, {
+      onSuccess: () => {
+          leaving.current = true
+          if (blocker.state === 'blocked') blocker.proceed()
+          else void navigate(-1)
+      },
+      onError: () => toast.error(t('duel.abandonError')),
+    })
   const [asking, setAsking] = useState(false)
   const confirmOpen = asking || blocker.state === 'blocked'
   const closeConfirm = () => {
@@ -316,7 +306,7 @@ export function DuelPage() {
         title={t('duel.abandonTitle')}
         message={t('duel.abandonText', { name: opponentName })}
         actions={[
-          { label: t('duel.abandon'), variant: 'tinted', tone: 'destructive', onClick: () => abandon.mutate() },
+          { label: t('duel.abandon'), variant: 'tinted', tone: 'destructive', onClick: abandon },
           { label: t('duel.continue'), variant: 'filled', onClick: closeConfirm },
         ]}
       />

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useT } from '@/lib/i18n'
 import { trackEvent } from '@/lib/telemetry'
 import { Button, CategoryTile, Notice, tokens, type CategoryCode } from '@/ui'
-import { useSaveInterests } from '../hooks/use-onboarding'
+import { useUpdateInterests } from '@joutio/client/me'
 import { MAX_UNIVERSES, useOnboardingStore } from '../onboarding-store'
 import { Steps } from './steps'
 
@@ -15,7 +15,7 @@ export function UniversesStep() {
   const setUniverses = useOnboardingStore((state) => state.setUniverses)
   const setSkipped = useOnboardingStore((state) => state.setSkipped)
   const go = useOnboardingStore((state) => state.go)
-  const save = useSaveInterests()
+  const save = useUpdateInterests()
   const full = selected.length === MAX_UNIVERSES
 
   useEffect(() => trackEvent('onboarding_started'), [])
