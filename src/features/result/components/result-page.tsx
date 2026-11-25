@@ -1,3 +1,4 @@
+import { selectUserId, useSessionStore } from '@/lib/session'
 import type { BadgeView, MasteryTier } from '@joutio/client/profile'
 import { Arena, isBonusRound, ROUNDS, useGameResult, useGameStream, type GameResultView, type GameRoundState, type GameState } from '@joutio/client/game'
 import { useProfile, useTitles, useWearTitle } from '@joutio/client/profile'
@@ -112,7 +113,7 @@ function Loading() {
  * Résultat d'un duel (`resultat.md`, lab `resultat.tsx`). Juste après le duel (`celebrate`, une seule fois par partie) :
  * la séquence de déblocages (rang, titres), à balayer, puis le résultat ; ensuite (historique, rechargement, retour),
  * le résultat seul. Bilan et manches sont relus en
- * REST (la partie est terminée) ; seule la récompense est attendue un instant.
+ * REST (la partie est terminée) ; la récompense est poussée par le serveur dès qu'elle est calculée.
  */
 export function ResultPage() {
   const { gameId = '' } = useParams()
@@ -129,8 +130,8 @@ export function ResultPage() {
   }, [gameId, location.pathname, location.search, navigate, passed])
   // La partie terminée, repliée de son historique : manches et forfait (le flux n'apporte plus rien).
   const history = useGameStream(gameId || undefined)
-  // La lib relit le résultat tant que la récompense manque.
-  const result = useGameResult(gameId || undefined)
+  // Résultat lu une fois ; la récompense arrive en vue vivante.
+  const result = useGameResult(gameId || undefined, useSessionStore(selectUserId) ?? undefined)
   const game = history.status?.loaded ? history.state : null
 
   if ((!history.status && gameId) || (history.status && !history.status.loaded && !history.status.notFound) || result.isPending) return <Loading />
