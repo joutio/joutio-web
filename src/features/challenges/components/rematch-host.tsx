@@ -9,6 +9,7 @@ import { ROUTES } from '@/shared/routes'
 import { toast, useToastStore } from '@/shared/toast'
 import { topicName } from '@/shared/topics'
 import { RematchPrompt } from '@/ui'
+import { selectUserId, useSessionStore } from '@/lib/session'
 
 /** Secondes avant l'échéance de la proposition (horloge serveur), pour l'affichage seulement. */
 function useSecondsUntil(at: string | null) {
@@ -25,14 +26,14 @@ function useSecondsUntil(at: string | null) {
  * Revanche reçue (`resultat.md` § 6) : `RematchPrompt` sur un voile, au-dessus de toute page, tant que
  * `useIncomingRematch` porte une salle `INVITED` d'origine `REMATCH`. Jamais pendant un duel (toasts suspendus) : la
  * demande attend la fin s'il reste du temps. Accepter ouvre le salon (même `roomId`) ; refuser la retire ; l'échéance
- * du serveur (`ROOM_STATUS` `EXPIRED`) la retire d'elle-même.
+ * du serveur (salle expirée, retirée de `my-rooms`) la retire d'elle-même.
  */
 export function RematchHost() {
   const t = useT()
   const navigate = useNavigate()
   const language = useLanguageStore((state) => state.language)
   const immersive = useToastStore((state) => state.suppressed > 0)
-  const room = useIncomingRematch().data
+  const room = useIncomingRematch(useSessionStore(selectUserId) ?? undefined).data
   const seconds = useSecondsUntil(room?.expiresAt ?? null)
   const accept = useAcceptInvitation()
   const decline = useDeclineInvitations()

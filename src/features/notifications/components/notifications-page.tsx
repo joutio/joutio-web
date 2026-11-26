@@ -12,6 +12,7 @@ import { Button, EmptyState, FeedFooter, IconButton, MobileTopBar, Screen, Secti
 import { toast } from '@/shared/toast'
 import { dayOf, isExpired, isUnread, type NotificationDay } from '../lib/inbox'
 import { NotificationItem } from './notification-item'
+import { selectUserId, useSessionStore } from '@/lib/session'
 
 const DAY_LABELS: Record<NotificationDay, MessageKey> = { today: 'notifications.today', week: 'notifications.week', older: 'notifications.older' }
 
@@ -57,7 +58,7 @@ export function NotificationsPage() {
   const inbox = useNotifications()
   const readAll = useReadAllNotifications()
   const removeAll = useRemoveAllNotifications()
-  const rooms = useMyRooms().data
+  const rooms = useMyRooms(useSessionStore(selectUserId) ?? undefined).data
   const items = inbox.data?.pages.flatMap((page) => page.content) ?? []
   const failed = inbox.isError
   const anyUnread = items.some(isUnread)

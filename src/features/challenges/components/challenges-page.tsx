@@ -18,6 +18,7 @@ import { useTabParam } from '@/shared/use-tab-param'
 import { topicName } from '@/shared/topics'
 import { toast } from '@/shared/toast'
 import { Button, ChallengeListRow, EmptyState, FeedFooter, JoutioTabs, ListRow, MobileTopBar, Screen, SectionHeader, Skeleton } from '@/ui'
+import { selectUserId, useSessionStore } from '@/lib/session'
 
 /** Défis reçus par page de l'onglet Reçus. */
 const RECEIVED_PAGE = 10
@@ -154,13 +155,13 @@ function RoomRow({ room, last }: { room: RoomView; last: boolean }) {
  * Défis (`design/specs/screens/defis.md`, lab `/screens/defis?view=compact`) : barre « Défis » (cloche, Réglages), puis
  * onglets Reçus / Envoyés / Salons comme l'Accueil (2026-11-14), leur nombre dans le libellé. Reçus (par défaut) :
  * liste paginée et « Tout refuser » confirmé. L'onglet est dans l'URL (`?tab=sent`) : les notifications y mènent.
- * Un défi est une salle `INVITED` : `useDefis` range les salles du joueur, tenues à jour par le flux personnel.
+ * Un défi est une salle `INVITED` : `useDefis` range les salles du joueur, poussées par la vue vivante `my-rooms`.
  */
 export function ChallengesPage() {
   const t = useT()
   const navigate = useNavigate()
   const language = useLanguageStore((state) => state.language)
-  const defis = useDefis()
+  const defis = useDefis(useSessionStore(selectUserId) ?? undefined)
   const acceptInvitation = useAcceptInvitation()
   const decline = useDeclineInvitations()
   const cancel = useCancelRooms()

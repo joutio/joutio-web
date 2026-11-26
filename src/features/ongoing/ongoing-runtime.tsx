@@ -9,7 +9,7 @@ import { Banner, GlobalBannerContext } from '@/ui'
 
 /**
  * Reprendre une partie (`etats-systeme.md`, repris du mobile) : `useActiveGames`, lu une fois puis tenu à jour par
- * `@joutio/client` (partie créée : `ROOM_STATUS` `COMPLETED` ; partie finie, abandonnée ou annulée : retirée). Aucun
+ * `@joutio/client` (partie créée : la salle quitte `my-rooms` ; partie finie, abandonnée ou annulée : retirée). Aucun
  * polling ni relecture maison. Le bandeau « Partie en cours » (sujet, Rejoindre) prend la place globale ; la bannière
  * de connexion l'emporte. Sans redirection automatique ; il disparaît dans l'arène de cette partie.
  */

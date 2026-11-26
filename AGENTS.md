@@ -12,7 +12,7 @@ web (`design/specs/platforms/web.md`, `desktop.md`).
 - **Le lab fait foi** : textes, composants, comportements. Son code se **porte** (même API, mêmes
   classes, mêmes jetons) mais ne s'importe jamais (`eslint` l'interdit). En cas d'écart, on corrige
   l'app ; un manque du lab se règle d'abord dans le lab.
-- **Domaine, données et textes** : `@joutio/client` (pin exact, 11.1.0) : repli du duel, salles (un défi est une salle
+- **Domaine, données et textes** : `@joutio/client` (pin exact, 13.0.0) : repli du duel, salles (un défi est une salle
   `INVITED`), atelier, DTOs, **toutes les lectures, mutations et la synchronisation temps réel**, et
   `@joutio/client/core/i18n`. Aucune règle métier dupliquée ici.
 - **Cadre** (D16, `design/specs/platforms/desktop.md`) : plein écran sur téléphone ; `WebFrame` en iPhone Duo

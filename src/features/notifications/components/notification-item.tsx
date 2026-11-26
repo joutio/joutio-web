@@ -15,6 +15,7 @@ import { useOpenNotification } from '../hooks/use-notifications'
 import { NOTIFICATION_ICONS, notificationActorId, notificationTitleKey } from '../lib/notification-presentation'
 import { opensScreen } from '../lib/notification-target'
 import { isExpired, isUnread } from '../lib/inbox'
+import { selectUserId, useSessionStore } from '@/lib/session'
 
 /** Délai écoulé : « à l'instant », « il y a 12 min », « il y a 3 h », « il y a 2 j », puis la date. */
 function useRelativeTime() {
@@ -46,8 +47,8 @@ export function NotificationItem({ notification, last }: { notification: Notific
   const actorId = notificationActorId(notification)
   const actor = useProfile(actorId ?? undefined).data
   const src = useUserAvatar(actor)
-  // Défi reçu : sa salle (`sourceId`), parmi les salles du joueur tenues à jour par le flux personnel.
-  const rooms = useMyRooms().data
+  // Défi reçu : sa salle (`sourceId`), parmi les salles du joueur poussées par la vue vivante `my-rooms`.
+  const rooms = useMyRooms(useSessionStore(selectUserId) ?? undefined).data
   const challenge = notification.type === 'CHALLENGE_RECEIVED' ? rooms?.find((room) => room.roomId === notification.sourceId) : undefined
 
   const name = actor?.pseudonym ?? t('notifications.somePlayer')
