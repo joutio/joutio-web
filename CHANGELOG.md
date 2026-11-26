@@ -1,3 +1,9 @@
+## [2.33.0](https://github.com/joutio/joutio-web/compare/v2.32.0...v2.33.0) (2026-11-26)
+
+### Features
+
+* **challenges:** my rooms from the live view of @joutio/client 13 ([4104f06](https://github.com/joutio/joutio-web/commit/4104f06cdaff58510111000424e97f3a9b154c67))
+
 ## [2.32.0](https://github.com/joutio/joutio-web/compare/v2.31.0...v2.32.0) (2026-11-25)
 
 ### Features
